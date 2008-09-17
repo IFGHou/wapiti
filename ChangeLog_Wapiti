@@ -1,0 +1,86 @@
+15/09/2008
+  Version 1.1.7-alpha
+	Use GET method if not specified in "method" tag
+	Keep an history of XSS payloads
+	New XSS engine for GET method using a list of payloads to bypass filters
+	New module HTTP.py for http requests
+	Added fpassthru to file handling warnings
+	Added a new new detection string for MS-SQL, submitted by Joe McCray
+
+28/01/2007
+	Version 1.1.6
+	New version of lswww
+
+24/10/2006
+	Version 1.1.5
+	Wildcard exclusion with -x (--exclude) option
+
+22/10/2006
+	Fixed a typo in wapiti.py (setAuthCreddentials : one 'd' is enough)
+	Fixed a bug with setAuthCredentials.
+
+07/10/2006
+	Version 1.1.4
+	Some modifications have been made on getccokie.py so it can work
+	on Webmin (and probably more web applications)
+	Added -t (--timeout) option to set the timeout in seconds
+	Added -v (--verbose) option to set the verbosity. Three availables
+	modes :
+	0: only print found vulnerabilities
+	1: print current attacked urls (existing urls)
+	2: print every attack payload and url (very much informations... good
+	for debugging)
+	Wapiti is much more modular and comes with some functions to set scan
+	and attack options... look the code ;)
+	Some defaults options are availables as "modules" with option -m
+	(--module) :
+	GET_XSS: only scan for XSS with HTTP GET method (no post)
+	POST_XSS: XSS attacks using POST and not GET
+	GET_ALL: every attack without POST requests
+	
+12/08/2006
+	Version 1.1.3
+	Fixed the timeout bug with chunked responses
+	(ID = 1536565 on SourceForge)
+
+09/08/2006
+	Version 1.1.2
+	Fixed a bug with HTTP 500 and POST attacks
+
+05/08/2006
+	Version 1.1.1
+	Fixed the UnboundLocalError due to socket timeouts
+	(bug ID = 1534415 on SourceForge)
+
+27/07/2006
+	Version 1.1.0 with urllib2
+	Detection string for mysql_error()
+	Changed the mysql payload (see http://shiflett.org/archive/184 )
+	Modification of the README file
+
+22/07/2006
+	Added CRLF Injection.
+
+20/07/2006
+	Added LDAP Injection and Command Execution (eval, system, passthru...)
+
+11/07/2006
+	-r (--remove) option to remove parameters from URLs
+	Support for Basic HTTP Auth added but don't work with Python 2.4.
+	Proxy support.
+	Now use cookie files (option "-c file" or "--cookie file")
+	-u (--underline) option to highlight vulnerable parameter in URL
+	Detect more vulnerabilities.
+
+04/07/2006:
+	Now attacks scripts using QUERY_STRING as a parameter
+	(i.e. http://server/script?attackme)
+
+23/06/2006:
+	Version 1.0.1
+	Can now use cookies !! (use -c var=data or --cookie var=data)
+	Two utilities added : getcookie.py (interactive) and cookie.py (command line) to get a cookie.
+	Now on Sourceforge
+
+25/04/2006:
+	Version 1.0.0

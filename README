@@ -1,0 +1,75 @@
+                    Wapiti is a web application security auditor.
+
+This version  requires Python 2.4 or  superior with the urllib2 module.
+The cookielib module is required if you want to use cookies.
+
+Wapiti works as a black box vulnerability scanner,  that means it won't
+study the source code of web applications but will work like a  fuzzer,
+scanning the pages of the deployed web application, extracting links and
+forms  and attacking  the scripts looking for  error messages  or  some
+special strings.
+
+It supports the following attacks :
+
++ Database Injection (PHP/ASP/JSP SQL Injections and XPath Injections)
++ Cross Site Scripting (XSS)
++ Bad File Handling detection (local and remote include, require, fopen,
+  readfile...)
++ LDAP Injection
++ Command Execution detection (eval(), system(), passtru()...)
++ CRLF Injection
+
+It support both GET and POST HTTP methods,  warns when an upload form is
+found  and  make  the  difference  beetween  permanent  and pontual  XSS
+vulnerabilities.
+A warning  is also issued when  a HTTP 500 code is returned  (useful for
+ASP/IIS)
+You can use cookies to access members areas.
+You can exclude urls from the scan.
+
+Wapiti use a web spider library I made called lswww.
+Wapiti and  lswww  use the Python  programming  language with its common
+modules.
+The HTMLParser  module from  Python only  works with  well formated html
+pages.
+
+It's VERY IMPORTANT you keep that in mind.
+A lot of webapps and  websites use bad html code,  making lswww useless.
+BUT we can use the Tidy library to clean up the html so the scan will be
+far more efficient.
+
+Wapiti will give very good results if you install the following applications :
+Tidy     - http://tidy.sourceforge.net/
+ctypes   - http://starship.python.net/crew/theller/ctypes/
+uTidyLib - http://utidylib.berlios.de/
+
+On Debian Etch can be done like this :
+aptitude install tidy python-utidylib python-ctypes python-pullparser python-clientcookie python-urlgrabber
+
+French people can go to the following page for more information :
+http://devloop.lyua.org/blog/index.php?2006/04/26/246-howto-faire-fonctionner-efficacement-lswww
+
+Since version 1.1.6, Wapiti comes with BeautifulSoup. It's not as powerful
+as tidy but it's good to have it.
+
+To find more vulnerabilities you can modify your PHP configuration to :
+safe_mode = Off
+display_errors = On (recommended)
+magic_quotes_gpc = Off
+allow_url_fopen = On
+
+Files :
+
+wapiti.py    - fuzzer
+lswww.py     - webspider
+getcookie.py - interactive tool to send data to a login page and get the cookie
+cookie.py    - command line tool to send data to a form and get the cookie
+BeautifulSoup.py - a Python HTML/XML parser
+
+To get help :
+python wapiti.py -h
+
+http://wapiti.sourceforge.net/
+
+An article about PHP Upload security (in french) :
+http://devloop.lyua.org/blog/index.php?2006/07/19/289-php-les-dangers-des-scripts-dupload

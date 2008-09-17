@@ -1,0 +1,68 @@
+First I use getcookie.py to login in the restricted area and get the cookie in cookies.txt
+
+bash-3.0$ python getcookie.py cookies.txt http://127.0.0.1/vuln/?page=login
+Please enter values for the folling form :
+url = http://127.0.0.1/vuln/login.php
+login (on) : toto
+password (on) : toto
+0 : <Cookie PHPSESSID=8qte5k7jr6ogkocrlcrk9obmj2 for 127.0.0.1/>
+
+Then I scan the vuln website using the cookie and excluding the logout script
+
+bash-3.0$ python wapiti.py http://127.0.0.1/vuln/ -c cookies.txt -x http://127.0.0.1/vuln/index.php?page=logout
+..........................
+
+Attacking urls (GET)...
+-----------------------
+Warning fread (article) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?article=http%3A%2F%2Fwww.google.fr%2F&page=articles
+Unix include/fread (article) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?article=..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd&page=articles
+Warning require (page) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?article=plop.txt&page=http%3A%2F%2Fwww.google.fr%2F
+Unix include/fread (page) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?article=plop.txt&page=%2Fetc%2Fpasswd%00
+Unix include/fread (article) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?article=..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd&page=articles2
+Warning require (page) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?article=truc.txt&page=http%3A%2F%2Fwww.google.fr%2F
+Unix include/fread (page) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?article=truc.txt&page=%2Fetc%2Fpasswd%00
+Warning require (page) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?page=http%3A%2F%2Fwww.google.fr%2F
+Unix include/fread (page) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?page=%2Fetc%2Fpasswd%00
+Warning require (page) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?var=plop&page=http%3A%2F%2Fwww.google.fr%2F
+Unix include/fread (page) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?var=plop&page=%2Fetc%2Fpasswd%00
+XSS (var) in http://127.0.0.1/vuln/
+	Evil url: http://127.0.0.1/vuln/?var=%3Cscript%3Evar+wapiti_687474703a2f2f3132372e302e302e312f7e7369726975732f76756c6e2f_766172%3Dnew+Boolean%28%29%3B%3C%2Fscript%3E&page=xss
+Command execution (var) in http://127.0.0.1/vuln/eval.php
+	Evil url: http://127.0.0.1/vuln/eval.php?var=a%3Benv
+500 HTTP Error code with
+	Evil url: http://127.0.0.1/vuln/test.php?http%3A//www.google.fr/
+500 HTTP Error code with
+	Evil url: http://127.0.0.1/vuln/test.php?a%3Benv
+500 HTTP Error code with
+	Evil url: http://127.0.0.1/vuln/test.php?'"(
+XSS (QUERY_STRING) in http://127.0.0.1/vuln/test.php
+	Evil url: http://127.0.0.1/vuln/test.php?%3Cscript%3Evar%20wapiti_687474703a2f2f3132372e302e302e312f7e7369726975732f76756c6e2f746573742e706870_5155455259535452494e47%3Dnew%20Boolean%28%29%3B%3C/script%3E
+MySQL Injection (user) in http://127.0.0.1/vuln/usermsg.php
+	Evil url: http://127.0.0.1/vuln/usermsg.php?user=%27%22%28
+
+Attacking forms (POST)...
+-------------------------
+SQL Injection found with http://127.0.0.1/vuln/login.php
+  and params = login=%27%22%28&password=on
+  coming from http://127.0.0.1/vuln/?page=login
+SQL Injection found with http://127.0.0.1/vuln/login.php
+  and params = login=on&password=%27%22%28
+  coming from http://127.0.0.1/vuln/?page=login
+
+Looking for permanent XSS
+-------------------------
+
+Upload scripts found :
+----------------------
+http://127.0.0.1/vuln/upload.php
