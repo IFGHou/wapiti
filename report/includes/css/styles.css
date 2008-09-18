@@ -1,0 +1,103 @@
+body {
+ background-color:#FFFFFF;
+ color: #000000;
+ font-size: 9pt;
+}
+* {
+ font-family: Arial,Helvetica,sans serif; 
+ font-variant: normal;
+ font-style: normal;
+
+}
+a,a:link,a:visited,a:active {
+ cursor: hand;
+ color: #003788;
+ text-decoration:none;
+}
+h1 {
+  
+ margin: 5px;
+ padding: 0pt;
+ font-family: Arial,Helvetica,sans-serif;
+ color:#5e5a5a;
+ font-size: 160%;
+ font-weight: bold;
+}
+
+h2 { 
+ margin: 5px;
+ padding: 0pt;
+ font-family: Arial,Helvetica,sans-serif;
+ font-size: 140%;
+ font-weight: bold;
+ color: #7f0000;
+}
+
+h3 { 
+ margin: 5px;
+ padding: 0pt;
+ font-family: Arial,Helvetica,sans-serif;
+ font-size: 100%;
+ text-transform: uppercase;
+ color: #003788;
+ text-align:left;
+}
+
+#chartdata {
+	float:left;
+}
+#datatable {
+    border:1px solid #DDD;
+}
+#datatable>tbody>tr>td {
+ vertical-align:top;
+ border-bottom:1px dotted #DDD;
+ border-left: 1px dotted #DDD;
+ margin:0;
+ overflow:hidden;
+}
+
+#high {
+	background: #fb1414;
+}
+
+#medium{
+	background: #f3bf21;
+}
+#low{
+	background: #f1f321;
+}
+
+.field {
+ border:1px solid #CCC;
+ width:75px;
+}
+#chartarea {
+	float:left;
+	margin-left:10px;
+}
+#chartcode {
+	float:left;
+	margin-left:10px;
+}
+
+.vulnerability>tbody>tr>td{
+ 	border:1px solid #DDD;
+	background: #e1e1e1;
+}
+
+.vulnerability {
+	max-width: 800px;
+	width: 800px;
+}
+#footer {
+	height: 50px;
+	padding-left:5px;
+	background: #545248 none repeat scroll 0 0;
+	color: #DBD3D3;
+ 	font-size: 8pt;
+}
+#footer a{
+	color: #DBD3D3;
+	text-decoration:underline;
+}
