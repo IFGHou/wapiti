@@ -248,7 +248,6 @@ Supported options are:
         if(self.inzone(lien)==0):
           # Is the document already visited of forbidden ?
           if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
-            ########################################################################################################################################"
             pass
           elif self.nice>0:
             if self.countMatches(lien)>=self.nice:
