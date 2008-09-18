@@ -92,6 +92,12 @@ Supported options are:
 --timeout <timeout>
 	Set the timeout (in seconds)
 
+-n <limit>
+--nice <limit>
+  Define a limit of urls to read with the same pattern
+  Use this option to prevent endless loops
+  Must be greater than 0
+
 -h
 --help
 	To print this usage message
@@ -114,6 +120,9 @@ Supported options are:
   bad_params=[]
   timeout=6
 
+  # 0 means no limits
+  nice=0
+
   def __init__(self,rooturl):
     root=rooturl
     if root[-1]!="/":
@@ -135,6 +144,10 @@ Supported options are:
   def setProxy(self,proxy={}):
     """Set proxy preferences"""
     self.proxy=proxy
+
+  def setNice(self,nice=0):
+    """Set the maximum of urls to visit with the same pattern"""
+    self.nice=nice
 
   def addStartURL(self,url):
     if(self.checklink(url)):
@@ -235,7 +248,15 @@ Supported options are:
         if(self.inzone(lien)==0):
           # Is the document already visited of forbidden ?
           if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
+            ########################################################################################################################################"
             pass
+          elif self.nice>0:
+            if self.countMatches(lien)>=self.nice:
+              # don't waste time next time we found it
+              self.excluded.append(lien)
+              return 0
+            else:
+              self.tobrowse.append(lien)
           else:
             # No -> Will browse it soon
             self.tobrowse.append(lien)
@@ -333,6 +354,29 @@ Supported options are:
         match=True
     return match
       
+  def countMatches(self,url):
+    """Return the number of known urls matching the pattern of the given url"""
+    matches=0
+    if url.find("?")!=-1:
+      if url.find("=")!=-1:
+        i=0
+        for x in range(0,url.count("=")):
+          start=url.find("=",i)
+          i=url.find("&",start)
+          if i!=-1:
+            for u in self.browsed:
+              if u.startswith(url[:start]+"=") and u.endswith(url[i:]):
+                matches+=1
+          else:
+            for u in self.browsed:
+              if u.startswith(url[:start]+"="):
+                matches+=1
+      else:#QUERY_STRING
+        for a in [u for u in self.browsed if u.find("=")<0]:
+          if a.startswith(url.split("?")[0]):
+            matches+=1
+    return matches
+
   def reWildcard(self,regexp,string):
     """Wildcard-based regular expression system"""
     regexp=re.sub("\*+","*",regexp)
@@ -394,7 +438,7 @@ Supported options are:
     try:
       while len(self.tobrowse)>0:
         lien=self.tobrowse.pop(0)
-        if (lien not in self.browsed):
+        if (lien not in self.browsed and lien not in self.excluded):
           if self.browse(lien):
             self.browsed.append(lien)
       if self.verbose==1:
@@ -514,53 +558,56 @@ class linkParser(HTMLParser.HTMLParser):
 
 if __name__ == "__main__":
   try:
-	prox={}
-	auth=[]
-	if len(sys.argv)<2:
-		print lswww.__doc__
-		sys.exit(0)
-	if '-h' in sys.argv or '--help' in sys.argv:
-	  print lswww.__doc__
-	  sys.exit(0)
-	myls=lswww(sys.argv[1])
-	myls.verbosity(1)
-	try:
-	  opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:",
-	      ["help","proxy=","start=","exclude=","cookie=","auth=","remove=","verbose=","timeout="])
-	except getopt.GetoptError,e:
-	  print e
-	  sys.exit(2)
-	for o,a in opts:
-	  if o in ("-h", "--help"):
-	    print lswww.__doc__
-	    sys.exit(0)
-	  if o in ("-s","--start"):
-	    if (a.find("http://",0)==0) or (a.find("https://",0)==0):
-	      myls.addStartURL(a)
-	  if o in ("-x","--exclude"):
-	    if (a.find("http://",0)==0) or (a.find("https://",0)==0):
-	      myls.addExcludedURL(a)
-	  if o in ("-p","--proxy"):
-	    if (a.find("http://",0)==0) or (a.find("https://",0)==0):
-	      prox={'http':a}
-	      myls.setProxy(prox)
-	  if o in ("-c","--cookie"):
-	    myls.setCookieFile(a)
-	  if o in ("-r","--remove"):
-	    myls.addBadParam(a)
-	  if o in ("-a","--auth"):
-	    if a.find("%")>=0:
-	      auth=[a.split("%")[0],a.split("%")[1]]
-	      myls.setAuthCredentials(auth)
-	  if o in ("-v","--verbose"):
-	    if str.isdigit(a):
-	      myls.verbosity(int(a))
-	  if o in ("-t","--timeout"):
-	    if str.isdigit(a):
-	      myls.setTimeOut(int(a))
-	myls.go()
-	myls.printLinks()
-	myls.printForms()
-	myls.printUploads()
+    prox={}
+    auth=[]
+    if len(sys.argv)<2:
+      print lswww.__doc__
+      sys.exit(0)
+    if '-h' in sys.argv or '--help' in sys.argv:
+      print lswww.__doc__
+      sys.exit(0)
+    myls=lswww(sys.argv[1])
+    myls.verbosity(1)
+    try:
+      opts, args = getopt.getopt(sys.argv[2:],"hp:s:x:c:a:r:v:t:n:",
+          ["help","proxy=","start=","exclude=","cookie=","auth=","remove=","verbose=","timeout=","nice="])
+    except getopt.GetoptError,e:
+      print e
+      sys.exit(2)
+    for o,a in opts:
+      if o in ("-h", "--help"):
+        print lswww.__doc__
+        sys.exit(0)
+      if o in ("-s","--start"):
+        if (a.find("http://",0)==0) or (a.find("https://",0)==0):
+          myls.addStartURL(a)
+      if o in ("-x","--exclude"):
+        if (a.find("http://",0)==0) or (a.find("https://",0)==0):
+          myls.addExcludedURL(a)
+      if o in ("-p","--proxy"):
+        if (a.find("http://",0)==0) or (a.find("https://",0)==0):
+          prox={'http':a}
+          myls.setProxy(prox)
+      if o in ("-c","--cookie"):
+        myls.setCookieFile(a)
+      if o in ("-r","--remove"):
+        myls.addBadParam(a)
+      if o in ("-a","--auth"):
+        if a.find("%")>=0:
+          auth=[a.split("%")[0],a.split("%")[1]]
+          myls.setAuthCredentials(auth)
+      if o in ("-v","--verbose"):
+        if str.isdigit(a):
+          myls.verbosity(int(a))
+      if o in ("-t","--timeout"):
+        if str.isdigit(a):
+          myls.setTimeOut(int(a))
+      if o in ("-n","--nice"):
+        if str.isdigit(a):
+          myls.setNice(int(a))
+    myls.go()
+    myls.printLinks()
+    myls.printForms()
+    myls.printUploads()
   except SystemExit:
-	pass
+    pass
