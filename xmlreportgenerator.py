@@ -23,8 +23,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from xml.dom.minidom import Document
+from reportgenerator import ReportGenerator
 
-class XMLReportGenerator:
+class XMLReportGenerator(ReportGenerator):
     """
     This class generates a report with the method printToFile(fileName) which contains
     the information of all the vulnerabilities notified to this object through the 
@@ -106,7 +107,7 @@ class XMLReportGenerator:
         vulnerability.appendChild(infoNode)
         self.__addToVulnerabilityList(vulnerabilityTypeName,vulnerability)
 
-    def printToFile(self,fileName):
+    def generateReport(self,fileName):
         """
         Create a xml file with a report of the vulnerabilities which have been logged with 
         the method logVulnerability(vulnerabilityTypeName,level,url,parameter,info)

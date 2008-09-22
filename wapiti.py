@@ -85,6 +85,11 @@ Supported options are:
 	Set the verbosity level
 	0: quiet (default), 1: print each url, 2: print every attack
 
+-rt <type>
+--reportType <type>
+	Set the type of the report
+	xml: Report in XML format
+
 -h
 --help
 	To print this usage message"""
@@ -102,6 +107,7 @@ Supported options are:
   color=0
   bad_params=[]
   verbose=0
+  reportGeneratorType = "xml"
 
   doGET=1
   doPOST=1
@@ -115,7 +121,7 @@ Supported options are:
   GET_XSS={}
   HTTP=None
   XSS=None
-  xmlReportGen = None
+  reporGen = None
 
   #Constants
   SQL_INJECTION = "Sql Injection"
@@ -139,12 +145,15 @@ Supported options are:
     self.__initReport()
 
   def __initReport(self):
-    self.xmlReportGen = XMLReportGenerator()
-    self.xmlReportGen.addVulnerabilityType(self.SQL_INJECTION)
-    self.xmlReportGen.addVulnerabilityType(self.FILE_HANDLING)
-    self.xmlReportGen.addVulnerabilityType(self.XSS)
-    self.xmlReportGen.addVulnerabilityType(self.CRLF)
-    self.xmlReportGen.addVulnerabilityType(self.EXEC)
+    if self.reportGeneratorType.lower() == "xml":
+        self.reporGen = XMLReportGenerator()
+    else: #default
+        self.reporGen = XMLReportGenerator()
+    self.reporGen.addVulnerabilityType(self.SQL_INJECTION)
+    self.reporGen.addVulnerabilityType(self.FILE_HANDLING)
+    self.reporGen.addVulnerabilityType(self.XSS)
+    self.reporGen.addVulnerabilityType(self.CRLF)
+    self.reporGen.addVulnerabilityType(self.EXEC)
 
   def browse(self):
     self.myls.go()
@@ -180,7 +189,7 @@ Supported options are:
       print "----------------------"
       for url in self.myls.getUploads():
         print url
-    self.xmlReportGen.printToFile(self.REPORT_DIR+"/vulnerabilities.xml")
+    self.reporGen.generateReport(self.REPORT_DIR+"/vulnerabilities.xml")
     print "\nReport"
     print "------"
     print "A report has been generated in the file vulnerabilities.xml"
@@ -250,6 +259,12 @@ Supported options are:
   def setCRLF(self,crlf=1):
     self.doCRLF=crlf
 
+  def setReportGeneratorType(self,repGentype="xml"):
+    self.reportGeneratorType = repGentype
+
+  def setOuputFile(self,outputFile):
+    self.outputFile = outputFile
+
   def attackGET(self,url):
     page=url.split('?')[0]
     query=url.split('?')[1]
@@ -309,14 +324,14 @@ Supported options are:
         if data.find("Sybase message:")>=0:
           err="Sybase Injection"
         if err!="":
-          self.xmlReportGen.logVulnerability(self.SQL_INJECTION,
+          self.reporGen.logVulnerability(self.SQL_INJECTION,
                             self.HIGH_LEVEL_VULNERABILITY,
                             url,payload,err+" (QUERY_STRING)")
           print err,"(QUERY_STRING) in",page
           print "\tEvil url:",url
         else:
           if code==500:
-            self.xmlReportGen.logVulnerability(self.SQL_INJECTION,
+            self.reporGen.logVulnerability(self.SQL_INJECTION,
                               self.HIGH_LEVEL_VULNERABILITY,
                               url,payload,"500 HTTP Error code")
             print "500 HTTP Error code with"
@@ -356,21 +371,21 @@ Supported options are:
             err="Sybase Injection"
           if err!="":
             if self.color==0:
-              self.xmlReportGen.logVulnerability(self.SQL_INJECTION,
+              self.reporGen.logVulnerability(self.SQL_INJECTION,
                                 self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.encode(tmp),
                                 err+" ("+k+")")
               print err,"("+k+") in",page
               print "\tEvil url:",url
             else:
-              self.xmlReportGen.logVulnerability(self.SQL_INJECTION,
+              self.reporGen.logVulnerability(self.SQL_INJECTION,
                                 self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.encode(tmp),
                                 err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
               print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
           else:
             if code==500:
-              self.xmlReportGen.logVulnerability(self.SQL_INJECTION,
+              self.reporGen.logVulnerability(self.SQL_INJECTION,
                                 self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.encode(tmp),
                                 "500 HTTP Error code")
@@ -429,7 +444,7 @@ Supported options are:
             err="Warning file_get_contents()"
             warn=1
           if err!="":
-            self.xmlReportGen.logVulnerability(self.FILE_HANDLING,
+            self.reporGen.logVulnerability(self.FILE_HANDLING,
                               self.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.quote(payload),
                               str(err)+" (QUERY_STRING) in "+str(page))
@@ -438,7 +453,7 @@ Supported options are:
           else:
             if code==500 and err500==0:
               err500=1
-              self.xmlReportGen.logVulnerability(self.FILE_HANDLING,
+              self.reporGen.logVulnerability(self.FILE_HANDLING,
                                 self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.quote(payload),
                                 "500 HTTP Error code")
@@ -491,20 +506,20 @@ Supported options are:
             warn=1
           if err!="":
             if self.color==0:
-              self.xmlReportGen.logVulnerability(self.FILE_HANDLING,
+              self.reporGen.logVulnerability(self.FILE_HANDLING,
                                 self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.encode(tmp),err+" ("+k+")")
               print err,"("+k+") in",page
               print "\tEvil url:",url
             else:
-              self.xmlReportGen.logVulnerability(self.FILE_HANDLING,
+              self.reporGen.logVulnerability(self.FILE_HANDLING,
                                 self.HIGH_LEVEL_VULNERABILITY,url,self.HTTP.encode(tmp),
                                 err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
               print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
           else:
             if code==500 and err500==0:
               err500=1
-              self.xmlReportGen.logVulnerability(self.FILE_HANDLING,
+              self.reporGen.logVulnerability(self.FILE_HANDLING,
                                 self.HIGH_LEVEL_VULNERABILITY,url,self.HTTP.encode(tmp),
                                 "500 HTTP Error code")
               print "500 HTTP Error code with"
@@ -555,14 +570,14 @@ Supported options are:
           print "+ "+url
         data,code=self.HTTP.send(url).getPageCode()
         if data.find(payload)>=0:
-          self.xmlReportGen.logVulnerability(self.XSS,
+          self.reporGen.logVulnerability(self.XSS,
                             self.HIGH_LEVEL_VULNERABILITY,
                             url,payload,"XSS (QUERY_STRING)")
           print "XSS (QUERY_STRING) in",page
           print "\tEvil url:",url
         else:
           if code==500:
-            self.xmlReportGen.logVulnerability(self.XSS,
+            self.reporGen.logVulnerability(self.XSS,
                               self.HIGH_LEVEL_VULNERABILITY,
                               url,payload,"500 HTTP Error code")
             print "500 HTTP Error code with"
@@ -585,21 +600,21 @@ Supported options are:
         data,code=self.HTTP.send(url).getPageCode()
         if data.find(payload)>=0:
           if self.color==0:
-            self.xmlReportGen.logVulnerability(self.XSS,
+            self.reporGen.logVulnerability(self.XSS,
                               self.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.uqe(tmp),
                               "XSS ("+k+")")
             print "XSS ("+k+") in",page
             print "\tEvil url:",url
           else:
-            self.xmlReportGen.logVulnerability(self.XSS,
+            self.reporGen.logVulnerability(self.XSS,
                               self.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.uqe(tmp),
                               "XSS: "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
             print "XSS",":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
         else:
           if code==500:
-            self.xmlReportGen.logVulnerability(self.XSS,
+            self.reporGen.logVulnerability(self.XSS,
                               self.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.uqe(tmp),
                               "500 HTTP Error code")
@@ -637,14 +652,14 @@ Supported options are:
             err="preg_replace injection"
             warn=1
           if err!="":
-            self.xmlReportGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
+            self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.quote(payload),err+" (QUERY_STRING)")
             print err,"(QUERY_STRING) in",page
             print "\tEvil url:",url
           else:
             if code==500 and err500==0:
               err500=1
-              self.xmlReportGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
+              self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.quote(payload),"500 HTTP Error code")
               print "500 HTTP Error code with"
               print "\tEvil url:",url
@@ -677,19 +692,19 @@ Supported options are:
             warn=1
           if err!="":
             if self.color==0:
-              self.xmlReportGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
+              self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.encode(tmp),err+" ("+k+")")
               print err,"("+k+") in",page
               print "\tEvil url:",url
             else:
-              self.xmlReportGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
+              self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.encode(tmp),
                                 err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
               print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
           else:
             if code==500 and err500==0:
               err500=1
-              self.xmlReportGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
+              self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.encode(tmp),
                                 "500 HTTP Error code")
               print "500 HTTP Error code with"
@@ -705,7 +720,7 @@ Supported options are:
         if self.verbose==2:
           print "+ "+url
         if self.HTTP.send(url).getInfo().has_key('Wapiti'):
-          self.xmlReportGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
+          self.reporGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
                             page,payload,err+" (QUERY_STRING)")
           print "CRLF Injection (QUERY_STRING) in",page
           print "\tEvil url:",url
@@ -722,12 +737,12 @@ Supported options are:
           if self.HTTP.send(url).getInfo().has_key('Wapiti'):
             err="CRLF Injection"
             if self.color==0:
-              self.xmlReportGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
+              self.reporGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
                                 page,self.HTTP.encode(tmp),err+" ("+k+")")
               print err,"("+k+") in",page
               print "\tEvil url:",url
             else:
-              self.xmlReportGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
+              self.reporGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
                                 page,self.HTTP.encode(tmp).
                                 err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
               print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
@@ -770,7 +785,7 @@ Supported options are:
         if data.find("Sybase message:")>=0:
           err="Sybase Injection"
         if err!="":
-          self.xmlReportGen.logVulnerability(self.SQL_INJECTION,
+          self.reporGen.logVulnerability(self.SQL_INJECTION,
                             self.HIGH_LEVEL_VULNERABILITY,
                             page,self.HTTP.encode(tmp),
                             err+" coming from "+form[2])
@@ -779,7 +794,7 @@ Supported options are:
           print "  coming from",form[2]
         else:
           if code==500:
-            self.xmlReportGen.logVulnerability(self.SQL_INJECTION,
+            self.reporGen.logVulnerability(self.SQL_INJECTION,
                               self.HIGH_LEVEL_VULNERABILITY,
                               page,self.HTTP.encode(tmp),
                               "500 HTTP Error coming from "+form[2])
@@ -844,7 +859,7 @@ Supported options are:
             err="Warning file_get_contents()"
             warn=1
           if err!="":
-            self.xmlReportGen.logVulnerability(self.FILE_HANDLING,
+            self.reporGen.logVulnerability(self.FILE_HANDLING,
                               self.HIGH_LEVEL_VULNERABILITY,
                               page,self.HTTP.encode(tmp),
                               err+" coming from "+form[2])
@@ -854,7 +869,7 @@ Supported options are:
           else:
             if code==500 and err500==0:
               err500=1
-              self.xmlReportGen.logVulnerability(self.FILE_HANDLING,
+              self.reporGen.logVulnerability(self.FILE_HANDLING,
                                 self.HIGH_LEVEL_VULNERABILITY,
                                 page,self.HTTP.encode(tmp),
                                 "500 HTTP Error coming from "+form[2])
@@ -919,7 +934,7 @@ Supported options are:
             err="preg_replace injection"
             warn=1
           if err!="":
-            self.xmlReportGen.logVulnerability(self.XSS,self.HIGH_LEVEL_VULNERABILITY,
+            self.reporGen.logVulnerability(self.XSS,self.HIGH_LEVEL_VULNERABILITY,
                               page,self.HTTP.encode(tmp),
                               err+" coming from "+form[2])
             print err,"in",page
@@ -928,7 +943,7 @@ Supported options are:
           else:
             if code==500 and err500==0:
               err500=1
-              self.xmlReportGen.logVulnerability(self.XSS,self.HIGH_LEVEL_VULNERABILITY,
+              self.reporGen.logVulnerability(self.XSS,self.HIGH_LEVEL_VULNERABILITY,
                                 page,self.HTTP.encode(tmp),
                                 "500 HTTP Error code coming from "+form[2])
               print "500 HTTP Error code in",page
@@ -941,7 +956,7 @@ Supported options are:
       if data.find(code):
         if self.XSS.validXSS(data,code):
           print "Found permanent XSS with ",self.GET_XSS[code].replace(code,"<XSS>")
-          self.xmlReportGen.logVulnerability(self.XSS,
+          self.reporGen.logVulnerability(self.XSS,
                             self.HIGH_LEVEL_VULNERABILITY,url,"",
                             "Found permanent XSS with "+self.GET_XSS[code].replace(code,"<XSS>"))
     # TODO
@@ -949,7 +964,7 @@ Supported options are:
     for s in p.findall(data):
       s=s.split(";")[0].split('XSS')[1].replace("_","-")
       if self.xss_history.has_key(int(s)):
-        self.xmlReportGen.logVulnerability(self.XSS,
+        self.reporGen.logVulnerability(self.XSS,
                           self.HIGH_LEVEL_VULNERABILITY,url,"",
                           "Found permanent XSS attacked by "+self.xss_history[int(s)][0]+
                           " with field "+self.xss_history[int(s)][1])
@@ -1022,6 +1037,10 @@ if __name__ == "__main__":
           wap.setGlobal()
           wap.setGET()
           wap.setFileHandling()
+      if o in ("-o","--outputFile"):
+        wap.setOutputFile(a)
+      if o in ("-rt","--reportType"):
+        wap.setReportType(a)
     print "Wapiti-1.1.8-alpha (wapiti.sourceforge.net)"
     print "THIS IS AN ALPHA VERSION - PLEASE REPORT BUGS"
     wap.browse()
