@@ -104,7 +104,7 @@ Supported options are:
   myls=""
   urls=[]
   forms=[]
-  attackedGET=[]
+  attackedGET =[]
   attackedPOST=[]
   server=""
   proxy={}
@@ -123,8 +123,7 @@ Supported options are:
   doXSS=1
   doCRLF=1
   timeout=6
-  xss_history={}
-  GET_XSS={}
+
   HTTP=None
   reportGen = None
 

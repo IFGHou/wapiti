@@ -3,6 +3,13 @@ import BeautifulSoup
 from attack import Attack
 
 class XSSAttack(Attack):
+  """
+  This class implements a cross site scripting attack
+  """
+
+  xss_history={}
+  GET_XSS={}
+
   # magic strings me must see to be sure script is vulnerable to XSS
   # payloads must be created on those paterns
   script_ok=[
@@ -10,7 +17,7 @@ class XSSAttack(Attack):
       "alert(\"__XSS__\")",
       "String.fromCharCode(0,__XSS__,1)"
       ]
-    
+
   # simple payloads that doesn't rely on their position in the DOM structure
   # payloads injected after closing a tag aatibute value (attrval) or in the
   # content of a tag (text node like beetween <p> and </p>)
