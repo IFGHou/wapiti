@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import BeautifulSoup
+import random
+import re
 from attack import Attack
 
 class XSSAttack(Attack):
@@ -105,7 +107,7 @@ class XSSAttack(Attack):
           # on effectue une recherche rapide sur l'indetifiant
           if data.find(code)>=0:
             # identifiant est dans la page, il faut determiner ou
-            if self.XSS.findXSS(data,page,tmp,k,code):
+            if self.findXSS(data,page,tmp,k,code):
               break
 
   def attackXSS(self,page,dict):
@@ -192,7 +194,7 @@ class XSSAttack(Attack):
       # on effectue une recherche rapide sur l'indetifiant
       if data.find(code)>=0:
         # identifiant est dans la page, il faut determiner ou
-        if self.XSS.findXSS(data,page,tmp,k,code,form[2]):
+        if self.findXSS(data,page,tmp,k,code,form[2]):
           break
 
         #attention de bloquer les formulaires sans ne prendre en compte la page d'origine
@@ -204,7 +206,7 @@ class XSSAttack(Attack):
     data=self.HTTP.send(url).getPage()
     for code in self.GET_XSS.keys():
       if data.find(code):
-        if self.XSS.validXSS(data,code):
+        if self.validXSS(data,code):
           print "Found permanent XSS with ",self.GET_XSS[code].replace(code,"<XSS>")
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,url,"",

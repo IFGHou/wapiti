@@ -24,7 +24,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import lswww,urlparse,socket
-import sys,re,getopt,os,random
+import sys,re,getopt,os
 import BeautifulSoup
 import XSS, HTTP
 from xmlreportgenerator import XMLReportGenerator
@@ -163,23 +163,24 @@ Supported options are:
     self.xssAttack          = XSSAttack         (self.HTTP,self.reportGen)
     self.attacks = [self.sqlInjectionAttack, self.fileHandlingAttack,
                     self.execAttack, self.crlfAttack, self.xssAttack]
-
-  def browse(self):
-    self.myls.go()
-    self.urls=self.myls.getLinks()
-    self.forms=self.myls.getForms()
-
-    self.HTTP=HTTP.HTTP(self.root,self.proxy,self.auth_basic,self.cookie)
-    self.__initAttacks()
     for attack in self.attacks:
       if self.color == 1:
         attack.setColor()
       attack.setVerbose(self.verbose)
 
+  def browse(self):
+    self.myls.go()
+    self.urls=self.myls.getLinks()
+    self.forms=self.myls.getForms()
+    self.HTTP=HTTP.HTTP(self.root,self.proxy,self.auth_basic,self.cookie)
+
   def attack(self):
-    if self.urls==[]:
+    if self.urls==[] and self.forms==[]:
       print "Problem scanning website !"
       sys.exit(1)
+
+    self.__initAttacks()
+
     if self.doGET==1:
       print "\nAttacking urls (GET)..."
       print  "-----------------------"
