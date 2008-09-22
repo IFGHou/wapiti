@@ -3,7 +3,7 @@ from vulnerability import Vulnerability
 
 class CRLFAttack(Attack):
 
-  def __init__(self,HTTP,xmlRepGenerator,):
+  def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
 
   # Won't work with PHP >= 4.4.2

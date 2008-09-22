@@ -10,7 +10,7 @@ class FileHandlingAttack(Attack):
               "../../../../../../../../../../boot.ini",
               "../../../../../../../../../../boot.ini\0"]
 
-  def __init__(self,HTTP,xmlRepGenerator,):
+  def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
 
   def __findPatternInResponse(self,data,inc,warn):

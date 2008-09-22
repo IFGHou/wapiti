@@ -7,7 +7,7 @@ class ExecAttack(Attack):
             "a);env",
             "/e\0"]
 
-  def __init__(self,HTTP,xmlRepGenerator,):
+  def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
 
   def __findPatternInResponse(self,data,cmd,warn):

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import BeautifulSoup
+from attack import Attack
 
-class XSS:
+class XSSAttack(Attack):
   # magic strings me must see to be sure script is vulnerable to XSS
   # payloads must be created on those paterns
   script_ok=[
@@ -68,8 +69,150 @@ class XSS:
   color=0
   verbose=0
 
-  def __init__(self,HTTP):
-    self.HTTP=HTTP
+  def __init__(self,HTTP,xmlRepGenerator):
+    Attack.__init__(self,HTTP,xmlRepGenerator)
+
+  #new_attackXSS
+  def attackGET(self,page,dict,attackedGET):
+    # page est l'url de script
+    # dict est l'ensembre des variables et leurs valeurs
+    if dict=={}:
+      err=""
+      code="".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
+      url=page+"?"+code
+      data=self.HTTP.send(url).getPage()
+    else:
+      for k in dict.keys():
+        err=""
+        tmp=dict.copy()
+        tmp[k]="__XSS__"
+        url=page+"?"+self.HTTP.uqe(tmp)
+        if url not in attackedGET:
+          attackedGET.append(url)
+          # genere un identifiant unique a rechercher ensuite dans la page
+          code="".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
+          tmp[k]=code
+          url=page+"?"+self.HTTP.uqe(tmp)
+          self.GET_XSS[code]=url
+          data=self.HTTP.send(url).getPage()
+          # on effectue une recherche rapide sur l'indetifiant
+          if data.find(code)>=0:
+            # identifiant est dans la page, il faut determiner ou
+            if self.XSS.findXSS(data,page,tmp,k,code):
+              break
+
+  def attackXSS(self,page,dict):
+    if dict=={}:
+      # TODO
+      err=""
+      tab=[page,"QUERYSTRING"]
+      xss_hash=hash(str(tab))
+      self.xss_history[xss_hash]=tab
+      payload="<script>var XSS"
+      payload+=str(xss_hash).replace("-","_")
+      payload+="</script>"
+      url=page+"?"+payload
+      if url not in attackedGET:
+        if self.verbose==2:
+          print "+ "+url
+        data,code=self.HTTP.send(url).getPageCode()
+        if data.find(payload)>=0:
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            url,payload,"XSS (QUERY_STRING)")
+          print "XSS (QUERY_STRING) in",page
+          print "\tEvil url:",url
+        else:
+          if code==500:
+            self.reportGen.logVulnerability(Vulnerability.XSS,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                              url,payload,"500 HTTP Error code")
+            print "500 HTTP Error code with"
+            print "\tEvil url:",url
+        attackedGET.append(url)
+    for k in dict.keys():
+      err=""
+      tmp=dict.copy()
+      tab=[page,k]
+      xss_hash=hash(str(tab))
+      self.xss_history[xss_hash]=tab
+      payload="<script>var XSS"
+      payload+=str(xss_hash).replace("-","_")
+      payload+=";</script>"
+      tmp[k]=payload
+      url=page+"?"+self.HTTP.uqe(tmp)
+      if url not in attackedGET:
+        if self.verbose==2:
+          print "+ "+url
+        data,code=self.HTTP.send(url).getPageCode()
+        if data.find(payload)>=0:
+          if self.color==0:
+            self.reportGen.logVulnerability(Vulnerability.XSS,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                              url,self.HTTP.uqe(tmp),
+                              "XSS ("+k+")")
+            print "XSS ("+k+") in",page
+            print "\tEvil url:",url
+          else:
+            self.reportGen.logVulnerability(Vulnerability.XSS,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                              url,self.HTTP.uqe(tmp),
+                              "XSS: "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
+            print "XSS",":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
+        else:
+          if code==500:
+            self.reportGen.logVulnerability(Vulnerability.XSS,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                              url,self.HTTP.uqe(tmp),
+                              "500 HTTP Error code")
+            print "500 HTTP Error code with"
+            print "\tEvil url:",url
+        attackedGET.append(url)
+
+  #attackXSS_POST
+  def attackPOST(self,form,attackedPOST):
+    # TODO : history / attackedPOST
+    headers={"Accept": "text/plain"}
+    page=form[0]
+    dict=form[1]
+    for k in dict.keys():
+      tmp=dict.copy()
+
+      code="".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
+      tmp[k]=code
+      #self.GET_XSS[code]=url
+      data=self.HTTP.send(page,self.HTTP.uqe(tmp),headers).getPage()
+      # on effectue une recherche rapide sur l'indetifiant
+      if data.find(code)>=0:
+        # identifiant est dans la page, il faut determiner ou
+        if self.XSS.findXSS(data,page,tmp,k,code,form[2]):
+          break
+
+        #attention de bloquer les formulaires sans ne prendre en compte la page d'origine
+        #mais en se basant seulement sur page cible+params
+        #self.attackedPOST.append((page,tmp))
+
+
+  def permanentXSS(self,url):
+    data=self.HTTP.send(url).getPage()
+    for code in self.GET_XSS.keys():
+      if data.find(code):
+        if self.XSS.validXSS(data,code):
+          print "Found permanent XSS with ",self.GET_XSS[code].replace(code,"<XSS>")
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,url,"",
+                            "Found permanent XSS with "+self.GET_XSS[code].replace(code,"<XSS>"))
+    # TODO
+    p=re.compile("<script>var XSS[_]?[0-9]{9,10};</script>")
+    for s in p.findall(data):
+      s=s.split(";")[0].split('XSS')[1].replace("_","-")
+      if self.xss_history.has_key(int(s)):
+        self.reportGen.logVulnerability(Vulnerability.XSS,
+                          Vulnerability.HIGH_LEVEL_VULNERABILITY,url,"",
+                          "Found permanent XSS attacked by "+self.xss_history[int(s)][0]+
+                          " with field "+self.xss_history[int(s)][1])
+        print "Found permanent XSS in",url
+        print "  attacked by",self.xss_history[int(s)][0],"with field",self.xss_history[int(s)][1]
 
   # type/name/tag ex: attrval/img/src
   def study(self,obj,parent=None,keyword="",entries=[]):
@@ -287,3 +430,5 @@ class XSS:
       #data=data.partition(code)[2] #reduire la zone de recherche
       data=data.replace(code,"none",1)#reduire la zone de recherche
     return False
+
+class GetTheFuckOutOfMyLoop(Exception): pass

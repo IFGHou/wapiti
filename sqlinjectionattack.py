@@ -3,7 +3,7 @@ from vulnerability import Vulnerability
 
 class SQLInjectionAttack(Attack):
 
-  def __init__(self,HTTP,xmlRepGenerator,):
+  def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
 
   def __findPatternInResponse(self,data):
