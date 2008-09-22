@@ -140,7 +140,7 @@ class FileHandlingAttack(Attack):
               print "500 HTTP Error code with"
               print "\tEvil url:",url
 
-  def attackPOST(self,form):
+  def attackPOST(self,form,attackedPOST):
     page=form[0]
     dict=form[1]
     err=""
@@ -151,8 +151,8 @@ class FileHandlingAttack(Attack):
       for k in dict.keys():
         tmp=dict.copy()
         tmp[k]=payload
-        if (page,tmp) not in self.attackedPOST:
-          self.attackedPOST.append((page,tmp))
+        if (page,tmp) not in attackedPOST:
+          attackedPOST.append((page,tmp))
           if inc==1: continue
           headers={"Accept": "text/plain"}
           if self.verbose==2:

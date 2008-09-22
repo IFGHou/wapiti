@@ -32,7 +32,7 @@ from attack.sqlinjectionattack import SQLInjectionAttack
 from attack.filehandlingattack import FileHandlingAttack
 from attack.execattack import ExecAttack
 from attack.crlfattack import CRLFAttack
-from attack.XSS import XSSAttack
+from attack.xssattack import XSSAttack
 from vulnerability import Vulnerability
 
 class wapiti:
