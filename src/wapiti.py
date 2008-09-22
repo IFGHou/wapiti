@@ -26,13 +26,13 @@
 import lswww,urlparse,socket
 import sys,re,getopt,os
 import BeautifulSoup
-import XSS, HTTP
+import HTTP
 from xmlreportgenerator import XMLReportGenerator
-from sqlinjectionattack import SQLInjectionAttack
-from filehandlingattack import FileHandlingAttack
-from execattack import ExecAttack
-from crlfattack import CRLFAttack
-from XSS import XSSAttack
+from attack.sqlinjectionattack import SQLInjectionAttack
+from attack.filehandlingattack import FileHandlingAttack
+from attack.execattack import ExecAttack
+from attack.crlfattack import CRLFAttack
+from attack.XSS import XSSAttack
 from vulnerability import Vulnerability
 
 class wapiti:
