@@ -108,13 +108,15 @@ Supported options are:
 --help
 	To print this usage message"""
 
-  urls=[]
-  forms=[]
-  attackedGET =[]
-  attackedPOST=[]
-  color=0
-  verbose=0
-  reportGeneratorType = "xml"
+  urls  = []
+  forms = []
+  attackedGET  = []
+  attackedPOST = []
+
+  color   = 0
+  verbose = 0
+
+  reportGeneratorType = "html"
   REPORT_DIR  = "report"
   REPORT_FILE = "vulnerabilities.xml"
   COPY_REPORT_DIR = "generated_report"
@@ -142,7 +144,6 @@ Supported options are:
   def __init__(self,rooturl):
     self.HTTP = HTTP.HTTP(rooturl)
 
-
   def __initReport(self):
     if self.reportGeneratorType.lower() == "xml":
         self.reportGen = XMLReportGenerator()
@@ -165,6 +166,10 @@ Supported options are:
     self.xssAttack          = XSSAttack         (self.HTTP,self.reportGen)
     self.attacks = [self.sqlInjectionAttack, self.fileHandlingAttack,
                     self.execAttack, self.crlfAttack, self.xssAttack]
+    for attack in self.attacks:
+      attack.setVerbose(self.verbose)
+      if self.color == 1:
+        attack.setColor()
 
   def browse(self):
     self.urls,self.forms = self.HTTP.browse()
@@ -199,10 +204,10 @@ Supported options are:
       for url in self.HTTP.getUploads():
         print url
     if not self.outputFile:
-        if self.reportGeneratorType == "html":
-            self.outputFile = self.COPY_REPORT_DIR
-        else:
-	    self.outputFile = self.REPORT_FILE
+      if self.reportGeneratorType == "html":
+        self.outputFile = self.COPY_REPORT_DIR
+      else:
+        self.outputFile = self.REPORT_FILE
     self.reportGen.generateReport(self.outputFile)
     print "\nReport"
     print "------"
@@ -211,36 +216,31 @@ Supported options are:
 
   def setTimeOut(self,timeout=6):
     self.HTTP.setTimeOut(timeout)
-    
+
   def setProxy(self,proxy={}):
     self.HTTP.setProxy(proxy)
- 
+
   def addStartURL(self,url):
     self.HTTP.addStartURL(url)
-    
+
   def addExcludedURL(self,url):
     self.HTTP.addExcludedURL(url)
-  
+
   def setCookieFile(self,cookie):
     self.HTTP.setCookieFile(cookie)
-    
+
   def setAuthCredentials(self,auth_basic):
     self.HTTP.setAuthCredentials(auth_basic)
-  
+
   def addBadParam(self,bad_param):
     self.HTTP.addBadParam(bad_param)
-  
+
   def setColor(self):
     self.color=1
-    for attack in self.attacks:
-      attack.setColor()
-  
+
   def verbosity(self,vb):
     self.verbose=vb
     self.HTTP.verbosity(vb)
-    for attack in self.attacks:
-      attack.setVerbose(vb)
-
 
   # following set* functions can be used to create scan modes
   def setGlobal(self,var=0):
