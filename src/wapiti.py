@@ -100,20 +100,16 @@ Supported options are:
 --help
 	To print this usage message"""
 
-  root=""
-  myls=""
-  urls=[]
+  urls =[]
   forms=[]
   attackedGET =[]
   attackedPOST=[]
-  server=""
-  proxy={}
-  cookie=""
-  auth_basic=[]
-  color=0
-  bad_params=[]
+
+  color= 0
   verbose=0
+
   reportGeneratorType = "xml"
+  outputFile = "."
 
   doGET=1
   doPOST=1
@@ -122,9 +118,8 @@ Supported options are:
   doInjection=1
   doXSS=1
   doCRLF=1
-  timeout=6
 
-  HTTP=None
+  HTTP = None
   reportGen = None
 
   xssAttack          = None
@@ -137,12 +132,9 @@ Supported options are:
   REPORT_DIR = "report"
 
   def __init__(self,rooturl):
-    self.root=rooturl
-    self.server=urlparse.urlparse(rooturl)[1]
-    self.myls=lswww.lswww(rooturl)
-    self.myls.verbosity(1)
-    socket.setdefaulttimeout(self.timeout)
+    self.HTTP = HTTP.HTTP(rooturl)
     self.__initReport()
+    self.__initAttacks()
 
   def __initReport(self):
     if self.reportGeneratorType.lower() == "xml":
@@ -163,24 +155,14 @@ Supported options are:
     self.xssAttack          = XSSAttack         (self.HTTP,self.reportGen)
     self.attacks = [self.sqlInjectionAttack, self.fileHandlingAttack,
                     self.execAttack, self.crlfAttack, self.xssAttack]
-    for attack in self.attacks:
-      if self.color == 1:
-        attack.setColor()
-      attack.setVerbose(self.verbose)
 
   def browse(self):
-    self.myls.go()
-    self.urls=self.myls.getLinks()
-    self.forms=self.myls.getForms()
-    self.HTTP=HTTP.HTTP(self.root,self.proxy,self.auth_basic,self.cookie)
+    self.urls,self.forms = self.HTTP.browse()
 
   def attack(self):
     if self.urls==[] and self.forms==[]:
       print "Problem scanning website !"
       sys.exit(1)
-
-    self.__initAttacks()
-
     if self.doGET==1:
       print "\nAttacking urls (GET)..."
       print  "-----------------------"
@@ -198,10 +180,10 @@ Supported options are:
       print "-------------------------"
       for url in self.urls:
         self.xssAttack.permanentXSS(url)
-    if self.myls.getUploads()!=[]:
+    if self.HTTP.getUploads()!=[]:
       print "\nUpload scripts found :"
       print "----------------------"
-      for url in self.myls.getUploads():
+      for url in self.HTTP.getUploads():
         print url
     self.reportGen.generateReport(self.REPORT_DIR+"/vulnerabilities.xml")
     print "\nReport"
@@ -210,36 +192,36 @@ Supported options are:
     print "Open "+self.REPORT_DIR+"/index.html with a browser to see this report."
 
   def setTimeOut(self,timeout=6):
-    self.timeout=timeout
-    self.myls.setTimeOut(timeout)
+    self.HTTP.setTimeOut(timeout)
 
   def setProxy(self,proxy={}):
-    self.proxy=proxy
-    self.myls.setProxy(proxy)
+    self.HTTP.setProxy(proxy)
 
   def addStartURL(self,url):
-    self.myls.addStartURL(url)
+    self.HTTP.addStartURL(url)
 
   def addExcludedURL(self,url):
-    self.myls.addExcludedURL(url)
+    self.HTTP.addExcludedURL(url)
 
   def setCookieFile(self,cookie):
-    self.cookie=cookie
-    self.myls.setCookieFile(cookie)
+    self.HTTP.setCookieFile(cookie)
 
   def setAuthCredentials(self,auth_basic):
-    self.auth_basic=auth_basic
-    self.myls.setAuthCredentials(auth_basic)
+    self.HTTP.setAuthCredentials(auth_basic)
 
   def addBadParam(self,bad_param):
-    self.myls.addBadParam(bad_param)
+    self.HTTP.addBadParam(bad_param)
 
   def setColor(self):
     self.color=1
+    for attack in self.attacks:
+      attack.setColor()
 
   def verbosity(self,vb):
     self.verbose=vb
-    self.myls.verbosity(vb)
+    self.HTTP.verbosity(vb)
+    for attack in self.attacks:
+      attack.setVerbose(vb)
 
   # following set* functions can be used to create scan modes
   def setGlobal(self,var=0):

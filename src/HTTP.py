@@ -26,7 +26,15 @@ class HTTPResponse:
 class HTTP:
   cookielibhere=0
 
-  def __init__(self,root,proxy={},auth=[],cookie=""):
+  root=""
+  myls=""
+  server=""
+  cookie=""
+  proxy={}
+  auth_basic=[]
+  timeout=6
+
+  def __init__(self,root):
     try:
       import cookielib
     except ImportError:
@@ -34,26 +42,40 @@ class HTTP:
     else:
       self.cookielibhere=1
 
+    self.root=root
+    self.server=urlparse.urlparse(root)[1]
+    self.myls=lswww.lswww(root)
+    self.myls.verbosity(1)
+    socket.setdefaulttimeout(self.timeout)
+
+  def browse(self):
+    self.myls.go()
+    urls  = self.myls.getLinks()
+    forms = self.myls.getForms()
     director = urllib2.OpenerDirector()
 
     director.add_handler(urllib2.HTTPHandler())
     director.add_handler(urllib2.HTTPSHandler())
 
-    if cookie!="" and self.cookielibhere==1:
+    if self.cookie!="" and cookielibhere==1:
       cj = cookielib.LWPCookieJar()
-      if os.path.isfile(cookie):
-        cj.load(cookie,ignore_discard=True)
+      if os.path.isfile(self.cookie):
+        cj.load(self.cookie,ignore_discard=True)
         director.add_handler(urllib2.HTTPCookieProcessor(cj))
+    if self.proxy!={}:
+      director.add_handler(urllib2.ProxyHandler(self.proxy))
 
-    if proxy!={}:
-      director.add_handler(urllib2.ProxyHandler(proxy))
-
-    if auth!=[]:
+    if self.auth_basic!=[]:
       passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-      passman.add_password(None, root, auth[0], auth[1])
+      passman.add_password(None, self.root, self.auth_basic[0], self.auth_basic[1])
       director.add_handler(urllib2.HTTPBasicAuthHandler(passman))
 
     urllib2.install_opener(director)
+
+    return urls, forms
+
+  def getUploads(self):
+    return self.myls.getUploads()
 
   def send(self,target,post_data=None,http_headers={}):
     data=""
@@ -78,4 +100,32 @@ class HTTP:
 
   def uqe(self,url):
     return urllib.unquote(urllib.urlencode(url))
+
+  def setTimeOut(self,timeout=6):
+    self.timeout=timeout
+    self.myls.setTimeOut(timeout)
+
+  def setProxy(self,proxy={}):
+    self.proxy=proxy
+    self.myls.setProxy(proxy)
+
+  def addStartURL(self,url):
+    self.myls.addStartURL(url)
+
+  def addExcludedURL(self,url):
+    self.myls.addExcludedURL(url)
+
+  def setCookieFile(self,cookie):
+    self.cookie=cookie
+    self.myls.setCookieFile(cookie)
+
+  def setAuthCredentials(self,auth_basic):
+    self.auth_basic=auth_basic
+    self.myls.setAuthCredentials(auth_basic)
+
+  def addBadParam(self,bad_param):
+    self.myls.addBadParam(bad_param)
+
+  def verbosity(self,vb):
+    self.myls.verbosity(vb)
 
