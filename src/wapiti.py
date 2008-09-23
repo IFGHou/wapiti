@@ -23,9 +23,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import net.lswww,urlparse,socket
 import sys,re,getopt,os
-import net.HTTP
+import urlparse,socket
+from net import lswww
+from net import BeautifulSoup
+from net import HTTP
+from htmlreportgenerator import HTMLReportGenerator 
 from xmlreportgenerator import XMLReportGenerator
 from attack.sqlinjectionattack import SQLInjectionAttack
 from attack.filehandlingattack import FileHandlingAttack
@@ -49,7 +52,7 @@ Supported options are:
 --exclude <url>
 	To exclude an url from the scan (for example logout scripts)
 	You can also use a wildcard (*)
-	Exemple : -x "http://server/base/?page=*&module=test"
+	Example : -x "http://server/base/?page=*&module=test"
 	or -x http://server/base/admin/* to exclude a directory
 
 -p <url_proxy>
@@ -90,25 +93,32 @@ Supported options are:
 	Set the verbosity level
 	0: quiet (default), 1: print each url, 2: print every attack
 
--rt <type>
---reportType <type>
+-f <type_file>
+--reportType <type_file>
 	Set the type of the report
 	xml: Report in XML format
-
+	html: Report in HTML format
+	
+-o <output>
+--output <output_file>
+	Set the name of the report file
+	If the selected report type is "html", this parameter must be a directory
+	
 -h
 --help
 	To print this usage message"""
 
-  urls =[]
+  urls=[]
   forms=[]
   attackedGET =[]
   attackedPOST=[]
-
-  color= 0
+  color=0
   verbose=0
-
   reportGeneratorType = "xml"
-  outputFile = "."
+  REPORT_DIR  = "report"
+  REPORT_FILE = "vulnerabilities.xml"
+  COPY_REPORT_DIR = "generated_report"
+  outputFile = ""
 
   doGET=1
   doPOST=1
@@ -118,7 +128,7 @@ Supported options are:
   doXSS=1
   doCRLF=1
 
-  HTTP = None
+  HTTP=None
   reportGen = None
 
   xssAttack          = None
@@ -128,16 +138,16 @@ Supported options are:
   crlfAttack         = None
   attacks = []
 
-  REPORT_DIR = "report"
 
   def __init__(self,rooturl):
-    self.HTTP = net.HTTP.HTTP(rooturl)
-    self.__initReport()
-    self.__initAttacks()
+    self.HTTP = HTTP.HTTP(rooturl)
+
 
   def __initReport(self):
     if self.reportGeneratorType.lower() == "xml":
         self.reportGen = XMLReportGenerator()
+    elif self.reportGeneratorType.lower() == "html":
+        self.reportGen = HTMLReportGenerator()
     else: #default
         self.reportGen = XMLReportGenerator()
     self.reportGen.addVulnerabilityType(Vulnerability.SQL_INJECTION)
@@ -147,6 +157,7 @@ Supported options are:
     self.reportGen.addVulnerabilityType(Vulnerability.EXEC)
 
   def __initAttacks(self):
+    self.__initReport()
     self.sqlInjectionAttack = SQLInjectionAttack(self.HTTP,self.reportGen)
     self.fileHandlingAttack = FileHandlingAttack(self.HTTP,self.reportGen)
     self.execAttack         = ExecAttack        (self.HTTP,self.reportGen)
@@ -162,6 +173,9 @@ Supported options are:
     if self.urls==[] and self.forms==[]:
       print "Problem scanning website !"
       sys.exit(1)
+
+    self.__initAttacks()
+
     if self.doGET==1:
       print "\nAttacking urls (GET)..."
       print  "-----------------------"
@@ -184,43 +198,49 @@ Supported options are:
       print "----------------------"
       for url in self.HTTP.getUploads():
         print url
-    self.reportGen.generateReport(self.REPORT_DIR+"/vulnerabilities.xml")
+    if not self.outputFile:
+        if self.reportGeneratorType == "html":
+            self.outputFile = self.COPY_REPORT_DIR
+        else:
+	    self.outputFile = self.REPORT_FILE
+    self.reportGen.generateReport(self.outputFile)
     print "\nReport"
     print "------"
-    print "A report has been generated in the file vulnerabilities.xml"
+    print "A report has been generated in the file "+ self.outputFile
     print "Open "+self.REPORT_DIR+"/index.html with a browser to see this report."
 
   def setTimeOut(self,timeout=6):
     self.HTTP.setTimeOut(timeout)
-
+    
   def setProxy(self,proxy={}):
     self.HTTP.setProxy(proxy)
-
+ 
   def addStartURL(self,url):
     self.HTTP.addStartURL(url)
-
+    
   def addExcludedURL(self,url):
     self.HTTP.addExcludedURL(url)
-
+  
   def setCookieFile(self,cookie):
     self.HTTP.setCookieFile(cookie)
-
+    
   def setAuthCredentials(self,auth_basic):
     self.HTTP.setAuthCredentials(auth_basic)
-
+  
   def addBadParam(self,bad_param):
     self.HTTP.addBadParam(bad_param)
-
+  
   def setColor(self):
     self.color=1
     for attack in self.attacks:
       attack.setColor()
-
+  
   def verbosity(self,vb):
     self.verbose=vb
     self.HTTP.verbosity(vb)
     for attack in self.attacks:
       attack.setVerbose(vb)
+
 
   # following set* functions can be used to create scan modes
   def setGlobal(self,var=0):
@@ -257,7 +277,7 @@ Supported options are:
   def setReportGeneratorType(self,repGentype="xml"):
     self.reportGeneratorType = repGentype
 
-  def setOuputFile(self,outputFile):
+  def setOutputFile(self,outputFile):
     self.outputFile = outputFile
 
   def attackGET(self,url):
@@ -300,8 +320,8 @@ if __name__ == "__main__":
       sys.exit(0)
     wap=wapiti(sys.argv[1])
     try:
-      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:",
-          ["help","underline","proxy=","start=","exclude=","cookie=","auth=","remove=","verbose=","timeout=","module="])
+      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:",
+          ["help","underline","proxy=","start=","exclude=","cookie=","auth=","remove=","verbose=","timeout=","module=", "outputfile", "reportType"])
     except getopt.GetoptError,e:
       print e
       sys.exit(2)
@@ -352,10 +372,11 @@ if __name__ == "__main__":
           wap.setGlobal()
           wap.setGET()
           wap.setFileHandling()
-      if o in ("-o","--outputFile"):
+      if o in ("-o","--outputfile"):
         wap.setOutputFile(a)
-      if o in ("-rt","--reportType"):
-        wap.setReportType(a)
+      if o in ("-f","--reportType"):
+        if (a.find("html",0)==0) or (a.find("xml",0)==0):
+          wap.setReportGeneratorType(a)
     print "Wapiti-1.1.8-alpha (wapiti.sourceforge.net)"
     print "THIS IS AN ALPHA VERSION - PLEASE REPORT BUGS"
     wap.browse()
