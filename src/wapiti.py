@@ -28,8 +28,8 @@ import urlparse,socket
 from net import lswww
 from net import BeautifulSoup
 from net import HTTP
-from htmlreportgenerator import HTMLReportGenerator 
-from xmlreportgenerator import XMLReportGenerator
+from report.htmlreportgenerator import HTMLReportGenerator 
+from report.xmlreportgenerator import XMLReportGenerator
 from attack.sqlinjectionattack import SQLInjectionAttack
 from attack.filehandlingattack import FileHandlingAttack
 from attack.execattack import ExecAttack

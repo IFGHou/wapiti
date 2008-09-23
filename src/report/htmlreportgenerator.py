@@ -44,7 +44,7 @@ class HTMLReportGenerator(XMLReportGenerator):
 		/css (contains the stylesheet files)
 		/images (contains the required images)
     """
-    REPORT_DIR = "report"
+    REPORT_DIR = "report_template"
     REPORT_XML_FILE = "vulnerabilities.xml"
     
     def generateReport(self,fileName):
