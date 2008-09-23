@@ -467,7 +467,12 @@ class linkParser():
                 self.verbose = verb
 
         def findTagAttributes(self,tag):
-                return re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*["|\']?(.*?)["|\']?[ +|>]',tag)
+                attDouble = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*"(.*?)"[ +|>]',tag)
+                attSingle = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*\'(.*?)\'[ +|>]',tag)
+                attNone   = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*["|\']?(.*?)["|\']?[ +|>]',tag)
+                attNone.extend(attSingle)
+                attNone.extend(attDouble)
+                return attNone
 
         def feed(self,htmlSource):
                 htmlSource = htmlSource.replace("\n","").replace("\r","").replace("\t","")
