@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import BeautifulSoup
 import random
 import re
+from net import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
 

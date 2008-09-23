@@ -23,10 +23,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import lswww,urlparse,socket
+import net.lswww,urlparse,socket
 import sys,re,getopt,os
-import BeautifulSoup
-import HTTP
+import net.HTTP
 from xmlreportgenerator import XMLReportGenerator
 from attack.sqlinjectionattack import SQLInjectionAttack
 from attack.filehandlingattack import FileHandlingAttack
@@ -132,7 +131,7 @@ Supported options are:
   REPORT_DIR = "report"
 
   def __init__(self,rooturl):
-    self.HTTP = HTTP.HTTP(rooturl)
+    self.HTTP = net.HTTP.HTTP(rooturl)
     self.__initReport()
     self.__initAttacks()
 
