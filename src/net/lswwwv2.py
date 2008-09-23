@@ -479,7 +479,7 @@ class linkParser():
 
                 #Finding all the forms: getting the text from "<form..." to "...</form>"
                 #the array forms will contain all the forms of the page
-                forms = re.findall('<form.*?action=".*?".*?>.*?</form>',htmlSource)
+                forms = re.findall('<form.*?>.*?</form>',htmlSource)
                 formsAttributes = []
                 for form in forms:
                     formsAttributes.append(self.findTagAttributes(form))
@@ -489,12 +489,10 @@ class linkParser():
                 inputsInForms    = []
                 textAreasInForms = []
                 selectsInForms   = []
-                formMethods      = []
                 for form in forms:
                         inputsInForms   .append(re.findall('<input.*?>',form))
                         textAreasInForms.append(re.findall('<textarea.*?>',form))
                         selectsInForms  .append(re.findall('<select.*?>',form))
-                        formMethods     .append(re.findall('<form.*?method="(.*?)"',form))
 
                 #Extracting the attributes of the <input> tag as XML parser
                 inputsAttributes = []
@@ -518,9 +516,12 @@ class linkParser():
                 if(self.verbose == 3):
                     print "\n\nForms"
                     print "====="
-                    for i in range(len(formMethods)):
+                    for i in range(len(forms)):
                             print "Form "+str(i)
-                            print " * Method:  "+str(formMethods[i])
+                            tmpdict={}
+                            for k,v in dict(formsAttributes[i]).items():
+                                tmpdict[k.lower()]=v
+                            print " * Method:  "+tmpdict['action']
                             print " * Intputs: "
                             for j in range(len(inputsInForms[i])):
                                     print "    + "+inputsInForms[i][j]
