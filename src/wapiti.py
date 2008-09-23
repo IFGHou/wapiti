@@ -296,7 +296,6 @@ Supported options are:
     if self.doInjection==1:    self.sqlInjectionAttack.attackGET(page,dict,self.attackedGET)
     if self.doXSS==1:          self.xssAttack         .attackGET(page,dict,self.attackedGET)
     if self.doCRLF==1:         self.crlfAttack        .attackGET(page,dict,self.attackedGET)
-    #if self.doXSS==1: self.attackXSS(page,dict)
 
   def attackPOST(self,form):
     if self.verbose==1:
