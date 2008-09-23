@@ -440,10 +440,10 @@ Supported options are:
         if (lien not in self.browsed and lien not in self.excluded):
           if self.browse(lien):
             self.browsed.append(lien)
-      if self.verbose==1:
-        sys.stderr.write('.')
-      elif self.verbose==2:
-        sys.stderr.write(lien+"\n")
+            if self.verbose==1:
+              sys.stderr.write('.')
+            elif self.verbose==2:
+              sys.stderr.write(lien+"\n")
     except KeyboardInterrupt: pass
 
   def verbosity(self,vb):
