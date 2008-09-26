@@ -63,7 +63,7 @@ class XMLReportGenerator(ReportGenerator):
     def __addToVulnerabilityTypeList(self,vulnerabilityType):
         self.__vulnerabilityTypeList.appendChild(vulnerabilityType)
 
-    def addVulnerabilityType(self,name):
+    def addVulnerabilityType(self,name,description="",solution="",references=""):
         """
         This method adds a vulnerability type, it can be invoked to include in the
         report the type. 
@@ -76,6 +76,18 @@ class XMLReportGenerator(ReportGenerator):
         vulnerabilityType.setAttribute("name",name)
         vulnerabilityType.appendChild(self.__xmlDoc.createElement("vulnerabilityList"))
         self.__addToVulnerabilityTypeList(vulnerabilityType)
+        if description!= "":
+          descriptionNode = self.__xmlDoc.createElement("description")
+          descriptionNode.appendChild(self.__xmlDoc.createTextNode(description))
+          vulnerabilityType.appendChild(descriptionNode)
+        if solution!= "":
+          solutionNode = self.__xmlDoc.createElement("solution")
+          solutionNode.appendChild(self.__xmlDoc.createTextNode(solution))
+          vulnerabilityType.appendChild(solutionNode)
+        if references!= "":
+          referencesNode = self.__xmlDoc.createElement("references")
+          referencesNode.appendChild(self.__xmlDoc.createTextNode(references))
+          vulnerabilityType.appendChild(referencesNode)
         return vulnerabilityType
 
     def __addToVulnerabilityList(self,vulnerabilityTypeName,vulnerability):
