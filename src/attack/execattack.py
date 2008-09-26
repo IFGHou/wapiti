@@ -33,10 +33,7 @@ class ExecAttack(Attack):
 
   def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
-    self.payloads = ["a;env",
-                     "a);env",
-                     "/e\0"]
-    #self.payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
+    self.payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
   def __findPatternInResponse(self,data,cmd,warn):
     err = ""
