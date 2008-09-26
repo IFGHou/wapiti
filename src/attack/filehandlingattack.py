@@ -28,15 +28,12 @@ class FileHandlingAttack(Attack):
   """
   This class implements a file handling attack
   """
-  payloads = ["http://www.google.fr/",
-              "/etc/passwd", "/etc/passwd\0", "c:\\\\boot.ini", "c:\\\\boot.ini\0",
-              "../../../../../../../../../../etc/passwd", # /.. is similar to / so one such payload is enough :)
-              "../../../../../../../../../../etc/passwd\0", # same with null byte
-              "../../../../../../../../../../boot.ini",
-              "../../../../../../../../../../boot.ini\0"]
+
+  CONFIG_FILE = "fileHandlingPayloads.txt"
 
   def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
+    self.payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
   def __findPatternInResponse(self,data,inc,warn):
     err = ""

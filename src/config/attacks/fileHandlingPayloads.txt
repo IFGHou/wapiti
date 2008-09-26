@@ -1,0 +1,9 @@
+http://www.google.fr/
+/etc/passwd
+/etc/passwd\0
+c:\\boot.ini
+c:\\boot.ini\0
+../../../../../../../../../../etc/passwd
+../../../../../../../../../../etc/passwd\0
+../../../../../../../../../../boot.ini
+../../../../../../../../../../boot.ini\0

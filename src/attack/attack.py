@@ -21,22 +21,42 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
+from auxtext import AuxText
+
 class Attack:
     """
     This class represents an attack, it must be extended
     for any class which implements a new type of attack
     """
     verbose = 0
-    color = 0
+    color   = 0
+    
     reportGen = None
-    HTTP = None
-
+    HTTP      = None
+    auxText   = None
+    
+    CONFIG_DIR_NAME = "config/attacks"
+    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
+    CONFIG_DIR = BASE_DIR+"/"+CONFIG_DIR_NAME
+    
     def __init__(self,HTTP,reportGen):
         self.HTTP = HTTP
         self.reportGen = reportGen
+        self.auxText = AuxText()
 
     def setVerbose(self,verbose):
         self.verbose = verbose
 
     def setColor(self):
         self.color = 1
+        
+    def loadPayloads(self,fileName):
+        return self.auxText.readLines(fileName)
+    
+    
+if __name__ == "__main__":
+    print __file__
+    print __doc__
+    print __name__
+    print os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
