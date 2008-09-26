@@ -212,7 +212,8 @@ Supported options are:
     print "\nReport"
     print "------"
     print "A report has been generated in the file "+ self.outputFile
-    print "Open "+self.REPORT_DIR+"/index.html with a browser to see this report."
+    if self.reportGeneratorType == "html":
+      print "Open "+self.outputFile+"/index.html with a browser to see this report."
 
   def setTimeOut(self,timeout=6):
     self.HTTP.setTimeOut(timeout)
