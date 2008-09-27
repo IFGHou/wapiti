@@ -57,7 +57,7 @@ class HTTP:
     director.add_handler(urllib2.HTTPHandler())
     director.add_handler(urllib2.HTTPSHandler())
 
-    if self.cookie!="" and cookielibhere==1:
+    if self.cookie!="" and self.cookielibhere==1:
       cj = cookielib.LWPCookieJar()
       if os.path.isfile(self.cookie):
         cj.load(self.cookie,ignore_discard=True)
