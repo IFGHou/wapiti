@@ -159,25 +159,39 @@ class XSSAttack(Attack):
 
 
   def permanentXSS(self,url):
+    headers={"Accept": "text/plain"}
     data=self.HTTP.send(url).getPage()
     for code in self.GET_XSS.keys():
-      if data.find(code):
-        if self.validXSS(data,code):
-          print "Found permanent XSS with ",self.GET_XSS[code].replace(code,"<XSS>")
-          self.reportGen.logVulnerability(Vulnerability.XSS,
+      if data.find(code)>=0:
+        # we where able to inject the ID but will we be able to inject javascript?
+        for xss in self.independant_payloads:
+          attack_url=self.GET_XSS[code].replace(code,xss.replace("__XSS__",code))
+          self.HTTP.send(attack_url)
+          dat=self.HTTP.send(url).getPage()
+          if self.validXSS(dat,code):
+            print "Found permanent XSS in",url,"with",attack_url
+            self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,url,"",
-                            "Found permanent XSS with "+self.GET_XSS[code].replace(code,"<XSS>"))
-    # TODO : add for POST_XSS
-    p=re.compile("<script>var XSS[_]?[0-9]{9,10};</script>")
-    for s in p.findall(data):
-      s=s.split(";")[0].split('XSS')[1].replace("_","-")
-      if self.xss_history.has_key(int(s)):
-        self.reportGen.logVulnerability(Vulnerability.XSS,
-                          Vulnerability.HIGH_LEVEL_VULNERABILITY,url,"",
-                          "Found permanent XSS attacked by "+self.xss_history[int(s)][0]+
-                          " with field "+self.xss_history[int(s)][1])
-        print "Found permanent XSS in",url
-        print "  attacked by",self.xss_history[int(s)][0],"with field",self.xss_history[int(s)][1]
+                            "Found permanent XSS in "+url+" with "+attack_url)
+            break
+
+    for code in self.POST_XSS.keys():
+      if data.find(code)>=0:
+        for k,v in self.POST_XSS[code][1].items():
+          if v==code:
+            tmp=self.POST_XSS[code][1].copy()
+            for xss in self.independant_payloads:
+              tmp[k]=xss.replace("__XSS__",code)
+              self.HTTP.send(self.POST_XSS[code][0],self.HTTP.uqe(tmp),headers)
+              dat=self.HTTP.send(url).getPage()
+              if self.validXSS(dat,code):
+                self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,url,"",
+                            "Found permanent XSS attacked by "+self.POST_XSS[code][0]+
+                            " with field "+self.HTTP.uqe(self.POST_XSS[code][1]))
+                print "Found permament XSS in",self.POST_XSS[code][0]
+                print "  attacked by",self.POST_XSS[code][2],"with fields",self.HTTP.uqe(tmp)
+                break
 
   # type/name/tag ex: attrval/img/src
   def study(self,obj,parent=None,keyword="",entries=[]):
