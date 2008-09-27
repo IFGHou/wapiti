@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import lswww,urllib,urllib2,urlparse,socket
+import lswww,urllib,urllib2,urlparse,socket,os
 
 class HTTPResponse:
   data=""
@@ -24,8 +24,6 @@ class HTTPResponse:
     return (self.data,self.code)
 
 class HTTP:
-  cookielibhere=0
-
   root=""
   myls=""
   server=""
@@ -35,13 +33,6 @@ class HTTP:
   timeout=6
 
   def __init__(self,root):
-    try:
-      import cookielib
-    except ImportError:
-      pass
-    else:
-      self.cookielibhere=1
-
     self.root=root
     self.server=urlparse.urlparse(root)[1]
     self.myls=lswww.lswww(root)
@@ -57,11 +48,17 @@ class HTTP:
     director.add_handler(urllib2.HTTPHandler())
     director.add_handler(urllib2.HTTPSHandler())
 
-    if self.cookie!="" and self.cookielibhere==1:
-      cj = cookielib.LWPCookieJar()
-      if os.path.isfile(self.cookie):
-        cj.load(self.cookie,ignore_discard=True)
-        director.add_handler(urllib2.HTTPCookieProcessor(cj))
+    try:
+      import cookielib
+    except ImportError:
+      pass
+    else:
+      if self.cookie!="":
+        cj = cookielib.LWPCookieJar()
+        if os.path.isfile(self.cookie):
+          cj.load(self.cookie,ignore_discard=True)
+          director.add_handler(urllib2.HTTPCookieProcessor(cj))
+
     if self.proxy!={}:
       director.add_handler(urllib2.ProxyHandler(self.proxy))
 
