@@ -42,11 +42,17 @@ class XSSAttack(Attack):
     # page est l'url de script
     # dict est l'ensembre des variables et leurs valeurs
     if dict=={}:
-      # TODO for QUERYSTRING
-      err=""
-      code="".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
-      url=page+"?"+code
-      data=self.HTTP.send(url).getPage()
+      url=page+"?__XSS__"
+      if url not in attackedGET:
+        attackedGET.append(url)
+        err=""
+        code="".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
+        url=page+"?"+code
+        self.GET_XSS[code]=url
+        data=self.HTTP.send(url).getPage()
+        if data.find(code)>=0:
+          self.findXSS(data,page,{},"",code)
+
     else:
       for k in dict.keys():
         err=""
@@ -265,15 +271,20 @@ class XSSAttack(Attack):
         else:
           payload+="></"+elem['tag']+">"
         for xss in self.independant_payloads:
-          params[var]=payload+xss.replace("__XSS__",code)
-          if referer!="": #POST
-            if self.verbose==2:
-              print "+ "+page
-              print "  ",params
-            dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
-          else:#GET
-            url=page+"?"+self.HTTP.uqe(params)
+          if params=={}:
+            url=page+"?"+payload.replace("__XSS__",code)
             dat=self.HTTP.send(url).getPage()
+            var="QUERY_STRING"
+          else:
+            params[var]=payload+xss.replace("__XSS__",code)
+            if referer!="": #POST
+              if self.verbose==2:
+                print "+ "+page
+                print "  ",params
+              dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
+            else:#GET
+              url=page+"?"+self.HTTP.uqe(params)
+              dat=self.HTTP.send(url).getPage()
 
           if self.validXSS(dat,code):
             self.reportGen.logVulnerability(Vulnerability.XSS,
