@@ -51,10 +51,14 @@ function cleanHTMLTags(str)
 				    linkId = "#"+processTextForLink(name);
 				    divId = "#div_"+processTextForLink(name);
 				    $(linkId).click(function(){ toggle(this.id);});
+
+
 				    description =  $(this).find('description').text();
 				    solution =  $(this).find('solution').text();
 				    references =  $(this).find('references').text();
 				    $(divId).append("<table><tr><td><b>Description:</b></td><td>"+description+"</td></tr><tr><td><b>Solution:</b></td><td>"+solution+"</td><tr><td><b>References:</b></td><td>"+references+"</td></tr></table><br/>");
+
+
                                     $(this).find ('vulnerability').each ( function (v){
                                             level = $(this).attr('level');
                                             vulnerabilities_table[name][level-1]++;

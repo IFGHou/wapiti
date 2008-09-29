@@ -91,11 +91,24 @@ h3 {
 	width: 800px;
 }
 #footer {
-	height: 50px;
+	height: 70px;
 	padding-left:5px;
 	background: #545248 none repeat scroll 0 0;
 	color: #DBD3D3;
  	font-size: 8pt;
+}
+#footer_left {
+	width:80%;
+	float: left;
+}
+#footer_right {
+	float: left;
+	width:20%;
+	margin: 0;
+	height: 1%;
+	padding-top: 5px;
+	text-align:right;
+	margin-left: -10px;
 }
 #footer a{
 	color: #DBD3D3;
