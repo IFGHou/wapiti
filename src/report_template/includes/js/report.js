@@ -60,6 +60,9 @@ function cleanHTMLTags(str)
                                             parameter = cleanHTMLTags(parameter);
                                             info = $(this).find('info').text();
                                             info = cleanHTMLTags(info);
+                                            description =  $(this).find('description').text();
+					    solution =  $(this).find('solution').text()
+					    references =  $(this).find('references').text()
 					    color="";
 					    riskLevel = "";
 					    if (level == "1"){
@@ -72,7 +75,7 @@ function cleanHTMLTags(str)
 						color="#f1f321";
 						riskLevel = "Low";
 					    }
-                                            $(divId).append("<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td>"+url+"</td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr></table><br/>");
+                                            $(divId).append("<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td>"+url+"</td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr><tr><td>Description</td><td>"+description+"</td><tr><tr><td>Solution</td><td>"+solution+"</td></tr><tr><td>References</td><td>"+references+"</td></tr></table><br/>");
 
                                     });
 
