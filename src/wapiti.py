@@ -78,6 +78,12 @@ Supported options are:
 --remove <parameter_name>
 	Remove a parameter from URLs
 
+-n <limit>
+--nice <limit>
+  Define a limit of urls to read with the same pattern
+  Use this option to prevent endless loops
+  Must be greater than 0
+
 -m <module>
 --module <module>
 	Use a predefined set of scan/attack options
@@ -237,6 +243,9 @@ Supported options are:
   def addBadParam(self,bad_param):
     self.HTTP.addBadParam(bad_param)
 
+  def setNice(self,nice):
+    self.HTTP.setNice(nice)
+
   def setColor(self):
     self.color=1
 
@@ -321,8 +330,8 @@ if __name__ == "__main__":
       sys.exit(0)
     wap=wapiti(sys.argv[1])
     try:
-      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:",
-          ["help","underline","proxy=","start=","exclude=","cookie=","auth=","remove=","verbose=","timeout=","module=", "outputfile", "reportType"])
+      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:",
+          ["help","underline","proxy=","start=","exclude=","cookie=","auth=","remove=","verbose=","timeout=","module=", "outputfile", "reportType","nice="])
     except getopt.GetoptError,e:
       print e
       sys.exit(2)
@@ -348,6 +357,9 @@ if __name__ == "__main__":
           wap.setAuthCredentials(auth)
       if o in ("-r","--remove"):
         wap.addBadParam(a)
+      if o in ("-n","--nice"):
+        if str.isdigit(a):
+          wap.setNice(int(a))
       if o in ("-u","--underline"):
         wap.setColor()
       if o in ("-v","--verbose"):

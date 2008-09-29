@@ -123,6 +123,9 @@ class HTTP:
   def addBadParam(self,bad_param):
     self.myls.addBadParam(bad_param)
 
+  def setNice(self,nice=0):
+    self.myls.setNice(nice)
+
   def verbosity(self,vb):
     self.myls.verbosity(vb)
 
