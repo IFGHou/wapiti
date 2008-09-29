@@ -44,6 +44,7 @@ class HTMLReportGenerator(XMLReportGenerator):
 		/css (contains the stylesheet files)
 		/images (contains the required images)
     """
+    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
     REPORT_DIR = "report_template"
     REPORT_XML_FILE = "vulnerabilities.xml"
     
@@ -53,8 +54,8 @@ class HTMLReportGenerator(XMLReportGenerator):
 	If these path exists, it will be overwritten
 	"""
         if os.path.exists(fileName):
-	    rmtree(fileName)
-        copytree(self.REPORT_DIR,fileName)
+            rmtree(fileName)
+        copytree(self.BASE_DIR+"/"+self.REPORT_DIR,fileName)
 	
 	"""
         Create a xml file with a report of the vulnerabilities calling the Base class
