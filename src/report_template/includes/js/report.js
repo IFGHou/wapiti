@@ -52,12 +52,11 @@ function cleanHTMLTags(str)
 				    divId = "#div_"+processTextForLink(name);
 				    $(linkId).click(function(){ toggle(this.id);});
 
-
 				    description =  $(this).find('description').text();
 				    solution =  $(this).find('solution').text();
 				    references =  $(this).find('references').text();
-				    $(divId).append("<table><tr><td><b>Description:</b></td><td>"+description+"</td></tr><tr><td><b>Solution:</b></td><td>"+solution+"</td><tr><td><b>References:</b></td><td>"+references+"</td></tr></table><br/>");
-
+				    
+				    vulnerability_body = "";
 
                                     $(this).find ('vulnerability').each ( function (v){
                                             level = $(this).attr('level');
@@ -80,9 +79,11 @@ function cleanHTMLTags(str)
 						color="#f1f321";
 						riskLevel = "Low";
 					    }
-                                            $(divId).append("<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td>"+url+"</td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr></table><br/>");
+                                            vulnerability_body = vulnerability_body+"<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td>"+url+"</td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr></table><br/>";
 
                                     });
+				   
+
 
                                     var vulnerabilityFound = false;
                                     for (i=0; i<3; i++)
@@ -94,7 +95,10 @@ function cleanHTMLTags(str)
                                         }
                                     }
                                     if(vulnerabilityFound == false)
-                                        $('#vulnerabilities_table').append("<b>No vulnerabilities found</b><br/>");
+                                        $(divId).append("<b>No vulnerabilities found</b><br/>");
+				    else
+				    	$(divId).append("<table><tr><td><b>Description:</b></td><td>"+description+"</td></tr><tr><td><b>Solution:</b></td><td>"+solution+"</td><tr><td><b>References:</b></td><td>"+references+"</td></tr></table><br/>"+vulnerability_body);
+
 			            $('#vulnerabilities_table').append("</div>");
 	
                             });
