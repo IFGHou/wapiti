@@ -79,7 +79,7 @@ function cleanHTMLTags(str)
 						color="#f1f321";
 						riskLevel = "Low";
 					    }
-                                            vulnerability_body = vulnerability_body+"<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td>"+url+"</td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr></table><br/>";
+                                            vulnerability_body = vulnerability_body+"<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td><a href='"+url+"'>"+url+"</a></td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr></table><br/>";
 
                                     });
 				   
