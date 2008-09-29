@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <vulnerabilities>
 	<vulnerability name="SQL Injection">
 		<description>SQL injection is a technique that exploits a vulnerability occurring in the database of an application.</description>
 		<solution>To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used.</solution>
-		<references>http://en.wikipedia.org/wiki/SQL_injection</references>
+		<references>http://www.owasp.org/index.php/SQL_Injection http://en.wikipedia.org/wiki/SQL_injection</references>
 	</vulnerability>
 	<vulnerability name="File Handling">
 		<description></description>
@@ -10,9 +11,9 @@
 		<references></references>
 	</vulnerability>
 	<vulnerability name="Cross Site Scripting">
-		<description></description>
+		<description>Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications which allow code injection by malicious web users into the web pages viewed by other users. Examples of such code include HTML code and client-side scripts. </description>
 		<solution></solution>
-		<references></references>
+		<references>http://www.owasp.org/index.php/Cross_Site_Scripting http://en.wikipedia.org/wiki/Cross-site_scripting</references>
 	</vulnerability>
 	<vulnerability name="CRLF">
 		<description></description>
