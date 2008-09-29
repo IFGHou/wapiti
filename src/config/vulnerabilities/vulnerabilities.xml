@@ -1,0 +1,27 @@
+<vulnerabilities>
+	<vulnerability name="SQL Injection">
+		<description>SQL injection is a technique that exploits a vulnerability occurring in the database of an application.</description>
+		<solution>To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used.</solution>
+		<references>http://en.wikipedia.org/wiki/SQL_injection</references>
+	</vulnerability>
+	<vulnerability name="File Handling">
+		<description></description>
+		<solution></solution>
+		<references></references>
+	</vulnerability>
+	<vulnerability name="Cross Site Scripting">
+		<description></description>
+		<solution></solution>
+		<references></references>
+	</vulnerability>
+	<vulnerability name="CRLF">
+		<description></description>
+		<solution></solution>
+		<references></references>
+	</vulnerability>
+	<vulnerability name="Commands execution">
+		<description></description>
+		<solution></solution>
+		<references></references>
+	</vulnerability>
+</vulnerabilities>

@@ -36,6 +36,8 @@ from attack.execattack import ExecAttack
 from attack.crlfattack import CRLFAttack
 from attack.xssattack import XSSAttack
 from vulnerability import Vulnerability
+from vulnerabilityxmlparser import VulnerabilityXMLParser
+from vulnerabilityxmlparser import Vulnerability
 
 class wapiti:
   """
@@ -151,11 +153,11 @@ Supported options are:
         self.reportGen = HTMLReportGenerator()
     else: #default
         self.reportGen = XMLReportGenerator()
-    self.reportGen.addVulnerabilityType(Vulnerability.SQL_INJECTION)
-    self.reportGen.addVulnerabilityType(Vulnerability.FILE_HANDLING)
-    self.reportGen.addVulnerabilityType(Vulnerability.XSS)
-    self.reportGen.addVulnerabilityType(Vulnerability.CRLF)
-    self.reportGen.addVulnerabilityType(Vulnerability.EXEC)
+    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'..'))
+    xmlParser = VulnerabilityXMLParser()
+    xmlParser.parse(BASE_DIR+"/config/vulnerabilities/vulnerabilities.xml")
+    for vul in xmlParser.getVulnerabilities():
+      self.reportGen.addVulnerabilityType(vul.getName(),vul.getDescription(),vul.getSolution(),vul.getReferences())
 
   def __initAttacks(self):
     self.__initReport()
