@@ -3,7 +3,16 @@
 	<vulnerability name="SQL Injection">
 		<description>SQL injection is a technique that exploits a vulnerability occurring in the database of an application.</description>
 		<solution>To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used.</solution>
-		<references>http://www.owasp.org/index.php/SQL_Injection http://en.wikipedia.org/wiki/SQL_injection</references>
+		<references>
+			<reference>
+				<title>http://www.owasp.org/index.php/SQL_Injection</title>
+				<url>http://www.owasp.org/index.php/SQL_Injection</url>
+			</reference>
+			<reference>
+				<title>http://en.wikipedia.org/wiki/SQL_injection</title>
+				<url>http://en.wikipedia.org/wiki/SQL_injection</url>
+			</reference>
+		</references>
 	</vulnerability>
 	<vulnerability name="File Handling">
 		<description></description>
@@ -12,13 +21,31 @@
 	</vulnerability>
 	<vulnerability name="Cross Site Scripting">
 		<description>Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications which allow code injection by malicious web users into the web pages viewed by other users. Examples of such code include HTML code and client-side scripts. </description>
-		<solution></solution>
-		<references>http://www.owasp.org/index.php/Cross_Site_Scripting http://en.wikipedia.org/wiki/Cross-site_scripting</references>
+		<solution>The best way to protect a web application from XSS attacks is ensure that the application performs validation of all headers, cookies, query strings, form fields, and hidden fields. Encoding user supplied output in the server side can also defeat XSS vulnerabilities by preventing inserted scripts from being transmitted to users in an executable form. Applications can gain significant protection from javascript based attacks by converting the following characters in all generated output to the appropriate HTML entity encoding: &lt;, &gt;, &amp;, ", ', (, ), #, %, ; , +, -</solution>
+		<references>
+			<reference>
+				<title>http://www.owasp.org/index.php/Cross_Site_Scripting</title>
+				<url>http://www.owasp.org/index.php/Cross_Site_Scripting</url>
+			</reference>
+			<reference>
+				<title>http://en.wikipedia.org/wiki/Cross-site_scripting</title>
+				<url>http://en.wikipedia.org/wiki/Cross-site_scripting</url>
+			</reference>
+		</references>
 	</vulnerability>
 	<vulnerability name="CRLF">
-		<description></description>
-		<solution></solution>
-		<references></references>
+		<description>The term CRLF refers to Carriage Return (ASCII 13, \r) Line Feed (ASCII 10, \n). They're used to note the termination of a line, however, dealt with differently in today’s popular Operating Systems. For example: in Windows both a CR and LF are required to note the end of a line, whereas in Linux/UNIX a LF is only required. This combination of CR and LR is used for example when pressing "Enter" on the keyboard. Depending on the application being used, pressing "Enter" generally instructs the application to start a new line, or to send a command.</description>
+		<solution>Check the submitted parameters and do not allow CRLF to be injected by filtering CRLF</solution>
+		<references>
+			<reference>
+				<title>http://www.owasp.org/index.php/CRLF_Injection</title>
+				<url>http://www.owasp.org/index.php/CRLF_Injection</url>
+			</reference>
+			<reference>
+				<title>http://www.acunetix.com/websitesecurity/crlf-injection.htm</title>
+				<url>http://www.acunetix.com/websitesecurity/crlf-injection.htm</url>
+			</reference>
+		</references>
 	</vulnerability>
 	<vulnerability name="Commands execution">
 		<description></description>

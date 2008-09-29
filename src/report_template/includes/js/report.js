@@ -54,7 +54,13 @@ function cleanHTMLTags(str)
 
 				    description =  $(this).find('description').text();
 				    solution =  $(this).find('solution').text();
-				    references =  $(this).find('references').text();
+				    references = "<ul>"
+					    $(this).find('references').each( function (m){
+						    $(this).find('reference').each( function (m){
+							    references += "<li><a href='"+$(this).find('url').text()+"'>"+$(this).find('title').text()+"</a></li>"
+						    });
+						});
+					references += "</ul>"
 				    
 				    vulnerability_body = "";
 
