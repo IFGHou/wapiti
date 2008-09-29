@@ -36,8 +36,7 @@ from attack.execattack import ExecAttack
 from attack.crlfattack import CRLFAttack
 from attack.xssattack import XSSAttack
 from vulnerability import Vulnerability
-from vulnerabilityxmlparser import VulnerabilityXMLParser
-from vulnerabilityxmlparser import Vulnerability
+from file.vulnerabilityxmlparser import VulnerabilityXMLParser
 
 class wapiti:
   """
