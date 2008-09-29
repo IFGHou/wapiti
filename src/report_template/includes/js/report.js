@@ -21,7 +21,7 @@
  */
 
  
-function cleanHTMLTags(str) 
+function cleanHTMLTags(str)
     {
         return str.replace("<", "&lt;", 'g').replace(">", "&gt;", 'g');
     }
@@ -51,6 +51,10 @@ function cleanHTMLTags(str)
 				    linkId = "#"+processTextForLink(name);
 				    divId = "#div_"+processTextForLink(name);
 				    $(linkId).click(function(){ toggle(this.id);});
+				    description =  $(this).find('description').text();
+				    solution =  $(this).find('solution').text();
+				    references =  $(this).find('references').text();
+				    $(divId).append("<table><tr><td><b>Description:</b></td><td>"+description+"</td></tr><tr><td><b>Solution:</b></td><td>"+solution+"</td><tr><td><b>References:</b></td><td>"+references+"</td></tr></table><br/>");
                                     $(this).find ('vulnerability').each ( function (v){
                                             level = $(this).attr('level');
                                             vulnerabilities_table[name][level-1]++;
@@ -60,9 +64,6 @@ function cleanHTMLTags(str)
                                             parameter = cleanHTMLTags(parameter);
                                             info = $(this).find('info').text();
                                             info = cleanHTMLTags(info);
-                                            description =  $(this).find('description').text();
-					    solution =  $(this).find('solution').text()
-					    references =  $(this).find('references').text()
 					    color="";
 					    riskLevel = "";
 					    if (level == "1"){
@@ -75,7 +76,7 @@ function cleanHTMLTags(str)
 						color="#f1f321";
 						riskLevel = "Low";
 					    }
-                                            $(divId).append("<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td>"+url+"</td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr><tr><td>Description</td><td>"+description+"</td><tr><tr><td>Solution</td><td>"+solution+"</td></tr><tr><td>References</td><td>"+references+"</td></tr></table><br/>");
+                                            $(divId).append("<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td>"+url+"</td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr></table><br/>");
 
                                     });
 
