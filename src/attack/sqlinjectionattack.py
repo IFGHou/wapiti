@@ -1,5 +1,6 @@
 from attack import Attack
 from vulnerability import Vulnerability
+from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 
 # Wapiti v1.1.8-alpha - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -75,8 +76,9 @@ class SQLInjectionAttack(Attack):
         else:
           if code==500:
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              url,payload,"500 HTTP Error code")
+                                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                            url,payload,
+                                            VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
             print "500 HTTP Error code with"
             print "\tEvil url:",url
         attackedGET.append(url)
@@ -94,23 +96,23 @@ class SQLInjectionAttack(Attack):
           if err!="":
             if self.color==0:
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                err+" ("+k+")")
+                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                              url,self.HTTP.encode(tmp),
+                                              err+" ("+k+")")
               print err,"("+k+") in",page
               print "\tEvil url:",url
             else:
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
+                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                              url,self.HTTP.encode(tmp),
+                                              err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
               print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
           else:
             if code==500:
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                "500 HTTP Error code")
+                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                              url,self.HTTP.encode(tmp),
+                                              VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code with"
               print "\tEvil url:",url
           attackedGET.append(url)
@@ -132,18 +134,19 @@ class SQLInjectionAttack(Attack):
         err = self.__findPatternInResponse(data)
         if err!="":
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                            page,self.HTTP.encode(tmp),
-                            err+" coming from "+form[2])
+                                          Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                          page,self.HTTP.encode(tmp),
+                                          err+" coming from "+form[2])
           print err,"in",page
           print "  with params =",self.HTTP.encode(tmp)
           print "  coming from",form[2]
         else:
           if code==500:
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              page,self.HTTP.encode(tmp),
-                              "500 HTTP Error coming from "+form[2])
+                                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                            page,self.HTTP.encode(tmp),
+                                            "500 HTTP Error code coming from "+form[2]+"<br>"+
+                                            VulDescrip.ERROR_500_DESCRIPTION)
             print "500 HTTP Error code in",page
             print "  with params =",self.HTTP.encode(tmp)
             print "  coming from",form[2]

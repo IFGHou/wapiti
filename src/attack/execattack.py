@@ -1,5 +1,6 @@
 from attack import Attack
 from vulnerability import Vulnerability
+from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 
 # Wapiti v1.1.8-alpha - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -77,7 +78,8 @@ class ExecAttack(Attack):
               err500=1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url,self.HTTP.quote(payload),"500 HTTP Error code")
+                                              url,self.HTTP.quote(payload),
+                                              VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code with"
               print "\tEvil url:",url
     for k in dict.keys():
@@ -105,8 +107,8 @@ class ExecAttack(Attack):
               print "\tEvil url:",url
             else:
               self.reportGen.logVulnerability(Vulnerability.EXEC,Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),
-                                err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
+                                              url,self.HTTP.encode(tmp),
+                                              err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
               print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
           else:
             if code==500 and err500==0:
@@ -114,7 +116,7 @@ class ExecAttack(Attack):
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url,self.HTTP.encode(tmp),
-                                              "500 HTTP Error code")
+                                              VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code with"
               print "\tEvil url:",url
 
@@ -152,7 +154,8 @@ class ExecAttack(Attack):
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page,self.HTTP.encode(tmp),
-                                              "500 HTTP Error code coming from "+form[2])
+                                              "500 HTTP Error code coming from "+form[2]+"<br>"+
+                                              VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code in",page
               print "  with params =",self.HTTP.encode(tmp)
               print "  coming from",form[2]

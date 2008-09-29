@@ -1,5 +1,6 @@
 from attack import Attack
 from vulnerability import Vulnerability
+from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 
 # Wapiti v1.1.8-alpha - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -97,7 +98,7 @@ class FileHandlingAttack(Attack):
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.quote(payload),
-                                "500 HTTP Error code")
+                                VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code with"
               print "\tEvil url:",url
     for k in dict.keys():
@@ -133,7 +134,7 @@ class FileHandlingAttack(Attack):
               err500=1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,url,self.HTTP.encode(tmp),
-                                "500 HTTP Error code")
+                                VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code with"
               print "\tEvil url:",url
 
@@ -169,9 +170,10 @@ class FileHandlingAttack(Attack):
             if code==500 and err500==0:
               err500=1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                page,self.HTTP.encode(tmp),
-                                "500 HTTP Error coming from "+form[2])
+                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                              page,self.HTTP.encode(tmp),
+                                              "500 HTTP Error code coming from "+form[2]+"<br>"+
+                                              VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code in",page
               print "  with params =",self.HTTP.encode(tmp)
               print "  coming from",form[2]

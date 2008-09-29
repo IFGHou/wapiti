@@ -4,6 +4,7 @@ import re
 from net import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
+from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 
 class XSSAttack(Attack):
   """
@@ -97,8 +98,9 @@ class XSSAttack(Attack):
         else:
           if code==500:
             self.reportGen.logVulnerability(Vulnerability.XSS,
-                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              url,payload,"500 HTTP Error code")
+                                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                            url,payload,
+                                            VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
             print "500 HTTP Error code with"
             print "\tEvil url:",url
         attackedGET.append(url)
@@ -136,7 +138,7 @@ class XSSAttack(Attack):
             self.reportGen.logVulnerability(Vulnerability.XSS,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url,self.HTTP.uqe(tmp),
-                              "500 HTTP Error code")
+                              VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
             print "500 HTTP Error code with"
             print "\tEvil url:",url
         attackedGET.append(url)

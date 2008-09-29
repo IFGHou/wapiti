@@ -66,7 +66,7 @@ function cleanHTMLTags(str)
                                             parameter = $(this).find('parameter').text();
                                             parameter = cleanHTMLTags(parameter);
                                             info = $(this).find('info').text();
-                                            info = cleanHTMLTags(info);
+                                            //info = cleanHTMLTags(info);
 					    color="";
 					    riskLevel = "";
 					    if (level == "1"){
