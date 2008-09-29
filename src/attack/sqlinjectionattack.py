@@ -41,6 +41,10 @@ class SQLInjectionAttack(Attack):
       return "Access-Based SQL Injection"
     if data.find("[Microsoft][ODBC SQL Server Driver]")>=0:
       return "MSSQL-Based Injection"
+    if data.find('Microsoft OLE DB Provider for ODBC Drivers</font> <font size="2" face="Arial">error')>=0:
+      return "MSSQL-Based Injection"
+    if data.find("Microsoft OLE DB Provider for ODBC Drivers")>=0:
+      return "MSSQL-Based Injection"
     if data.find("java.sql.SQLException: Syntax error or access violation")>=0:
       return "Java.SQL Injection"
     if data.find("PostgreSQL query failed: ERROR: parser:")>=0:
