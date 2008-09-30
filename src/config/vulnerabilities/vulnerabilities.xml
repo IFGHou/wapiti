@@ -2,7 +2,7 @@
 <vulnerabilities>
 	<vulnerability name="SQL Injection">
 		<description>SQL injection is a technique that exploits a vulnerability occurring in the database of an application.</description>
-		<solution>To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used.</solution>
+		<solution text="To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used." />
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/SQL_Injection</title>
@@ -16,7 +16,7 @@
 	</vulnerability>
 	<vulnerability name="File Handling">
 		<description>This attack is also known as Path Transversal or Directory Transversal, its aim is the access to files and directories that are stored outside the web root folder. The attacker tries to explore the directories stored in web server the web server. The attacker uses some techniques, for instance, the manipulation of variables that reference files with “dot-dot-slash (../)” sequences and its variations to move up to root directory to navigate through the file system.</description>
-		<solution>Prefer working without user input when using file system calls. Use indexes rather than actual portions of file names when templating or using language files (ie value 5 from the user submission = Czechoslovakian, rather than expecting the user to return “Czechoslovakian”). Ensure the user cannot supply all parts of the path – surround it with your path code. Validate the user’s input by only accepting known good – do not sanitize the data. Use chrooted jails and code access policies to restrict where the files can be obtained or saved to.</solution>
+		<solution text="Prefer working without user input when using file system calls.&lt;br&gt;Use indexes rather than actual portions of file names when templating or using language files (ie value 5 from the user submission = Czechoslovakian, rather than expecting the user to return “Czechoslovakian”).&lt;br&gt;Ensure the user cannot supply all parts of the path – surround it with your path code.&lt;br&gt;Validate the user’s input by only accepting known good – do not sanitize the data.&lt;br&gt;Use chrooted jails and code access policies to restrict where the files can be obtained or saved to." />
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/Path_Traversal</title>
@@ -30,7 +30,7 @@
 	</vulnerability>
 	<vulnerability name="Cross Site Scripting">
 		<description>Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications which allow code injection by malicious web users into the web pages viewed by other users. Examples of such code include HTML code and client-side scripts. </description>
-		<solution>The best way to protect a web application from XSS attacks is ensure that the application performs validation of all headers, cookies, query strings, form fields, and hidden fields. Encoding user supplied output in the server side can also defeat XSS vulnerabilities by preventing inserted scripts from being transmitted to users in an executable form. Applications can gain significant protection from javascript based attacks by converting the following characters in all generated output to the appropriate HTML entity encoding: &lt;, &gt;, &amp;, ", ', (, ), #, %, ; , +, -</solution>
+		<solution text="The best way to protect a web application from XSS attacks is ensure that the application performs validation of all headers, cookies, query strings, form fields, and hidden fields. Encoding user supplied output in the server side can also defeat XSS vulnerabilities by preventing inserted scripts from being transmitted to users in an executable form. Applications can gain significant protection from javascript based attacks by converting the following characters in all generated output to the appropriate HTML entity encoding: &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -" />
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/Cross_Site_Scripting</title>
@@ -44,7 +44,7 @@
 	</vulnerability>
 	<vulnerability name="CRLF">
 		<description>The term CRLF refers to Carriage Return (ASCII 13, \r) Line Feed (ASCII 10, \n). They're used to note the termination of a line, however, dealt with differently in today’s popular Operating Systems. For example: in Windows both a CR and LF are required to note the end of a line, whereas in Linux/UNIX a LF is only required. This combination of CR and LR is used for example when pressing "Enter" on the keyboard. Depending on the application being used, pressing "Enter" generally instructs the application to start a new line, or to send a command.</description>
-		<solution>Check the submitted parameters and do not allow CRLF to be injected by filtering CRLF</solution>
+		<solution text="Check the submitted parameters and do not allow CRLF to be injected by filtering CRLF"/>
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/CRLF_Injection</title>
@@ -58,7 +58,7 @@
 	</vulnerability>
 	<vulnerability name="Commands execution">
 		<description>This attack consists in executing system commands on the server. The attacker tries to inject this commands in the request parameters</description>
-		<solution>Prefer working without user input when using file system calls</solution>
+		<solution text="Prefer working without user input when using file system calls"/>
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/Command_Injection</title>
