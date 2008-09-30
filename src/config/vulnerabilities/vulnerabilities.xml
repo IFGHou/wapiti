@@ -15,9 +15,18 @@
 		</references>
 	</vulnerability>
 	<vulnerability name="File Handling">
-		<description></description>
-		<solution></solution>
-		<references></references>
+		<description>This attack is also known as Path Transversal or Directory Transversal, its aim is the access to files and directories that are stored outside the web root folder. The attacker tries to explore the directories stored in web server the web server. The attacker uses some techniques, for instance, the manipulation of variables that reference files with “dot-dot-slash (../)” sequences and its variations to move up to root directory to navigate through the file system.</description>
+		<solution>Prefer working without user input when using file system calls. Use indexes rather than actual portions of file names when templating or using language files (ie value 5 from the user submission = Czechoslovakian, rather than expecting the user to return “Czechoslovakian”). Ensure the user cannot supply all parts of the path – surround it with your path code. Validate the user’s input by only accepting known good – do not sanitize the data. Use chrooted jails and code access policies to restrict where the files can be obtained or saved to.</solution>
+		<references>
+			<reference>
+				<title>http://www.owasp.org/index.php/Path_Traversal</title>
+				<url>http://www.owasp.org/index.php/Path_Traversal</url>
+			</reference>
+			<reference>
+				<title>http://www.acunetix.com/websitesecurity/directory-traversal.htm</title>
+				<url>http://www.acunetix.com/websitesecurity/directory-traversal.htm</url>
+			</reference>
+		</references>
 	</vulnerability>
 	<vulnerability name="Cross Site Scripting">
 		<description>Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications which allow code injection by malicious web users into the web pages viewed by other users. Examples of such code include HTML code and client-side scripts. </description>
@@ -48,8 +57,13 @@
 		</references>
 	</vulnerability>
 	<vulnerability name="Commands execution">
-		<description></description>
-		<solution></solution>
-		<references></references>
+		<description>This attack consists in executing system commands on the server. The attacker tries to inject this commands in the request parameters</description>
+		<solution>Prefer working without user input when using file system calls</solution>
+		<references>
+			<reference>
+				<title>http://www.owasp.org/index.php/Command_Injection</title>
+				<url>http://www.owasp.org/index.php/Command_Injection</url>
+			</reference>
+		</references>
 	</vulnerability>
 </vulnerabilities>
