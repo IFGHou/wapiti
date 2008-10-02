@@ -412,26 +412,32 @@ Supported options are:
     return match
 
   def go(self):
-    director = urllib2.OpenerDirector()
-    
-    director.add_handler(urllib2.HTTPHandler())
-    director.add_handler(urllib2.HTTPSHandler())
+    cookieHandler  = urllib2.BaseHandler()
+    proxyHandler = urllib2.BaseHandler()
+    authHandler = urllib2.BaseHandler
 
     if self.proxy!={}:
-      director.add_handler(urllib2.ProxyHandler(self.proxy))
+      proxyHandler=urllib2.ProxyHandler(self.proxy)
 
     if self.auth_basic!=[]:
-      auth=urllib2.HTTPBasicAuthHandler(urllib2.HTTPPasswordMgrWithDefaultRealm())
-      auth.add_password(None, self.server, self.auth_basic[0], self.auth_basic[1])
-      director.add_handler(auth)
+      passwordMgr=urllib2.HTTPPasswordMgrWithDefaultRealm()
+      passwordMgr.add_password(None, self.root[:-1], self.auth_basic[0], self.auth_basic[1])
+
+      authHandler=urllib2.HTTPBasicAuthHandler(passwordMgr)
+      # TODO : Add an option for digest
+      #authHandler=urllib2.HTTPDigestAuthHandler(passwordMgr)
+
+      print self.root[:-1],self.auth_basic[0],self.auth_basic[1]
 
     if self.cookie!="" and cookielibhere==1:
       cj = cookielib.LWPCookieJar()
       if os.path.isfile(self.cookie):
         cj.load(self.cookie,ignore_discard=True)
-        director.add_handler(urllib2.HTTPCookieProcessor(cj))
+        cookieHandler=urllib2.HTTPCookieProcessor(cj)
 
-    urllib2.install_opener(director)
+    opener  = urllib2.build_opener(proxyHandler, authHandler, cookieHandler)
+    urllib2.install_opener(opener)
+
     # while url list isn't empty, continue browsing
     # if the user stop the scan with Ctrl+C, give him all found urls
     try:
