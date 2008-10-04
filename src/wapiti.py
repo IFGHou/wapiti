@@ -30,6 +30,7 @@ from net import BeautifulSoup
 from net import HTTP
 from report.htmlreportgenerator import HTMLReportGenerator 
 from report.xmlreportgenerator import XMLReportGenerator
+from report.txtreportgenerator import TXTReportGenerator
 from attack.sqlinjectionattack import SQLInjectionAttack
 from attack.filehandlingattack import FileHandlingAttack
 from attack.execattack import ExecAttack
@@ -156,6 +157,8 @@ Supported options are:
         self.reportGen = XMLReportGenerator()
     elif self.reportGeneratorType.lower() == "html":
         self.reportGen = HTMLReportGenerator()
+    elif self.reportGeneratorType.lower() == "txt":
+        self.reportGen = TXTReportGenerator()
     else: #default
         self.reportGen = XMLReportGenerator()
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'..'))
@@ -388,7 +391,7 @@ if __name__ == "__main__":
       if o in ("-o","--outputfile"):
         wap.setOutputFile(a)
       if o in ("-f","--reportType"):
-        if (a.find("html",0)==0) or (a.find("xml",0)==0):
+        if (a.find("html",0)==0) or (a.find("xml",0)==0) or (a.find("txt",0)==0):
           wap.setReportGeneratorType(a)
     print "Wapiti-1.1.8-alpha (wapiti.sourceforge.net)"
     print "THIS IS AN ALPHA VERSION - PLEASE REPORT BUGS"
