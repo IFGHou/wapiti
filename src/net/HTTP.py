@@ -45,8 +45,20 @@ class HTTP:
     forms = self.myls.getForms()
     director = urllib2.OpenerDirector()
 
-    director.add_handler(urllib2.HTTPHandler())
-    director.add_handler(urllib2.HTTPSHandler())
+    cookieHandler  = urllib2.BaseHandler()
+    proxyHandler = urllib2.BaseHandler()
+    basicAuthHandler = urllib2.BaseHandler()
+    digestAuthHandler = urllib2.BaseHandler()
+
+    if self.proxy!={}:
+      proxyHandler=urllib2.ProxyHandler(self.proxy)
+
+    if self.auth_basic!=[]:
+      passwordMgr=urllib2.HTTPPasswordMgrWithDefaultRealm()
+      passwordMgr.add_password(None, self.root[:-1], self.auth_basic[0], self.auth_basic[1])
+
+      basicAuthHandler =urllib2.HTTPBasicAuthHandler(passwordMgr)
+      digestAuthHandler=urllib2.HTTPDigestAuthHandler(passwordMgr)
 
     try:
       import cookielib
@@ -57,17 +69,14 @@ class HTTP:
         cj = cookielib.LWPCookieJar()
         if os.path.isfile(self.cookie):
           cj.load(self.cookie,ignore_discard=True)
-          director.add_handler(urllib2.HTTPCookieProcessor(cj))
+          cookieHandler=urllib2.HTTPCookieProcessor(cj)
 
-    if self.proxy!={}:
-      director.add_handler(urllib2.ProxyHandler(self.proxy))
+    opener  = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), proxyHandler, basicAuthHandler, digestAuthHandler, cookieHandler)
+    urllib2.install_opener(opener)
 
-    if self.auth_basic!=[]:
-      passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-      passman.add_password(None, self.root, self.auth_basic[0], self.auth_basic[1])
-      director.add_handler(urllib2.HTTPBasicAuthHandler(passman))
+    director.add_handler(urllib2.HTTPHandler())
+    director.add_handler(urllib2.HTTPSHandler())
 
-    urllib2.install_opener(director)
 
     return urls, forms
 

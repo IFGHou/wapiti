@@ -414,7 +414,8 @@ Supported options are:
   def go(self):
     cookieHandler  = urllib2.BaseHandler()
     proxyHandler = urllib2.BaseHandler()
-    authHandler = urllib2.BaseHandler
+    basicAuthHandler = urllib2.BaseHandler()
+    digestAuthHandler = urllib2.BaseHandler()
 
     if self.proxy!={}:
       proxyHandler=urllib2.ProxyHandler(self.proxy)
@@ -423,9 +424,8 @@ Supported options are:
       passwordMgr=urllib2.HTTPPasswordMgrWithDefaultRealm()
       passwordMgr.add_password(None, self.root[:-1], self.auth_basic[0], self.auth_basic[1])
 
-      authHandler=urllib2.HTTPBasicAuthHandler(passwordMgr)
-      # TODO : Add an option for digest
-      #authHandler=urllib2.HTTPDigestAuthHandler(passwordMgr)
+      basicAuthHandler =urllib2.HTTPBasicAuthHandler(passwordMgr)
+      digestAuthHandler=urllib2.HTTPDigestAuthHandler(passwordMgr)
 
       print self.root[:-1],self.auth_basic[0],self.auth_basic[1]
 
@@ -435,7 +435,7 @@ Supported options are:
         cj.load(self.cookie,ignore_discard=True)
         cookieHandler=urllib2.HTTPCookieProcessor(cj)
 
-    opener  = urllib2.build_opener(proxyHandler, authHandler, cookieHandler)
+    opener  = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), proxyHandler, basicAuthHandler, digestAuthHandler, cookieHandler)
     urllib2.install_opener(opener)
 
     # while url list isn't empty, continue browsing
