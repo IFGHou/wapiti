@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import lswww,urllib,urllib2,urlparse,socket,os
+import cgi
 
 class HTTPResponse:
   data=""
@@ -106,6 +107,9 @@ class HTTP:
 
   def uqe(self,url):
     return urllib.unquote(urllib.urlencode(url))
+
+  def escape(self,url):
+    return cgi.escape(url)
 
   def setTimeOut(self,timeout=6):
     self.timeout=timeout

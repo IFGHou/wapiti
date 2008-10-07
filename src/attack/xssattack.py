@@ -265,7 +265,6 @@ class XSSAttack(Attack):
           continue
 
         start=data[i1:i0].replace(" ","")[len(elem['name']):]
-        print "start="+start
         if start.startswith("='"): payload="'"
         if start.startswith('="'): payload='"'
         if elem['tag'].lower()=="img":
@@ -274,7 +273,7 @@ class XSSAttack(Attack):
           payload+="></"+elem['tag']+">"
         for xss in self.independant_payloads:
           if params=={}:
-            url=page+"?"+payload.replace("__XSS__",code)
+            url=page+"?"+payload+xss.replace("__XSS__",code)
             dat=self.HTTP.send(url).getPage()
             var="QUERY_STRING"
           else:
@@ -289,10 +288,17 @@ class XSSAttack(Attack):
               dat=self.HTTP.send(url).getPage()
 
           if self.validXSS(dat,code):
-            self.reportGen.logVulnerability(Vulnerability.XSS,
-                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              url,self.HTTP.uqe(params),
-                              "XSS ("+var+")")
+            if params!={}:
+              self.reportGen.logVulnerability(Vulnerability.XSS,
+                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                url,self.HTTP.uqe(params),
+                                "XSS ("+var+")")
+            else:
+              self.reportGen.logVulnerability(Vulnerability.XSS,
+                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                url,url.split("?")[1],
+                                "XSS ("+var+")")
+
             if referer!="":
               print "Found XSS in",page
               print "  with params =",self.HTTP.encode(params)
@@ -311,22 +317,34 @@ class XSSAttack(Attack):
         #print "attrname"
         if code==elem['name']:
           for xss in self.independant_payloads:
-            params[var]='>'+xss.replace("__XSS__",code)
-
-            if referer!="": #POST
-              if self.verbose==2:
-                print "+ "+page
-                print "  ",params
-              dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
-            else:
-              url=page+"?"+self.HTTP.uqe(params)
+            if params=={}:
+              url=page+"?"+xss.replace("__XSS__",code)
               dat=self.HTTP.send(url).getPage()
+              var="QUERY_STRING"
+            else:
+              params[var]='>'+xss.replace("__XSS__",code)
+
+              if referer!="": #POST
+                if self.verbose==2:
+                  print "+ "+page
+                  print "  ",params
+                dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
+              else:
+                url=page+"?"+self.HTTP.uqe(params)
+                dat=self.HTTP.send(url).getPage()
 
             if self.validXSS(dat,code):
-              self.reportGen.logVulnerability(Vulnerability.XSS,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.uqe(params),
-                                "XSS ("+var+")")
+              if params!={}:
+                self.reportGen.logVulnerability(Vulnerability.XSS,
+                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                  url,self.HTTP.uqe(params),
+                                  "XSS ("+var+")")
+              else:
+                self.reportGen.logVulnerability(Vulnerability.XSS,
+                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                  url,url.split("?")[1],
+                                  "XSS ("+var+")")
+
               if referer!="":
                 print "Found XSS in",page
                 print "  with params =",self.HTTP.encode(params)
@@ -344,22 +362,33 @@ class XSSAttack(Attack):
         if elem['value'].startswith(code):
           # use independant payloads, just remove the first character (<)
           for xss in self.independant_payloads:
-            params[var]=xss.replace("__XSS__",code)[1:]
-
-            if referer!="": #POST
-              if self.verbose==2:
-                print "+ "+page
-                print "  ",params
-              dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
-            else:
-              url=page+"?"+self.HTTP.uqe(params)
+            if params=={}:
+              url=page+"?"+xss.replace("__XSS__",code)
               dat=self.HTTP.send(url).getPage()
+              var="QUERY_STRING"
+            else:
+              params[var]=xss.replace("__XSS__",code)[1:]
+
+              if referer!="": #POST
+                if self.verbose==2:
+                  print "+ "+page
+                  print "  ",params
+                dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
+              else:
+                url=page+"?"+self.HTTP.uqe(params)
+                dat=self.HTTP.send(url).getPage()
 
             if self.validXSS(dat,code):
-              self.reportGen.logVulnerability(Vulnerability.XSS,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.uqe(params),
-                                "XSS ("+var+")")
+              if params!={}:
+                self.reportGen.logVulnerability(Vulnerability.XSS,
+                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                  url,self.HTTP.uqe(params),
+                                  "XSS ("+var+")")
+              else:
+                self.reportGen.logVulnerability(Vulnerability.XSS,
+                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                  url,url.split("?")[1],
+                                  "XSS ("+var+")")
               if referer!="":
                 print "Found XSS in",page
                 print "  with params =",self.HTTP.encode(params)
@@ -374,23 +403,34 @@ class XSSAttack(Attack):
               return True
         else:
           for xss in self.independant_payloads:
-            #close tag and inject independant payloads
-            params[var]="/>"+xss.replace("__XSS__",code)
-
-            if referer!="": #POST
-              if self.verbose==2:
-                print "+ "+page
-                print "  ",params
-              dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
-            else:
-              url=page+"?"+self.HTTP.uqe(params)
+            if params=={}:
+              url=page+"?"+xss.replace("__XSS__",code)
               dat=self.HTTP.send(url).getPage()
+              var="QUERY_STRING"
+            else:
+              #close tag and inject independant payloads
+              params[var]="/>"+xss.replace("__XSS__",code)
+
+              if referer!="": #POST
+                if self.verbose==2:
+                  print "+ "+page
+                  print "  ",params
+                dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
+              else:
+                url=page+"?"+self.HTTP.uqe(params)
+                dat=self.HTTP.send(url).getPage()
 
             if self.validXSS(dat,code):
-              self.reportGen.logVulnerability(Vulnerability.XSS,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.uqe(params),
-                                "XSS ("+var+")")
+              if params!={}:
+                self.reportGen.logVulnerability(Vulnerability.XSS,
+                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                  url,self.HTTP.uqe(params),
+                                  "XSS ("+var+")")
+              else:
+                self.reportGen.logVulnerability(Vulnerability.XSS,
+                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                  url,url.split("?")[1],
+                                  "XSS ("+var+")")
               if referer!="":
                 print "Found XSS in",page
                 print "  with params =",self.HTTP.encode(params)
@@ -411,22 +451,34 @@ class XSSAttack(Attack):
           payload="</title>"
 
         for xss in self.independant_payloads:
-          params[var]=payload+xss.replace("__XSS__",code)
-
-          if referer!="": #POST
-            if self.verbose==2:
-              print "+ "+page
-              print "  ",params
-            dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
-          else:
-            url=page+"?"+self.HTTP.uqe(params)
+          if params=={}:
+            url=page+"?"+payload+xss.replace("__XSS__",code)
             dat=self.HTTP.send(url).getPage()
+            var="QUERY_STRING"
+          else:
+            params[var]=payload+xss.replace("__XSS__",code)
+
+            if referer!="": #POST
+              if self.verbose==2:
+                print "+ "+page
+                print "  ",params
+              dat=self.HTTP.send(page,self.HTTP.uqe(params),headers).getPage()
+            else:
+              url=page+"?"+self.HTTP.uqe(params)
+              dat=self.HTTP.send(url).getPage()
 
           if self.validXSS(dat,code):
-            self.reportGen.logVulnerability(Vulnerability.XSS,
-                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              page,self.HTTP.uqe(params),
-                              "XSS ("+var+")")
+            if params!={}:
+              self.reportGen.logVulnerability(Vulnerability.XSS,
+                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                page,self.HTTP.uqe(params),
+                                "XSS ("+var+")")
+            else:
+              self.reportGen.logVulnerability(Vulnerability.XSS,
+                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                self.HTTP.escape(url),url.split("?")[1],
+                                "XSS ("+var+")")
+
             if referer!="":
               print "Found XSS in",page
               print "  with params =",self.HTTP.encode(params)
@@ -440,7 +492,6 @@ class XSSAttack(Attack):
                 print "XSS",":",url.replace(var+"=","\033[0;31m"+var+"\033[0;0m=")
             return True
 
-      #data=data.partition(code)[2] #reduire la zone de recherche
       data=data.replace(code,"none",1)#reduire la zone de recherche
     return False
 
