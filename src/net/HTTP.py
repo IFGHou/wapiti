@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import lswww,urllib,urllib2,urlparse,socket,os
 import cgi
+import httplib2
 
 class HTTPResponse:
   data=""
@@ -32,6 +33,7 @@ class HTTP:
   proxy={}
   auth_basic=[]
   timeout=6
+  h=None
 
   def __init__(self,root):
     self.root=root
@@ -51,8 +53,12 @@ class HTTP:
     basicAuthHandler = urllib2.BaseHandler()
     digestAuthHandler = urllib2.BaseHandler()
 
+    # HttpLib2 vars
+    proxy=None
+
     if self.proxy!={}:
       proxyHandler=urllib2.ProxyHandler(self.proxy)
+      proxy=httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, 'localhost', 8000)
 
     if self.auth_basic!=[]:
       passwordMgr=urllib2.HTTPPasswordMgrWithDefaultRealm()
@@ -78,6 +84,10 @@ class HTTP:
     director.add_handler(urllib2.HTTPHandler())
     director.add_handler(urllib2.HTTPSHandler())
 
+    self.h=httplib2.Http(cache=None,timeout=self.timeout,proxy_info=proxy)
+    if self.auth_basic!=[]:
+      self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
+
 
     return urls, forms
 
@@ -88,15 +98,22 @@ class HTTP:
     data=""
     code=0
     info={}
-    try:
-      req = urllib2.Request(target,post_data,http_headers)
-      u = urllib2.urlopen(req)
-      data=u.read()
-      code=u.code
-      info=u.info()
-    except (urllib2.URLError,socket.timeout),e:
-      if hasattr(e,'code'):
-        data=""
+    #
+    #try:
+    #  req = urllib2.Request(target,post_data,http_headers)
+    #  u = urllib2.urlopen(req)
+    #  data=u.read()
+    #  code=u.code
+    #  info=u.info()
+    #except (urllib2.URLError,socket.timeout),e:
+    #  if hasattr(e,'code'):
+    #    data=""
+    if post_data==None:
+      info,data=self.h.request(target, headers=http_headers)
+    else:
+      http_headers.update({'Content-type': 'application/x-www-form-urlencoded'})
+      info,data=self.h.request(target, "POST", headers=http_headers, body=post_data)
+    code=info['status']
     return HTTPResponse(data,code,info)
 
   def quote(self,url):

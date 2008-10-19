@@ -19,6 +19,7 @@
 
 import sys, re, socket, getopt, os
 import HTMLParser,urllib,urllib2
+import httplib2
 
 try:
 	import cookielib
@@ -30,10 +31,6 @@ else:
 try:
 	import tidy
 except ImportError:
-	print "lswww will be far less effective without tidy"
-	print "please install libtidy ( http://tidy.sourceforge.net/ ),"
-	print "ctypes ( http://starship.python.net/crew/theller/ctypes/ )"
-	print "and uTidylib ( http://utidylib.berlios.de/ )"
 	tidyhere=0
 else:
 	tidyhere=1
@@ -119,6 +116,7 @@ Supported options are:
   auth_basic=[]
   bad_params=[]
   timeout=6
+  h=None
 
   # 0 means no limits
   nice=0
@@ -182,29 +180,36 @@ Supported options are:
     # Timeout must not be too long to block big documents (for exemple a download script)
     # and not too short to give good results
     socket.setdefaulttimeout(self.timeout)
-    try:
-      req = urllib2.Request(url)
-      u = urllib2.urlopen(req)
-    # BadStatusLine can happen when no HTTP status code is given or when a connexion is suddenly closed
-    except urllib2.httplib.BadStatusLine:
-      print "Error reading response"
-      return 0
-    except IOError,e:
-      print "\n"+url+":",e
-      self.excluded.append(url)
-      return 0
+
+    info,data=self.h.request(url)
+    code=info['status']
+
+#    try:
+#      req = urllib2.Request(url)
+#     u = urllib2.urlopen(req)
+#    # BadStatusLine can happen when no HTTP status code is given or when a connexion is suddenly closed
+#    except urllib2.httplib.BadStatusLine:
+#      print "Error reading response"
+#      return 0
+#    except IOError,e:
+#      print "\n"+url+":",e
+#      self.excluded.append(url)
+#      return 0
     proto=url.split("://")[0]
     if proto=="http" or proto=="https":
       # Check the content-type first
-      if not u.info().get("Content-Type"):
+      #if not u.info().get("Content-Type"):
+      if not info.has_key("Content-Type"):
         # Sometimes there's no content-type... so we rely on the document extension
         if (current.split(".")[-1] not in self.allowed) and current[-1]!="/":
           return 1
-      elif u.info().get("Content-Type").find("text")==-1:
+      #elif u.info().get("Content-Type").find("text")==-1:
+      elif info["Content-Type"].find("text")==-1:
         return 1
     # Manage redirections
-    if u.headers.dict.has_key("location"):
-      redir=self.correctlink(u.headers.dict["location"],current,currentdir,proto)
+    #if u.headers.dict.has_key("location"):
+    if info.has_key("Location"):
+      redir=self.correctlink(info["Location"],current,currentdir,proto)
       if redir!=None:
         if(self.inzone(redir)==0):
           # Is the document already visited of forbidden ?
@@ -213,10 +218,11 @@ Supported options are:
           else:
             # No -> Will browse it soon
             self.tobrowse.append(redir)
-    try:
-      htmlSource=u.read()
-    except socket.timeout:
-      htmlSource=""
+#    try:
+#      htmlSource=u.read()
+#    except socket.timeout:
+#      htmlSource=""
+    htmlSource=data
     p=linkParser()
     try:
       p.feed(htmlSource)
@@ -265,7 +271,8 @@ Supported options are:
       form=(action,form[1],url)
       if form not in self.forms: self.forms.append(form)
     # We automaticaly exclude 404 urls
-    if u.code==404:
+    #if u.code==404:
+    if code==404:
       self.excluded.append(url)
       return 0
     return 1
@@ -417,8 +424,12 @@ Supported options are:
     basicAuthHandler = urllib2.BaseHandler()
     digestAuthHandler = urllib2.BaseHandler()
 
+    # HttpLib2 vars
+    proxy=None
+
     if self.proxy!={}:
       proxyHandler=urllib2.ProxyHandler(self.proxy)
+      proxy=httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, 'localhost', 8000)
 
     if self.auth_basic!=[]:
       passwordMgr=urllib2.HTTPPasswordMgrWithDefaultRealm()
@@ -426,8 +437,6 @@ Supported options are:
 
       basicAuthHandler =urllib2.HTTPBasicAuthHandler(passwordMgr)
       digestAuthHandler=urllib2.HTTPDigestAuthHandler(passwordMgr)
-
-      print self.root[:-1],self.auth_basic[0],self.auth_basic[1]
 
     if self.cookie!="" and cookielibhere==1:
       cj = cookielib.LWPCookieJar()
@@ -437,6 +446,10 @@ Supported options are:
 
     opener  = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), proxyHandler, basicAuthHandler, digestAuthHandler, cookieHandler)
     urllib2.install_opener(opener)
+
+    self.h=httplib2.Http(cache=None,timeout=self.timeout,proxy_info=proxy)
+    if self.auth_basic!=[]:
+      self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
     # while url list isn't empty, continue browsing
     # if the user stop the scan with Ctrl+C, give him all found urls
