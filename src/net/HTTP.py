@@ -34,6 +34,7 @@ class HTTP:
   auth_basic=[]
   timeout=6
   h=None
+  global_headers={}
 
   def __init__(self,root):
     self.root=root
@@ -58,6 +59,7 @@ class HTTP:
 
     if self.proxy!={}:
       proxyHandler=urllib2.ProxyHandler(self.proxy)
+      # have to change that
       proxy=httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, 'localhost', 8000)
 
     if self.auth_basic!=[]:
@@ -77,6 +79,8 @@ class HTTP:
         if os.path.isfile(self.cookie):
           cj.load(self.cookie,ignore_discard=True)
           cookieHandler=urllib2.HTTPCookieProcessor(cj)
+          # "Cookie" is sent lowercase... have to check why
+          self.global_headers["Cookie"]="; ".join(cook.name+"="+cook.value for cook in cj)
 
     opener  = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), proxyHandler, basicAuthHandler, digestAuthHandler, cookieHandler)
     urllib2.install_opener(opener)
@@ -98,6 +102,8 @@ class HTTP:
     data=""
     code=0
     info={}
+    _headers=self.global_headers
+    _headers.update(http_headers)
     #
     #try:
     #  req = urllib2.Request(target,post_data,http_headers)
@@ -109,10 +115,10 @@ class HTTP:
     #  if hasattr(e,'code'):
     #    data=""
     if post_data==None:
-      info,data=self.h.request(target, headers=http_headers)
+      info,data=self.h.request(target, headers=_headers)
     else:
-      http_headers.update({'Content-type': 'application/x-www-form-urlencoded'})
-      info,data=self.h.request(target, "POST", headers=http_headers, body=post_data)
+      _headers.update({'Content-type': 'application/x-www-form-urlencoded'})
+      info,data=self.h.request(target, "POST", headers=_headers, body=post_data)
     code=info['status']
     return HTTPResponse(data,code,info)
 
