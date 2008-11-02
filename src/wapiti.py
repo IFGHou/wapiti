@@ -228,7 +228,7 @@ Supported options are:
   def setTimeOut(self,timeout=6):
     self.HTTP.setTimeOut(timeout)
 
-  def setProxy(self,proxy={}):
+  def setProxy(self,proxy=""):
     self.HTTP.setProxy(proxy)
 
   def addStartURL(self,url):
@@ -323,7 +323,7 @@ Supported options are:
 
 if __name__ == "__main__":
   try:
-    prox={}
+    prox=""
     auth=[]
     if len(sys.argv)<2:
       print wapiti.__doc__
@@ -349,9 +349,7 @@ if __name__ == "__main__":
         if (a.find("http://",0)==0) or (a.find("https://",0)==0):
           wap.addExcludedURL(a)
       if o in ("-p","--proxy"):
-        if (a.find("http://",0)==0) or (a.find("https://",0)==0):
-          prox={'http':a}
-          wap.setProxy(prox)
+          wap.setProxy(a)
       if o in ("-c","--cookie"):
         wap.setCookieFile(a)
       if o in ("-a","--auth"):

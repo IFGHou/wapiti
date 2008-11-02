@@ -104,7 +104,7 @@ Supported options are:
   server=""
   tobrowse=[]
   browsed=[]
-  proxy={}
+  proxy=""
   excluded=[]
   forms=[]
   uploads=[]
@@ -117,6 +117,7 @@ Supported options are:
   bad_params=[]
   timeout=6
   h=None
+  global_headers={}
 
   # 0 means no limits
   nice=0
@@ -139,7 +140,7 @@ Supported options are:
     """Set the timeout in seconds to wait for a page"""
     self.timeout=timeout
 
-  def setProxy(self,proxy={}):
+  def setProxy(self,proxy=""):
     """Set proxy preferences"""
     self.proxy=proxy
 
@@ -181,7 +182,7 @@ Supported options are:
     # and not too short to give good results
     socket.setdefaulttimeout(self.timeout)
 
-    info,data=self.h.request(url)
+    info,data=self.h.request(url,headers=self.global_headers)
     code=info['status']
 
 #    try:
@@ -419,35 +420,20 @@ Supported options are:
     return match
 
   def go(self):
-    cookieHandler  = urllib2.BaseHandler()
-    proxyHandler = urllib2.BaseHandler()
-    basicAuthHandler = urllib2.BaseHandler()
-    digestAuthHandler = urllib2.BaseHandler()
-
-    # HttpLib2 vars
     proxy=None
 
-    if self.proxy!={}:
-      proxyHandler=urllib2.ProxyHandler(self.proxy)
-      proxy=httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, 'localhost', 8000)
+    if self.proxy!="":
+      (proxy_type, proxy_usr, proxy_pwd, proxy_host, proxy_port, path, query, fragment)=httplib2.parse_proxy(self.proxy)
+      proxy=httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port, proxy_user=proxy_usr, proxy_pass=proxy_pwd)
 
-    if self.auth_basic!=[]:
-      passwordMgr=urllib2.HTTPPasswordMgrWithDefaultRealm()
-      passwordMgr.add_password(None, self.root[:-1], self.auth_basic[0], self.auth_basic[1])
-
-      basicAuthHandler =urllib2.HTTPBasicAuthHandler(passwordMgr)
-      digestAuthHandler=urllib2.HTTPDigestAuthHandler(passwordMgr)
+    self.h=httplib2.Http(cache=None,timeout=self.timeout,proxy_info=proxy)
 
     if self.cookie!="" and cookielibhere==1:
       cj = cookielib.LWPCookieJar()
       if os.path.isfile(self.cookie):
         cj.load(self.cookie,ignore_discard=True)
-        cookieHandler=urllib2.HTTPCookieProcessor(cj)
+        self.global_headers["Cookie"]="; ".join(cook.name+"="+cook.value for cook in cj)
 
-    opener  = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), proxyHandler, basicAuthHandler, digestAuthHandler, cookieHandler)
-    urllib2.install_opener(opener)
-
-    self.h=httplib2.Http(cache=None,timeout=self.timeout,proxy_info=proxy)
     if self.auth_basic!=[]:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
@@ -576,7 +562,7 @@ class linkParser(HTMLParser.HTMLParser):
 
 if __name__ == "__main__":
   try:
-    prox={}
+    prox=""
     auth=[]
     if len(sys.argv)<2:
       print lswww.__doc__
@@ -603,9 +589,7 @@ if __name__ == "__main__":
         if (a.find("http://",0)==0) or (a.find("https://",0)==0):
           myls.addExcludedURL(a)
       if o in ("-p","--proxy"):
-        if (a.find("http://",0)==0) or (a.find("https://",0)==0):
-          prox={'http':a}
-          myls.setProxy(prox)
+          myls.setProxy(a)
       if o in ("-c","--cookie"):
         myls.setCookieFile(a)
       if o in ("-r","--remove"):

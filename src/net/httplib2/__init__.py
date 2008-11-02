@@ -139,6 +139,35 @@ def parse_uri(uri):
     groups = URI.match(uri).groups()
     return (groups[1], groups[3], groups[4], groups[6], groups[8])
 
+def parse_proxy(uri):
+    """
+        (scheme, user_name, password, authority, port, path, query, fragment) = parse_proxy(uri)
+    """
+    groups=parse_uri(uri)
+    user_name=None
+    password=None
+    port=8080
+    proxy_type=socks.PROXY_TYPE_HTTP
+
+    if groups[0] in ["socks","tor"]:
+        port=9050
+        proxy_type=socks.PROXY_TYPE_SOCKS5
+    elif groups[0]=="socks4":
+        port=9050
+        proxy_type=socks.PROXY_TYPE_SOCKS4
+
+    server=groups[1]
+    if groups[1].find("@")>0:
+        creds,server=groups[1].split("@")
+        if creds.find(":")>0:
+            user_name,password=creds.split(":")
+    if server.find(":")>0:
+        server,s_port=server.split(":")
+        if s_port.isdigit():
+            port=int(s_port)
+
+    return (proxy_type,user_name,password,server,port,groups[2],groups[3],groups[4])
+
 def urlnorm(uri):
     (scheme, authority, path, query, fragment) = parse_uri(uri)
     if not scheme or not authority:
@@ -188,7 +217,7 @@ def safename(filename):
 
 NORMALIZE_SPACE = re.compile(r'(?:\r\n)?[ \t]+')
 def _normalize_headers(headers):
-    return dict([ (key.lower(), NORMALIZE_SPACE.sub(value, ' ').strip())  for (key, value) in headers.iteritems()])
+    return dict([ (key.title(), NORMALIZE_SPACE.sub(value, ' ').strip())  for (key, value) in headers.iteritems()])
 
 def _parse_cache_control(headers):
     retval = {}
@@ -572,7 +601,7 @@ class GoogleLoginAuthentication(Authentication):
         #elif request_uri.find("spreadsheets") > 0:
         #    service = "wise"
 
-        auth = dict(Email=credentials[0], Passwd=credentials[1], service=service, source=headers['user-agent'])
+        auth = dict(Email=credentials[0], Passwd=credentials[1], service=service, source=headers['User-Agent'])
         resp, content = self.http.request("https://www.google.com/accounts/ClientLogin", method="POST", body=urlencode(auth), headers={'Content-Type': 'application/x-www-form-urlencoded'})
         lines = content.split('\n')
         d = dict([tuple(line.split("=", 1)) for line in lines if line])
@@ -677,6 +706,7 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
 
     def __init__(self, host, port=None, strict=None, timeout=None, proxy_info=None):
         httplib.HTTPConnection.__init__(self, host, port, strict)
+        print "on est la",host
         self.timeout = timeout
         self.proxy_info = proxy_info
 
@@ -687,6 +717,8 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
         for res in socket.getaddrinfo(self.host, self.port, 0,
                 socket.SOCK_STREAM):
             af, socktype, proto, canonname, sa = res
+            ## TODO: Set simple HTTP proxy connections here ##
+            #sa=('192.168.1.3',8118)
             try:
                 if self.proxy_info and self.proxy_info.isgood():
                     self.sock = socks.socksocket(af, socktype, proto)
@@ -848,7 +880,9 @@ the same interface as FileCache."""
         if auth: 
             auth.request(method, request_uri, headers, body)
 
+        ## TODO: if we use simple HTTP proxies, use absolute urls
         (response, content) = self._conn_request(conn, request_uri, method, body, headers)
+        #(response, content) = self._conn_request(conn, absolute_uri, method, body, headers)
 
         if auth: 
             if auth.response(response, body):
@@ -938,8 +972,8 @@ a string that contains the response entity body.
             else:
                 headers = _normalize_headers(headers)
 
-            if not headers.has_key('user-agent'):
-                headers['user-agent'] = "Python-httplib2/%s" % __version__
+            if not headers.has_key('User-Agent'):
+                headers['User-Agent'] = "Python-httplib2/%s" % __version__
 
             uri = iri2uri(uri)
 
@@ -960,7 +994,7 @@ a string that contains the response entity body.
                 conn.set_debuglevel(debuglevel)
 
             if method in ["GET", "HEAD"] and 'range' not in headers:
-                headers['accept-encoding'] = 'compress, gzip'
+                headers['Accept-Encoding'] = 'compress, gzip'
 
             info = email.Message.Message()
             cached_value = None
