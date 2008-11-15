@@ -219,12 +219,9 @@ Supported options are:
           else:
             # No -> Will browse it soon
             self.tobrowse.append(redir)
-#    try:
-#      htmlSource=u.read()
-#    except socket.timeout:
-#      htmlSource=""
+
     htmlSource=data
-    p=linkParser()
+    p=linkParser(url)
     try:
       p.feed(htmlSource)
     except HTMLParser.HTMLParseError,err:
@@ -495,15 +492,16 @@ Supported options are:
     
 class linkParser(HTMLParser.HTMLParser):
   """Extract urls in 'a' href HTML tags"""
-  def __init__(self):
+  def __init__(self,url=""):
     HTMLParser.HTMLParser.__init__(self)
     self.liens=[]
     self.forms=[]
     self.form_values={}
     self.inform=0
-    self.current_form_url=""
+    self.current_form_url=url
     self.uploads=[]
     self.current_form_method="get"
+    self.url=url
 
   def handle_starttag(self,tag,attrs):
     tmpdict={}
@@ -517,6 +515,7 @@ class linkParser(HTMLParser.HTMLParser):
     if tag.lower()=='form':
       self.inform=1
       self.form_values={}
+      self.current_form_url=self.url
       if "action" in tmpdict.keys():
         self.liens.append(tmpdict['action'])
         self.current_form_url=tmpdict['action']

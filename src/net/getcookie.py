@@ -59,7 +59,7 @@ try:
 except socket.timeout:
   print "Error fetching page"
   sys.exit(1)
-p=lswww.linkParser()
+p=lswww.linkParser(url)
 try:
   p.feed(htmlSource)
 except HTMLParser.HTMLParseError,err:
