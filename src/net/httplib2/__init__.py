@@ -147,7 +147,7 @@ def parse_proxy(uri):
     user_name=None
     password=None
     port=8080
-    proxy_type=socks.PROXY_TYPE_HTTP
+    proxy_type=None
 
     if groups[0] in ["socks","tor"]:
         port=9050
@@ -155,6 +155,9 @@ def parse_proxy(uri):
     elif groups[0]=="socks4":
         port=9050
         proxy_type=socks.PROXY_TYPE_SOCKS4
+    elif groups[0]=="connect":
+        port=3128
+        proxy_type=socks.PROXY_TYPE_HTTP
 
     server=groups[1]
     if groups[1].find("@")>0:
@@ -706,7 +709,6 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
 
     def __init__(self, host, port=None, strict=None, timeout=None, proxy_info=None):
         httplib.HTTPConnection.__init__(self, host, port, strict)
-        print "on est la",host
         self.timeout = timeout
         self.proxy_info = proxy_info
 
@@ -714,11 +716,9 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
         """Connect to the host and port specified in __init__."""
         # Mostly verbatim from httplib.py.
         msg = "getaddrinfo returns an empty list"
-        for res in socket.getaddrinfo(self.host, self.port, 0,
-                socket.SOCK_STREAM):
+        for res in socket.getaddrinfo(self.host, self.port, 0, socket.SOCK_STREAM):
             af, socktype, proto, canonname, sa = res
-            ## TODO: Set simple HTTP proxy connections here ##
-            #sa=('192.168.1.3',8118)
+
             try:
                 if self.proxy_info and self.proxy_info.isgood():
                     self.sock = socks.socksocket(af, socktype, proto)
@@ -880,9 +880,12 @@ the same interface as FileCache."""
         if auth: 
             auth.request(method, request_uri, headers, body)
 
-        ## TODO: if we use simple HTTP proxies, use absolute urls
-        (response, content) = self._conn_request(conn, request_uri, method, body, headers)
-        #(response, content) = self._conn_request(conn, absolute_uri, method, body, headers)
+        ## if we use simple HTTP proxies, use absolute urls
+        if self.proxy_info!=None and self.proxy_info.proxy_type==None:
+          #headers["Proxy-Connection"]="Keep-Alive"
+          (response, content) = self._conn_request(conn, absolute_uri, method, body, headers)
+        else:
+          (response, content) = self._conn_request(conn, request_uri, method, body, headers)
 
         if auth: 
             if auth.response(response, body):
