@@ -283,6 +283,8 @@ Supported options are:
     """Transform relatives urls in absolutes ones"""
     # No leading or trailing whitespaces
     lien=lien.strip()
+    if lien=="..":
+      lien="../"
     # bad protocols
     if lien.find("telnet:",0)==0 or lien.find("ftp:",0)==0 or lien.find("mailto:",0)==0 or \
     lien.find("javascript:",0)==0 or lien.find("news:",0)==0 or lien.find("file:",0)==0 or \
