@@ -200,17 +200,17 @@ Supported options are:
     if proto=="http" or proto=="https":
       # Check the content-type first
       #if not u.info().get("Content-Type"):
-      if not info.has_key("Content-Type"):
+      if not info.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
         if (current.split(".")[-1] not in self.allowed) and current[-1]!="/":
           return 1
       #elif u.info().get("Content-Type").find("text")==-1:
-      elif info["Content-Type"].find("text")==-1:
+      elif info["content-type"].find("text")==-1:
         return 1
     # Manage redirections
     #if u.headers.dict.has_key("location"):
-    if info.has_key("Location"):
-      redir=self.correctlink(info["Location"],current,currentdir,proto)
+    if info.has_key("location"):
+      redir=self.correctlink(info["location"],current,currentdir,proto)
       if redir!=None:
         if(self.inzone(redir)==0):
           # Is the document already visited of forbidden ?
