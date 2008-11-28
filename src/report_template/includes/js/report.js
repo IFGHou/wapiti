@@ -22,161 +22,194 @@
 
  
 function cleanHTMLTags(str)
-    {
-        return str.replace("<", "&lt;", 'g').replace(">", "&gt;", 'g');
-    }
+{
+    return str.replace("<", "&lt;", 'g').replace(">", "&gt;", 'g');
+}
 
-    function processTextForLink(str)
-    {
-        return str.replace(/[ ]/g, "_");
-    }
+function processTextForLink(str)
+{
+    return str.replace(/[ ]/g, "_");
+}
+    
+function processTextForCharts(str)
+{
+    return str.replace(/[ ]/g, "+");
+}
 
-    $(document).ready(function() {
-
+$(document).ready(function() {
     var vulnerabilities_table = new Object();
 
     $.ajax({
-                    type: "GET",
-                    url: "vulnerabilities.xml",
-                    dataType: "xml",
-                    ayncr: false,
-                    success: function(xml) {
-                            $(xml).find('vulnerabilityType').each(function (i){
-                                    name = $(this).attr('name');
-                                    vulnerabilities_table [name] = new Array (3);
-                                    for (i=0; i<3; i++)
-                                            vulnerabilities_table [name][i]= 0;
-                                    $('#vulnerabilities_table').append("<div name=\""+processTextForLink(name)+"\" id='"+processTextForLink(name)+"'><h3><img id='img_"+processTextForLink(name)+"' src='includes/images/collapse.gif' /> "+name+"</h3></div>");
-				    $('#vulnerabilities_table').append("<div id='div_"+processTextForLink(name)+"'>");
-				    linkId = "#"+processTextForLink(name);
-				    divId = "#div_"+processTextForLink(name);
-				    $(linkId).click(function(){ toggle(this.id);});
+        type: "GET",
+        url: "vulnerabilities.xml",
+        dataType: "xml",
+        ayncr: false,
+        success: function(xml) {
+            $(xml).find('vulnerabilityType').each(function (i){
+                name = $(this).attr('name');
+                vulnerabilities_table [name] = new Array (3);
+                for (i=0; i<3; i++)
+                    vulnerabilities_table [name][i]= 0;
+                $('#vulnerabilities_table').append("<div name=\""+processTextForLink(name)+"\" id='"+processTextForLink(name)+"'><h3><img id='img_"+processTextForLink(name)+"' src='includes/images/collapse.gif' /> "+name+"</h3></div>");
+                $('#vulnerabilities_table').append("<div id='div_"+processTextForLink(name)+"'>");
+                linkId = "#"+processTextForLink(name);
+                divId = "#div_"+processTextForLink(name);
+                $(linkId).click(function(){ toggle(this.id);});
 
-				    description =  $(this).find('description').text();
-				    solution =  $(this).find('solution').text();
-				    references = "<ul>"
-					    $(this).find('references').each( function (m){
-						    $(this).find('reference').each( function (m){
-							    references += "<li><a href='"+$(this).find('url').text()+"'>"+$(this).find('title').text()+"</a></li>"
-						    });
-						});
-					references += "</ul>"
+                description =  $(this).find('description').text();
+                solution =  $(this).find('solution').text();
+                references = "<ul>"
+                $(this).find('references').each( function (m){
+                    $(this).find('reference').each( function (m){
+                        references += "<li><a href='"+$(this).find('url').text()+"'>"+$(this).find('title').text()+"</a></li>"
+                    });
+                });
+                references += "</ul>"
 				    
-				    vulnerability_body = "";
+                vulnerability_body = "";
 
-                                    $(this).find ('vulnerability').each ( function (v){
-                                            level = $(this).attr('level');
-                                            vulnerabilities_table[name][level-1]++;
-                                            url = $(this).find('url').text();
-                                            url = cleanHTMLTags(url);
-                                            parameter = $(this).find('parameter').text();
-                                            parameter = cleanHTMLTags(parameter);
-                                            info = $(this).find('info').text();
-                                            //info = cleanHTMLTags(info);
-					    color="";
-					    riskLevel = "";
-					    if (level == "1"){
-						color= "#fb1414";
-						riskLevel = "High";
-					    }else if (level =="2"){
-						color="#f3bf21";
-						riskLevel = "Medium";
-				            }else if (level == "3"){
-						color="#f1f321";
-						riskLevel = "Low";
-					    }
-                                            vulnerability_body = vulnerability_body+"<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td><a href='"+url+"'>"+url+"</a></td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr></table><br/>";
+                $(this).find ('vulnerability').each ( function (v){
+                    level = $(this).attr('level');
+                    vulnerabilities_table[name][level-1]++;
+                    url = $(this).find('url').text();
+                    url = cleanHTMLTags(url);
+                    parameter = $(this).find('parameter').text();
+                    parameter = cleanHTMLTags(parameter);
+                    info = $(this).find('info').text();
+                    //info = cleanHTMLTags(info);
+                    color="";
+                    riskLevel = "";
+                    if (level == "1"){
+                        color= "#fb1414";
+                        riskLevel = "High";
+                    }else if (level =="2"){
+                        color="#f3bf21";
+                        riskLevel = "Medium";
+                    }else if (level == "3"){
+                        color="#f1f321";
+                        riskLevel = "Low";
+                    }
+                    vulnerability_body = vulnerability_body+"<table class='vulnerability'><tr><td style='background:"+color+"'>Risk Level</td><td style='background:"+color+"'>"+riskLevel+"</td></tr><tr><td class='table_title'>Url</td><td><a href='"+url+"'>"+url+"</a></td></tr><tr><td class='table_title'>Parameter</td><td>"+parameter+"</td></tr><tr><td class='table_title'>Info</td><td >"+info+"</td></tr></table><br/>";
 
-                                    });
+                });
 				   
 
 
-                                    var vulnerabilityFound = false;
-                                    for (i=0; i<3; i++)
-                                    {
-                                        if(vulnerabilities_table [name][i] != 0)
-                                        {
-                                            vulnerabilityFound = true
-                                            break;
-                                        }
-                                    }
-                                    if(vulnerabilityFound == false)
-                                        $(divId).append("<b>No vulnerabilities found</b><br/>");
-				    else
-				    	$(divId).append("<table><tr><td><b>Description:</b></td><td>"+description+"</td></tr><tr><td><b>Solution:</b></td><td>"+solution+"</td><tr><td><b>References:</b></td><td>"+references+"</td></tr></table><br/>"+vulnerability_body);
-
-			            $('#vulnerabilities_table').append("</div>");
-	
-                            });
-
-                            //Draw the result table
-                            header = "<thead><td></td>";
-                            body = "<tbody>";
-                            var max = 1;
-                            var row = new Array(3);
-                            row [0] = "<tr><th headers='members' id='high'>High</th>";
-                            row [1] = "<tr><th headers='members'id='medium'>Medium</th>";
-                            row [2] = "<tr><th headers='members'id='low'>Low</th>";
-                            var vuln_names = [];
-                            var vuln = [];
-                            vuln [0] = [];
-                            vuln [1] = [];
-                            vuln [2] = [];
-                            var v = 0;
-                            for (var k in vulnerabilities_table){
-                                    header += "<th id='"+k+"'><a href=\"#"+processTextForLink(k)+"\">"+k+"</a></th>";
-                                    vuln_names[v] = k;
-                                    for (i=0; i<3; i++){
-                                            row[i] += "<td headers='"+k+"'>"+vulnerabilities_table[k][i]+"</td>";
-                                            vuln[i][v]= vulnerabilities_table[k][i];
-                                            if (vulnerabilities_table[k][i] > max)
-                                                    max = vulnerabilities_table[k][i];
-                                    }		
-                                    v++
-                            }
-                            for (i=0; i<3; i++)
-                                    body += row[i]+"</tr>";
-                            header += "</thead>";
-                            body += "</tbody>";
-                            $('#result_table').append("<table id='dataTable' >"+header+body+"</table>");
-				
-					
-			if (max < 5)
-				yGrid = yMax = 5;
-			else if (max < 10)
-				yGrid = yMax =10;
-			else if (max < 25){
-				yMax = 25;
-				yGrid = 5;
-			}
-			else if (max < 50){
-				yMax = 50;
-				yGrid = 10;
-			}
-			else if (max < 100){
-				yMax = 100;
-				yGrid = 10;
-			}
-			else{
-				yMax = max;
-				yGrid = max/10;
-			}
-                            $('#mychart').chartInit({"painterType":"canvas","backgroundColor":"","textColor":"","axesColor":"","yMin":"0","yMax":yMax ,"xGrid":"0","yGrid":yGrid,"xLabels":vuln_names,"showLegend":false})
-    .chartAdd({"label":"High","type":"Bar","color":"#fb1414","values":vuln[0]})
-    .chartAdd({"label":"Medium","type":"Bar","color":"#f3bf21","values":vuln[1],"stackedOn":""})
-    .chartAdd({"label":"Low","type":"Bar","color":"#f1f321","values":vuln[2],"stackedOn":""})
-    .chartClear()
-    .chartDraw();
+                var vulnerabilityFound = false;
+                for (i=0; i<3; i++)
+                {
+                    if(vulnerabilities_table [name][i] != 0)
+                    {
+                        vulnerabilityFound = true
+                        break;
                     }
-            });
-    });
+                }
+                if(vulnerabilityFound == false)
+                    $(divId).append("<b>No vulnerabilities found</b><br/>");
+                else
+                    $(divId).append("<table><tr><td><b>Description:</b></td><td>"+description+"</td></tr><tr><td><b>Solution:</b></td><td>"+solution+"</td><tr><td><b>References:</b></td><td>"+references+"</td></tr></table><br/>"+vulnerability_body);
 
-    function toggle(id){
-		divId = "#div_"+id;
-		imgId = "#img_"+id;
-		if ($(imgId).attr('src') == "includes/images/collapse.gif")
-			$(imgId).attr('src', "includes/images/expand.gif");
-		else
-			$(imgId).attr('src', "includes/images/collapse.gif");
-		$(divId).toggle();
-	}
+                $('#vulnerabilities_table').append("</div>");
+	
+            });
+
+            //Draw the result table
+            header = "<thead><td></td>";
+            body = "<tbody>";
+            var max = 1;
+            var row = new Array(3);
+            row [0] = "<tr><th headers='members' id='high'>High</th>";
+            row [1] = "<tr><th headers='members'id='medium'>Medium</th>";
+            row [2] = "<tr><th headers='members'id='low'>Low</th>";
+            var vuln_names = [];
+            var vuln = [];
+            vuln [0] = [];
+            vuln [1] = [];
+            vuln [2] = [];
+            var v = 0;
+            for (var k in vulnerabilities_table){
+                header += "<th id='"+k+"'><a href=\"#"+processTextForLink(k)+"\">"+k+"</a></th>";
+                vuln_names[v] = k;
+                for (i=0; i<3; i++){
+                    row[i] += "<td headers='"+k+"'>"+vulnerabilities_table[k][i]+"</td>";
+                    vuln[i][v]= vulnerabilities_table[k][i];
+                    if (vulnerabilities_table[k][i] > max)
+                        max = vulnerabilities_table[k][i];
+                }		
+                v++
+            }
+            for (i=0; i<3; i++)
+                body += row[i]+"</tr>";
+            header += "</thead>";
+            body += "</tbody>";
+            $('#result_table').append("<table id='dataTable' >"+header+body+"</table>");
+	    
+            //Scale
+            var scale_string="|1:|0|";
+            yMax = 100;
+            
+            if (max < 5){
+                yMax = 5;
+                scale_string = scale_string + "1|2|3|4|5";
+            }
+            else if (max < 10){
+                yMax =10;
+                 scale_string = scale_string + "1|2|3|4|5|6|7|8|9|10";
+            }
+            else if (max < 25){
+                yMax = 25;
+                scale_string = scale_string + "5|10|15|20|25";
+            }
+            else if (max < 50){
+                yMax = 50;
+                scale_string = scale_string + "5|10|15|20|25|30|35|40|45|50";
+            }
+            else if (max < 100){
+                yMax = 100;
+                scale_string = scale_string + "10|20|30|40|50|60|70|80|90|100";
+            }
+            else{
+                yMax = max;
+                scale_string = scale_string + Math.floor(yMax/4)+"|"+Math.floor(yMax/2)+"|"+Math.floor((yMax/4)*3)+"|"+yMax;
+            }
+            
+                                
+            //Draw the Chart using Google Charts (http://code.google.com/apis/chart/)
+            var base_url = "http://chart.apis.google.com/chart?chtt=Summary&chts=000000,12&chs=600x200&chf=bg,s,ffffff|c,s,ffffff&chxt=x,y&chxl=0:";
+            var vuln_names_string = "";
+            var data_string = "&cht=bvg&chd=t:";
+            var base_url_end = "&chdl=Low|Medium|High&chco=ffff33,ff9933,ff0000&chbh=25";
+                        
+            //Vulnerability names
+            for (i=0; i<vuln_names.length; i++)
+                vuln_names_string = vuln_names_string + "|" +processTextForCharts(vuln_names[i]);
+            
+           
+            //Data format
+            for (i=2; i>-1; i--){
+                for (j=0; j<vuln[i].length; j++){
+                    var num = (vuln[i][j]*100)/yMax;
+                    data_string = data_string + num;
+                    if (j != (vuln[i].length -1))
+                        data_string = data_string +",";
+                }
+                if (i != 0)
+                    data_string = data_string +"|";
+            }
+                  
+            var url_google_chart = base_url + vuln_names_string + scale_string + data_string + base_url_end;
+            $('#mychart').append("<img src='"+url_google_chart+"' alt='Summary Chart' />");
+
+        }
+    });
+});
+
+function toggle(id){
+    divId = "#div_"+id;
+    imgId = "#img_"+id;
+    if ($(imgId).attr('src') == "includes/images/collapse.gif")
+        $(imgId).attr('src', "includes/images/expand.gif");
+    else
+        $(imgId).attr('src', "includes/images/collapse.gif");
+    $(divId).toggle();
+}
