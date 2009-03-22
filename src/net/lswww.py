@@ -20,6 +20,7 @@
 import sys, re, socket, getopt, os
 import HTMLParser,urllib,urllib2
 import httplib2
+from htmlentitydefs import name2codepoint as n2cp
 
 try:
 	import cookielib
@@ -239,10 +240,12 @@ Supported options are:
           p.reset()
           p.feed(htmlSource)
         except HTMLParser.HTMLParseError,err:
-          pass
+          p=linkParser2(url,self.verbose)
+          p.feed(htmlSource)
       # last chance
       else:
-        p.liens=re.findall('href="(.*?)"',htmlSource)
+        p=linkParser2(url,self.verbose)
+        p.feed(htmlSource)
 
     for lien in p.uploads:
       self.uploads.append(self.correctlink(lien,current,currentdir,proto))
@@ -561,6 +564,176 @@ class linkParser(HTMLParser.HTMLParser):
         l.sort()
         self.liens.append(self.current_form_url.split("?")[0]+"?"+"&".join(l))
 
+class linkParser2():
+  verbose = 0
+    
+  """Extract urls in 'a' href HTML tags"""
+  def __init__(self,url="",verb=0):
+    self.liens=[]
+    self.forms=[]
+    self.form_values={}
+    self.inform=0
+    self.current_form_url=""
+    self.uploads=[]
+    self.current_form_method="get"
+    self.verbose = verb
+
+  def findTagAttributes(self,tag):
+    attDouble = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*"(.*?)"[ +|>]',tag)
+    attSingle = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*\'(.*?)\'[ +|>]',tag)
+    attNone   = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*["|\']?(.*?)["|\']?[ +|>]',tag)
+    attNone.extend(attSingle)
+    attNone.extend(attDouble)
+    return attNone
+
+  def feed(self,htmlSource):
+    htmlSource = htmlSource.replace("\n","").replace("\r","").replace("\t","")
+
+    links = re.findall('<a.*?>',htmlSource)
+    linkAttributes = []
+    for link in links:
+      linkAttributes.append(self.findTagAttributes(link))
+
+    #Finding all the forms: getting the text from "<form..." to "...</form>"
+    #the array forms will contain all the forms of the page
+    forms = re.findall('<form.*?>.*?</form>',htmlSource)
+    formsAttributes = []
+    for form in forms:
+      formsAttributes.append(self.findTagAttributes(form))
+
+    #Processing the forms, obtaining the method and all the inputs
+    #Also finding the method of the forms
+    inputsInForms    = []
+    textAreasInForms = []
+    selectsInForms   = []
+    for form in forms:
+      inputsInForms   .append(re.findall('<input.*?>',form))
+      textAreasInForms.append(re.findall('<textarea.*?>',form))
+      selectsInForms  .append(re.findall('<select.*?>',form))
+
+    #Extracting the attributes of the <input> tag as XML parser
+    inputsAttributes = []
+    for i in range(len(inputsInForms)):
+      inputsAttributes.append([])
+      for inputt in inputsInForms[i]:
+        inputsAttributes[i].append(self.findTagAttributes(inputt))
+
+    selectsAttributes = []
+    for i in range(len(selectsInForms)):
+      selectsAttributes.append([])
+      for select in selectsInForms[i]:
+        selectsAttributes[i].append(self.findTagAttributes(select))
+
+    textAreasAttributes = []
+    for i in range(len(textAreasInForms)):
+      textAreasAttributes.append([])
+      for textArea in textAreasInForms[i]:
+        textAreasAttributes[i].append(self.findTagAttributes(textArea))
+
+    if(self.verbose == 3):
+      print "\n\nForms"
+      print "====="
+      for i in range(len(forms)):
+        print "Form "+str(i)
+        tmpdict={}
+        for k,v in dict(formsAttributes[i]).items():
+          tmpdict[k.lower()]=v
+        print " * Method:  "+self.decode_htmlentities(tmpdict['action'])
+        print " * Intputs: "
+        for j in range(len(inputsInForms[i])):
+          print "    + "+inputsInForms[i][j]
+          for att in inputsAttributes[i][j]:
+            print "       - "+str(att)
+        print " * Selects: "
+        for j in range(len(selectsInForms[i])):
+          print "    + "+selectsInForms[i][j]
+          for att in selectsAttributes[i][j]:
+            print "       - "+str(att)
+        print " * TextAreas: "
+        for j in range(len(textAreasInForms[i])):
+          print "    + "+textAreasInForms[i][j]
+          for att in textAreasAttributes[i][j]:
+            print "       - "+str(att)
+      print "\nURLS"
+      print "===="
+
+    for i in range(len(links)):
+      tmpdict={}
+      for k,v in dict(linkAttributes[i]).items():
+        tmpdict[k.lower()]=v
+      if "href" in tmpdict.keys():
+        self.liens.append(self.decode_htmlentities(tmpdict['href']))
+        if(self.verbose == 3):
+          print self.decode_htmlentities(tmpdict['href'])
+
+    for i in range(len(forms)):
+      tmpdict={}
+      for k,v in dict(formsAttributes[i]).items():
+        tmpdict[k.lower()]=v
+      self.form_values={}
+      if "action" in tmpdict.keys():
+        self.liens.append(self.decode_htmlentities(tmpdict['action']))
+        self.current_form_url=self.decode_htmlentities(tmpdict['action'])
+
+      # Forms use GET method by default
+      self.current_form_method="get"
+      if "method" in tmpdict.keys():
+        if tmpdict["method"].lower()=="post":
+          self.current_form_method="post"
+
+      for j in range(len(inputsAttributes[i])):
+        tmpdict={}
+        for k,v in dict(inputsAttributes[i][j]).items():
+          tmpdict[k.lower()]=v
+          if "type" not in tmpdict.keys():
+            tmpdict["type"]="text"
+          if "name" in tmpdict.keys():
+            if tmpdict['type'].lower() in ['text','password','radio','checkbox','hidden','submit','search']:
+              # use default value if present or set it to 'on'
+              if "value" in tmpdict.keys():
+                if tmpdict["value"]!="": val=tmpdict["value"]
+                else: val="on"
+              else: val="on"
+              self.form_values.update(dict([(tmpdict['name'],val)]))
+            if tmpdict['type'].lower()=="file":
+              self.uploads.append(self.current_form_url)
+
+      for j in range(len(textAreasAttributes[i])):
+        tmpdict={}
+        for k,v in dict(textAreasAttributes[i][j]).items():
+          tmpdict[k.lower()]=v
+        if "name" in tmpdict.keys():
+          self.form_values.update(dict([(tmpdict['name'],'on')]))
+
+      for j in range(len(selectsAttributes[i])):
+        tmpdict={}
+        for k,v in dict(selectsAttributes[i][j]).items():
+          tmpdict[k.lower()]=v
+        if "name" in tmpdict.keys():
+          self.form_values.update(dict([(tmpdict['name'],'on')]))
+
+      if self.current_form_method=="post":
+        self.forms.append((self.current_form_url,self.form_values))
+      else:
+        l=["=".join([k,v]) for k,v in self.form_values.items()]
+        l.sort()
+        self.liens.append(self.current_form_url.split("?")[0]+"?"+"&".join(l))
+
+  def substitute_entity(self,match):
+    ent = match.group(2)
+    if match.group(1) == "#":
+      return unichr(int(ent))
+    else:
+      cp = n2cp.get(ent)
+
+      if cp:
+        return unichr(cp)
+      else:
+        return match.group()
+
+  def decode_htmlentities(self,string):
+    entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
+    return entity_re.subn(self.substitute_entity, string)[0]
 
 if __name__ == "__main__":
   try:

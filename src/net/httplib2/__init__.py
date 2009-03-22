@@ -26,7 +26,7 @@ __version__ = "$Rev: 259 $"
 
 import re 
 import sys 
-import md5
+from hashlib import md5
 import email
 import email.Utils
 import email.Message
@@ -41,7 +41,7 @@ import copy
 import calendar
 import time
 import random
-import sha
+from hashlib import sha1 as sha
 import hmac
 from gettext import gettext as _
 import socket
@@ -209,7 +209,7 @@ def safename(filename):
         pass
     if isinstance(filename,unicode):
         filename=filename.encode('utf-8')
-    filemd5 = md5.new(filename).hexdigest()
+    filemd5 = md5(filename).hexdigest()
     filename = re_url_scheme.sub("", filename)
     filename = re_slash.sub(",", filename)
 
@@ -388,11 +388,11 @@ def _updateCache(request_headers, response_headers, content, cache, cachekey):
             cache.set(cachekey, text)
 
 def _cnonce():
-    dig = md5.new("%s:%s" % (time.ctime(), ["0123456789"[random.randrange(0, 9)] for i in range(20)])).hexdigest()
+    dig = md5("%s:%s" % (time.ctime(), ["0123456789"[random.randrange(0, 9)] for i in range(20)])).hexdigest()
     return dig[:16]
 
 def _wsse_username_token(cnonce, iso_now, password):
-    return base64.encodestring(sha.new("%s%s%s" % (cnonce, iso_now, password)).digest()).strip()
+    return base64.encodestring(sha("%s%s%s" % (cnonce, iso_now, password)).digest()).strip()
 
 
 # For credentials we need two things, first 
@@ -466,7 +466,7 @@ class DigestAuthentication(Authentication):
 
     def request(self, method, request_uri, headers, content, cnonce = None):
         """Modify the request headers"""
-        H = lambda x: md5.new(x).hexdigest()
+        H = lambda x: md5(x).hexdigest()
         KD = lambda s, d: H("%s:%s" % (s, d))
         A2 = "".join([method, ":", request_uri])
         self.challenge['cnonce'] = cnonce or _cnonce() 
