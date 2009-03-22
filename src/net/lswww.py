@@ -283,9 +283,10 @@ Supported options are:
     if lien=="..":
       lien="../"
     # bad protocols
-    if lien.find("telnet:",0)==0 or lien.find("ftp:",0)==0 or lien.find("mailto:",0)==0 or \
-    lien.find("javascript:",0)==0 or lien.find("news:",0)==0 or lien.find("file:",0)==0 or \
-    lien.find("gopher:",0)==0 or lien.find("irc:",0)==0 or lien=="":
+    llien=lien.lower()
+    if llien.find("telnet:",0)==0 or llien.find("ftp:",0)==0 or llien.find("mailto:",0)==0 or \
+    llien.find("javascript:",0)==0 or llien.find("news:",0)==0 or llien.find("file:",0)==0 or \
+    llien.find("gopher:",0)==0 or llien.find("irc:",0)==0 or lien=="":
       return None
     # Good protocols or relatives links
     else:
