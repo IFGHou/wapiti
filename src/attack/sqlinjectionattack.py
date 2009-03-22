@@ -62,9 +62,11 @@ class SQLInjectionAttack(Attack):
     return ""
 
   def attackGET(self,page,dict,attackedGET):
-    payload="\xbf'\"("
+    # about this payload : http://shiflett.org/blog/2006/jan/addslashes-versus-mysql-real-escape-string
+    payload="\xBF'\"("
     if dict=={}:
       err=""
+      payload=self.HTTP.quote(payload)
       url=page+"?"+payload
       if url not in attackedGET:
         if self.verbose==2:
