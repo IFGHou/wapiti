@@ -70,111 +70,117 @@ class FileHandlingAttack(Attack):
       warn=1
     return err,inc,warn
 
-  def attackGET(self,page,dict,attackedGET):
-    if dict=={}:
-      warn=0
-      inc=0
-      err500=0
+  def attackGET(self, page, dict, attackedGET):
+    if dict == {}:
+      warn = 0
+      inc = 0
+      err500 = 0
       for payload in self.payloads:
-        err=""
-        url=page+"?"+self.HTTP.quote(payload)
+        err = ""
+        url = page+"?"+self.HTTP.quote(payload)
         if url not in attackedGET:
-          if self.verbose==2:
+          if self.verbose == 2:
             print "+ "+url
           attackedGET.append(url)
-          if inc==1: continue
-          data,code=self.HTTP.send(url).getPageCode()
+          if inc == 1: continue
+          data,code = self.HTTP.send(url).getPageCode()
           err,inc,warn = self.__findPatternInResponse(data,inc,warn)
-          if err!="":
+          if err != "":
             self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              url,self.HTTP.quote(payload),
+                              url, self.HTTP.quote(payload),
                               str(err)+" (QUERY_STRING) in "+str(page))
-            print err,"(QUERY_STRING) in",page
-            print "\tEvil url:",url
+            print err, "(QUERY_STRING) in", page
+            print "\tEvil url:", url
           else:
-            if code==500 and err500==0:
-              err500=1
+            if code == 500 and err500 == 0:
+              err500 = 1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.quote(payload),
+                                url, self.HTTP.quote(payload),
                                 VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code with"
-              print "\tEvil url:",url
+              print "\tEvil url:", url
     for k in dict.keys():
-      warn=0
-      inc=0
-      err500=0
+      warn = 0
+      inc = 0
+      err500 = 0
       for payload in self.payloads:
-        err=""
-        tmp=dict.copy()
-        tmp[k]=payload
-        url=page+"?"+self.HTTP.encode(tmp)
+        err = ""
+        tmp = dict.copy()
+        tmp[k] = payload
+        url = page+"?"+self.HTTP.encode(tmp)
         if url not in attackedGET:
-          if self.verbose==2:
+          if self.verbose == 2:
             print "+ "+url
           attackedGET.append(url)
-          if inc==1: continue
-          data,code=self.HTTP.send(url).getPageCode()
-          err,inc,warn = self.__findPatternInResponse(data,inc,warn)
-          if err!="":
-            if self.color==0:
+          if inc == 1: continue
+          data, code = self.HTTP.send(url).getPageCode()
+          err, inc, warn = self.__findPatternInResponse(data,inc,warn)
+          if err != "":
+            if self.color == 0:
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp),err+" ("+k+")")
-              print err,"("+k+") in",page
-              print "\tEvil url:",url
+                                url,self.HTTP.encode(tmp), err+" ("+k+")")
+              print err, "("+k+") in", page
+              print "\tEvil url:", url
             else:
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,url,self.HTTP.encode(tmp),
-                                err+" : "+url.replace(k+"=","\033[0;31m"+k+"\033[0;0m="))
-              print err,":",url.replace(k+"=","\033[0;31m"+k+"\033[0;0m=")
+                                Vulnerability.HIGH_LEVEL_VULNERABILITY,url, self.HTTP.encode(tmp),
+                                err+" : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
+              print err, ":", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
           else:
-            if code==500 and err500==0:
-              err500=1
+            if code == 500 and err500 == 0:
+              err500 = 1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,url,self.HTTP.encode(tmp),
+                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                url, self.HTTP.encode(tmp),
                                 VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code with"
-              print "\tEvil url:",url
+              print "\tEvil url:", url
 
   def attackPOST(self,form,attackedPOST):
-    page=form[0]
-    dict=form[1]
-    err=""
+    page = form[0]
+    dict = form[1]
+    err = ""
     for payload in self.payloads:
-      warn=0
-      inc=0
-      err500=0
+      warn = 0
+      inc = 0
+      err500 = 0
       for k in dict.keys():
-        tmp=dict.copy()
-        tmp[k]=payload
-        if (page,tmp) not in attackedPOST:
-          attackedPOST.append((page,tmp))
-          if inc==1: continue
-          headers={"Accept": "text/plain"}
-          if self.verbose==2:
+        tmp = dict.copy()
+        tmp[k] = payload
+        if (page, tmp) not in attackedPOST:
+          attackedPOST.append((page, tmp))
+          if inc == 1: continue
+          headers = {"Accept": "text/plain"}
+          if self.verbose == 2:
             print "+ "+page
-            print "  ",tmp
-          data,code=self.HTTP.send(page,self.HTTP.encode(tmp),headers).getPageCode()
-          err,inc,warn = self.__findPatternInResponse(data,inc,warn)
-          if err!="":
+            print "  ", tmp
+          try:
+            data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
+          except socket.timeout:
+            data = ""
+            code = 408
+          else:
+          err, inc, warn = self.__findPatternInResponse(data, inc, warn)
+          if err != "":
             self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              page,self.HTTP.encode(tmp),
+                              page, self.HTTP.encode(tmp),
                               err+" coming from "+form[2])
-            print err,"in",page
-            print "  with params =",self.HTTP.encode(tmp)
-            print "  coming from",form[2]
+            print err, "in", page
+            print "  with params =", self.HTTP.encode(tmp)
+            print "  coming from", form[2]
           else:
-            if code==500 and err500==0:
-              err500=1
+            if code == 500 and err500 == 0:
+              err500 = 1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              page,self.HTTP.encode(tmp),
+                                              page, self.HTTP.encode(tmp),
                                               "500 HTTP Error code coming from "+form[2]+"<br>"+
                                               VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code in",page
-              print "  with params =",self.HTTP.encode(tmp)
-              print "  coming from",form[2]
+              print "  with params =", self.HTTP.encode(tmp)
+              print "  coming from", form[2]
 

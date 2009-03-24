@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-import lswww, urllib, urllib2, urlparse, socket, os
+import lswww
+import urllib
+import urlparse
+import socket
+import os
 import cgi
 import httplib2
 

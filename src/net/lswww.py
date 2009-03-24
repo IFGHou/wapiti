@@ -189,7 +189,12 @@ Supported options are:
     # and not too short to give good results
     socket.setdefaulttimeout(self.timeout)
 
-    info, data = self.h.request(url, headers = self.global_headers)
+    try:
+      info, data = self.h.request(url, headers = self.global_headers)
+    except socket.timeout:
+      self.excluded.append(url)
+      return 0
+
     code = info['status']
 
     proto = url.split("://")[0]
