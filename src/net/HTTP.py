@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import lswww,urllib,urllib2,urlparse,socket,os
+import lswww, urllib, urllib2, urlparse, socket, os
 import cgi
 import httplib2
 
@@ -83,16 +83,6 @@ class HTTP:
     info={}
     _headers=self.global_headers
     _headers.update(http_headers)
-    #
-    #try:
-    #  req = urllib2.Request(target,post_data,http_headers)
-    #  u = urllib2.urlopen(req)
-    #  data=u.read()
-    #  code=u.code
-    #  info=u.info()
-    #except (urllib2.URLError,socket.timeout),e:
-    #  if hasattr(e,'code'):
-    #    data=""
     if post_data==None:
       info,data=self.h.request(target, headers=_headers)
     else:

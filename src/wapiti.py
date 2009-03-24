@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Wapiti v1.1.8-alpha - A web application vulnerability scanner
+# Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
 # Copyright (C) 2008 Nicolas Surribas
 #
@@ -23,10 +23,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys,re,getopt,os
-import urlparse,socket
-from net import lswww
-from net import BeautifulSoup
+import sys
+import getopt
+import os
 from net import HTTP
 from report.htmlreportgenerator import HTMLReportGenerator 
 from report.xmlreportgenerator import XMLReportGenerator
@@ -36,10 +35,9 @@ from attack.filehandlingattack import FileHandlingAttack
 from attack.execattack import ExecAttack
 from attack.crlfattack import CRLFAttack
 from attack.xssattack import XSSAttack
-from vulnerability import Vulnerability
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
 
-class wapiti:
+class Wapiti:
   """
 Wapiti-1.1.7-alpha - A web application vulnerability scanner
 
@@ -130,15 +128,15 @@ Supported options are:
   COPY_REPORT_DIR = "generated_report"
   outputFile = ""
 
-  doGET=1
-  doPOST=1
-  doExec=1
-  doFileHandling=1
-  doInjection=1
-  doXSS=1
-  doCRLF=1
+  doGET = 1
+  doPOST = 1
+  doExec = 1
+  doFileHandling = 1
+  doInjection = 1
+  doXSS = 1
+  doCRLF = 1
 
-  HTTP=None
+  HTTP = None
   reportGen = None
 
   xssAttack          = None
@@ -149,7 +147,7 @@ Supported options are:
   attacks = []
 
 
-  def __init__(self,rooturl):
+  def __init__(self, rooturl):
     self.HTTP = HTTP.HTTP(rooturl)
 
   def __initReport(self):
@@ -161,19 +159,20 @@ Supported options are:
         self.reportGen = TXTReportGenerator()
     else: #default
         self.reportGen = XMLReportGenerator()
-    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'..'))
+    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
     xmlParser = VulnerabilityXMLParser()
     xmlParser.parse(BASE_DIR+"/config/vulnerabilities/vulnerabilities.xml")
     for vul in xmlParser.getVulnerabilities():
-      self.reportGen.addVulnerabilityType(vul.getName(),vul.getDescription(),vul.getSolution(),vul.getReferences())
+      self.reportGen.addVulnerabilityType(vul.getName(), vul.getDescription(),
+          vul.getSolution(), vul.getReferences())
 
   def __initAttacks(self):
     self.__initReport()
-    self.sqlInjectionAttack = SQLInjectionAttack(self.HTTP,self.reportGen)
-    self.fileHandlingAttack = FileHandlingAttack(self.HTTP,self.reportGen)
-    self.execAttack         = ExecAttack        (self.HTTP,self.reportGen)
-    self.crlfAttack         = CRLFAttack        (self.HTTP,self.reportGen)
-    self.xssAttack          = XSSAttack         (self.HTTP,self.reportGen)
+    self.sqlInjectionAttack = SQLInjectionAttack(self.HTTP, self.reportGen)
+    self.fileHandlingAttack = FileHandlingAttack(self.HTTP, self.reportGen)
+    self.execAttack         = ExecAttack        (self.HTTP, self.reportGen)
+    self.crlfAttack         = CRLFAttack        (self.HTTP, self.reportGen)
+    self.xssAttack          = XSSAttack         (self.HTTP, self.reportGen)
     self.attacks = [self.sqlInjectionAttack, self.fileHandlingAttack,
                     self.execAttack, self.crlfAttack, self.xssAttack]
     for attack in self.attacks:
@@ -182,33 +181,35 @@ Supported options are:
         attack.setColor()
 
   def browse(self):
-    self.urls,self.forms = self.HTTP.browse()
+    "Extract hyperlinks and forms from the webpages found on the website"
+    self.urls, self.forms = self.HTTP.browse()
 
   def attack(self):
-    if self.urls==[] and self.forms==[]:
+    "Launch the attacks based on the preferences set by the command line"
+    if self.urls == [] and self.forms == []:
       print "Problem scanning website !"
       sys.exit(1)
 
     self.__initAttacks()
 
-    if self.doGET==1:
+    if self.doGET == 1:
       print "\nAttacking urls (GET)..."
       print  "-----------------------"
       for url in self.urls:
-        if url.find("?")!=-1:
-          self.attackGET(url)
-    if self.doPOST==1:
+        if url.find("?") != -1:
+          self.__attackGET(url)
+    if self.doPOST == 1:
       print "\nAttacking forms (POST)..."
       print "-------------------------"
       for form in self.forms:
-        if form[1]!={}:
-          self.attackPOST(form)
-    if self.doXSS==1:
+        if form[1] != {}:
+          self.__attackPOST(form)
+    if self.doXSS == 1:
       print "\nLooking for permanent XSS"
       print "-------------------------"
       for url in self.urls:
         self.xssAttack.permanentXSS(url)
-    if self.HTTP.getUploads()!=[]:
+    if self.HTTP.getUploads() != []:
       print "\nUpload scripts found :"
       print "----------------------"
       for url in self.HTTP.getUploads():
@@ -223,176 +224,213 @@ Supported options are:
     print "------"
     print "A report has been generated in the file "+ self.outputFile
     if self.reportGeneratorType == "html":
-      print "Open "+self.outputFile+"/index.html with a browser to see this report."
+      print "Open "+self.outputFile+ \
+            "/index.html with a browser to see this report."
 
-  def setTimeOut(self,timeout=6):
+  def setTimeOut(self, timeout = 6):
+    "Set the timeout for the time waiting for a HTTP response"
     self.HTTP.setTimeOut(timeout)
 
-  def setProxy(self,proxy=""):
+  def setProxy(self, proxy = ""):
+    "Set a proxy to use for HTTP requests."
     self.HTTP.setProxy(proxy)
 
-  def addStartURL(self,url):
+  def addStartURL(self, url):
+    "Specify an URL to start the scan with. Can be called several times."
     self.HTTP.addStartURL(url)
 
-  def addExcludedURL(self,url):
+  def addExcludedURL(self, url):
+    "Specify an URL to exclude from the scan. Can be called several times."
     self.HTTP.addExcludedURL(url)
 
-  def setCookieFile(self,cookie):
+  def setCookieFile(self, cookie):
+    "Load session data from a cookie file"
     self.HTTP.setCookieFile(cookie)
 
-  def setAuthCredentials(self,auth_basic):
+  def setAuthCredentials(self, auth_basic):
+    "Set credentials to use if the website require an authentification."
     self.HTTP.setAuthCredentials(auth_basic)
 
-  def addBadParam(self,bad_param):
+  def addBadParam(self, bad_param):
+    """Exclude a parameter from an url (urls with this parameter will be
+    modified. This function can be call several times"""
     self.HTTP.addBadParam(bad_param)
 
-  def setNice(self,nice):
+  def setNice(self, nice):
+    """Define how many tuples of parameters / values must be sent for a
+    given URL. Use it to prevent infinite loops."""
     self.HTTP.setNice(nice)
 
   def setColor(self):
-    self.color=1
+    "Put colors in the console output (terminal must support colors)"
+    self.color = 1
 
-  def verbosity(self,vb):
-    self.verbose=vb
+  def verbosity(self, vb):
+    "Define the level of verbosity of the output."
+    self.verbose = vb
     self.HTTP.verbosity(vb)
 
   # following set* functions can be used to create scan modes
-  def setGlobal(self,var=0):
+  def setGlobal(self, var = 0):
     """Activate or desactivate (default) all attacks"""
-    self.doGET=var
-    self.doPOST=var
-    self.doFileHandling=var
-    self.doExec=var
-    self.doInjection=var
-    self.doXSS=var
-    self.doCRLF=var
+    self.doGET = var
+    self.doPOST = var
+    self.doFileHandling = var
+    self.doExec = var
+    self.doInjection = var
+    self.doXSS = var
+    self.doCRLF = var
 
-  def setGET(self,get=1):
-    self.doGET=get
+  def setGET(self, get = 1):
+    "Define if HTTP GET attacks will be launched."
+    self.doGET = get
 
-  def setPOST(self,post=1):
-    self.doPOST=post
+  def setPOST(self, post = 1):
+    "Define if HTTP POST attacks will be launched."
+    self.doPOST = post
 
-  def setFileHandling(self,fh=1):
-    self.doFileHandling=fh
+  def setFileHandling(self, fh = 1):
+    "Define if we must look for file handling vulnerabilities."
+    self.doFileHandling = fh
 
-  def setExec(self,cmds=1):
-    self.doExec=cmds
+  def setExec(self, cmds = 1):
+    "Define if we must look for command execution vulnerabilities."
+    self.doExec = cmds
 
-  def setInjection(self,inject=1):
-    self.doInjection=inject
+  def setInjection(self, inject = 1):
+    "Define if we must look for SQL injection vulnerabilities."
+    self.doInjection = inject
 
-  def setXSS(self,xss=1):
-    self.doXSS=xss
+  def setXSS(self, xss = 1):
+    "Define if we must look for XSS vulnerabilities."
+    self.doXSS = xss
 
-  def setCRLF(self,crlf=1):
-    self.doCRLF=crlf
+  def setCRLF(self, crlf = 1):
+    "Define if we must look for CRLF vulnerabilities."
+    self.doCRLF = crlf
 
-  def setReportGeneratorType(self,repGentype="xml"):
+  def setReportGeneratorType(self, repGentype = "xml"):
+    "Set the format of the generated report. Can be xml, html of txt"
     self.reportGeneratorType = repGentype
 
-  def setOutputFile(self,outputFile):
+  def setOutputFile(self, outputFile):
+    "Set the filename where the report will be written"
     self.outputFile = outputFile
 
-  def attackGET(self,url):
-    page=url.split('?')[0]
-    query=url.split('?')[1]
-    params=query.split('&')
-    dict={}
-    if self.verbose==1:
-      print "+ attackGET "+url
-      print "  ",params
-    if query.find("=")>=0:
-      for param in params:
-        dict[param.split('=')[0]]=param.split('=')[1]
-    if self.doFileHandling==1: self.fileHandlingAttack.attackGET(page,dict,self.attackedGET)
-    if self.doExec==1:         self.execAttack        .attackGET(page,dict,self.attackedGET)
-    if self.doInjection==1:    self.sqlInjectionAttack.attackGET(page,dict,self.attackedGET)
-    if self.doXSS==1:          self.xssAttack         .attackGET(page,dict,self.attackedGET)
-    if self.doCRLF==1:         self.crlfAttack        .attackGET(page,dict,self.attackedGET)
+  def __attackGET(self, url):
+    "Launch attacks based on HTTP GET methods"
+    page = url.split('?')[0]
+    query = url.split('?')[1]
+    params = query.split('&')
+    dictio = {}
 
-  def attackPOST(self,form):
-    if self.verbose==1:
+    if self.verbose == 1:
+      print "+ attackGET "+url
+      print "  ", params
+    if query.find("=") >= 0:
+      for param in params:
+        dictio[param.split('=')[0]] = param.split('=')[1]
+
+    if self.doFileHandling == 1:
+      self.fileHandlingAttack.attackGET(page, dictio, self.attackedGET)
+    if self.doExec == 1:
+      self.execAttack        .attackGET(page, dictio, self.attackedGET)
+    if self.doInjection == 1:
+      self.sqlInjectionAttack.attackGET(page, dictio, self.attackedGET)
+    if self.doXSS == 1:
+      self.xssAttack         .attackGET(page, dictio, self.attackedGET)
+    if self.doCRLF == 1:
+      self.crlfAttack        .attackGET(page, dictio, self.attackedGET)
+
+  def __attackPOST(self, form):
+    "Launch attacks based on HTTP POST method."
+    if self.verbose == 1:
       print "+ attackPOST "+form[0]
-      print "  ",form[1]
-    if self.doFileHandling==1: self.fileHandlingAttack.attackPOST(form,self.attackedPOST)
-    if self.doExec==1:         self.execAttack        .attackPOST(form,self.attackedPOST)
-    if self.doInjection==1:    self.sqlInjectionAttack.attackPOST(form,self.attackedPOST)
-    if self.doXSS==1:          self.xssAttack         .attackPOST(form,self.attackedPOST)
+      print "  ", form[1]
+    if self.doFileHandling == 1:
+      self.fileHandlingAttack.attackPOST(form, self.attackedPOST)
+    if self.doExec == 1:
+      self.execAttack        .attackPOST(form, self.attackedPOST)
+    if self.doInjection == 1:
+      self.sqlInjectionAttack.attackPOST(form, self.attackedPOST)
+    if self.doXSS == 1:
+      self.xssAttack         .attackPOST(form, self.attackedPOST)
 
 
 if __name__ == "__main__":
   try:
-    prox=""
-    auth=[]
+    prox = ""
+    auth = []
     if len(sys.argv)<2:
-      print wapiti.__doc__
+      print Wapiti.__doc__
       sys.exit(0)
     if '-h' in sys.argv or '--help' in sys.argv:
-      print wapiti.__doc__
+      print Wapiti.__doc__
       sys.exit(0)
-    wap=wapiti(sys.argv[1])
+    wap = Wapiti(sys.argv[1])
     try:
       opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:",
-          ["help","underline","proxy=","start=","exclude=","cookie=","auth=","remove=","verbose=","timeout=","module=", "outputfile", "reportType","nice="])
-    except getopt.GetoptError,e:
+          ["help", "underline", "proxy=", "start=", "exclude=", "cookie=",
+            "auth=", "remove=", "verbose=", "timeout=", "module=",
+            "outputfile", "reportType", "nice="])
+    except getopt.GetoptError, e:
       print e
       sys.exit(2)
-    for o,a in opts:
+    for o, a in opts:
       if o in ("-h", "--help"):
-        print wapiti.__doc__
+        print Wapiti.__doc__
         sys.exit(0)
-      if o in ("-s","--start"):
-        if (a.find("http://",0)==0) or (a.find("https://",0)==0):
+      if o in ("-s", "--start"):
+        if (a.find("http://", 0) == 0) or (a.find("https://", 0) == 0):
           wap.addStartURL(a)
-      if o in ("-x","--exclude"):
-        if (a.find("http://",0)==0) or (a.find("https://",0)==0):
+      if o in ("-x", "--exclude"):
+        if (a.find("http://", 0) == 0) or (a.find("https://", 0) == 0):
           wap.addExcludedURL(a)
-      if o in ("-p","--proxy"):
+      if o in ("-p", "--proxy"):
           wap.setProxy(a)
-      if o in ("-c","--cookie"):
+      if o in ("-c", "--cookie"):
         wap.setCookieFile(a)
-      if o in ("-a","--auth"):
-        if a.find("%")>=0:
-          auth=[a.split("%")[0],a.split("%")[1]]
+      if o in ("-a", "--auth"):
+        if a.find("%") >= 0:
+          auth = [a.split("%")[0], a.split("%")[1]]
           wap.setAuthCredentials(auth)
-      if o in ("-r","--remove"):
+      if o in ("-r", "--remove"):
         wap.addBadParam(a)
-      if o in ("-n","--nice"):
+      if o in ("-n", "--nice"):
         if str.isdigit(a):
           wap.setNice(int(a))
-      if o in ("-u","--underline"):
+      if o in ("-u", "--underline"):
         wap.setColor()
-      if o in ("-v","--verbose"):
+      if o in ("-v", "--verbose"):
         if str.isdigit(a):
           wap.verbosity(int(a))
-      if o in ("-t","--timeout"):
+      if o in ("-t", "--timeout"):
         if str.isdigit(a):
           wap.setTimeOut(int(a))
-      if o in ("-m","--module"):
-        if a=="GET_XSS":
+      if o in ("-m", "--module"):
+        if a == "GET_XSS":
           wap.setGlobal()
           wap.setGET()
           wap.setXSS()
-        elif a=="POST_XSS":
+        elif a == "POST_XSS":
           wap.setGlobal()
           wap.setPOST()
           wap.setXSS()
-        elif a=="GET_ALL":
+        elif a == "GET_ALL":
           wap.setPOST(0)
-        elif a=="POST_ALL":
+        elif a == "POST_ALL":
           wap.setGET(0)
-        elif a=="GET_FILE":
+        elif a == "GET_FILE":
           wap.setGlobal()
           wap.setGET()
           wap.setFileHandling()
-      if o in ("-o","--outputfile"):
+      if o in ("-o", "--outputfile"):
         wap.setOutputFile(a)
-      if o in ("-f","--reportType"):
-        if (a.find("html",0)==0) or (a.find("xml",0)==0) or (a.find("txt",0)==0):
-          wap.setReportGeneratorType(a)
-    print "Wapiti-1.1.8-alpha (wapiti.sourceforge.net)"
-    print "THIS IS AN ALPHA VERSION - PLEASE REPORT BUGS"
+      if o in ("-f", "--reportType"):
+        if (a.find("html", 0) == 0) or (a.find("xml", 0) == 0) \
+          or (a.find("txt", 0) == 0):
+            wap.setReportGeneratorType(a)
+    print "Wapiti-SVN (wapiti.sourceforge.net)"
     wap.browse()
     wap.attack()
   except SystemExit:
