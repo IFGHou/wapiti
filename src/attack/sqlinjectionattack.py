@@ -74,8 +74,14 @@ class SQLInjectionAttack(Attack):
       if url not in attackedGET:
         if self.verbose == 2:
           print "+ "+url
-        data,code = self.HTTP.send(url).getPageCode()
-        err = self.__findPatternInResponse(data)
+        try:
+          data, code = self.HTTP.send(url).getPageCode()
+        except socket.timeout:
+          data = ""
+          code = 408
+          err = ""
+        else:
+          err = self.__findPatternInResponse(data)
         if err != "":
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -101,8 +107,14 @@ class SQLInjectionAttack(Attack):
         if url not in attackedGET:
           if self.verbose == 2:
             print "+ "+url
-          data, code = self.HTTP.send(url).getPageCode()
-          err = self.__findPatternInResponse(data)
+          try:
+            data, code = self.HTTP.send(url).getPageCode()
+          except socket.timeout:
+            data = ""
+            code = 408
+            err = ""
+          else:
+            err = self.__findPatternInResponse(data)
           if err != "":
             if self.color == 0:
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
@@ -144,8 +156,13 @@ class SQLInjectionAttack(Attack):
         if self.verbose==2:
           print "+ "+page
           print "  ", tmp
-        data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
-        err = self.__findPatternInResponse(data)
+        try:
+          data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
+        except socket.timeout:
+          data = ""
+          code = 408
+        else:
+          err = self.__findPatternInResponse(data)
         if err != "":
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                           Vulnerability.HIGH_LEVEL_VULNERABILITY,

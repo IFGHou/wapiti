@@ -1,3 +1,4 @@
+import socket
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
@@ -83,8 +84,14 @@ class FileHandlingAttack(Attack):
             print "+ "+url
           attackedGET.append(url)
           if inc == 1: continue
-          data,code = self.HTTP.send(url).getPageCode()
-          err,inc,warn = self.__findPatternInResponse(data,inc,warn)
+          try:
+            data, code = self.HTTP.send(url).getPageCode()
+          except socket.timeout:
+            data = ""
+            code = 408
+            err = ""
+          else:
+            err,inc,warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -115,8 +122,14 @@ class FileHandlingAttack(Attack):
             print "+ "+url
           attackedGET.append(url)
           if inc == 1: continue
-          data, code = self.HTTP.send(url).getPageCode()
-          err, inc, warn = self.__findPatternInResponse(data,inc,warn)
+          try:
+            data, code = self.HTTP.send(url).getPageCode()
+          except socket.timeout:
+            data = ""
+            code = 408
+            err = ""
+          else:
+            err, inc, warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
             if self.color == 0:
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
@@ -163,7 +176,7 @@ class FileHandlingAttack(Attack):
             data = ""
             code = 408
           else:
-          err, inc, warn = self.__findPatternInResponse(data, inc, warn)
+            err, inc, warn = self.__findPatternInResponse(data, inc, warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
