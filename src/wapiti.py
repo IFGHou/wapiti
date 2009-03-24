@@ -336,7 +336,10 @@ Supported options are:
     if self.doExec == 1:
       self.execAttack        .attackGET(page, dictio, self.attackedGET)
     if self.doInjection == 1:
-      self.sqlInjectionAttack.attackGET(page, dictio, self.attackedGET)
+      if self.sqlInjectionAttack.attackGET(page, dictio, self.attackedGET)==0:
+        # if no SQL injection was found by errors in page, try blind sql
+        # maybe we can add an option to force this. same for POST.
+        self.sqlInjectionAttack.blindGET(page, dictio, self.attackedGET)
     if self.doXSS == 1:
       self.xssAttack         .attackGET(page, dictio, self.attackedGET)
     if self.doCRLF == 1:
@@ -352,7 +355,8 @@ Supported options are:
     if self.doExec == 1:
       self.execAttack        .attackPOST(form, self.attackedPOST)
     if self.doInjection == 1:
-      self.sqlInjectionAttack.attackPOST(form, self.attackedPOST)
+      if self.sqlInjectionAttack.attackPOST(form, self.attackedPOST)==0:
+        self.sqlInjectionAttack.blindPOST(form, self.attackedPOST)
     if self.doXSS == 1:
       self.xssAttack         .attackPOST(form, self.attackedPOST)
 
