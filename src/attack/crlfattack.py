@@ -2,7 +2,7 @@ import socket
 from attack import Attack
 from vulnerability import Vulnerability
 
-# Wapiti v1.1.8-alpha - A web application vulnerability scanner
+# Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
 # Copyright (C) 2008 Nicolas Surribas
 #
@@ -34,7 +34,7 @@ class CRLFAttack(Attack):
 
   # Won't work with PHP >= 4.4.2
   def attackGET(self, page, dict, attackedGET):
-    payload="http://www.google.fr\r\nWapiti: version 1.1.7-alpha"
+    payload="http://www.google.fr\r\nWapiti: SVN version"
     if dict == {}:
       err = ""
       url = page+"?"+payload

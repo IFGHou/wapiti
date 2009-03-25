@@ -39,7 +39,7 @@ from file.vulnerabilityxmlparser import VulnerabilityXMLParser
 
 class Wapiti:
   """
-Wapiti-1.1.7-alpha - A web application vulnerability scanner
+Wapiti-SVN - A web application vulnerability scanner
 
 Usage: python wapiti.py http://server.com/base/url/ [options]
 

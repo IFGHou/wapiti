@@ -3,7 +3,7 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 
-# Wapiti v1.1.8-alpha - A web application vulnerability scanner
+# Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
 # Copyright (C) 2008 Nicolas Surribas
 #
