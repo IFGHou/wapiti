@@ -168,7 +168,7 @@ Supported options are:
 
   def __initAttacks(self):
     self.__initReport()
-    self.sqlInjectionAttack = SQLInjectionAttack(self.HTTP, self.reportGen)
+    self.sqlInjectionAttack = SQLInjectionAttack(self.HTTP, self.reportGen, self.HTTP.getTimeOut())
     self.fileHandlingAttack = FileHandlingAttack(self.HTTP, self.reportGen)
     self.execAttack         = ExecAttack        (self.HTTP, self.reportGen)
     self.crlfAttack         = CRLFAttack        (self.HTTP, self.reportGen)

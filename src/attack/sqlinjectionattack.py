@@ -33,10 +33,12 @@ class SQLInjectionAttack(Attack):
 
   CONFIG_FILE = "blindSQLPayloads.txt"
   blind_sql_payloads = []
+  TIME_TO_SLEEP = 6
 
-  def __init__(self,HTTP,xmlRepGenerator):
+  def __init__(self,HTTP,xmlRepGenerator,timeout):
     Attack.__init__(self,HTTP,xmlRepGenerator)
     self.blind_sql_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
+    self.TIME_TO_SLEEP = str(1 + int(timeout))
 
   def __findPatternInResponse(self,data):
     if data.find("You have an error in your SQL syntax")>=0:
@@ -195,7 +197,7 @@ class SQLInjectionAttack(Attack):
   def blindGET(self, page, dict, attackedGET):
     if dict == {}:
       for payload in self.blind_sql_payloads:
-        payload = self.HTTP.quote(payload.replace("__TIME__","10"))
+        payload = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
         url = page+"?"+payload
         if url not in attackedGET:
           if self.verbose == 2:
@@ -222,7 +224,7 @@ class SQLInjectionAttack(Attack):
       for k in dict.keys():
         tmp = dict.copy()
         for payload in self.blind_sql_payloads:
-          tmp[k] = payload.replace("__TIME__","10")
+          tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
           url = page+"?"+self.HTTP.encode(tmp)
           if url not in attackedGET:
             if self.verbose == 2:
@@ -260,7 +262,7 @@ class SQLInjectionAttack(Attack):
     for k in dict.keys():
       tmp = dict.copy()
       for payload in self.blind_sql_payloads:
-        tmp[k] = payload.replace("__TIME__","10")
+        tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
         if (page, tmp) not in attackedPOST:
           headers = {"Accept": "text/plain"}
           if self.verbose == 2:

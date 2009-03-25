@@ -111,6 +111,10 @@ class HTTP:
     self.timeout=timeout
     self.myls.setTimeOut(timeout)
 
+  def getTimeOut(self):
+    "Return the timeout use for HTTP requests."
+    return self.timeout
+
   def setProxy(self,proxy=""):
     self.proxy=proxy
     self.myls.setProxy(proxy)
