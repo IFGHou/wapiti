@@ -27,6 +27,7 @@ import urllib
 import urllib2
 import httplib2
 from htmlentitydefs import name2codepoint as n2cp
+from xml.dom import minidom
 
 try:
 	import cookielib
@@ -488,6 +489,38 @@ Supported options are:
       for up in self.uploads:
         print up
 
+  def exportXML(self,filename,encoding="UTF-8"):
+    "Export the urls and the forms found in an XML file."
+    xml = minidom.Document()
+    items = xml.createElement("items")
+    xml.appendChild(items)
+
+    for lien in self.browsed:
+      get = xml.createElement("get")
+      get.setAttribute("url", lien)
+      items.appendChild(get)
+
+    for form in self.forms:
+      post = xml.createElement("post")
+      post.setAttribute("url", form[0])
+      post.setAttribute("referer", form[2])
+
+      for k, v in form[1].items():
+        var = xml.createElement("var")
+        var.setAttribute("name", k)
+        var.setAttribute("value", v)
+        post.appendChild(var)
+      items.appendChild(post)
+
+    for up in self.uploads:
+      upl = xml.createElement("upload")
+      upl.setAttribute("url", up)
+      items.appendChild(upl)
+
+    fd = open(filename,"w")
+    xml.writexml(fd, "    ", "    ", "\n", encoding)
+    fd.close()
+ 
   def getLinks(self):
     self.browsed.sort()
     return self.browsed
@@ -749,6 +782,8 @@ if __name__ == "__main__":
   try:
     prox = ""
     auth = []
+    xmloutput = ""
+
     if len(sys.argv)<2:
       print lswww.__doc__
       sys.exit(0)
@@ -758,9 +793,9 @@ if __name__ == "__main__":
     myls = lswww(sys.argv[1])
     myls.verbosity(1)
     try:
-      opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:",
+      opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:",
           ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
-            "remove=", "verbose=", "timeout=", "nice="])
+            "remove=", "verbose=", "timeout=", "nice=", "export="])
     except getopt.GetoptError, e:
       print e
       sys.exit(2)
@@ -793,9 +828,14 @@ if __name__ == "__main__":
       if o in ("-n", "--nice"):
         if str.isdigit(a):
           myls.setNice(int(a))
+      if o in ("-e", "--export"):
+        xmloutput = a
+
     myls.go()
     myls.printLinks()
     myls.printForms()
     myls.printUploads()
+    if xmloutput != "":
+      myls.exportXML(xmloutput)
   except SystemExit:
     pass
