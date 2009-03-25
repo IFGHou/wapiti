@@ -84,6 +84,7 @@ class SQLInjectionAttack(Attack):
         try:
           data, code = self.HTTP.send(url).getPageCode()
         except socket.timeout:
+          # No timeout report here... launch blind sql detection later
           data = ""
           code = 408
           err = ""
@@ -117,6 +118,7 @@ class SQLInjectionAttack(Attack):
           try:
             data, code = self.HTTP.send(url).getPageCode()
           except socket.timeout:
+            # No timeout report here... launch blind sql detection later
             data = ""
             code = 408
             err = ""
@@ -166,6 +168,7 @@ class SQLInjectionAttack(Attack):
         try:
           data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
         except socket.timeout:
+          # No timeout report here... launch blind sql detection later
           data = ""
           code = 408
         else:
@@ -205,15 +208,15 @@ class SQLInjectionAttack(Attack):
           try:
             data, code=self.HTTP.send(url).getPageCode()
           except socket.timeout:
-            self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+            self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              url,payload, "blind (QUERY_STRING)")
-            print "blind (QUERY_STRING) in", page
+                              url,payload, "Blind SQL Injection (QUERY_STRING)")
+            print "Blind SQL Injection (QUERY_STRING) in", page
             print "\tEvil url:",url
             break
           else:
             if code == 500:
-              self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+              self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, payload,
                                               VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
@@ -233,22 +236,22 @@ class SQLInjectionAttack(Attack):
               data, code = self.HTTP.send(url).getPageCode()
             except socket.timeout:
               if self.color == 0:
-                self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+                self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp),
-                                                "blind ("+k+")")
-                print "blind("+k+") in", page
+                                                "Blind SQL Injection ("+k+")")
+                print "Blind SQL Injection ("+k+") in", page
                 print "\tEvil url:", url
               else:
-                self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+                self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp),
                                                 "blind : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
-                print "blind:", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
+                print "Blind SQL Injection:", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
               break # ok, one of the payloads worked
             else:
               if code == 500:
-                self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+                self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp),
                                                 VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
@@ -271,17 +274,17 @@ class SQLInjectionAttack(Attack):
           try:
             data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
           except socket.timeout:
-            self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+            self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp),
-                                            "blind coming from "+form[2])
-            print "blind in", page
+                                            "Blind SQL Injection coming from "+form[2])
+            print "Blind SQL Injection in", page
             print "  with params =", self.HTTP.encode(tmp)
             print "  coming from", form[2]
             break # ok, one of the payloads worked
           else:
             if code == 500:
-              self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+              self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp),
                                               "500 HTTP Error code coming from "+form[2]+"<br>"+

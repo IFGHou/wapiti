@@ -72,6 +72,11 @@ class ExecAttack(Attack):
             data = ""
             code = 408
             err = ""
+            print "Timeout in",page
+            print "\tcaused by:",url
+            self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
+                                            Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                                            url, self.HTTP.quote(payload), err+" (QUERY_STRING)")
           else: 
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
@@ -109,6 +114,11 @@ class ExecAttack(Attack):
             data = ""
             code = 408
             err = ""
+            print "Timeout ("+k+") in",page
+            print "\tcaused by:",url
+            self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
+                                            Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                                            url, self.HTTP.encode(tmp), err+" ("+k+")")
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
@@ -156,6 +166,13 @@ class ExecAttack(Attack):
           except socket.timeout:
             data = ""
             code = 408
+            print "Timeout in",page
+            print "  with params =", self.HTTP.encode(tmp)
+            print "  coming from", form[2]
+            self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
+                                            Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                                            page, self.HTTP.encode(tmp),
+                                            "Timeout coming from "+form[2])
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":

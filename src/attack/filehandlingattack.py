@@ -90,6 +90,12 @@ class FileHandlingAttack(Attack):
             data = ""
             code = 408
             err = ""
+            self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
+                              Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                              url, self.HTTP.quote(payload),
+                              "Timeout (QUERY_STRING) in "+str(page))
+            print "Timeout (QUERY_STRING) in", page
+            print "\tcaused by:", url
           else:
             err,inc,warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
@@ -128,6 +134,11 @@ class FileHandlingAttack(Attack):
             data = ""
             code = 408
             err = ""
+            self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
+                              Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                              url,self.HTTP.encode(tmp), err+" ("+k+")")
+            print "Timeout ("+k+") in", page
+            print "\tcaused by:", url
           else:
             err, inc, warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
@@ -175,6 +186,13 @@ class FileHandlingAttack(Attack):
           except socket.timeout:
             data = ""
             code = 408
+            self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
+                              Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                              page, self.HTTP.encode(tmp),
+                              "Timeout coming from "+form[2])
+            print "Timeout in", page
+            print "  with params =", self.HTTP.encode(tmp)
+            print "  coming from", form[2]
           else:
             err, inc, warn = self.__findPatternInResponse(data, inc, warn)
           if err != "":

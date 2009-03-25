@@ -18,15 +18,19 @@ class HTTPResponse:
     self.headers=headers
 
   def getPage(self):
+    "Return the content of the page."
     return self.data
 
   def getCode(self):
+    "Return the HTTP Response code ."
     return self.code
 
   def getInfo(self):
+    "Return the HTTP headers of the Response."
     return self.headers
 
   def getPageCode(self):
+    "Return a tuple of the content and the HTTP Response code."
     return (self.data,self.code)
 
 class HTTP:
@@ -48,6 +52,7 @@ class HTTP:
     socket.setdefaulttimeout(self.timeout)
 
   def browse(self):
+    "Explore the entire website under the pre-defined root-url."
     self.myls.go()
     urls  = self.myls.getLinks()
     forms = self.myls.getForms()
@@ -79,9 +84,11 @@ class HTTP:
     return urls, forms
 
   def getUploads(self):
+    "Return the url of the pages used for file uploads."
     return self.myls.getUploads()
 
   def send(self,target,post_data=None,http_headers={}):
+    "Send a HTTP Request. GET or POST (if post_data is set)."
     data=""
     code=0
     info={}
@@ -96,49 +103,64 @@ class HTTP:
     return HTTPResponse(data,code,info)
 
   def quote(self,url):
+    "Encode a string with hex representation (%XX) for special characters."
     return urllib.quote(url)
 
   def encode(self,url):
+    "Encode a sequence of two-element tuples or dictionary into a URL query string."
     return urllib.urlencode(url)
 
   def uqe(self,url):
+    "urlencode a string then interpret the hex characters (%41 will give 'A')."
     return urllib.unquote(urllib.urlencode(url))
 
   def escape(self,url):
+    "Change special characters in their html entities representation."
     return cgi.escape(url)
 
   def setTimeOut(self,timeout=6):
+    "Set the time to wait for a response from the server."
     self.timeout=timeout
     self.myls.setTimeOut(timeout)
 
   def getTimeOut(self):
-    "Return the timeout use for HTTP requests."
+    "Return the timeout used for HTTP requests."
     return self.timeout
 
   def setProxy(self,proxy=""):
+    "Set a proxy to use for HTTP requests."
     self.proxy=proxy
     self.myls.setProxy(proxy)
 
   def addStartURL(self,url):
+    "Specify an URL to start the scan with. Can be called several times."
     self.myls.addStartURL(url)
 
   def addExcludedURL(self,url):
+    "Specify an URL to exclude from the scan. Can be called several times."
     self.myls.addExcludedURL(url)
 
   def setCookieFile(self,cookie):
+    "Load session data from a cookie file"
     self.cookie=cookie
     self.myls.setCookieFile(cookie)
 
   def setAuthCredentials(self,auth_basic):
+    "Set credentials to use if the website require an authentification."
     self.auth_basic=auth_basic
     self.myls.setAuthCredentials(auth_basic)
 
   def addBadParam(self,bad_param):
+    """Exclude a parameter from an url (urls with this parameter will be
+    modified. This function can be call several times"""
     self.myls.addBadParam(bad_param)
 
   def setNice(self,nice=0):
+    """Define how many tuples of parameters / values must be sent for a
+    given URL. Use it to prevent infinite loops."""
     self.myls.setNice(nice)
 
   def verbosity(self,vb):
+    "Define the level of verbosity of the output."
     self.myls.verbosity(vb)
 

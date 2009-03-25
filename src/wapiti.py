@@ -163,8 +163,9 @@ Supported options are:
     xmlParser = VulnerabilityXMLParser()
     xmlParser.parse(BASE_DIR+"/config/vulnerabilities/vulnerabilities.xml")
     for vul in xmlParser.getVulnerabilities():
-      self.reportGen.addVulnerabilityType(vul.getName(), vul.getDescription(),
-          vul.getSolution(), vul.getReferences())
+      if vul.getName()!="Resource consumption":
+        self.reportGen.addVulnerabilityType(vul.getName(), vul.getDescription(),
+            vul.getSolution(), vul.getReferences())
 
   def __initAttacks(self):
     self.__initReport()

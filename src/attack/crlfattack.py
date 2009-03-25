@@ -48,7 +48,10 @@ class CRLFAttack(Attack):
             print "CRLF Injection (QUERY_STRING) in", page
             print "\tEvil url:", url
         except socket.timeout:
-          pass
+          self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                            page, payload, err+" (QUERY_STRING)")
+          print "Timeout (QUERY_STRING) in", page
+          print "\tcaused by:", url
         attackedGET.append(url)
     else:
       for k in dict.keys():
@@ -73,6 +76,9 @@ class CRLFAttack(Attack):
                                   err+" : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
                 print err, ":", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
           except socket.timeout:
-            pass
+            self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                              page, self.HTTP.encode(tmp), err+" ("+k+")")
+            print "Timeout ("+k+") in", page
+            print "\tcaused by:", url
           attackedGET.append(url)
 

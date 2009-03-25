@@ -109,6 +109,8 @@ class XSSAttack(Attack):
 
   def permanentXSS(self,url):
     headers = {"Accept": "text/plain"}
+    if self.verbose >= 1:
+      print "+", url
     try:
       data = self.HTTP.send(url).getPage()
     except socket.timeout:
