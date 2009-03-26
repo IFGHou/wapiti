@@ -79,6 +79,7 @@ class HTTP:
           self.global_headers["Cookie"] = "; ".join(cook.name+"="+cook.value for cook in cj)
 
     self.h = httplib2.Http(cache = None, timeout = self.timeout, proxy_info = proxy)
+    self.h.follow_redirects=False
 
     if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])

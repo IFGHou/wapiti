@@ -209,7 +209,6 @@ Supported options are:
       elif info["content-type"].find("text") == -1:
         return 1
     # Manage redirections
-    #if u.headers.dict.has_key("location"):
     if info.has_key("location"):
       redir = self.correctlink(info["location"], current, currentdir, proto)
       if redir != None:
@@ -277,6 +276,7 @@ Supported options are:
     if code == "404":
       self.excluded.append(url)
       return 0
+
     return 1
 
 
@@ -436,6 +436,7 @@ Supported options are:
 
     self.h = httplib2.Http(cache = None, timeout = self.timeout,
                             proxy_info = proxy)
+    self.h.follow_redirects = False
 
     if self.cookie != "" and cookielibhere == 1:
       cj = cookielib.LWPCookieJar()
