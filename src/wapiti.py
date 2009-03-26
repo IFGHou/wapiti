@@ -188,7 +188,8 @@ Supported options are:
   def attack(self):
     "Launch the attacks based on the preferences set by the command line"
     if self.urls == [] and self.forms == []:
-      print "Problem scanning website !"
+      print "No links or forms found in this page !"
+      print "Make sure the url is correct."
       sys.exit(1)
 
     self.__initAttacks()

@@ -106,6 +106,8 @@ class SQLInjectionAttack(Attack):
             print "500 HTTP Error code with"
             print "\tEvil url:", url
         attackedGET.append(url)
+      else:
+        return 1
     else:
       for k in dict.keys():
         err = ""
@@ -148,6 +150,8 @@ class SQLInjectionAttack(Attack):
               print "500 HTTP Error code with"
               print "\tEvil url:", url
           attackedGET.append(url)
+        else:
+          return 1
     return vuln_found
 
   def attackPOST(self, form, attackedPOST):
@@ -193,6 +197,8 @@ class SQLInjectionAttack(Attack):
             print "  with params =", self.HTTP.encode(tmp)
             print "  coming from", form[2]
         attackedPOST.append((page, tmp))
+      else:
+        return 1
     return vuln_found
 
   # first implementations for blind sql injection...
