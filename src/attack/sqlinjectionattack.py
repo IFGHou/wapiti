@@ -86,7 +86,7 @@ class SQLInjectionAttack(Attack):
         except socket.timeout:
           # No timeout report here... launch blind sql detection later
           data = ""
-          code = 408
+          code = "408"
           err = ""
         else:
           err = self.__findPatternInResponse(data)
@@ -98,7 +98,7 @@ class SQLInjectionAttack(Attack):
           print "\tEvil url:", url
           vuln_found += 1
         else:
-          if code == 500:
+          if code == "500":
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             url,payload,
@@ -120,7 +120,7 @@ class SQLInjectionAttack(Attack):
           except socket.timeout:
             # No timeout report here... launch blind sql detection later
             data = ""
-            code = 408
+            code = "408"
             err = ""
           else:
             err = self.__findPatternInResponse(data)
@@ -140,7 +140,7 @@ class SQLInjectionAttack(Attack):
               print err, ":", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
             vuln_found += 1
           else:
-            if code == 500:
+            if code == "500":
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp),
@@ -170,7 +170,7 @@ class SQLInjectionAttack(Attack):
         except socket.timeout:
           # No timeout report here... launch blind sql detection later
           data = ""
-          code = 408
+          code = "408"
         else:
           err = self.__findPatternInResponse(data)
         if err != "":
@@ -183,7 +183,7 @@ class SQLInjectionAttack(Attack):
           print "  coming from", form[2]
           vuln_found += 1
         else:
-          if code == 500:
+          if code == "500":
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp),
@@ -206,7 +206,7 @@ class SQLInjectionAttack(Attack):
           if self.verbose == 2:
             print "+ "+url
           try:
-            data, code=self.HTTP.send(url).getPageCode()
+            data, code = self.HTTP.send(url).getPageCode()
           except socket.timeout:
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -215,7 +215,7 @@ class SQLInjectionAttack(Attack):
             print "\tEvil url:",url
             break
           else:
-            if code == 500:
+            if code == "500":
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, payload,
@@ -250,7 +250,7 @@ class SQLInjectionAttack(Attack):
                 print "Blind SQL Injection:", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
               break # ok, one of the payloads worked
             else:
-              if code == 500:
+              if code == "500":
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp),
@@ -283,7 +283,7 @@ class SQLInjectionAttack(Attack):
             print "  coming from", form[2]
             break # ok, one of the payloads worked
           else:
-            if code == 500:
+            if code == "500":
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp),

@@ -88,7 +88,7 @@ class FileHandlingAttack(Attack):
             data, code = self.HTTP.send(url).getPageCode()
           except socket.timeout:
             data = ""
-            code = 408
+            code = "408"
             err = ""
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
@@ -106,7 +106,7 @@ class FileHandlingAttack(Attack):
             print err, "(QUERY_STRING) in", page
             print "\tEvil url:", url
           else:
-            if code == 500 and err500 == 0:
+            if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -132,7 +132,7 @@ class FileHandlingAttack(Attack):
             data, code = self.HTTP.send(url).getPageCode()
           except socket.timeout:
             data = ""
-            code = 408
+            code = "408"
             err = ""
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
@@ -154,7 +154,7 @@ class FileHandlingAttack(Attack):
                                 err+" : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
               print err, ":", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
           else:
-            if code == 500 and err500 == 0:
+            if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -185,7 +185,7 @@ class FileHandlingAttack(Attack):
             data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
           except socket.timeout:
             data = ""
-            code = 408
+            code = "408"
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               page, self.HTTP.encode(tmp),
@@ -204,7 +204,7 @@ class FileHandlingAttack(Attack):
             print "  with params =", self.HTTP.encode(tmp)
             print "  coming from", form[2]
           else:
-            if code == 500 and err500 == 0:
+            if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,

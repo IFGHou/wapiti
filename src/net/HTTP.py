@@ -8,14 +8,14 @@ import cgi
 import httplib2
 
 class HTTPResponse:
-  data=""
-  code=200
-  headers={}
+  data = ""
+  code = "200"
+  headers = {}
 
-  def __init__(self,data,code,headers):
-    self.data=data
-    self.code=code
-    self.headers=headers
+  def __init__(self, data, code, headers):
+    self.data = data
+    self.code = code
+    self.headers = headers
 
   def getPage(self):
     "Return the content of the page."
@@ -31,23 +31,23 @@ class HTTPResponse:
 
   def getPageCode(self):
     "Return a tuple of the content and the HTTP Response code."
-    return (self.data,self.code)
+    return (self.data, self.code)
 
 class HTTP:
-  root=""
-  myls=""
-  server=""
-  cookie=""
-  proxy=""
-  auth_basic=[]
-  timeout=6
-  h=None
-  global_headers={}
+  root = ""
+  myls = ""
+  server = ""
+  cookie = ""
+  proxy = ""
+  auth_basic = []
+  timeout = 6
+  h = None
+  global_headers = {}
 
   def __init__(self,root):
-    self.root=root
-    self.server=urlparse.urlparse(root)[1]
-    self.myls=lswww.lswww(root)
+    self.root = root
+    self.server = urlparse.urlparse(root)[1]
+    self.myls = lswww.lswww(root)
     self.myls.verbosity(1)
     socket.setdefaulttimeout(self.timeout)
 
@@ -58,27 +58,29 @@ class HTTP:
     forms = self.myls.getForms()
 
     # HttpLib2 vars
-    proxy=None
+    proxy = None
 
-    if self.proxy!="":
-      (proxy_type, proxy_usr, proxy_pwd, proxy_host, proxy_port, path, query, fragment)=httplib2.parse_proxy(self.proxy)
-      proxy=httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port, proxy_user=proxy_usr, proxy_pass=proxy_pwd)
+    if self.proxy != "":
+      (proxy_type, proxy_usr, proxy_pwd, proxy_host, proxy_port,
+          path, query, fragment) = httplib2.parse_proxy(self.proxy)
+      proxy = httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port,
+          proxy_user=proxy_usr, proxy_pass=proxy_pwd)
 
     try:
       import cookielib
     except ImportError:
       pass
     else:
-      if self.cookie!="":
+      if self.cookie != "":
         cj = cookielib.LWPCookieJar()
         if os.path.isfile(self.cookie):
-          cj.load(self.cookie,ignore_discard=True)
+          cj.load(self.cookie,ignore_discard = True)
           # "Cookie" is sent lowercase... have to check why
-          self.global_headers["Cookie"]="; ".join(cook.name+"="+cook.value for cook in cj)
+          self.global_headers["Cookie"] = "; ".join(cook.name+"="+cook.value for cook in cj)
 
-    self.h=httplib2.Http(cache=None,timeout=self.timeout,proxy_info=proxy)
+    self.h = httplib2.Http(cache = None, timeout = self.timeout, proxy_info = proxy)
 
-    if self.auth_basic!=[]:
+    if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
     return urls, forms
@@ -87,30 +89,30 @@ class HTTP:
     "Return the url of the pages used for file uploads."
     return self.myls.getUploads()
 
-  def send(self,target,post_data=None,http_headers={}):
+  def send(self, target, post_data = None, http_headers = {}):
     "Send a HTTP Request. GET or POST (if post_data is set)."
-    data=""
-    code=0
-    info={}
-    _headers=self.global_headers
+    data = ""
+    code = "0"
+    info = {}
+    _headers = self.global_headers
     _headers.update(http_headers)
-    if post_data==None:
-      info,data=self.h.request(target, headers=_headers)
+    if post_data == None:
+      info,data = self.h.request(target, headers = _headers)
     else:
       _headers.update({'Content-type': 'application/x-www-form-urlencoded'})
-      info,data=self.h.request(target, "POST", headers=_headers, body=post_data)
-    code=info['status']
-    return HTTPResponse(data,code,info)
+      info, data = self.h.request(target, "POST", headers = _headers, body = post_data)
+    code = info['status']
+    return HTTPResponse(data, code, info)
 
-  def quote(self,url):
+  def quote(self, url):
     "Encode a string with hex representation (%XX) for special characters."
     return urllib.quote(url)
 
-  def encode(self,url):
+  def encode(self, url):
     "Encode a sequence of two-element tuples or dictionary into a URL query string."
     return urllib.urlencode(url)
 
-  def uqe(self,url):
+  def uqe(self, url):
     "urlencode a string then interpret the hex characters (%41 will give 'A')."
     return urllib.unquote(urllib.urlencode(url))
 
@@ -118,49 +120,49 @@ class HTTP:
     "Change special characters in their html entities representation."
     return cgi.escape(url)
 
-  def setTimeOut(self,timeout=6):
+  def setTimeOut(self, timeout = 6):
     "Set the time to wait for a response from the server."
-    self.timeout=timeout
+    self.timeout = timeout
     self.myls.setTimeOut(timeout)
 
   def getTimeOut(self):
     "Return the timeout used for HTTP requests."
     return self.timeout
 
-  def setProxy(self,proxy=""):
+  def setProxy(self, proxy = ""):
     "Set a proxy to use for HTTP requests."
-    self.proxy=proxy
+    self.proxy = proxy
     self.myls.setProxy(proxy)
 
-  def addStartURL(self,url):
+  def addStartURL(self, url):
     "Specify an URL to start the scan with. Can be called several times."
     self.myls.addStartURL(url)
 
-  def addExcludedURL(self,url):
+  def addExcludedURL(self, url):
     "Specify an URL to exclude from the scan. Can be called several times."
     self.myls.addExcludedURL(url)
 
-  def setCookieFile(self,cookie):
+  def setCookieFile(self, cookie):
     "Load session data from a cookie file"
-    self.cookie=cookie
+    self.cookie = cookie
     self.myls.setCookieFile(cookie)
 
-  def setAuthCredentials(self,auth_basic):
+  def setAuthCredentials(self, auth_basic):
     "Set credentials to use if the website require an authentification."
-    self.auth_basic=auth_basic
+    self.auth_basic = auth_basic
     self.myls.setAuthCredentials(auth_basic)
 
-  def addBadParam(self,bad_param):
+  def addBadParam(self, bad_param):
     """Exclude a parameter from an url (urls with this parameter will be
     modified. This function can be call several times"""
     self.myls.addBadParam(bad_param)
 
-  def setNice(self,nice=0):
+  def setNice(self, nice = 0):
     """Define how many tuples of parameters / values must be sent for a
     given URL. Use it to prevent infinite loops."""
     self.myls.setNice(nice)
 
-  def verbosity(self,vb):
+  def verbosity(self, vb):
     "Define the level of verbosity of the output."
     self.myls.verbosity(vb)
 

@@ -70,7 +70,7 @@ class ExecAttack(Attack):
             data, code = self.HTTP.send(url).getPageCode()
           except socket.timeout:
             data = ""
-            code = 408
+            code = "408"
             err = ""
             print "Timeout in",page
             print "\tcaused by:",url
@@ -86,7 +86,7 @@ class ExecAttack(Attack):
             print err, "(QUERY_STRING) in", page
             print "\tEvil url:", url
           else:
-            if code == 500 and err500 == 0:
+            if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -112,7 +112,7 @@ class ExecAttack(Attack):
             data, code = self.HTTP.send(url).getPageCode()
           except socket.timeout:
             data = ""
-            code = 408
+            code = "408"
             err = ""
             print "Timeout ("+k+") in",page
             print "\tcaused by:",url
@@ -134,7 +134,7 @@ class ExecAttack(Attack):
                                               err+" : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
               print err, ":", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
           else:
-            if code == 500 and err500 == 0:
+            if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -165,7 +165,7 @@ class ExecAttack(Attack):
             data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
           except socket.timeout:
             data = ""
-            code = 408
+            code = "408"
             print "Timeout in",page
             print "  with params =", self.HTTP.encode(tmp)
             print "  coming from", form[2]
@@ -184,7 +184,7 @@ class ExecAttack(Attack):
             print "  with params =", self.HTTP.encode(tmp)
             print "  coming from", form[2]
           else:
-            if code == 500 and err500 == 0:
+            if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,

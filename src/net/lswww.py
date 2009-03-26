@@ -274,7 +274,7 @@ Supported options are:
       form = (action, form[1], url)
       if form not in self.forms: self.forms.append(form)
     # We automaticaly exclude 404 urls
-    if code == 404:
+    if code == "404":
       self.excluded.append(url)
       return 0
     return 1
