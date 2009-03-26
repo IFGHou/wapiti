@@ -91,12 +91,12 @@ class SQLInjectionAttack(Attack):
         else:
           err = self.__findPatternInResponse(data)
         if err != "":
+          vuln_found += 1
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                             url, payload, err+" (QUERY_STRING)")
           print err, "(QUERY_STRING) in", page
           print "\tEvil url:", url
-          vuln_found += 1
         else:
           if code == "500":
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
@@ -125,6 +125,7 @@ class SQLInjectionAttack(Attack):
           else:
             err = self.__findPatternInResponse(data)
           if err != "":
+            vuln_found += 1
             if self.color == 0:
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -138,7 +139,6 @@ class SQLInjectionAttack(Attack):
                                               url,self.HTTP.encode(tmp),
                                               err+" : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
               print err, ":", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
-            vuln_found += 1
           else:
             if code == "500":
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
@@ -174,6 +174,7 @@ class SQLInjectionAttack(Attack):
         else:
           err = self.__findPatternInResponse(data)
         if err != "":
+          vuln_found += 1
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                           Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                           page, self.HTTP.encode(tmp),
@@ -181,7 +182,6 @@ class SQLInjectionAttack(Attack):
           print err, "in", page
           print "  with params =", self.HTTP.encode(tmp)
           print "  coming from", form[2]
-          vuln_found += 1
         else:
           if code == "500":
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
@@ -201,8 +201,10 @@ class SQLInjectionAttack(Attack):
     if dict == {}:
       for payload in self.blind_sql_payloads:
         payload = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
-        url = page+"?"+payload
+        url = page+"?__TIME__"
         if url not in attackedGET:
+          attackedGET.append(url)
+          url = page+"?"+payload
           if self.verbose == 2:
             print "+ "+url
           try:
@@ -222,14 +224,18 @@ class SQLInjectionAttack(Attack):
                                               VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
               print "500 HTTP Error code with"
               print "\tEvil url:", url
-          attackedGET.append(url)
     else:
       for k in dict.keys():
         tmp = dict.copy()
+
+        tmp[k] = "__TIME__"
+        url_to_log = page+"?"+self.HTTP.encode(tmp)
+
         for payload in self.blind_sql_payloads:
-          tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
-          url = page+"?"+self.HTTP.encode(tmp)
-          if url not in attackedGET:
+
+          if url_to_log not in attackedGET:
+            tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
+            url = page+"?"+self.HTTP.encode(tmp)
             if self.verbose == 2:
               print "+ "+url
             try:
@@ -246,9 +252,12 @@ class SQLInjectionAttack(Attack):
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp),
-                                                "blind : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
+                                                "Blind SQL Injection : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
                 print "Blind SQL Injection:", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
-              break # ok, one of the payloads worked
+              # ok, one of the payloads worked
+              # log the url and exit
+              attackedGET.append(url_to_log)
+              break
             else:
               if code == "500":
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
@@ -257,7 +266,9 @@ class SQLInjectionAttack(Attack):
                                                 VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
                 print "500 HTTP Error code with"
                 print "\tEvil url:", url
-            attackedGET.append(url)
+
+        # none of the payloads worked
+        attackedGET.append(url_to_log)
 
   def blindPOST(self, form, attackedPOST):
     page = form[0]
@@ -265,8 +276,11 @@ class SQLInjectionAttack(Attack):
     for k in dict.keys():
       tmp = dict.copy()
       for payload in self.blind_sql_payloads:
-        tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
+        tmp[k] = "__TIME__"
+
         if (page, tmp) not in attackedPOST:
+          tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
+
           headers = {"Accept": "text/plain"}
           if self.verbose == 2:
             print "+ "+page
@@ -281,7 +295,11 @@ class SQLInjectionAttack(Attack):
             print "Blind SQL Injection in", page
             print "  with params =", self.HTTP.encode(tmp)
             print "  coming from", form[2]
-            break # ok, one of the payloads worked
+
+            # one of the payloads worked. log the form and exit
+            tmp[k] = "__TIME__"
+            attackedPOST.append((page, tmp))
+            break
           else:
             if code == "500":
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
@@ -292,5 +310,7 @@ class SQLInjectionAttack(Attack):
               print "500 HTTP Error code in", page
               print "  with params =", self.HTTP.encode(tmp)
               print "  coming from", form[2]
-          attackedPOST.append((page, tmp))
+      # none of the payloads worked. log the url and exit
+      tmp[k] = "__TIME__"
+      attackedPOST.append((page, tmp))
 

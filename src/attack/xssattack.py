@@ -12,7 +12,7 @@ class XSSAttack(Attack):
   This class implements a cross site scripting attack
   """
 
-  # magic strings me must see to be sure script is vulnerable to XSS
+  # magic strings we must see to be sure script is vulnerable to XSS
   # payloads must be created on those paterns
   script_ok = [
       "alert('__XSS__')",
