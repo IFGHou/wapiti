@@ -1,3 +1,70 @@
+27/03/2007
+	Updated ChangeLogs
+
+26/03/2009
+	Fixed bug ID 2433127. Comparison was made with HTTP error codes
+	on numeric values but httplib2 return the status code as a string.
+	Forbid httplib2 to handle HTTP redirections. Wapiti and lswww will
+	take care of this (more checks on urls...)
+	Fixed a bug with Blind SQL attacks (the same attack could be launched
+	several times)
+	Fixed an error in blindSQLPayloads.txt.
+	Changed the error message when Wapiti don't get any data from lswww.
+	Verifications to be sure blind SQL attacks won't be launched if "standard"
+	SQL attacks works.
+
+25/03/2009
+	Exported blind SQL payloads from the code. Now in config file
+	blindSQLPayloads.txt.
+	Set timeout for time-based BSQL attacks to timetout used for HTTP
+	requests + 1 second.
+	Added Blind SQL as a type of vulnerability in the report generator.
+	More verbosity for permanent XSS scan.
+	More docstrings.
+	Updated the REAME.
+
+24/03/2009
+	Added some docstring to the code.
+	Removed warnign on alpha code.
+	First Blind SQL Injection implementation in Wapiti.
+	Fixed some timeout errors.
+
+22/03/2009
+	Fixed character encoding error in sql injection module.
+	Changed the md5 and sha1 import in httplib2 to hashlib.
+
+28/11/2008
+	Google Charts API is added to generate the charts of the reports.
+
+15/11/2008
+	Re-integration of standard HTTP proxies in httplib2.
+	Integration of HTTP CONNECT tunneling in Wapiti.
+	Fixed bug ID 2257654 "getcookie.py error missing action in html form"
+
+02/11/2008
+	Integraded the proxy implementation of httplib2 in Wapiti.
+	Can now use SOCKSv5 and SOCKSv4 proxies.
+
+22/10/2008
+	Fixed a bug with Cookie headers.
+
+19/10/2008
+	Remplaced urllib2 by httplib2.
+	Wapiti now use persistent HTTP connections, speed up the scan.
+	Included a python SOCKS library.
+
+09/10/2008
+	Version 2.0.0-beta
+  Added the possibility to generate reports of the vulnerabilities found
+  in HTML, XML or plain-text format. See options -o and -f.
+	HTTP authentification now works.
+	Added the option -n (or --nice) to prevent endless loops during scanning.
+	More patterns for SQL vulnerability detection
+	Code refactoring : more clear and more object-oriented
+	New XSS function is now fully implemented
+  The payloads have been separated from the code into configuration files.
+	Updated BeautifulSoup
+
 15/09/2008
   Version 1.1.7-alpha
 	Use GET method if not specified in "method" tag
