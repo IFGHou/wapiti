@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# lswww v2.1.5 - A web spider library
+# lswww v2.2.0 - A web spider library
 # Copyright (C) 2006 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify

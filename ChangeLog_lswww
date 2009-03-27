@@ -1,3 +1,49 @@
+26/03/2009
+  Version 2.2.0
+  Fixed bug ID 2433127 with HTTP 404 error codes.
+	Don't let httplib2 manage HTTP redirections : return the status code
+	and let lswww handle the new url.
+
+25/03/2009
+  Version 2.1.9
+  Added option -e (or --export)
+	Saves urls and forms data to a XML file.
+	We hope other fuzzers will allow importation of this file.
+
+24/03/2009
+	More verifications on timeout errors.
+
+22/03/2009
+  Version 2.1.8
+  Fixed bug ID: 2415094
+	Check on protocol found in hyperlinks was case-sentitive.
+	Moved it to non-case-sensitive.
+	Integration of a second linkParser class called linkParser2 from
+	lswwwv2.py. This parser use only regexp to extract links and forms.
+
+25/11/2008
+  httplib2 use lowercase names for the HTTP headers in opposition to
+	urllib2 (first letter was uppercase).
+	Changed the verifications on headers.
+
+15/11/2008
+  Fixed a bug with links going to parrent directory.
+
+02/11/2008
+  Better integration of proxy support provided by httplib2.
+	It's now possible to use SOCKS proxies.
+
+19/10/2008
+  Version 2.1.7
+  Now use httplib2 (http://code.google.com/p/httplib2/)n MIT licence
+	instead of urllib2.
+	The ability to use persistents connections makes the scan faster.
+
+09/10/2008
+	Version 2.1.6
+	HTTP authentification now works
+	Added the option -n (or --nice) to prevent endless loops during scanning
+
 28/01/2007
 	Version 2.1.5
 	First take a look at the Content-Type instead of the document extension
