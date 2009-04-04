@@ -418,10 +418,18 @@ if __name__ == "__main__":
           wap.setGlobal()
           wap.setGET()
           wap.setXSS()
+        elif a == "GET_SQL":
+          wap.setGlobal()
+          wap.setGET()
+          wap.setInjection()
         elif a == "POST_XSS":
           wap.setGlobal()
           wap.setPOST()
           wap.setXSS()
+        elif a == "POST_SQL":
+          wap.setGlobal()
+          wap.setPOST()
+          wap.setInjection()
         elif a == "GET_ALL":
           wap.setPOST(0)
         elif a == "POST_ALL":

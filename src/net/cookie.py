@@ -49,6 +49,27 @@ except IOError, e:
     print e
     sys.exit(1)
 
-for index, cookie in enumerate(cj):
-    print index,':',cookie
-cj.save(COOKIEFILE,ignore_discard=True)
+if len(cj)>0:
+  for index, cookie in enumerate(cj):
+      print index,':',cookie
+  cj.save(COOKIEFILE,ignore_discard=True)
+else:
+  fd=open(COOKIEFILE,"w")
+  fd.write("#LWP-Cookies-2.0\n")
+  for cook in handle.headers.getheaders("set-cookie"):
+    fd.write("Set-Cookie3: ")
+    if cook.find(";")>=0:
+      s=""
+      for tupl in cook.split(";"):
+        if tupl.find("=")>=0:
+          s+=tupl.split("=",1)[0]+'="'+tupl.split("=",1)[1]+'"'
+        else:
+          s+=tupl
+        s+="; "
+      fd.write(s)
+      print s
+    else:
+      fd.write(cook)
+      print cook
+    fd.write("\n")
+  fd.close()
