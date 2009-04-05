@@ -33,43 +33,45 @@ class FileHandlingAttack(Attack):
 
   CONFIG_FILE = "fileHandlingPayloads.txt"
 
-  def __init__(self,HTTP,xmlRepGenerator):
-    Attack.__init__(self,HTTP,xmlRepGenerator)
+  warning_messages = [
+      ("java.io.FileNotFoundException:",        "Java include/open"),
+      ("fread(): supplied argument is not",     "fread()"),
+      ("fpassthru(): supplied argument is not", "fpassthru()"),
+      ("for inclusion (include_path=",          "include()"),
+      ("Failed opening required",               "require()"),
+      ("Warning: file(",                        "file()"),
+      ("<b>Warning</b>:  file(",                "file()"),
+      ("Warning: readfile(",                    "readfile()"),
+      ("<b>Warning:</b>  readfile(",            "readfile()"),
+      ("Warning: file_get_contents(",           "file_get_contents()"),
+      ("<b>Warning</b>:  file_get_contents(",   "file_get_contents()"),
+      ("Warning: show_source(",                 "show_source()"),
+      ("<b>Warning:</b>  show_source(",         "show_source()"),
+      ("Warning: highlight_file(",              "highlight_file()"),
+      ("<b>Warning:</b>  highlight_file(",      "highlight_file()")
+      ]
+
+  def __init__(self, HTTP, xmlRepGenerator):
+    Attack.__init__(self, HTTP, xmlRepGenerator)
     self.payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
-  def __findPatternInResponse(self,data,inc,warn):
+  def __findPatternInResponse(self, data, inc, warn):
     err = ""
     if data.find("root:x:0:0")>=0:
-      err="Unix include/fread"
-      inc=1
+      err = "Unix include/fread"
+      inc = 1
     if data.find("[boot loader]")>=0:
-      err="Windows include/fread"
-      inc=1
+      err = "Windows include/fread"
+      inc = 1
     if data.find("<title>Google</title>")>0:
-      err="Remote include"
-      inc=1
-    if data.find("java.io.FileNotFoundException:")>=0 and warn==0:
-      err="Warning Java include/open"
-      warn=1
-    if data.find("fread(): supplied argument is not")>0 and warn==0:
-      err="Warning fread"
-      warn=1
-    if data.find("fpassthru(): supplied argument is not")>0 and warn==0:
-      err="Warning fpassthru"
-      warn=1
-    if data.find("for inclusion (include_path=")>0 and warn==0:
-      err="Warning include"
-      warn=1
-    if data.find("Failed opening required")>=0 and warn==0:
-      err="Warning require"
-      warn=1
-    if data.find("<b>Warning</b>:  file(")>=0 and warn==0:
-      err="Warning file()"
-      warn=1
-    if data.find("<b>Warning</b>:  file_get_contents(")>=0:
-      err="Warning file_get_contents()"
-      warn=1
-    return err,inc,warn
+      err = "Remote include"
+      inc = 1
+    for pattern, funcname in self.warning_messages:
+      if data.find(pattern) >= 0 and warn == 0:
+        err = "Warning " + funcname
+        warn = 1
+        break
+    return err, inc, warn
 
   def attackGET(self, page, dict, attackedGET):
     if dict == {}:
