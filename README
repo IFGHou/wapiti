@@ -1,5 +1,6 @@
                     Wapiti is a web application security auditor.
-                          http://wapiti.sourceforge.net/
+                      http://www.ict-romulus.eu/web/wapiti/home
+                           http://wapiti.sourceforge.net/
 
 This version  requires Python 2.4 or  superior with the urllib2 module.
 The cookielib module is required if you want to use cookies.
@@ -122,6 +123,8 @@ Supported options are:
 	GET_ALL: only use GET request (no POST)
 	GET_XSS: only XSS attacks with HTTP GET method
 	POST_XSS: only XSS attacks with HTTP POST method
+  GET_SQL: only SQL attacks with HTTP GET method
+  POST_SQL: only SQL attacks with HTTP POST method
   GET_FILE: only File Handling attacks with HTTP GET method
   If you want to create your own, look at the end of the wapiti.py file.
 

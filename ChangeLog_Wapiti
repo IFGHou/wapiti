@@ -1,3 +1,9 @@
+05/04/2008
+	Added more patterns for file handling vulnerabilities in PHP.
+	Added GET_SQL and POST_SQL as modules (-m) for attacks.
+	Modifier getcookie.py and cookie.py so they try to get the cookies
+	even if cookielib fails.
+
 27/03/2007
 	Updated ChangeLogs
 
