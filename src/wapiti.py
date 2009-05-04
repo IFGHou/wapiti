@@ -27,7 +27,7 @@ import sys
 import getopt
 import os
 from net import HTTP
-from report.htmlreportgenerator import HTMLReportGenerator 
+from report.htmlreportgenerator import HTMLReportGenerator
 from report.xmlreportgenerator import XMLReportGenerator
 from report.txtreportgenerator import TXTReportGenerator
 from attack.sqlinjectionattack import SQLInjectionAttack
@@ -36,6 +36,7 @@ from attack.execattack import ExecAttack
 from attack.crlfattack import CRLFAttack
 from attack.xssattack import XSSAttack
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
+from language.language import Language
 
 class Wapiti:
   """
@@ -104,12 +105,12 @@ Supported options are:
 	Set the type of the report
 	xml: Report in XML format
 	html: Report in HTML format
-	
+
 -o <output>
 --output <output_file>
 	Set the name of the report file
 	If the selected report type is "html", this parameter must be a directory
-	
+
 -h
 --help
 	To print this usage message"""
@@ -188,31 +189,31 @@ Supported options are:
   def attack(self):
     "Launch the attacks based on the preferences set by the command line"
     if self.urls == [] and self.forms == []:
-      print "No links or forms found in this page !"
-      print "Make sure the url is correct."
+      print _("No links or forms found in this page !")
+      print _("Make sure the url is correct.")
       sys.exit(1)
 
     self.__initAttacks()
 
     if self.doGET == 1:
-      print "\nAttacking urls (GET)..."
-      print  "-----------------------"
+      print "\n"+_("Attacking urls (GET)")+"..."
+      print "-----------------------"
       for url in self.urls:
         if url.find("?") != -1:
           self.__attackGET(url)
     if self.doPOST == 1:
-      print "\nAttacking forms (POST)..."
+      print "\n"+_("Attacking forms (POST)")+"..."
       print "-------------------------"
       for form in self.forms:
         if form[1] != {}:
           self.__attackPOST(form)
     if self.doXSS == 1:
-      print "\nLooking for permanent XSS"
+      print "\n"+_("Looking for permanent XSS")
       print "-------------------------"
       for url in self.urls:
         self.xssAttack.permanentXSS(url)
     if self.HTTP.getUploads() != []:
-      print "\nUpload scripts found :"
+      print "\n"+_("Upload scripts found")+":"
       print "----------------------"
       for url in self.HTTP.getUploads():
         print url
@@ -222,12 +223,12 @@ Supported options are:
       else:
         self.outputFile = self.REPORT_FILE
     self.reportGen.generateReport(self.outputFile)
-    print "\nReport"
+    print "\n"+_("Report")
     print "------"
-    print "A report has been generated in the file "+ self.outputFile
+    print _("A report has been generated in the file")+" "+self.outputFile
     if self.reportGeneratorType == "html":
-      print "Open "+self.outputFile+ \
-            "/index.html with a browser to see this report."
+      print _("Open")+" "+self.outputFile+ \
+            "/index.html "+_("with a browser to see this report.")
 
   def setTimeOut(self, timeout = 6):
     "Set the timeout for the time waiting for a HTTP response"
@@ -327,7 +328,7 @@ Supported options are:
     dictio = {}
 
     if self.verbose == 1:
-      print "+ attackGET "+url
+      print "+ "+_("attackGET")+" "+url
       print "  ", params
     if query.find("=") >= 0:
       for param in params:
@@ -350,7 +351,7 @@ Supported options are:
   def __attackPOST(self, form):
     "Launch attacks based on HTTP POST method."
     if self.verbose == 1:
-      print "+ attackPOST "+form[0]
+      print "+ "+_("attackPOST")+" "+form[0]
       print "  ", form[1]
     if self.doFileHandling == 1:
       self.fileHandlingAttack.attackPOST(form, self.attackedPOST)
@@ -364,14 +365,18 @@ Supported options are:
 
 
 if __name__ == "__main__":
+  lan = Language()
+  lan.configure()
+
+  doc = _("doc")
   try:
     prox = ""
     auth = []
     if len(sys.argv)<2:
-      print Wapiti.__doc__
+      print doc
       sys.exit(0)
     if '-h' in sys.argv or '--help' in sys.argv:
-      print Wapiti.__doc__
+      print doc
       sys.exit(0)
     wap = Wapiti(sys.argv[1])
     try:
@@ -384,7 +389,7 @@ if __name__ == "__main__":
       sys.exit(2)
     for o, a in opts:
       if o in ("-h", "--help"):
-        print Wapiti.__doc__
+        print doc
         sys.exit(0)
       if o in ("-s", "--start"):
         if (a.find("http://", 0) == 0) or (a.find("https://", 0) == 0):
@@ -444,7 +449,7 @@ if __name__ == "__main__":
         if (a.find("html", 0) == 0) or (a.find("xml", 0) == 0) \
           or (a.find("txt", 0) == 0):
             wap.setReportGeneratorType(a)
-    print "Wapiti-SVN (wapiti.sourceforge.net)"
+    print _("Wapiti-SVN (wapiti.sourceforge.net)")
     wap.browse()
     wap.attack()
   except SystemExit:
