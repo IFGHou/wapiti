@@ -368,7 +368,7 @@ if __name__ == "__main__":
   lan = Language()
   lan.configure()
 
-  doc = _("doc")
+  doc = _("wapityDoc")
   try:
     prox = ""
     auth = []

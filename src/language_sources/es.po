@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Wapiti 2.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-05-04 16:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: David del Pozo <dpozog@grupogesfor.com>\n"
+"Language-Team: Spanish <dpozog@grupogesfor.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../wapiti.py:192
+msgid "No links or forms found in this page !"
+msgstr "¡No se han encontrado enlaces ni formularios en esta página!"
+
+#: ../wapiti.py:193
+msgid "Make sure the url is correct."
+msgstr "Asegurate de que la URL es correcta"
+
+#: ../wapiti.py:199
+msgid "Attacking urls (GET)"
+msgstr "Atacando URL (GET)"
+
+#: ../wapiti.py:205
+msgid "Attacking forms (POST)"
+msgstr "Atacando formularios (POST)"
+
+#: ../wapiti.py:211
+msgid "Looking for permanent XSS"
+msgstr "Buscando XSS permantentes"
+
+#: ../wapiti.py:216
+msgid "Upload scripts found"
+msgstr "Scripts de upload encontrados"
+
+#: ../wapiti.py:226
+msgid "Report"
+msgstr "Informe"
+
+#: ../wapiti.py:228
+msgid "A report has been generated in the file"
+msgstr "Un informe ha sido generado en el fichero"
+
+#: ../wapiti.py:230
+msgid "Open"
+msgstr "Abre"
+
+#: ../wapiti.py:231
+msgid "with a browser to see this report."
+msgstr "con un navegador para ver el informe"
+
+#: ../wapiti.py:331
+msgid "attackGET"
+msgstr "Ataque GET"
+
+#: ../wapiti.py:354
+msgid "attackPOST"
+msgstr "Ataque POST"
+
+#: ../wapiti.py:371
+msgid "wapityDoc"
+msgstr ""
+" Wapiti - Escáner de vulnerabilidades de aplicaciones web\n"
+" \n"
+" Uso: python wapiti.py http://server.com/base/url/ [opciones]\n"
+" \n"
+" Las opciones soportadas son:\n"
+" -s <url>\n"
+" --start <url>\n"
+" \tPara especificar una URL con la que empezar\n"
+" \n"
+" -x <url>\n"
+" --exclude <url>\n"
+" \tPara excluir una URL del análisis (por ejemplo scripts de logout)\n"
+" \tTambién se permite el uso del comodín (*)\n"
+" \tEjemplo: -x http://server/base/?page=*&module=test\n"
+" \to -x http://server/base/admin/* para excluir un directorio\n"
+" \n"
+" -p <url_proxy>\n"
+" --proxy <url_proxy>\n"
+" \tEspecifica un proxy\n"
+" \tEjemplo: -p http://proxy:port/\n"
+" \n"
+" -c <cookie_file>\n"
+" --cookie <cookie_file>\n"
+" \tPara usar una cookie\n"
+" \n"
+" -t <timeout>\n"
+" --timeout <timeout>\n"
+" \tEstablece el tiempo del timeout (en segundos)\n"
+" \n"
+" -a <login%password>\n"
+" --auth <login%password>\n"
+" \tEstablece credenciales para autenticación HTTP\n"
+" \tNo funciona con Python 2.4\n"
+" \n"
+" -r <parameter_name>\n"
+" --remove <parameter_name>\n"
+" \tBorra un parámetro de las URL\n"
+" \n"
+" -n <limit>\n"
+" --nice <limit>\n"
+" \tDefine el límite de URL a leer con el mismo patrón\n"
+" \tUsar esta opción para prevenir bucles infinitos\n"
+" \tEste parámetro debe ser mayor de 0\n"
+" \n"
+" -m <module>\n"
+" --module <module>\n"
+" \tEstablece el uso de un conjunto de opciones de escaneo/ataque\n"
+" \tGET_ALL: solo usa peticiones mediante GET (no POST)\n"
+" \tGET_XSS: solo ataques XSS con el método HTTP GET\n"
+" \tPOST_XSS: solo ataques XSS con el método  HTTP POST\n"
+" \n"
+" -u\n"
+" --underline\n"
+" \tPara resaltar en color los parámetros de las vulnerabilidades en la "
+"salida\n"
+" \n"
+" -v <level>\n"
+" --verbose <level>\n"
+" \tEstablece el nivel de logs por pantalla\n"
+" \t0: silencioso (default), 1: pinta cada URL, 2: pinta cada ataque\n"
+" \n"
+" -f <type_file>\n"
+" --reportType <type_file>\n"
+" \tEstablece el tipo de informe\n"
+" \txml:  Informe en formato XML\n"
+" \thtml: Informe en formato HTML\n"
+" \n"
+" -o <output>\n"
+" --output <output_file>\n"
+" \tEstablece el nombre del informe\n"
+" \tSi el tipo de informe seleccionado es HTML, este parámetro debe ser un "
+"directorio\n"
+" \n"
+" -h\n"
+" --help\n"
+" \tPara sacar este mensaje de uso de Wapiti"
+
+#: ../wapiti.py:452
+msgid "Wapiti-SVN (wapiti.sourceforge.net)"
+msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
+
+#: ../net/lswww.py:138 ../net/lswww.py:161
+msgid "Invalid link argument"
+msgstr "Argumento link (URL) inválido"
+
+#: ../net/lswww.py:471
+msgid "URLs"
+msgstr "URLs"
+
+#: ../net/lswww.py:478
+msgid "Forms Info"
+msgstr "Información de los formularios"
+
+#: ../net/lswww.py:480
+msgid "From"
+msgstr "De"
+
+#: ../net/lswww.py:481
+msgid "To"
+msgstr "A"
+
+#: ../net/lswww.py:489
+msgid "Upload Scripts"
+msgstr "Scripts de subida"
+
+#: ../net/lswww.py:676
+msgid "Forms"
+msgstr "Formularios"
+
+#: ../net/lswww.py:679
+msgid "Form"
+msgstr "Formulario"
+
+#: ../net/lswww.py:683
+msgid "Method"
+msgstr "Metodo"
+
+#: ../net/lswww.py:684
+msgid "Intputs"
+msgstr "Entradas"
+
+#: ../net/lswww.py:689
+msgid "Selects"
+msgstr "Seleccionables (Selects)"
+
+#: ../net/lswww.py:694
+msgid "TextAreas"
+msgstr "Areas de texto"
+
+#: ../net/lswww.py:699
+msgid "URLS"
+msgstr "URLs"
+
+#: ../net/lswww.py:783
+msgid "lswwwDoc"
+msgstr " lswww explora un sitio web y extrae los enlaces y formularios (incluyendo sus campos).\n"
+" \n"
+" Usoge: python lswww.py http://server.com/base/url/ [opciones]\n"
+" \n"
+" Las opciones soportadas son:\n"
+" -s <url>\n"
+" --start <url>\n"
+" \tPara especificar una URL con la que empezar\n"
+" \n"
+" -x <url>\n"
+" --exclude <url>\n"
+" \tPara excluir una URL del análisis (por ejemplo scripts de logout)\n"
+" \tTambién se permite el uso del comodín (*)\n"
+" \tEjemplo: -x http://server/base/?page=*&module=test\n"
+" \to -x http://server/base/admin/* para excluir un directorio\n"
+" \n"
+" -p <url_proxy>\n"
+" --proxy <url_proxy>\n"
+" \tEspecifica un proxy\n"
+" \tEjemplo: -p http://proxy:port/\n"
+" \n"
+" -c <cookie_file>\n"
+" --cookie <cookie_file>\n"
+" \tPara usar una cookie\n"
+" \n"
+" -a <login%password>\n"
+" --auth <login%password>\n"
+" \tEstablece credenciales para autenticación HTTP\n"
+" \tNo funciona con Python 2.4\n"
+" \n"
+" -r <parameter_name>\n"
+" --remove <parameter_name>\n"
+" \tBorra un parámetro de las URL\n"
+" \n"
+" -v <level>\n"
+" --verbose <level>\n"
+" \tEstablece el nivel de logs\n"
+" \t  0: only print results\n"
+" \t  1: pinta un punto (.) por cada URL encontrada (logs por defecto)\n"
+" \t  2: pinta cada URL\n"
+" \n"
+" -t <timeout>\n"
+" --timeout <timeout>\n"
+" \tEstablece el tiempo del timeout (en segundos)\n"
+" \n"
+" -n <limit>\n"
+" --nice <limit>\n"
+" \tDefine el límite de URL a leer con el mismo patrón\n"
+" \tUsar esta opción para prevenir bucles infinitos\n"
+" \tEste parámetro debe ser mayor de 0\n"
+" \n"
+" -h\n"
+" --help\n"
+" \tPara sacar este mensaje de uso de Wapiti"

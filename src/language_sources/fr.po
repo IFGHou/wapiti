@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-05-04 16:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: wapiti.py:192 ../wapiti.py:192
+msgid "No links or forms found in this page !"
+msgstr "No links or forms found in this page !"
+
+#: wapiti.py:193 ../wapiti.py:193
+msgid "Make sure the url is correct."
+msgstr "Make sure the url is correct."
+
+#: wapiti.py:199 ../wapiti.py:199
+msgid "Attacking urls (GET)"
+msgstr "Attacking urls (GET)"
+
+#: wapiti.py:205 ../wapiti.py:205
+msgid "Attacking forms (POST)"
+msgstr "Attacking forms (POST)"
+
+#: wapiti.py:211 ../wapiti.py:211
+msgid "Looking for permanent XSS"
+msgstr "Looking for permanent XSS"
+
+#: wapiti.py:216 ../wapiti.py:216
+msgid "Upload scripts found"
+msgstr "Upload scripts found"
+
+#: wapiti.py:226 ../wapiti.py:226
+msgid "Report"
+msgstr "Report"
+
+#: wapiti.py:228 ../wapiti.py:228
+msgid "A report has been generated in the file"
+msgstr "A report has been generated in the file"
+
+#: ../wapiti.py:230
+msgid "Open"
+msgstr "Open"
+
+#: ../wapiti.py:231
+msgid "with a browser to see this report."
+msgstr "with a browser to see this report"
+
+#: ../wapiti.py:331
+msgid "attackGET"
+msgstr "attackGET"
+
+#: ../wapiti.py:354
+msgid "attackPOST"
+msgstr "attackPOST"
+
+#: ../wapiti.py:371
+msgid "wapityDoc"
+msgstr ""
+"Wapiti-SVN - A web application vulnerability scanner \n"
+" \n"
+" Usage: python wapiti.py http://server.com/base/url/ [options] \n"
+" \n"
+" Supported options are: \n"
+" -s <url> \n"
+" --start <url> \n"
+" \tTo specify an url to start with \n"
+"  \n"
+" -x <url> \n"
+" --exclude <url> \n"
+" \tTo exclude an url from the scan (for example logout scripts) \n"
+" \tYou can also use a wildcard (*) \n"
+" \tExample : -x http://server/base/?page=*&module=test \n"
+" \tor -x http://server/base/admin/* to exclude a directory \n"
+" \n"
+" -p <url_proxy> \n"
+" --proxy <url_proxy> \n"
+" \tTo specify a proxy \n"
+" \tExample: -p http://proxy:port/ \n"
+" \n"
+" -c <cookie_file> \n"
+" --cookie <cookie_file> \n"
+" \tTo use a cookie \n"
+" \n"
+" -t <timeout> \n"
+" --timeout <timeout> \n"
+" \tTo fix the timeout (in seconds) \n"
+" \n"
+" -a <login%password> \n"
+" --auth <login%password> \n"
+" \tSet credentials for HTTP authentication \n"
+" \tDoesn't work with Python 2.4 \n"
+" \n"
+" -r <parameter_name> \n"
+" --remove <parameter_name> \n"
+" \tRemove a parameter from URLs \n"
+" \n"
+" -n <limit> \n"
+" --nice <limit> \n"
+" \tDefine a limit of urls to read with the same pattern \n"
+" \tUse this option to prevent endless loops \n"
+" \tMust be greater than 0 \n"
+" \n"
+" -m <module> \n"
+" --module <module> \n"
+" \tUse a predefined set of scan/attack options \n"
+" \tGET_ALL: only use GET request (no POST) \n"
+" \tGET_XSS: only XSS attacks with HTTP GET method \n"
+" \tPOST_XSS: only XSS attacks with HTTP POST method \n"
+" \n"
+" -u \n"
+" --underline \n"
+" \tUse color to highlight vulnerables parameters in output \n"
+" \n"
+" -v <level> \n"
+" --verbose <level> \n"
+" \tSet the verbosity level \n"
+" \t0: quiet (default), 1: print each url, 2: print every attack \n"
+" \n"
+" -f <type_file> \n"
+" --reportType <type_file> \n"
+" \tSet the type of the report \n"
+" \txml: Report in XML format \n"
+" \thtml: Report in HTML format \n"
+" \n"
+" -o <output> \n"
+" --output <output_file> \n"
+" \tSet the name of the report file \n"
+" \tIf the selected report type is 'html', this parameter must be a "
+"directory \n"
+" \n"
+" -h \n"
+" --help \n"
+" \tTo print this usage message"
+
+#: ../wapiti.py:452
+msgid "Wapiti-SVN (wapiti.sourceforge.net)"
+msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
+
+#: ../net/lswww.py:138 ../net/lswww.py:161
+msgid "Invalid link argument"
+msgstr "Invalid link argument"
+
+#: ../net/lswww.py:471
+msgid "URLs"
+msgstr "URLs"
+
+#: ../net/lswww.py:478
+msgid "Forms Info"
+msgstr "Forms Info"
+
+#: ../net/lswww.py:480
+msgid "From"
+msgstr "From"
+
+#: ../net/lswww.py:481
+msgid "To"
+msgstr "To"
+
+#: ../net/lswww.py:489
+msgid "Upload Scripts"
+msgstr "Upload Scripts"
+
+#: ../net/lswww.py:676
+msgid "Forms"
+msgstr "Forms"
+
+#: ../net/lswww.py:679
+msgid "Form"
+msgstr "Form"
+
+#: ../net/lswww.py:683
+msgid "Method"
+msgstr "Method"
+
+#: ../net/lswww.py:684
+msgid "Intputs"
+msgstr "Inputs"
+
+#: ../net/lswww.py:689
+msgid "Selects"
+msgstr "Selects"
+
+#: ../net/lswww.py:694
+msgid "TextAreas"
+msgstr "TextAreas"
+
+#: ../net/lswww.py:699
+msgid "URLS"
+msgstr "URLS"
+
+
+#: ../net/lswww.py:783
+msgid "lswwwDoc"
+msgstr " lswww explore a website and extract links and forms fields.\n"
+" \n "
+" Usage: python lswww.py http://server.com/base/url/ [options]\n"
+" \n "
+" Supported options are:\n"
+" -s <url>\n"
+" --start <url>\n"
+" \tTo specify an url to start with\n"
+" \n"
+" -x <url>\n"
+" --exclude <url>\n"
+" \tTo exclude an url from the scan (for example logout scripts)\n"
+" \tYou can also use a wildcard (*)\n"
+" \tExample : -x http://server/base/?page=*&module=test\n"
+" \tor -x http://server/base/admin/* to exclude a directory\n"
+" \n"
+" -p <url_proxy>\n"
+" --proxy <url_proxy>\n"
+" \tTo specify a proxy\n"
+" \tExemple: -p http://proxy:port/\n"
+" \n"
+" -c <cookie_file>\n"
+" --cookie <cookie_file>\n"
+" \tTo use a cookie\n"
+" \n"
+" -a <login%password>\n"
+" --auth <login%password>\n"
+" \tSet credentials for HTTP authentication\n"
+" \tDoesn't work with Python 2.4\n"
+" \n"
+" -r <parameter_name>\n"
+" --remove <parameter_name>\n"
+" \tRemove a parameter from URLs\n"
+" \n"
+" -v <level>\n"
+" --verbose <level>\n"
+" \tSet verbosity level\n"
+" \t  0: only print results\n"
+" \t  1: print a dot for each url found (default)\n"
+" \t  2: print each url\n"
+" \n"
+" -t <timeout>\n"
+" --timeout <timeout>\n"
+" \tSet the timeout (in seconds)\n"
+" \n"
+" -n <limit>\n"
+" --nice <limit>\n"
+" \tDefine a limit of urls to read with the same pattern\n"
+" \tUse this option to prevent endless loops\n"
+" \tMust be greater than 0\n"
+" \n"
+" -h\n"
+" --help\n"
+" \tTo print this usage message"

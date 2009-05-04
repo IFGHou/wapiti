@@ -135,7 +135,7 @@ Supported options are:
     if root[-1] != "/":
       root += "/"
     if(self.__checklink(root)):
-      print "Invalid link argument"
+      print _("Invalid link argument")
       sys.exit(0)
 
     server = (root.split("://")[1]).split("/")[0]
@@ -158,7 +158,7 @@ Supported options are:
 
   def addStartURL(self, url):
     if(self.__checklink(url)):
-      print "Invalid link argument:", url
+      print _("Invalid link argument")+":", url
       sys.exit(0)
     if(self.__inzone(url) == 0):
       self.tobrowse.append(url)
@@ -468,17 +468,17 @@ Supported options are:
   def printLinks(self):
     """Print found URLs on standard output"""
     self.browsed.sort()
-    sys.stderr.write("\n+ URLs :\n")
+    sys.stderr.write("\n+ "+_("URLs")+":\n")
     for lien in self.browsed:
       print lien
 
   def printForms(self):
     """Print found forms on standard output"""
     if self.forms != []:
-      sys.stderr.write("\n+ Forms Info :\n")
+      sys.stderr.write("\n+ "+_("Forms Info")+":\n")
       for form in self.forms:
-        print "From:", form[2]
-        print "To:", form[0]
+        print _("From")+":", form[2]
+        print _("To")  +":", form[0]
         for k, v in form[1].items():
           print "\t"+k, ":", v
         print
@@ -486,7 +486,7 @@ Supported options are:
   def printUploads(self):
     """Print urls accepting uploads"""
     if self.uploads != []:
-      sys.stderr.write("\n+ Upload Scripts :\n")
+      sys.stderr.write("\n+ "+_("Upload Scripts")+":\n")
       for up in self.uploads:
         print up
 
@@ -673,30 +673,30 @@ class linkParser2():
         textAreasAttributes[i].append(self.__findTagAttributes(textArea))
 
     if(self.verbose == 3):
-      print "\n\nForms"
+      print "\n\n"+_("Forms")
       print "====="
       for i in range(len(forms)):
-        print "Form "+str(i)
+        print _("Form")+" "+str(i)
         tmpdict = {}
         for k, v in dict(formsAttributes[i]).items():
           tmpdict[k.lower()] = v
-        print " * Method:  "+self.__decode_htmlentities(tmpdict['action'])
-        print " * Intputs: "
+        print " * "+_("Method")+":  "+self.__decode_htmlentities(tmpdict['action'])
+        print " * "+_("Intputs")+": "
         for j in range(len(inputsInForms[i])):
           print "    + "+inputsInForms[i][j]
           for att in inputsAttributes[i][j]:
             print "       - "+str(att)
-        print " * Selects: "
+        print " * "+_("Selects")+": "
         for j in range(len(selectsInForms[i])):
           print "    + "+selectsInForms[i][j]
           for att in selectsAttributes[i][j]:
             print "       - "+str(att)
-        print " * TextAreas: "
+        print " * "+_("TextAreas")+": "
         for j in range(len(textAreasInForms[i])):
           print "    + "+textAreasInForms[i][j]
           for att in textAreasAttributes[i][j]:
             print "       - "+str(att)
-      print "\nURLS"
+      print "\n"+_("URLS")
       print "===="
 
     for i in range(len(links)):
@@ -780,6 +780,8 @@ class linkParser2():
     return entity_re.subn(self.__substitute_entity, string)[0]
 
 if __name__ == "__main__":
+  def _(text):
+    return text
   try:
     prox = ""
     auth = []
