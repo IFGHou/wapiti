@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-04 16:50+0200\n"
+"POT-Creation-Date: 2009-05-05 12:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,35 +16,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: wapiti.py:192 ../wapiti.py:192
+#: ../wapiti.py:192
 msgid "No links or forms found in this page !"
 msgstr "No links or forms found in this page !"
 
-#: wapiti.py:193 ../wapiti.py:193
+#: ../wapiti.py:193
 msgid "Make sure the url is correct."
 msgstr "Make sure the url is correct."
 
-#: wapiti.py:199 ../wapiti.py:199
+#: ../wapiti.py:199
 msgid "Attacking urls (GET)"
 msgstr "Attacking urls (GET)"
 
-#: wapiti.py:205 ../wapiti.py:205
+#: ../wapiti.py:205
 msgid "Attacking forms (POST)"
 msgstr "Attacking forms (POST)"
 
-#: wapiti.py:211 ../wapiti.py:211
+#: ../wapiti.py:211
 msgid "Looking for permanent XSS"
 msgstr "Looking for permanent XSS"
 
-#: wapiti.py:216 ../wapiti.py:216
+#: ../wapiti.py:216
 msgid "Upload scripts found"
 msgstr "Upload scripts found"
 
-#: wapiti.py:226 ../wapiti.py:226
+#: ../wapiti.py:226
 msgid "Report"
 msgstr "Report"
 
-#: wapiti.py:228 ../wapiti.py:228
+#: ../wapiti.py:228
 msgid "A report has been generated in the file"
 msgstr "A report has been generated in the file"
 
@@ -199,14 +199,14 @@ msgstr "TextAreas"
 msgid "URLS"
 msgstr "URLS"
 
-
 #: ../net/lswww.py:783
 msgid "lswwwDoc"
-msgstr " lswww explore a website and extract links and forms fields.\n"
-" \n "
-" Usage: python lswww.py http://server.com/base/url/ [options]\n"
-" \n "
-" Supported options are:\n"
+msgstr ""
+" lswww explore a website and extract links and forms fields.\n"
+" \n"
+"  Usage: python lswww.py http://server.com/base/url/ [options]\n"
+" \n"
+"  Supported options are:\n"
 " -s <url>\n"
 " --start <url>\n"
 " \tTo specify an url to start with\n"
@@ -256,3 +256,190 @@ msgstr " lswww explore a website and extract links and forms fields.\n"
 " -h\n"
 " --help\n"
 " \tTo print this usage message"
+
+#: ../attack/crlfattack.py:48 ../attack/crlfattack.py:53
+#: ../attack/execattack.py:80 ../attack/execattack.py:86
+#: ../attack/sqlinjectionattack.py:98
+msgid "(QUERY_STRING)"
+msgstr "(QUERY_STRING)"
+
+#: ../attack/crlfattack.py:49
+msgid "CRLF Injection (QUERY_STRING) in"
+msgstr "CRLF Injection (QUERY_STRING) in"
+
+#: ../attack/crlfattack.py:50 ../attack/crlfattack.py:73
+#: ../attack/execattack.py:88 ../attack/execattack.py:97
+#: ../attack/execattack.py:131 ../attack/execattack.py:145
+#: ../attack/filehandlingattack.py:111 ../attack/filehandlingattack.py:120
+#: ../attack/filehandlingattack.py:154 ../attack/filehandlingattack.py:168
+#: ../attack/sqlinjectionattack.py:100 ../attack/sqlinjectionattack.py:108
+#: ../attack/sqlinjectionattack.py:138 ../attack/sqlinjectionattack.py:152
+#: ../attack/sqlinjectionattack.py:225 ../attack/sqlinjectionattack.py:234
+#: ../attack/sqlinjectionattack.py:258 ../attack/sqlinjectionattack.py:276
+#: ../attack/xssattack.py:276 ../attack/xssattack.py:331
+#: ../attack/xssattack.py:386 ../attack/xssattack.py:440
+#: ../attack/xssattack.py:497
+msgid "Evil url"
+msgstr "Evil url"
+
+#: ../attack/crlfattack.py:54 ../attack/filehandlingattack.py:100
+#: ../attack/filehandlingattack.py:101
+msgid "Timeout (QUERY_STRING) in"
+msgstr "Timeout (QUERY_STRING) in"
+
+#: ../attack/crlfattack.py:55 ../attack/crlfattack.py:83
+#: ../attack/execattack.py:77 ../attack/execattack.py:119
+#: ../attack/filehandlingattack.py:102 ../attack/filehandlingattack.py:145
+msgid "caused by"
+msgstr "caused by"
+
+#: ../attack/crlfattack.py:72 ../attack/crlfattack.py:82
+#: ../attack/execattack.py:118 ../attack/execattack.py:130
+#: ../attack/execattack.py:185 ../attack/filehandlingattack.py:144
+#: ../attack/filehandlingattack.py:153 ../attack/filehandlingattack.py:208
+#: ../attack/sqlinjectionattack.py:137 ../attack/sqlinjectionattack.py:188
+#: ../attack/sqlinjectionattack.py:257 ../attack/xssattack.py:275
+#: ../attack/xssattack.py:330 ../attack/xssattack.py:385
+msgid "in"
+msgstr "in"
+
+#: ../attack/crlfattack.py:82 ../attack/execattack.py:118
+#: ../attack/filehandlingattack.py:144
+msgid "Timeout"
+msgstr "Timeout"
+
+#: ../attack/execattack.py:76 ../attack/execattack.py:171
+#: ../attack/filehandlingattack.py:198
+msgid "Timeout in"
+msgstr "Timeout in"
+
+#: ../attack/execattack.py:87 ../attack/filehandlingattack.py:109
+#: ../attack/filehandlingattack.py:110 ../attack/sqlinjectionattack.py:99
+msgid "(QUERY_STRING) in"
+msgstr "(QUERY_STRING) in"
+
+#: ../attack/execattack.py:96 ../attack/execattack.py:144
+#: ../attack/filehandlingattack.py:119 ../attack/filehandlingattack.py:167
+#: ../attack/sqlinjectionattack.py:107 ../attack/sqlinjectionattack.py:151
+#: ../attack/sqlinjectionattack.py:233 ../attack/sqlinjectionattack.py:275
+msgid "500 HTTP Error code with"
+msgstr "500 HTTP Error code with"
+
+#: ../attack/execattack.py:172 ../attack/execattack.py:186
+#: ../attack/execattack.py:197 ../attack/filehandlingattack.py:199
+#: ../attack/filehandlingattack.py:209 ../attack/filehandlingattack.py:220
+#: ../attack/sqlinjectionattack.py:189 ../attack/sqlinjectionattack.py:199
+#: ../attack/sqlinjectionattack.py:304 ../attack/sqlinjectionattack.py:319
+#: ../attack/xssattack.py:270 ../attack/xssattack.py:325
+#: ../attack/xssattack.py:380 ../attack/xssattack.py:434
+#: ../attack/xssattack.py:491
+msgid "with params"
+msgstr "with params"
+
+#: ../attack/execattack.py:173 ../attack/execattack.py:184
+#: ../attack/execattack.py:187 ../attack/execattack.py:198
+#: ../attack/filehandlingattack.py:200 ../attack/filehandlingattack.py:207
+#: ../attack/filehandlingattack.py:210 ../attack/filehandlingattack.py:221
+#: ../attack/sqlinjectionattack.py:187 ../attack/sqlinjectionattack.py:190
+#: ../attack/sqlinjectionattack.py:200 ../attack/sqlinjectionattack.py:305
+#: ../attack/sqlinjectionattack.py:320 ../attack/xssattack.py:271
+#: ../attack/xssattack.py:326 ../attack/xssattack.py:381
+#: ../attack/xssattack.py:435 ../attack/xssattack.py:492
+msgid "coming from"
+msgstr "coming from"
+
+#: ../attack/execattack.py:177 ../attack/filehandlingattack.py:197
+msgid "Timeout coming from"
+msgstr "Timeout coming from"
+
+#: ../attack/execattack.py:194 ../attack/filehandlingattack.py:217
+#: ../attack/sqlinjectionattack.py:196 ../attack/sqlinjectionattack.py:316
+msgid "500 HTTP Error code coming from"
+msgstr "500 HTTP Error code coming from"
+
+#: ../attack/execattack.py:196 ../attack/filehandlingattack.py:219
+#: ../attack/sqlinjectionattack.py:198 ../attack/sqlinjectionattack.py:318
+msgid "500 HTTP Error code in"
+msgstr "500 HTTP Error code in"
+
+#: ../attack/sqlinjectionattack.py:223
+msgid "Blind SQL Injection (QUERY_STRING)"
+msgstr "Blind SQL Injection (QUERY_STRING)"
+
+#: ../attack/sqlinjectionattack.py:224
+msgid "Blind SQL Injection (QUERY_STRING) in"
+msgstr "Blind SQL Injection (QUERY_STRING) in"
+
+#: ../attack/sqlinjectionattack.py:256 ../attack/sqlinjectionattack.py:257
+#: ../attack/sqlinjectionattack.py:263 ../attack/sqlinjectionattack.py:264
+msgid "Blind SQL Injection"
+msgstr "Blind SQL Injection"
+
+#: ../attack/sqlinjectionattack.py:302
+msgid "Blind SQL Injection coming from"
+msgstr "Blind SQL Injection coming from"
+
+#: ../attack/sqlinjectionattack.py:303
+msgid "Blind SQL Injection in"
+msgstr "Blind SQL Injection in"
+
+#: ../attack/xssattack.py:132 ../attack/xssattack.py:135
+#: ../attack/xssattack.py:155
+msgid "Found permanent XSS in"
+msgstr "Found permanent XSS in"
+
+#: ../attack/xssattack.py:132 ../attack/xssattack.py:135
+msgid "with"
+msgstr "with"
+
+#: ../attack/xssattack.py:153
+msgid "Found permanent XSS attacked by"
+msgstr "Found permanent XSS attacked by"
+
+#: ../attack/xssattack.py:154
+msgid "with field"
+msgstr "with field"
+
+#: ../attack/xssattack.py:156
+msgid "attacked by"
+msgstr "attacked by"
+
+#: ../attack/xssattack.py:156
+msgid "with fields"
+msgstr "with fields"
+
+#: ../attack/xssattack.py:261 ../attack/xssattack.py:266
+#: ../attack/xssattack.py:275 ../attack/xssattack.py:278
+#: ../attack/xssattack.py:316 ../attack/xssattack.py:321
+#: ../attack/xssattack.py:330 ../attack/xssattack.py:333
+#: ../attack/xssattack.py:372 ../attack/xssattack.py:377
+#: ../attack/xssattack.py:385 ../attack/xssattack.py:388
+#: ../attack/xssattack.py:426 ../attack/xssattack.py:431
+#: ../attack/xssattack.py:439 ../attack/xssattack.py:442
+#: ../attack/xssattack.py:482 ../attack/xssattack.py:487
+#: ../attack/xssattack.py:496 ../attack/xssattack.py:499
+msgid "XSS"
+msgstr "XSS"
+
+#: ../attack/xssattack.py:269 ../attack/xssattack.py:324
+#: ../attack/xssattack.py:379 ../attack/xssattack.py:433
+#: ../attack/xssattack.py:490
+msgid "Found XSS in"
+msgstr "Found XSS in"
+
+#: ../attack/vulnerabilitiesdescriptions.py:2
+msgid "500 HTTP Error code"
+msgstr "500 HTTP Error code"
+
+#: ../attack/vulnerabilitiesdescriptions.py:3
+msgid "500 Error description"
+msgstr "Internal Server Error. The server encountered an unexpected condition which "
+"prevented it from fulfilling the request."
+"<ul>"
+"  <li><a href='http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>"
+"      World Wide Web Consortium: HTTP/1.1 Status Code Definitions"
+"      </a></li>"
+"  <li><a href='http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_Error'>"
+"      Wikipedia: List of HTTP status codes"
+"      </a></li>"
+"</ul>"

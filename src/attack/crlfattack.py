@@ -34,6 +34,7 @@ class CRLFAttack(Attack):
 
   # Won't work with PHP >= 4.4.2
   def attackGET(self, page, dict, attackedGET):
+    """This method performs the CRLF attack with method GET"""
     payload="http://www.google.fr\r\nWapiti: SVN version"
     if dict == {}:
       err = ""
@@ -44,14 +45,14 @@ class CRLFAttack(Attack):
         try:
           if self.HTTP.send(url).getInfo().has_key('Wapiti'):
             self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              page, payload, err+" (QUERY_STRING)")
-            print "CRLF Injection (QUERY_STRING) in", page
-            print "\tEvil url:", url
+                              page, payload, err+" "+_("(QUERY_STRING)"))
+            print _("CRLF Injection (QUERY_STRING) in"), page
+            print "\t"+_("Evil url")+":", url
         except socket.timeout:
           self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                            page, payload, err+" (QUERY_STRING)")
-          print "Timeout (QUERY_STRING) in", page
-          print "\tcaused by:", url
+                            page, payload, err+" "+_("(QUERY_STRING)"))
+          print _("Timeout (QUERY_STRING) in"), page
+          print "\t"+_("caused by")+":", url
         attackedGET.append(url)
     else:
       for k in dict.keys():
@@ -68,8 +69,8 @@ class CRLFAttack(Attack):
               if self.color == 0:
                 self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                   page, self.HTTP.encode(tmp), err+" ("+k+")")
-                print err, "("+k+") in", page
-                print "\tEvil url:", url
+                print err, "("+k+") "+_("in"), page
+                print "\t"+_("Evil url")+":", url
               else:
                 self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                   page, self.HTTP.encode(tmp).
@@ -78,7 +79,7 @@ class CRLFAttack(Attack):
           except socket.timeout:
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               page, self.HTTP.encode(tmp), err+" ("+k+")")
-            print "Timeout ("+k+") in", page
-            print "\tcaused by:", url
+            print _("Timeout")+" ("+k+") "+_("in"), page
+            print "\t"+_("caused by")+":", url
           attackedGET.append(url)
 

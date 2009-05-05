@@ -52,11 +52,5 @@ class Attack:
         self.color = 1
         
     def loadPayloads(self,fileName):
+        """This method loads the payloads for an attack from the specified file"""
         return self.auxText.readLines(fileName)
-    
-    
-if __name__ == "__main__":
-    print __file__
-    print __doc__
-    print __name__
-    print os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))

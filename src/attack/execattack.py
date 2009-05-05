@@ -54,6 +54,7 @@ class ExecAttack(Attack):
     return err,cmd,warn
 
   def attackGET(self,page,dict,attackedGET):
+    """This method performs the command execution with method GET"""
     if dict == {}:
       warn = 0
       cmd = 0
@@ -72,19 +73,19 @@ class ExecAttack(Attack):
             data = ""
             code = "408"
             err = ""
-            print "Timeout in",page
-            print "\tcaused by:",url
+            print _("Timeout in"),page
+            print "\t"+_("caused by")+":",url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.quote(payload), err+" (QUERY_STRING)")
+                                            url, self.HTTP.quote(payload), err+" "+_("(QUERY_STRING)"))
           else: 
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.EXEC,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.quote(payload), err+" (QUERY_STRING)")
-            print err, "(QUERY_STRING) in", page
-            print "\tEvil url:", url
+                                            url, self.HTTP.quote(payload), err+" "+_("(QUERY_STRING)"))
+            print err, _("(QUERY_STRING) in"), page
+            print "\t"+_("Evil url")+":", url
           else:
             if code == "500" and err500 == 0:
               err500 = 1
@@ -92,8 +93,8 @@ class ExecAttack(Attack):
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.quote(payload),
                                               VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
-              print "500 HTTP Error code with"
-              print "\tEvil url:", url
+              print _("500 HTTP Error code with")
+              print "\t"+_("Evil url")+":", url
     for k in dict.keys():
       warn = 0
       cmd = 0
@@ -114,8 +115,8 @@ class ExecAttack(Attack):
             data = ""
             code = "408"
             err = ""
-            print "Timeout ("+k+") in",page
-            print "\tcaused by:",url
+            print _("Timeout")+" ("+k+") "+_("in"),page
+            print "\t"+_("caused by")+":",url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                             url, self.HTTP.encode(tmp), err+" ("+k+")")
@@ -126,8 +127,8 @@ class ExecAttack(Attack):
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp), err+" ("+k+")")
-              print err, "("+k+") in", page
-              print "\tEvil url:", url
+              print err, "("+k+") "+_("in"), page
+              print "\t"+_("Evil url")+":", url
             else:
               self.reportGen.logVulnerability(Vulnerability.EXEC,Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp),
@@ -140,10 +141,11 @@ class ExecAttack(Attack):
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp),
                                               VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
-              print "500 HTTP Error code with"
-              print "\tEvil url:", url
+              print _("500 HTTP Error code with")
+              print "\t"+_("Evil url")+":", url
 
   def attackPOST(self,form,attackedPOST):
+    """This method performs the command execution with method POST"""
     page = form[0]
     dict = form[1]
     err = ""
@@ -166,32 +168,32 @@ class ExecAttack(Attack):
           except socket.timeout:
             data = ""
             code = "408"
-            print "Timeout in",page
-            print "  with params =", self.HTTP.encode(tmp)
-            print "  coming from", form[2]
+            print _("Timeout in"),page
+            print "  "+_("with params")+" =", self.HTTP.encode(tmp)
+            print "  "+_("coming from"), form[2]
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp),
-                                            "Timeout coming from "+form[2])
+                                            _("Timeout coming from")+" "+form[2])
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.EXEC,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp),
-                                            err+" coming from "+form[2])
-            print err, "in", page
-            print "  with params =", self.HTTP.encode(tmp)
-            print "  coming from", form[2]
+                                            err+" "+_("coming from")+" "+form[2])
+            print err, _("in"), page
+            print "  "+_("with params")+" =", self.HTTP.encode(tmp)
+            print "  "+_("coming from"), form[2]
           else:
             if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp),
-                                              "500 HTTP Error code coming from "+form[2]+"<br>"+
+                                              _("500 HTTP Error code coming from")+" "+form[2]+"<br>"+
                                               VulDescrip.ERROR_500_DESCRIPTION)
-              print "500 HTTP Error code in", page
-              print "  with params =", self.HTTP.encode(tmp)
-              print "  coming from", form[2]
+              print _("500 HTTP Error code in"), page
+              print "  "+_("with params")+" =", self.HTTP.encode(tmp)
+              print "  "+_("coming from"), form[2]
 

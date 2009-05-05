@@ -41,6 +41,7 @@ class XSSAttack(Attack):
     self.independant_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
   def attackGET(self, page, dict, attackedGET):
+    """This method performs the cross site scripting attack (XSS attack) with method GET"""
     # page est l'url de script
     # dict est l'ensembre des variables et leurs valeurs
     if dict == {}:
@@ -82,6 +83,7 @@ class XSSAttack(Attack):
               break
 
   def attackPOST(self,form,attackedPOST):
+    """This method performs the cross site scripting attack (XSS attack) with method POST"""
     headers = {"Accept": "text/plain"}
     page = form[0]
     params = form[1]
@@ -108,6 +110,7 @@ class XSSAttack(Attack):
 
 
   def permanentXSS(self,url):
+    """This method searches XSS which could be permanently stored in the web application"""
     headers = {"Accept": "text/plain"}
     if self.verbose >= 1:
       print "+", url
@@ -126,10 +129,10 @@ class XSSAttack(Attack):
           except socket.timeout:
             dat = ""
           if self.validXSS(dat, code):
-            print "Found permanent XSS in", url, "with",attack_url
+            print _("Found permanent XSS in"), url, _("with"),attack_url
             self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
-                            "Found permanent XSS in "+url+" with "+attack_url)
+                            _("Found permanent XSS in")+" "+url+" "+_("with")+" "+attack_url)
             break
 
     for code in self.POST_XSS.keys():
@@ -147,10 +150,10 @@ class XSSAttack(Attack):
               if self.validXSS(dat,code):
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY, url,"",
-                            "Found permanent XSS attacked by "+self.POST_XSS[code][0]+
-                            " with field "+self.HTTP.uqe(self.POST_XSS[code][1]))
-                print "Found permament XSS in", self.POST_XSS[code][0]
-                print "  attacked by", self.POST_XSS[code][2], "with fields", self.HTTP.uqe(tmp)
+                            _("Found permanent XSS attacked by")+" "+self.POST_XSS[code][0]+
+                            " "+_("with field")+" "+self.HTTP.uqe(self.POST_XSS[code][1]))
+                print _("Found permanent XSS in"), self.POST_XSS[code][0]
+                print "  "+_("attacked by"), self.POST_XSS[code][2], _("with fields"), self.HTTP.uqe(tmp)
                 break
 
   # type/name/tag ex: attrval/img/src
@@ -255,24 +258,24 @@ class XSSAttack(Attack):
               self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url, self.HTTP.uqe(params),
-                                "XSS ("+var+")")
+                                _("XSS")+" ("+var+")")
             else:
               self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url, url.split("?")[1],
-                                "XSS ("+var+")")
+                                _("XSS")+" ("+var+")")
 
             if referer != "":
-              print "Found XSS in", page
-              print "  with params =", self.HTTP.encode(params)
-              print "  coming from", referer
+              print _("Found XSS in"), page
+              print "  "+_("with params")+" =", self.HTTP.encode(params)
+              print "  "+_("coming from"), referer
 
             else:
               if self.color == 0:
-                print "XSS ("+var+") in", page
-                print "\tEvil url:", url
+                print _("XSS")+" ("+var+") "+_("in"), page
+                print "\t"+_("Evil url")+":", url
               else:
-                print "XSS", ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
             return True
 
       # this should not happen but you never know...
@@ -310,24 +313,24 @@ class XSSAttack(Attack):
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                   url, self.HTTP.uqe(params),
-                                  "XSS ("+var+")")
+                                  _("XSS")+"  ("+var+")")
               else:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                   url, url.split("?")[1],
-                                  "XSS ("+var+")")
+                                  _("XSS")+"  ("+var+")")
 
               if referer != "":
-                print "Found XSS in", page
-                print "  with params =", self.HTTP.encode(params)
-                print "  coming from", referer
+                print _("Found XSS in"), page
+                print "  "+_("with params")+" =", self.HTTP.encode(params)
+                print "  "+_("coming from"), referer
 
               else:
                 if self.color == 0:
-                  print "XSS ("+var+") in", page
-                  print "\tEvil url:", url
+                  print _("XSS")+" ("+var+") "+_("in"), page
+                  print "\t"+_("Evil url")+":", url
                 else:
-                  print "XSS", ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                  print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
               return True
 
       elif elem['type'] == "tag":
@@ -366,23 +369,23 @@ class XSSAttack(Attack):
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                   url, self.HTTP.uqe(params),
-                                  "XSS ("+var+")")
+                                  _("XSS")+" ("+var+")")
               else:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                   url, url.split("?")[1],
-                                  "XSS ("+var+")")
+                                  _("XSS")+" ("+var+")")
               if referer != "":
-                print "Found XSS in", page
-                print "  with params =", self.HTTP.encode(params)
-                print "  coming from", referer
+                print _("Found XSS in"), page
+                print "  "+_("with params")+" =", self.HTTP.encode(params)
+                print "  "+_("coming from"), referer
 
               else:
                 if self.color == 0:
-                  print "XSS ("+var+") in", page
-                  print "\tEvil url:", url
+                  print _("XSS")+" ("+var+") "+_("in"), page
+                  print "\t"+_("Evil url")+":", url
                 else:
-                  print "XSS", ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                  print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
               return True
 
         else:
@@ -420,23 +423,23 @@ class XSSAttack(Attack):
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                   url, self.HTTP.uqe(params),
-                                  "XSS ("+var+")")
+                                  _("XSS")+" ("+var+")")
               else:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                   url, url.split("?")[1],
-                                  "XSS ("+var+")")
+                                  _("XSS")+" ("+var+")")
               if referer != "":
-                print "Found XSS in", page
-                print "  with params =", self.HTTP.encode(params)
-                print "  coming from", referer
+                print _("Found XSS in"), page
+                print "  "+_("with params")+" =", self.HTTP.encode(params)
+                print "  "+_("coming from"), referer
 
               else:
                 if self.color == 0:
-                  print "XSS ("+var+") in", page
-                  print "\tEvil url:", url
+                  print _("XSS")+" ("+var+") in", page
+                  print "\t"+_("Evil url")+":", url
                 else:
-                  print "XSS", ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                  print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
               return True
 
       # another common one
@@ -476,24 +479,24 @@ class XSSAttack(Attack):
               self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 page, self.HTTP.uqe(params),
-                                "XSS ("+var+")")
+                                _("XSS")+" ("+var+")")
             else:
               self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 self.HTTP.escape(url), url.split("?")[1],
-                                "XSS ("+var+")")
+                                _("XSS")+" ("+var+")")
 
             if referer != "":
-              print "Found XSS in", page
-              print "  with params =", self.HTTP.encode(params)
-              print "  coming from", referer
+              print _("Found XSS in"), page
+              print "  "+_("with params")+" =", self.HTTP.encode(params)
+              print "  "+_("coming from"), referer
 
             else:
               if self.color == 0:
-                print "XSS ("+var+") in", page
-                print "\tEvil url:", url
+                print _("XSS")+" ("+var+") in", page
+                print "\t"+_("Evil url")+":", url
               else:
-                print "XSS", ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
             return True
 
       data = data.replace(code, "none", 1)#reduire la zone de recherche

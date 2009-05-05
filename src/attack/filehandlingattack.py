@@ -56,6 +56,7 @@ class FileHandlingAttack(Attack):
     self.payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
   def __findPatternInResponse(self, data, inc, warn):
+    """This method searches patterns in the response from the server"""
     err = ""
     if data.find("root:x:0:0")>=0:
       err = "Unix include/fread"
@@ -74,6 +75,7 @@ class FileHandlingAttack(Attack):
     return err, inc, warn
 
   def attackGET(self, page, dict, attackedGET):
+    """This method performs the file handling attack with method GET"""
     if dict == {}:
       warn = 0
       inc = 0
@@ -95,18 +97,18 @@ class FileHandlingAttack(Attack):
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               url, self.HTTP.quote(payload),
-                              "Timeout (QUERY_STRING) in "+str(page))
-            print "Timeout (QUERY_STRING) in", page
-            print "\tcaused by:", url
+                              _("Timeout (QUERY_STRING) in")+" "+str(page))
+            print _("Timeout (QUERY_STRING) in"), page
+            print "\t"+_("caused by")+":", url
           else:
             err,inc,warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url, self.HTTP.quote(payload),
-                              str(err)+" (QUERY_STRING) in "+str(page))
-            print err, "(QUERY_STRING) in", page
-            print "\tEvil url:", url
+                              str(err)+" "+_("(QUERY_STRING) in")+" "+str(page))
+            print err, _("(QUERY_STRING) in"), page
+            print "\t"+_("Evil url")+":", url
           else:
             if code == "500" and err500 == 0:
               err500 = 1
@@ -114,8 +116,8 @@ class FileHandlingAttack(Attack):
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url, self.HTTP.quote(payload),
                                 VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
-              print "500 HTTP Error code with"
-              print "\tEvil url:", url
+              print _("500 HTTP Error code with")
+              print "\t"+_("Evil url")+":", url
     for k in dict.keys():
       warn = 0
       inc = 0
@@ -139,8 +141,8 @@ class FileHandlingAttack(Attack):
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               url,self.HTTP.encode(tmp), err+" ("+k+")")
-            print "Timeout ("+k+") in", page
-            print "\tcaused by:", url
+            print _("Timeout")+" ("+k+") "+_("in"), page
+            print "\t"+_("caused by")+":", url
           else:
             err, inc, warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
@@ -148,8 +150,8 @@ class FileHandlingAttack(Attack):
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url,self.HTTP.encode(tmp), err+" ("+k+")")
-              print err, "("+k+") in", page
-              print "\tEvil url:", url
+              print err, "("+k+") "+_("in"), page
+              print "\t"+_("Evil url")+":", url
             else:
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,url, self.HTTP.encode(tmp),
@@ -162,10 +164,11 @@ class FileHandlingAttack(Attack):
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url, self.HTTP.encode(tmp),
                                 VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
-              print "500 HTTP Error code with"
-              print "\tEvil url:", url
+              print _("500 HTTP Error code with")
+              print "\t"+_("Evil url")+":", url
 
   def attackPOST(self,form,attackedPOST):
+    """This method performs the file handling attack with method POST"""
     page = form[0]
     dict = form[1]
     err = ""
@@ -191,29 +194,29 @@ class FileHandlingAttack(Attack):
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               page, self.HTTP.encode(tmp),
-                              "Timeout coming from "+form[2])
-            print "Timeout in", page
-            print "  with params =", self.HTTP.encode(tmp)
-            print "  coming from", form[2]
+                              _("Timeout coming from")+" "+form[2])
+            print _("Timeout in"), page
+            print "  "+_("with params")+" =", self.HTTP.encode(tmp)
+            print "  "+_("coming from"), form[2]
           else:
             err, inc, warn = self.__findPatternInResponse(data, inc, warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               page, self.HTTP.encode(tmp),
-                              err+" coming from "+form[2])
-            print err, "in", page
-            print "  with params =", self.HTTP.encode(tmp)
-            print "  coming from", form[2]
+                              err+" "+_("coming from")+" "+form[2])
+            print err, _("in"), page
+            print "  "+_("with params")+" =", self.HTTP.encode(tmp)
+            print "  "+_("coming from"), form[2]
           else:
             if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp),
-                                              "500 HTTP Error code coming from "+form[2]+"<br>"+
+                                              _("500 HTTP Error code coming from")+" "+form[2]+"<br>"+
                                               VulDescrip.ERROR_500_DESCRIPTION)
-              print "500 HTTP Error code in",page
-              print "  with params =", self.HTTP.encode(tmp)
-              print "  coming from", form[2]
+              print _("500 HTTP Error code in"),page
+              print "  "+_("with params")+" =", self.HTTP.encode(tmp)
+              print "  "+_("coming from"), form[2]
 

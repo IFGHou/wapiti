@@ -26,6 +26,9 @@
 import sys
 import getopt
 import os
+from language.language import Language
+lan = Language()
+lan.configure()
 from net import HTTP
 from report.htmlreportgenerator import HTMLReportGenerator
 from report.xmlreportgenerator import XMLReportGenerator
@@ -36,7 +39,6 @@ from attack.execattack import ExecAttack
 from attack.crlfattack import CRLFAttack
 from attack.xssattack import XSSAttack
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
-from language.language import Language
 
 class Wapiti:
   """
@@ -365,9 +367,6 @@ Supported options are:
 
 
 if __name__ == "__main__":
-  lan = Language()
-  lan.configure()
-
   doc = _("wapityDoc")
   try:
     prox = ""
