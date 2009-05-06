@@ -372,6 +372,7 @@ msgstr "Blind SQL Injection (QUERY_STRING) in"
 
 #: ../attack/sqlinjectionattack.py:256 ../attack/sqlinjectionattack.py:257
 #: ../attack/sqlinjectionattack.py:263 ../attack/sqlinjectionattack.py:264
+#: ../config/vulnerabilities/vulnerabilities.xml:17
 msgid "Blind SQL Injection"
 msgstr "Blind SQL Injection"
 
@@ -443,3 +444,91 @@ msgstr "Internal Server Error. The server encountered an unexpected condition wh
 "      Wikipedia: List of HTTP status codes"
 "      </a></li>"
 "</ul>"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:3
+msgid "SQL Injection"
+msgstr "SQL Injection"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:4
+msgid "SQL Injection description"
+msgstr "SQL injection is a technique that exploits a vulnerability occurring in the database of an application."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:5
+msgid "SQL Injection solution"
+msgstr "To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:18
+msgid "Blind SQL Injection description"
+msgstr "Blind SQL injection is a technique that exploits a vulnerability occurring in the database of an application. This kind of vulnerability is harder to detect than basic SQL injections because no error message will be displayed on the webpage."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:19
+msgid "Blind SQL Injection solution"
+msgstr "To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:31
+msgid "File Handling"
+msgstr "File Handling"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:32
+msgid "File Handling description"
+msgstr "This attack is also known as Path Transversal or Directory Transversal, its aim is the access to files and directories that are stored outside the web root folder. The attacker tries to explore the directories stored in the web server. The attacker uses some techniques, for instance, the manipulation of variables that reference files with 'dot-dot-slash (../)' sequences and its variations to move up to root directory to navigate through the file system."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:33
+msgid "File Handling solution"
+msgstr "Prefer working without user input when using file system calls"
+"<br>"
+"Use indexes rather than actual portions of file names when templating or using language files (ie value 5 from the user submission = Czechoslovakian, rather than expecting the user to return 'Czechoslovakian')."
+"<br>"
+"Ensure the user cannot supply all parts of the path – surround it with your path code."
+"<br>"
+"Validate the user’s input by only accepting known good – do not sanitize the data."
+"<br>"
+"Use chrooted jails and code access policies to restrict where the files can be obtained or saved to."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:45
+msgid "Cross Site Scripting"
+msgstr "Cross Site Scripting"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:46
+msgid "Cross Site Scripting description"
+msgstr "Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications which allow code injection by malicious web users into the web pages viewed by other users. Examples of such code include HTML code and client-side scripts."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:47
+msgid "Cross Site Scripting solution"
+msgstr "The best way to protect a web application from XSS attacks is ensure that the application performs validation of all headers, cookies, query strings, form fields, and hidden fields. Encoding user supplied output in the server side can also defeat XSS vulnerabilities by preventing inserted scripts from being transmitted to users in an executable form. Applications can gain significant protection from javascript based attacks by converting the following characters in all generated output to the appropriate HTML entity encoding:  &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:59
+msgid "CRLF"
+msgstr "CRLF"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:60
+msgid "CRLF description"
+msgstr "The term CRLF refers to Carriage Return (ASCII 13, \\r) Line Feed (ASCII 10, \\n). They're used to note the termination of a line, however, dealt with differently in today’s popular Operating Systems. For example: in Windows both a CR and LF are required to note the end of a line, whereas in Linux/UNIX a LF is only required. This combination of CR and LR is used for example when pressing 'Enter' on the keyboard. Depending on the application being used, pressing 'Enter' generally instructs the application to start a new line, or to send a command."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:61
+msgid "CRLF solution"
+msgstr "Check the submitted parameters and do not allow CRLF to be injected by filtering CRLF"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:73
+msgid "Commands execution"
+msgstr "Commands execution"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:74
+msgid "Commands execution description"
+msgstr "This attack consists in executing system commands on the server. The attacker tries to inject this commands in the request parameters"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:75
+msgid "Commands execution solution"
+msgstr "Prefer working without user input when using file system calls"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:83
+msgid "Resource consumption"
+msgstr "Resource consumption"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:84
+msgid "Resource consumption description"
+msgstr "An attacker can force a victim to consume more resources than should be allowed for the attacker's level of access. The program can potentially fail to release or incorrectly release a system resource. A resource is not properly cleared and made available for re-use. It can also be a false-positive due to a too short timeout used for the scan."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:85
+msgid "Resource consumption solution"
+msgstr "Configure properly the software giving the ressource to avoid memory consumption or system load."

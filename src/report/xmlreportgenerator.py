@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 # XML Report Generator Module for Wapiti Project
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -25,12 +26,20 @@
 from xml.dom.minidom import Document
 from reportgenerator import ReportGenerator
 
+WAPITI_VERSION = "Wapiti 2.1.0";
+
 class XMLReportGenerator(ReportGenerator):
     """
     This class generates a report with the method printToFile(fileName) which contains
     the information of all the vulnerabilities notified to this object through the 
     method logVulnerability(vulnerabilityTypeName,level,url,parameter,info).
     The format of the file is XML and it has the following structure:
+    <report type="security">
+        <generatedBy id="Wapiti 2.0"/>
+            <bugTypeList>
+                <bugType name="SQL Injection">
+                    <bugList/>
+
     <report>
         <vulnerabilityTypeList>
             <vulnerabilityType name="SQL Injection">
@@ -52,11 +61,15 @@ class XMLReportGenerator(ReportGenerator):
     def __init__(self):
         self.__xmlDoc = Document()
         report = self.__addReport()
-        self.__vulnerabilityTypeList = self.__xmlDoc.createElement("vulnerabilityTypeList")
+        generated = self.__xmlDoc.createElement("generatedBy")
+        generated.setAttribute("id",WAPITI_VERSION);
+        report.appendChild(generated)
+        self.__vulnerabilityTypeList = self.__xmlDoc.createElement("bugTypeList")
         report.appendChild(self.__vulnerabilityTypeList)
 
     def __addReport(self):
         report = self.__xmlDoc.createElement("report")
+        report.setAttribute("type","security")
         self.__xmlDoc.appendChild(report)
         return report
 
@@ -72,17 +85,17 @@ class XMLReportGenerator(ReportGenerator):
         and if there is no vulnerabilty of a type, this type will not be presented
         in the report
         """
-        vulnerabilityType = self.__xmlDoc.createElement("vulnerabilityType")
+        vulnerabilityType = self.__xmlDoc.createElement("bugType")
         vulnerabilityType.setAttribute("name",name)
-        vulnerabilityType.appendChild(self.__xmlDoc.createElement("vulnerabilityList"))
+        vulnerabilityType.appendChild(self.__xmlDoc.createElement("bugList"))
         self.__addToVulnerabilityTypeList(vulnerabilityType)
         if description!= "":
           descriptionNode = self.__xmlDoc.createElement("description")
-          descriptionNode.appendChild(self.__xmlDoc.createTextNode(description))
+          descriptionNode.appendChild(self.__xmlDoc.createCDATASection(description))
           vulnerabilityType.appendChild(descriptionNode)
         if solution!= "":
           solutionNode = self.__xmlDoc.createElement("solution")
-          solutionNode.appendChild(self.__xmlDoc.createTextNode(solution))
+          solutionNode.appendChild(self.__xmlDoc.createCDATASection(solution))
           vulnerabilityType.appendChild(solutionNode)
         if references!= "":
           referencesNode = self.__xmlDoc.createElement("references")
@@ -114,7 +127,7 @@ class XMLReportGenerator(ReportGenerator):
         The method printToFile(fileName) can be used to save in a file the
         vulnerabilities notified through the current method.
         """
-        vulnerability = self.__xmlDoc.createElement("vulnerability")
+        vulnerability = self.__xmlDoc.createElement("bug")
         vulnerability.setAttribute("level",level)
         urlNode = self.__xmlDoc.createElement("url")
         urlNode.appendChild(self.__xmlDoc.createTextNode(url))

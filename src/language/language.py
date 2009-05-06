@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
 # Copyright (C) 2008 Nicolas Surribas
@@ -25,8 +28,6 @@ import os
 import locale
 import gettext
 
-_ = None; #funcion which translates
-
 class Language:
   """
   This class configures the internationalization of Wapiti, retrieving the
@@ -53,6 +54,10 @@ class Language:
       lang       = langCounty[:2] #en
     if lang not in self.AVAILABLE_LANGS: #if lang is not between the lang translated, english by default
       lang = 'en'
-    lan = gettext.translation('wapiti', self.LANG_PATH, languages=[lang])
+    lan = gettext.translation('wapiti', self.LANG_PATH, languages=[lang], codeset="UTF-8")
     lan.install();
-    _ = lan.gettext;
+
+    #funcion which translates
+    def _(key):
+      return lan.lgettext(key);
+

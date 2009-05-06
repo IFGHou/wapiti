@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -167,8 +168,8 @@ Supported options are:
     xmlParser.parse(BASE_DIR+"/config/vulnerabilities/vulnerabilities.xml")
     for vul in xmlParser.getVulnerabilities():
       if vul.getName()!="Resource consumption":
-        self.reportGen.addVulnerabilityType(vul.getName(), vul.getDescription(),
-            vul.getSolution(), vul.getReferences())
+        self.reportGen.addVulnerabilityType(_(vul.getName()).decode('utf-8'), _(vul.getDescription()).decode('utf-8'),
+                                            _(vul.getSolution()).decode('utf-8'), vul.getReferences())
 
   def __initAttacks(self):
     self.__initReport()

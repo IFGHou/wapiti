@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <vulnerabilities>
 	<vulnerability name="SQL Injection">
-		<description>SQL injection is a technique that exploits a vulnerability occurring in the database of an application.</description>
-		<solution text="To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used." />
+		<description>SQL Injection description</description>
+		<solution text="SQL Injection solution"/>
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/SQL_Injection</title>
@@ -15,8 +15,8 @@
 		</references>
 	</vulnerability>
 	<vulnerability name="Blind SQL Injection">
-		<description>Blind SQL injection is a technique that exploits a vulnerability occurring in the database of an application. This kind of vulnerability is harder to detect than basic SQL injections because no error message will be displayed on the webpage.</description>
-		<solution text="To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used." />
+		<description>Blind SQL Injection description</description>
+		<solution text="Blind SQL Injection solution" />
 		<references>
 			<reference>
         <title>http://www.owasp.org/index.php/Blind_SQL_Injection</title>
@@ -29,8 +29,8 @@
 		</references>
 	</vulnerability>
 	<vulnerability name="File Handling">
-		<description>This attack is also known as Path Transversal or Directory Transversal, its aim is the access to files and directories that are stored outside the web root folder. The attacker tries to explore the directories stored in web server the web server. The attacker uses some techniques, for instance, the manipulation of variables that reference files with “dot-dot-slash (../)” sequences and its variations to move up to root directory to navigate through the file system.</description>
-		<solution text="Prefer working without user input when using file system calls.&lt;br&gt;Use indexes rather than actual portions of file names when templating or using language files (ie value 5 from the user submission = Czechoslovakian, rather than expecting the user to return “Czechoslovakian”).&lt;br&gt;Ensure the user cannot supply all parts of the path – surround it with your path code.&lt;br&gt;Validate the user’s input by only accepting known good – do not sanitize the data.&lt;br&gt;Use chrooted jails and code access policies to restrict where the files can be obtained or saved to." />
+		<description>File Handling description</description>
+		<solution text="File Handling solution" />
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/Path_Traversal</title>
@@ -43,8 +43,8 @@
 		</references>
 	</vulnerability>
 	<vulnerability name="Cross Site Scripting">
-		<description>Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications which allow code injection by malicious web users into the web pages viewed by other users. Examples of such code include HTML code and client-side scripts.</description>
-		<solution text="The best way to protect a web application from XSS attacks is ensure that the application performs validation of all headers, cookies, query strings, form fields, and hidden fields. Encoding user supplied output in the server side can also defeat XSS vulnerabilities by preventing inserted scripts from being transmitted to users in an executable form. Applications can gain significant protection from javascript based attacks by converting the following characters in all generated output to the appropriate HTML entity encoding: &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -" />
+		<description>Cross Site Scripting description</description>
+		<solution text="Cross Site Scripting solution" />
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/Cross_Site_Scripting</title>
@@ -57,8 +57,8 @@
 		</references>
 	</vulnerability>
 	<vulnerability name="CRLF">
-		<description>The term CRLF refers to Carriage Return (ASCII 13, \r) Line Feed (ASCII 10, \n). They're used to note the termination of a line, however, dealt with differently in today’s popular Operating Systems. For example: in Windows both a CR and LF are required to note the end of a line, whereas in Linux/UNIX a LF is only required. This combination of CR and LR is used for example when pressing "Enter" on the keyboard. Depending on the application being used, pressing "Enter" generally instructs the application to start a new line, or to send a command.</description>
-		<solution text="Check the submitted parameters and do not allow CRLF to be injected by filtering CRLF"/>
+		<description>CRLF description</description>
+		<solution text="CRLF solution"/>
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/CRLF_Injection</title>
@@ -71,8 +71,8 @@
 		</references>
 	</vulnerability>
 	<vulnerability name="Commands execution">
-		<description>This attack consists in executing system commands on the server. The attacker tries to inject this commands in the request parameters</description>
-		<solution text="Prefer working without user input when using file system calls"/>
+		<description>Commands execution description</description>
+		<solution text="Commands execution solution"/>
 		<references>
 			<reference>
 				<title>http://www.owasp.org/index.php/Command_Injection</title>
@@ -81,8 +81,8 @@
 		</references>
 	</vulnerability>
 	<vulnerability name="Resource consumption">
-		<description>An attacker can force a victim to consume more resources than should be allowed for the attacker's level of access. The program can potentially fail to release or incorrectly release a system resource. A resource is not properly cleared and made available for re-use. It can also be a false-positive due to a too short timeout used for the scan.</description>
-		<solution text="Configure properly the software giving the ressource to avoid memory consumption or system load."/>
+		<description>Resource consumption description</description>
+		<solution text="Resource consumption solution"/>
 		<references>
 			<reference>
         <title>http://www.owasp.org/index.php/Asymmetric_resource_consumption_(amplification)</title>

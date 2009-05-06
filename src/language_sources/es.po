@@ -372,6 +372,7 @@ msgstr "Inyección ciega SQL (QUERY_STRING) en"
 
 #: ../attack/sqlinjectionattack.py:256 ../attack/sqlinjectionattack.py:257
 #: ../attack/sqlinjectionattack.py:263 ../attack/sqlinjectionattack.py:264
+#: ../config/vulnerabilities/vulnerabilities.xml:17
 msgid "Blind SQL Injection"
 msgstr "Inyección ciega SQL"
 
@@ -437,9 +438,97 @@ msgstr "Error interno del servidor. El servidor encontró un inesperado condici�
 "le impiden el cumplimiento de la solicitud."
 "<ul>"
 "  <li><a href='http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>"
-"      World Wide Web Consortium: HTTP/1.1 Status Code Definitions"
+"      Consorcio World Wide Web: HTTP/1.1 Definiciones de códigos de estado (en inglés)"
 "      </a></li>"
 "  <li><a href='http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_Error'>"
-"      Wikipedia: List of HTTP status codes"
+"      Wikipedia: Lista de códigos de estado de HTTP (en inglés)"
 "      </a></li>"
 "</ul>"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:3
+msgid "SQL Injection"
+msgstr "Inyección SQL"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:4
+msgid "SQL Injection description"
+msgstr "La inyección SQL es una técnica que explota una vulnerabilidad que ocurre en la base de datos de una aplicación."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:5
+msgid "SQL Injection solution"
+msgstr "Para protegerse contra las inyecciones SQL, las entradas de información que el usuario introduce en la aplicación no deben ser directamente colocadas en sentencias SQL. En vez de eso, las entradas deben ser limipiadas o filtradas o bien se deben usar sentencias parametrizadas."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:18
+msgid "Blind SQL Injection description"
+msgstr "La inyección SQL ciega es una técnica que explota una vulnerabilidad que ocurre en la base de datos de una aplicación. Este tipo de vulnerabilidad es dificil de detectar que la inyección SQL normal porque no muestra mensajes de error en la página web."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:19
+msgid "Blind SQL Injection solution"
+msgstr "Para protegerse contra las inyecciones SQL, las entradas de información que el usuario introduce en la aplicación no deben ser directamente colocadas en sentencias SQL. En vez de eso, las entradas deben ser limipiadas o filtradas o bien se deben usar sentencias parametrizadas."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:31
+msgid "File Handling"
+msgstr "Manejo de archivos"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:32
+msgid "File Handling description"
+msgstr "Este ataque es también conocido como Path Transversal or Directory Transversal, su objetivo acceder a directorios y ficheros que son almacenados fuera del directorio en el que se encuentre la aplicación web. El atacante intenta explorar los ditectorios guardados en el servidor web usando algunas técnicas como por ejemplo, la manipulación de variables que referencian ficheros con secuencias de 'punto punto barra (../)' y sus variantes para mover hasta el directorio raíz para navegar a través del sistema de archivos."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:33
+msgid "File Handling solution"
+msgstr "Preferiblemente no usar las entradas de un usuario cuando se manejen llamadas al sistema de ficheros"
+"<br>"
+"Usar indices mejor que porciones del nombre del fichero cuando se usen ficheros de lenguaje (por ejemplo el valor 5 para la entrada de datos de usuario por el nombre Checoslovaco, en vez de esperar que el usuario introduzca 'Checoslovaco')."
+"<br>"
+"Asegurar que el usuario no pueda la ruta entera a un fichero."
+"<br>"
+"Validar la entrada de datos del usuario, solo aceptando las bien conocidas."
+"<br>"
+"Usar jaulas (chrooted jails) y tener políticas de acceso para restringir por quien puede ser obtenido o salvado un fichero."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:45
+msgid "Cross Site Scripting"
+msgstr "Cross Site Scripting"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:46
+msgid "Cross Site Scripting description"
+msgstr "Cross-site scripting (XSS) es un tipo de vulnerabilidad de sistemas infomáticos que se encuentra comunmente en aplicaciones web que permite la inyección de código por usuarios maliciosos dentro de las páginas vistas por otros usuarios. Normalmente el código inyectado sueles ser HTML y lenguajes del lado cliente."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:47
+msgid "Cross Site Scripting solution"
+msgstr "La mejor forma de proteger una aplicación web de los ataques XSS es asegurarse de que la aplicacion realiza validación de todas las cabeceras, cookies, query strings, campos de formularios y campos ocultos. La codificación de los datos proporcionados por el usuario en el servidor puede también defenderse de vulnerabilidades XSS mediante la prevencion de inserción de script transmitidos por los usuarios desde formularios. Las aplicaciones puede ganar una significativa protección de los ataques basados en JavaScript mediante la conversión apropiada codificación en HTML de los siguientes caracteres: &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:59
+msgid "CRLF"
+msgstr "CRLF"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:60
+msgid "CRLF description"
+msgstr "El término CRLF se refiere al retorno de carro (ASCII 13, \\r) y al salto de línea(ASCII 10, \\n). Suelen usarse para delimitar la terminación de una línea, sin embargo, funcionan de forma diferente en los sistemas operativos más populares hoy en día. Por ejemplo: en Windows tanto el retorno de carro (CR) como el salto de línea (LF) son requeridos para indicar el final de la línea, mientras que en Linux/UNIX solo se necesita un salto de línea (LF). Esta combinación de retorno de carro y salto de línea se usa por ejemplo cuando se presiona 'Intro' en el teclado. Dependiendo de la aplicación que se esté usando, la presión de 'Intro' normalmente indica a la aplicación el comienzo de una nueva línea o el envío de un comando."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:61
+msgid "CRLF solution"
+msgstr "Comprobar los parámetros enviados por el usuario y evitando que se inserten CRLF mediante su filtrado."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:73
+msgid "Commands execution"
+msgstr "Ejecución de comandos"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:74
+msgid "Commands execution description"
+msgstr "Este ataque consiste en ejecutar comandos del sistema en el servidor. El atacante intenta inyector estos comandos en los parametros de la petición al servidor."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:75
+msgid "Commands execution solution"
+msgstr "Preferiblemente no usar las entradas de un usuario cuando se manejen llamadas al sistema de ficheos"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:83
+msgid "Resource consumption"
+msgstr "Consumo de recursos"
+
+#: ../config/vulnerabilities/vulnerabilities.xml:84
+msgid "Resource consumption description"
+msgstr "Un atacante puede formar a una víctima a consumir más recursos de los que le está permitido consumir debido al nivel de acceso del atacante. El programa puede potencialmente fallar liberando un recurso del sistema o puede liberarlo incorrectamente. Si un recurso no es adecuadamente liberado no estará disponible para poder ser reutilizado. También puede ser un falso positivo debido al corto timeout usado en el para realizar el ataque."
+
+#: ../config/vulnerabilities/vulnerabilities.xml:85
+msgid "Resource consumption solution"
+msgstr "Configurar adecuadamente el software para evitar el consumo de memoria o la caída del sistema."
