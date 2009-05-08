@@ -1,0 +1,215 @@
+import os
+from xml.parsers import expat
+from xml.dom.minidom import Document
+
+class CrawlerPersister:
+  """
+  This class makes the persistence tasks for persisting the crawler parameters
+  in other to can continue the process in the future.
+  """
+
+  CRAWLER_DATA_DIR_NAME = "scans"
+  BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
+  CRAWLER_DATA_DIR = BASE_DIR+"/"+CRAWLER_DATA_DIR_NAME
+
+  ROOT_URL = "rootURL"
+  TO_BROWSE = "toBrowse"
+  BROWSED   = "browsed"
+  URL = "url"
+  FORMS    = "forms"
+  FORM     = "form"
+  FORM_URL = "url"
+  FORM_TO  = "to"
+  INPUTS = "inputs"
+  INPUT  = "input"
+  INPUT_NAME  = "name"
+  INPUT_VALUE = "value"
+  UPLOADS = "uploads"
+
+  toBrowse = []
+  browsed  = []
+  urls     = []
+  inputs   = {}
+  form     = []
+  forms    = []
+  uploads  = []
+  rootURL = ""
+
+  tag = ""
+  array = None
+
+  url   = ""
+
+
+  def __init__(self):
+    self.form.append(0)
+    self.form.append(1)
+    self.form.append(2)
+
+
+  def isDataForUrl(self,fileName):
+    return os.path.exists(fileName)
+
+  def saveXML(self, fileName):
+    """
+    Exports the crawler parameters to an XML file.
+    @param fileName The file where is loaded the crawler data
+    """
+    xml = Document()
+    root = xml.createElement("root")
+    xml.appendChild(root)
+
+    rootUrlEl = xml.createElement(self.ROOT_URL)
+    rootUrlEl.appendChild(xml.createTextNode(self.rootURL))
+    root.appendChild(rootUrlEl)
+
+    toBrowseEl = xml.createElement(self.TO_BROWSE)
+    for url in self.toBrowse:
+      urlEl = xml.createElement(self.URL)
+      urlEl.appendChild(xml.createTextNode(url))
+      toBrowseEl.appendChild(urlEl)
+    root.appendChild(toBrowseEl)
+
+    browsedEl = xml.createElement(self.BROWSED)
+    for url in self.browsed:
+      urlEl = xml.createElement(self.URL)
+      urlEl.appendChild(xml.createTextNode(url))
+      browsedEl.appendChild(urlEl)
+    root.appendChild(browsedEl)
+
+    formsEl = xml.createElement(self.FORMS)
+    for form in self.forms:
+      formEl = xml.createElement(self.FORM)
+      formEl.setAttribute(self.FORM_URL, form[0])
+      formEl.setAttribute(self.FORM_TO, form[2])
+
+      inputsEl = xml.createElement(self.INPUTS)
+      for k, v in form[1].items():
+        inputEl = xml.createElement(self.INPUT)
+        inputEl.setAttribute(self.INPUT_NAME, k)
+        inputEl.setAttribute(self.INPUT_VALUE, v)
+        inputsEl.appendChild(inputEl)
+      formEl.appendChild(inputsEl)
+      formsEl.appendChild(formEl)
+    root.appendChild(formsEl)
+
+    uploadsEl = xml.createElement(self.UPLOADS)
+    for url in self.uploads:
+      urlEl = xml.createElement(self.URL)
+      urlEl.appendChild(xml.createTextNode(url))
+      uploadsEl.appendChild(urlEl)
+    root.appendChild(uploadsEl)
+
+    f = open(fileName,"w")
+    try:
+        xml.writexml(f, "    ", "    ", "\n", "UTF-8")
+    finally:
+        f.close()
+
+
+  def loadXML(self, fileName):
+    """
+    Loads the crawler parameters from an XML file.
+    @param fileName The file from where is loaded the crawler data
+    """
+    self._parser = expat.ParserCreate()
+    self._parser.StartElementHandler  = self.__start_element
+    self._parser.EndElementHandler    = self.__end_element
+    self._parser.CharacterDataHandler = self.__char_data
+
+    f = None
+    try:
+      f = open(fileName)
+      content = f.read()
+      self.__feed(content.replace("\n",""))
+    finally:
+      if f != None:
+        f.close()
+
+  
+  def __feed(self, data):
+    self._parser.Parse(data, 0)
+
+
+  def __close(self):
+    self._parser.Parse("", 1)
+    del self._parser
+
+
+  def __start_element(self, name, attrs):
+    if name == self.TO_BROWSE:
+      self.array = self.toBrowse
+    elif name == self.BROWSED:
+      self.array = self.browsed
+    elif name == self.INPUTS:
+      self.array = self.inputs
+    elif name == self.UPLOADS:
+      self.array = self.uploads
+    elif name == self.URL:
+      self.tag = self.URL
+    elif name == self.ROOT_URL:
+      self.tag = self.ROOT_URL
+    elif name == self.INPUTS:
+      self.inputs = {}
+    elif name == self.INPUT:
+      self.inputs[attrs[self.INPUT_NAME]] = attrs[self.INPUT_VALUE]
+    elif name == self.FORM:
+      self.form[0] = attrs[self.FORM_URL]
+      self.form[2] = attrs[self.FORM_TO]
+
+
+  def __end_element(self, name):
+    if name == self.URL:
+      self.array.append(self.url)
+    elif name == self.FORM:
+      self.form[1] = self.inputs
+      self.forms.append(self.form)
+      self.form = []
+      self.form.append(0)
+      self.form.append(1)
+      self.form.append(2)
+
+
+  def __char_data(self, data):
+    if self.tag == self.URL:
+      self.url = data.strip(" ");
+    elif self.tag == self.ROOT_URL:
+      self.rootURL = data.strip(" ");
+    self.tag = ""
+
+  
+  def setRootURL(self, rootURL):
+    self.rootURL = rootURL
+
+  def getRootURL(self):
+    return self.rootURL
+
+  
+  def setToBrose(self, toBrowse):
+    self.toBrowse = toBrowse
+
+  def getToBrose(self):
+    return self.toBrowse
+
+
+  def setBrowsed(self, browsed):
+    self.browsed = browsed
+
+  def getBrowsed(self):
+    return self.browsed
+
+
+  def setForms(self, forms):
+    self.forms = forms
+
+  def getForms(self):
+    return self.forms
+
+
+  def setUploads(self, uploads):
+    self.uploads = uploads
+
+  def getUploads(self):
+    return self.uploads
+
+

@@ -40,6 +40,7 @@ from attack.execattack import ExecAttack
 from attack.crlfattack import CRLFAttack
 from attack.xssattack import XSSAttack
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
+from net.crawlerpersister import CrawlerPersister
 
 class Wapiti:
   """
@@ -114,6 +115,20 @@ Supported options are:
 	Set the name of the report file
 	If the selected report type is "html", this parameter must be a directory
 
+-i <file>
+--continue <file>
+	This parameter indicates Wapiti to continue with the scan from the specified
+  file, this file should contain data from a previous scan.
+	The file is optional, if it is not specified, Wapiti takes the default file
+  from \"scans\" folder.
+
+-k <file>
+--attack <file>
+	This parameter indicates Wapiti to perform attacks without scanning again the
+  website and following the data of this file.
+	The file is optional, if it is not specified, Wapiti takes the default file
+  from \"scans\" folder.
+
 -h
 --help
 	To print this usage message"""
@@ -185,9 +200,9 @@ Supported options are:
       if self.color == 1:
         attack.setColor()
 
-  def browse(self):
+  def browse(self,crawlerFile):
     "Extract hyperlinks and forms from the webpages found on the website"
-    self.urls, self.forms = self.HTTP.browse()
+    self.urls, self.forms = self.HTTP.browse(crawlerFile)
 
   def attack(self):
     "Launch the attacks based on the preferences set by the command line"
@@ -372,6 +387,9 @@ if __name__ == "__main__":
   try:
     prox = ""
     auth = []
+    crawlerPersister = CrawlerPersister();
+    crawlerFile = None
+    attackFile  = None
     if len(sys.argv)<2:
       print doc
       sys.exit(0)
@@ -380,10 +398,10 @@ if __name__ == "__main__":
       sys.exit(0)
     wap = Wapiti(sys.argv[1])
     try:
-      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:",
+      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:ki",
           ["help", "underline", "proxy=", "start=", "exclude=", "cookie=",
             "auth=", "remove=", "verbose=", "timeout=", "module=",
-            "outputfile", "reportType", "nice="])
+            "outputfile", "reportType", "nice=", "attack", "continue"])
     except getopt.GetoptError, e:
       print e
       sys.exit(2)
@@ -449,8 +467,43 @@ if __name__ == "__main__":
         if (a.find("html", 0) == 0) or (a.find("xml", 0) == 0) \
           or (a.find("txt", 0) == 0):
             wap.setReportGeneratorType(a)
+      if o in ("-k", "--attack"):
+        attackFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+sys.argv[1].split("://")[1]+'.xml'
+      if o in ("-i", "--continue"):
+        crawlerFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+sys.argv[1].split("://")[1]+'.xml'
+    try:
+      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:",
+          ["help", "underline", "proxy=", "start=", "exclude=", "cookie=",
+            "auth=", "remove=", "verbose=", "timeout=", "module=",
+            "outputfile", "reportType", "nice=", "attack", "continue"])
+    except getopt.GetoptError, e:
+      print e
+      sys.exit(2)
+    for o, a in opts:
+      if o in ("-k", "--attack"):
+        if a!= "" and a[0] != '-':
+          attackFile = a
+      if o in ("-i", "--continue"):
+        if a!= '' and a[0] != '-':
+          crawlerFile = a
     print _("Wapiti-SVN (wapiti.sourceforge.net)")
-    wap.browse()
-    wap.attack()
+    if attackFile!=None:
+      if crawlerPersister.isDataForUrl(attackFile) == 1:
+        crawlerPersister.loadXML(attackFile)
+        wap.urls  = crawlerPersister.getBrowsed()
+        wap.forms = crawlerPersister.getForms()
+        print _("File")+" "+attackFile+" "+_("loaded, Wapiti will use it to perform the attacks")
+      else:
+        print _("File")+" "+attackFile+" "+_("not found, Wapiti will scan again the web site")
+        wap.browse(crawlerFile)
+    else:
+      wap.browse(crawlerFile)
+    try:
+      wap.attack()
+    except KeyboardInterrupt:
+      print ""
+      print _("Attack process interrupted. To perform again the attack, lauch Wapiti with \"-i\" or \"-k\" parameter.")
+      print ""
+      pass
   except SystemExit:
     pass

@@ -28,6 +28,7 @@ import urllib2
 import httplib2
 from htmlentitydefs import name2codepoint as n2cp
 from xml.dom import minidom
+from crawlerpersister import CrawlerPersister
 
 try:
 	import cookielib
@@ -103,11 +104,19 @@ Supported options are:
   Use this option to prevent endless loops
   Must be greater than 0
 
+-i <file>
+--continue <file>
+	This parameter indicates Wapiti to continue with the scan from the specified
+  file, this file should contain data from a previous scan.
+	The file is optional, if it is not specified, Wapiti takes the default file
+  from \"scans\" folder.
+
 -h
 --help
 	To print this usage message
   """
 
+  rooturl = None
   root = ""
   server = ""
   tobrowse = []
@@ -127,10 +136,13 @@ Supported options are:
   h = None
   global_headers = {}
 
+  persister = None
+
   # 0 means no limits
   nice = 0
 
-  def __init__(self, rooturl):
+  def __init__(self, rooturl, crawlerFile=None):
+    self.rooturl = rooturl
     root = rooturl
     if root[-1] != "/":
       root += "/"
@@ -141,8 +153,9 @@ Supported options are:
     server = (root.split("://")[1]).split("/")[0]
     self.root = root
     self.server = server
-
+    
     self.tobrowse.append(root)
+    self.persister = CrawlerPersister()
 
   def setTimeOut(self, timeout = 6):
     """Set the timeout in seconds to wait for a page"""
@@ -366,7 +379,7 @@ Supported options are:
       if self.__reWildcard(regexp, url):
         match = True
     return match
-      
+
   def __countMatches(self, url):
     """Return the number of known urls matching the pattern of the given url"""
     matches = 0
@@ -425,7 +438,7 @@ Supported options are:
       string = string[i+len(block):]
     return match
 
-  def go(self):
+  def go(self,crawlerFile):
     proxy = None
 
     if self.proxy != "":
@@ -447,8 +460,27 @@ Supported options are:
     if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
+    if crawlerFile!=None:
+      if self.persister.isDataForUrl(crawlerFile) == 1:
+        self.persister.loadXML(crawlerFile)
+        self.tobrowse = self.persister.getToBrose()
+        self.browsed  = self.persister.getBrowsed()
+        self.forms    = self.persister.getForms()
+        self.uploads  = self.persister.getUploads()
+        print _("File")+" "+crawlerFile+" "+_("loaded, the scan continues")+":"
+        if self.verbose==2:
+          print " * "+_("URLs to browse")
+          for x in self.tobrowse:
+            print "    + "+x
+          print " * "+_("URLs browsed")
+          for x in self.browsed:
+            print "    + "+x
+      else:
+        print _("File")+" "+crawlerFile+" "+_("not found, Wapiti will scan again the web site")
+
     # while url list isn't empty, continue browsing
     # if the user stop the scan with Ctrl+C, give him all found urls
+    # and they are saved in an XML file
     try:
       while len(self.tobrowse)>0:
         lien = self.tobrowse.pop(0)
@@ -459,7 +491,20 @@ Supported options are:
               sys.stderr.write('.')
             elif self.verbose == 2:
               sys.stderr.write(lien+"\n")
-    except KeyboardInterrupt: pass
+      self.saveCrawlerData()
+      print ""
+      print " "+_("Notice")+" "
+      print "========"
+      print _("This scan has been saved in the file")+" "+self.persister.CRAWLER_DATA_DIR+'/'+self.server+".xml"
+      print _("You can use it to perform attacks without scanning again the web site with")+" \"-k\" "+_("parameter")
+    except KeyboardInterrupt:
+      self.saveCrawlerData()
+      print ""
+      print " "+_("Notice")+" "
+      print "========"
+      print _("Scan stopped, the data has been saved in the file")+" "+self.persister.CRAWLER_DATA_DIR+'/'+self.server+".xml"
+      print _("To continue this scan, you should launch Wapiti with")+" \"-i "+_("parameter")
+      pass
 
   def verbosity(self, vb):
     """Set verbosity level"""
@@ -521,7 +566,7 @@ Supported options are:
     fd = open(filename,"w")
     xml.writexml(fd, "    ", "    ", "\n", encoding)
     fd.close()
- 
+
   def getLinks(self):
     self.browsed.sort()
     return self.browsed
@@ -532,7 +577,15 @@ Supported options are:
   def getUploads(self):
     self.uploads.sort()
     return self.uploads
-    
+
+  def saveCrawlerData(self):
+    self.persister.setRootURL(self.rooturl);
+    self.persister.setToBrose(self.tobrowse);
+    self.persister.setBrowsed(self.browsed);
+    self.persister.setForms  (self.forms);
+    self.persister.setUploads(self.uploads);
+    self.persister.saveXML(self.persister.CRAWLER_DATA_DIR+'/'+self.server+'.xml')
+
 class linkParser(HTMLParser.HTMLParser):
   """Extract urls in 'a' href HTML tags"""
   def __init__(self, url = ""):
@@ -606,7 +659,7 @@ class linkParser(HTMLParser.HTMLParser):
 
 class linkParser2():
   verbose = 0
-    
+
   """Extract urls in 'a' href HTML tags"""
   def __init__(self, url = "", verb = 0):
     self.liens = []
@@ -786,6 +839,7 @@ if __name__ == "__main__":
     prox = ""
     auth = []
     xmloutput = ""
+    crawlerFile = None
 
     if len(sys.argv)<2:
       print lswww.__doc__
@@ -796,9 +850,9 @@ if __name__ == "__main__":
     myls = lswww(sys.argv[1])
     myls.verbosity(1)
     try:
-      opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:",
+      opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:i",
           ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
-            "remove=", "verbose=", "timeout=", "nice=", "export="])
+            "remove=", "verbose=", "timeout=", "nice=", "export=", "continue"])
     except getopt.GetoptError, e:
       print e
       sys.exit(2)
@@ -833,8 +887,22 @@ if __name__ == "__main__":
           myls.setNice(int(a))
       if o in ("-e", "--export"):
         xmloutput = a
+      if o in ("-i", "--continue"):
+        crawlerPersister = CrawlerPersister()
+        crawlerFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+sys.argv[1].split("://")[1]+'.xml'
+    try:
+      opts, args = getopt.getopt(sys.argv[1:], "hp:s:x:c:a:r:v:t:n:e:i:",
+          ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
+            "remove=", "verbose=", "timeout=", "nice=", "export=", "continue="])
+    except getopt.GetoptError, e:
+      print e
+      sys.exit(2)
+    for o, a in opts:
+      if o in ("-i", "--continue"):
+        if a!= '' and a[0] != '-':
+          crawlerFile = a
 
-    myls.go()
+    myls.go(crawlerFile)
     myls.printLinks()
     myls.printForms()
     myls.printUploads()

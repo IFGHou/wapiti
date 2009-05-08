@@ -51,12 +51,6 @@ class HTTP:
     self.myls.verbosity(1)
     socket.setdefaulttimeout(self.timeout)
 
-  def browse(self):
-    "Explore the entire website under the pre-defined root-url."
-    self.myls.go()
-    urls  = self.myls.getLinks()
-    forms = self.myls.getForms()
-
     # HttpLib2 vars
     proxy = None
 
@@ -84,6 +78,11 @@ class HTTP:
     if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
+  def browse(self, crawlerFile):
+    "Explore the entire website under the pre-defined root-url."
+    self.myls.go(crawlerFile)
+    urls  = self.myls.getLinks()
+    forms = self.myls.getForms()
     return urls, forms
 
   def getUploads(self):

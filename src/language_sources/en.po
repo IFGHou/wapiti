@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-05 12:45+0200\n"
+"POT-Creation-Date: 2009-05-08 14:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,55 +16,55 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../wapiti.py:192
+#: ../wapiti.py:192 ../wapiti.py:196
 msgid "No links or forms found in this page !"
 msgstr "No links or forms found in this page !"
 
-#: ../wapiti.py:193
+#: ../wapiti.py:193 ../wapiti.py:197
 msgid "Make sure the url is correct."
 msgstr "Make sure the url is correct."
 
-#: ../wapiti.py:199
+#: ../wapiti.py:199 ../wapiti.py:203
 msgid "Attacking urls (GET)"
 msgstr "Attacking urls (GET)"
 
-#: ../wapiti.py:205
+#: ../wapiti.py:205 ../wapiti.py:209
 msgid "Attacking forms (POST)"
 msgstr "Attacking forms (POST)"
 
-#: ../wapiti.py:211
+#: ../wapiti.py:211 ../wapiti.py:215
 msgid "Looking for permanent XSS"
 msgstr "Looking for permanent XSS"
 
-#: ../wapiti.py:216
+#: ../wapiti.py:216 ../wapiti.py:220
 msgid "Upload scripts found"
 msgstr "Upload scripts found"
 
-#: ../wapiti.py:226
+#: ../wapiti.py:226 ../wapiti.py:230
 msgid "Report"
 msgstr "Report"
 
-#: ../wapiti.py:228
+#: ../wapiti.py:228 ../wapiti.py:232
 msgid "A report has been generated in the file"
 msgstr "A report has been generated in the file"
 
-#: ../wapiti.py:230
+#: ../wapiti.py:230 ../wapiti.py:234
 msgid "Open"
 msgstr "Open"
 
-#: ../wapiti.py:231
+#: ../wapiti.py:231 ../wapiti.py:235
 msgid "with a browser to see this report."
 msgstr "with a browser to see this report"
 
-#: ../wapiti.py:331
+#: ../wapiti.py:331 ../wapiti.py:335
 msgid "attackGET"
 msgstr "attackGET"
 
-#: ../wapiti.py:354
+#: ../wapiti.py:354 ../wapiti.py:358
 msgid "attackPOST"
 msgstr "attackPOST"
 
-#: ../wapiti.py:371
+#: ../wapiti.py:371 ../wapiti.py:372
 msgid "wapityDoc"
 msgstr ""
 "Wapiti-SVN - A web application vulnerability scanner \n"
@@ -139,63 +139,78 @@ msgstr ""
 " \tIf the selected report type is 'html', this parameter must be a "
 "directory \n"
 " \n"
+" -i <file>\n"
+" --continue <file>\n"
+" \tThis parameter indicates Wapiti to continue with the scan from the specified "
+"file, this file should contain data from a previous scan.\n"
+" \tThe file is optional, if it is not specified, Wapiti takes the default file"
+"from \"scans\" folder.\n"
+" \n"
+" -k <file>\n"
+" --attack <file>\n"
+" \tThis parameter indicates Wapiti to perform attacks without scanning again the "
+"website and following the data of this file.\n"
+" \tThe file is optional, if it is not specified, Wapiti takes the default file "
+"from \"scans\" folder.\n"
+" \n"
 " -h \n"
 " --help \n"
 " \tTo print this usage message"
 
-#: ../wapiti.py:452
+#: ../wapiti.py:452 ../wapiti.py:475
 msgid "Wapiti-SVN (wapiti.sourceforge.net)"
 msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
 
-#: ../net/lswww.py:138 ../net/lswww.py:161
+#: ../net/lswww.py:138 ../net/lswww.py:161 ../net/lswww.py:143
+#: ../net/lswww.py:167
 msgid "Invalid link argument"
 msgstr "Invalid link argument"
 
-#: ../net/lswww.py:471
+#: ../net/lswww.py:471 ../net/lswww.py:519 ../net/lswww.py:509
 msgid "URLs"
 msgstr "URLs"
 
-#: ../net/lswww.py:478
+#: ../net/lswww.py:478 ../net/lswww.py:526 ../net/lswww.py:516
 msgid "Forms Info"
 msgstr "Forms Info"
 
-#: ../net/lswww.py:480
+#: ../net/lswww.py:480 ../net/lswww.py:528 ../net/lswww.py:518
 msgid "From"
 msgstr "From"
 
-#: ../net/lswww.py:481
+#: ../net/lswww.py:481 ../net/lswww.py:529 ../net/lswww.py:519
 msgid "To"
 msgstr "To"
 
-#: ../net/lswww.py:489
+#: ../net/lswww.py:489 ../net/lswww.py:537 ../net/lswww.py:527
 msgid "Upload Scripts"
 msgstr "Upload Scripts"
 
-#: ../net/lswww.py:676
+#: ../net/lswww.py:676 ../net/lswww.py:724 ../net/lswww.py:722
 msgid "Forms"
 msgstr "Forms"
 
-#: ../net/lswww.py:679
+#: ../net/lswww.py:679 ../net/lswww.py:727 ../net/lswww.py:725
 msgid "Form"
 msgstr "Form"
 
-#: ../net/lswww.py:683
+#: ../net/lswww.py:683 ../net/lswww.py:731 ../net/lswww.py:729
 msgid "Method"
 msgstr "Method"
 
-#: ../net/lswww.py:684
+#: ../net/lswww.py:684 ../net/lswww.py:732 ../net/lswww.py:730
 msgid "Intputs"
 msgstr "Inputs"
 
-#: ../net/lswww.py:689
+#: ../net/lswww.py:689 ../net/lswww.py:737 ../net/lswww.py:735
 msgid "Selects"
 msgstr "Selects"
 
-#: ../net/lswww.py:694
+#: ../net/lswww.py:694 ../net/lswww.py:742 ../net/lswww.py:740
 msgid "TextAreas"
 msgstr "TextAreas"
 
-#: ../net/lswww.py:699
+#: ../net/lswww.py:699 ../net/lswww.py:747 ../net/lswww.py:745
 msgid "URLS"
 msgstr "URLS"
 
@@ -252,6 +267,13 @@ msgstr ""
 " \tDefine a limit of urls to read with the same pattern\n"
 " \tUse this option to prevent endless loops\n"
 " \tMust be greater than 0\n"
+" \n"
+" -i <file>\n"
+" --continue <file>\n"
+" \tThis parameter indicates Wapiti to continue with the scan from the specified "
+"file, this file should contain data from a previous scan.\n"
+" \tThe file is optional, if it is not specified, Wapiti takes the default file"
+"from \"scans\" folder.\n"
 " \n"
 " -h\n"
 " --help\n"
@@ -434,16 +456,14 @@ msgstr "500 HTTP Error code"
 
 #: ../attack/vulnerabilitiesdescriptions.py:3
 msgid "500 Error description"
-msgstr "Internal Server Error. The server encountered an unexpected condition which "
-"prevented it from fulfilling the request."
-"<ul>"
-"  <li><a href='http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>"
-"      World Wide Web Consortium: HTTP/1.1 Status Code Definitions"
-"      </a></li>"
-"  <li><a href='http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_Error'>"
-"      Wikipedia: List of HTTP status codes"
-"      </a></li>"
-"</ul>"
+msgstr ""
+"Internal Server Error. The server encountered an unexpected condition which "
+"prevented it from fulfilling the request.<ul>  <li><a href='http://www.w3."
+"org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>      World Wide Web "
+"Consortium: HTTP/1.1 Status Code Definitions      </a></li>  <li><a "
+"href='http://en.wikipedia.org/wiki/"
+"List_of_HTTP_status_codes#5xx_Server_Error'>      Wikipedia: List of HTTP "
+"status codes      </a></li></ul>"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:3
 msgid "SQL Injection"
@@ -451,19 +471,31 @@ msgstr "SQL Injection"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:4
 msgid "SQL Injection description"
-msgstr "SQL injection is a technique that exploits a vulnerability occurring in the database of an application."
+msgstr ""
+"SQL injection is a technique that exploits a vulnerability occurring in the "
+"database of an application."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:5
 msgid "SQL Injection solution"
-msgstr "To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used."
+msgstr ""
+"To protect against SQL injection, user input must not directly be embedded "
+"in SQL statements. Instead, user input must be escaped or filtered or "
+"parameterized statements must be used."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:18
 msgid "Blind SQL Injection description"
-msgstr "Blind SQL injection is a technique that exploits a vulnerability occurring in the database of an application. This kind of vulnerability is harder to detect than basic SQL injections because no error message will be displayed on the webpage."
+msgstr ""
+"Blind SQL injection is a technique that exploits a vulnerability occurring "
+"in the database of an application. This kind of vulnerability is harder to "
+"detect than basic SQL injections because no error message will be displayed "
+"on the webpage."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:19
 msgid "Blind SQL Injection solution"
-msgstr "To protect against SQL injection, user input must not directly be embedded in SQL statements. Instead, user input must be escaped or filtered or parameterized statements must be used."
+msgstr ""
+"To protect against SQL injection, user input must not directly be embedded "
+"in SQL statements. Instead, user input must be escaped or filtered or "
+"parameterized statements must be used."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:31
 msgid "File Handling"
@@ -471,19 +503,25 @@ msgstr "File Handling"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:32
 msgid "File Handling description"
-msgstr "This attack is also known as Path Transversal or Directory Transversal, its aim is the access to files and directories that are stored outside the web root folder. The attacker tries to explore the directories stored in the web server. The attacker uses some techniques, for instance, the manipulation of variables that reference files with 'dot-dot-slash (../)' sequences and its variations to move up to root directory to navigate through the file system."
+msgstr ""
+"This attack is also known as Path Transversal or Directory Transversal, its "
+"aim is the access to files and directories that are stored outside the web "
+"root folder. The attacker tries to explore the directories stored in the web "
+"server. The attacker uses some techniques, for instance, the manipulation of "
+"variables that reference files with 'dot-dot-slash (../)' sequences and its "
+"variations to move up to root directory to navigate through the file system."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:33
 msgid "File Handling solution"
-msgstr "Prefer working without user input when using file system calls"
-"<br>"
-"Use indexes rather than actual portions of file names when templating or using language files (ie value 5 from the user submission = Czechoslovakian, rather than expecting the user to return 'Czechoslovakian')."
-"<br>"
-"Ensure the user cannot supply all parts of the path – surround it with your path code."
-"<br>"
-"Validate the user’s input by only accepting known good – do not sanitize the data."
-"<br>"
-"Use chrooted jails and code access policies to restrict where the files can be obtained or saved to."
+msgstr ""
+"Prefer working without user input when using file system calls<br>Use "
+"indexes rather than actual portions of file names when templating or using "
+"language files (ie value 5 from the user submission = Czechoslovakian, "
+"rather than expecting the user to return 'Czechoslovakian').<br>Ensure the "
+"user cannot supply all parts of the path – surround it with your path code."
+"<br>Validate the user’s input by only accepting known good – do not sanitize "
+"the data.<br>Use chrooted jails and code access policies to restrict where "
+"the files can be obtained or saved to."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:45
 msgid "Cross Site Scripting"
@@ -491,11 +529,23 @@ msgstr "Cross Site Scripting"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:46
 msgid "Cross Site Scripting description"
-msgstr "Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications which allow code injection by malicious web users into the web pages viewed by other users. Examples of such code include HTML code and client-side scripts."
+msgstr ""
+"Cross-site scripting (XSS) is a type of computer security vulnerability "
+"typically found in web applications which allow code injection by malicious "
+"web users into the web pages viewed by other users. Examples of such code "
+"include HTML code and client-side scripts."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:47
 msgid "Cross Site Scripting solution"
-msgstr "The best way to protect a web application from XSS attacks is ensure that the application performs validation of all headers, cookies, query strings, form fields, and hidden fields. Encoding user supplied output in the server side can also defeat XSS vulnerabilities by preventing inserted scripts from being transmitted to users in an executable form. Applications can gain significant protection from javascript based attacks by converting the following characters in all generated output to the appropriate HTML entity encoding:  &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -."
+msgstr ""
+"The best way to protect a web application from XSS attacks is ensure that "
+"the application performs validation of all headers, cookies, query strings, "
+"form fields, and hidden fields. Encoding user supplied output in the server "
+"side can also defeat XSS vulnerabilities by preventing inserted scripts from "
+"being transmitted to users in an executable form. Applications can gain "
+"significant protection from javascript based attacks by converting the "
+"following characters in all generated output to the appropriate HTML entity "
+"encoding:  &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:59
 msgid "CRLF"
@@ -503,11 +553,21 @@ msgstr "CRLF"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:60
 msgid "CRLF description"
-msgstr "The term CRLF refers to Carriage Return (ASCII 13, \\r) Line Feed (ASCII 10, \\n). They're used to note the termination of a line, however, dealt with differently in today’s popular Operating Systems. For example: in Windows both a CR and LF are required to note the end of a line, whereas in Linux/UNIX a LF is only required. This combination of CR and LR is used for example when pressing 'Enter' on the keyboard. Depending on the application being used, pressing 'Enter' generally instructs the application to start a new line, or to send a command."
+msgstr ""
+"The term CRLF refers to Carriage Return (ASCII 13, \\r) Line Feed (ASCII 10, "
+"\\n). They're used to note the termination of a line, however, dealt with "
+"differently in today’s popular Operating Systems. For example: in Windows "
+"both a CR and LF are required to note the end of a line, whereas in Linux/"
+"UNIX a LF is only required. This combination of CR and LR is used for "
+"example when pressing 'Enter' on the keyboard. Depending on the application "
+"being used, pressing 'Enter' generally instructs the application to start a "
+"new line, or to send a command."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:61
 msgid "CRLF solution"
-msgstr "Check the submitted parameters and do not allow CRLF to be injected by filtering CRLF"
+msgstr ""
+"Check the submitted parameters and do not allow CRLF to be injected by "
+"filtering CRLF"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:73
 msgid "Commands execution"
@@ -515,7 +575,9 @@ msgstr "Commands execution"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:74
 msgid "Commands execution description"
-msgstr "This attack consists in executing system commands on the server. The attacker tries to inject this commands in the request parameters"
+msgstr ""
+"This attack consists in executing system commands on the server. The "
+"attacker tries to inject this commands in the request parameters"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:75
 msgid "Commands execution solution"
@@ -527,8 +589,73 @@ msgstr "Resource consumption"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:84
 msgid "Resource consumption description"
-msgstr "An attacker can force a victim to consume more resources than should be allowed for the attacker's level of access. The program can potentially fail to release or incorrectly release a system resource. A resource is not properly cleared and made available for re-use. It can also be a false-positive due to a too short timeout used for the scan."
+msgstr ""
+"An attacker can force a victim to consume more resources than should be "
+"allowed for the attacker's level of access. The program can potentially fail "
+"to release or incorrectly release a system resource. A resource is not "
+"properly cleared and made available for re-use. It can also be a false-"
+"positive due to a too short timeout used for the scan."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:85
 msgid "Resource consumption solution"
-msgstr "Configure properly the software giving the ressource to avoid memory consumption or system load."
+msgstr ""
+"Configure properly the software giving the ressource to avoid memory "
+"consumption or system load."
+
+#: ../wapiti.py:481 ../wapiti.py:483 ../net/lswww.py:463 ../net/lswww.py:465
+#: ../net/lswww.py:472
+msgid "File"
+msgstr "File"
+
+#: ../wapiti.py:481
+msgid "loaded, Wapiti will use it to perform the attacks"
+msgstr "loaded, Wapiti will use it to perform the attacks"
+
+#: ../wapiti.py:483 ../net/lswww.py:465 ../net/lswww.py:472
+msgid "not found, Wapiti will scan again the web site"
+msgstr "not found, Wapiti will scan again the web site"
+
+#: ../net/lswww.py:463
+msgid "loaded, the scan continues"
+msgstr "loaded, the scan continues"
+
+#: ../net/lswww.py:506 ../net/lswww.py:489 ../net/lswww.py:496
+msgid "Notice"
+msgstr "Notice"
+
+#: ../net/lswww.py:508 ../net/lswww.py:498
+msgid "Scan stopped, the data has been saved in the file"
+msgstr "Scan stopped, the data has been saved in the file"
+
+#: ../net/lswww.py:509 ../net/lswww.py:499
+msgid "To continue this scan, you should launch Wapiti with"
+msgstr "To continue this scan, you should launch Wapiti with"
+
+#: ../net/lswww.py:509 ../net/lswww.py:492 ../net/lswww.py:499
+msgid "parameter"
+msgstr "parameter"
+
+#: ../wapiti.py:491
+msgid ""
+"Attack process interrupted. To perform again the attack, lauch Wapiti with "
+"\"-i\" or \"-k\" parameter."
+msgstr ""
+"Attack process interrupted. To perform again the attack, lauch Wapiti with "
+"\"-i\" or \"-k\" parameter."
+
+#: ../net/lswww.py:465
+msgid "URLs to browse"
+msgstr "URLs to browse"
+
+#: ../net/lswww.py:468
+msgid "URLs browsed"
+msgstr "URLs browse"
+
+#: ../net/lswww.py:491
+msgid "This scan has been saved in the file"
+msgstr "This scan has been saved in the file"
+
+#: ../net/lswww.py:492
+msgid ""
+"You can use it to perform attacks without scanning again the web site with"
+msgstr "You can use it to perform attacks without scanning again the web site with"

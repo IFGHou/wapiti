@@ -6,65 +6,65 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Wapiti 2.1.0\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-05 12:45+0200\n"
+"POT-Creation-Date: 2009-05-08 14:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: David del Pozo <dpozog@grupogesfor.com>\n"
-"Language-Team: Spanish <dpozog@grupogesfor.com>\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../wapiti.py:192
+#: ../wapiti.py:192 ../wapiti.py:196
 msgid "No links or forms found in this page !"
 msgstr "¡No se han encontrado enlaces ni formularios en esta página!"
 
-#: ../wapiti.py:193
+#: ../wapiti.py:193 ../wapiti.py:197
 msgid "Make sure the url is correct."
 msgstr "Asegurate de que la URL es correcta"
 
-#: ../wapiti.py:199
+#: ../wapiti.py:199 ../wapiti.py:203
 msgid "Attacking urls (GET)"
 msgstr "Atacando URL (GET)"
 
-#: ../wapiti.py:205
+#: ../wapiti.py:205 ../wapiti.py:209
 msgid "Attacking forms (POST)"
 msgstr "Atacando formularios (POST)"
 
-#: ../wapiti.py:211
+#: ../wapiti.py:211 ../wapiti.py:215
 msgid "Looking for permanent XSS"
 msgstr "Buscando XSS permantentes"
 
-#: ../wapiti.py:216
+#: ../wapiti.py:216 ../wapiti.py:220
 msgid "Upload scripts found"
 msgstr "Scripts de upload encontrados"
 
-#: ../wapiti.py:226
+#: ../wapiti.py:226 ../wapiti.py:230
 msgid "Report"
 msgstr "Informe"
 
-#: ../wapiti.py:228
+#: ../wapiti.py:228 ../wapiti.py:232
 msgid "A report has been generated in the file"
 msgstr "Un informe ha sido generado en el fichero"
 
-#: ../wapiti.py:230
+#: ../wapiti.py:230 ../wapiti.py:234
 msgid "Open"
 msgstr "Abre"
 
-#: ../wapiti.py:231
+#: ../wapiti.py:231 ../wapiti.py:235
 msgid "with a browser to see this report."
 msgstr "con un navegador para ver el informe"
 
-#: ../wapiti.py:331
+#: ../wapiti.py:331 ../wapiti.py:335
 msgid "attackGET"
 msgstr "Ataque GET"
 
-#: ../wapiti.py:354
+#: ../wapiti.py:354 ../wapiti.py:358
 msgid "attackPOST"
 msgstr "Ataque POST"
 
-#: ../wapiti.py:371
+#: ../wapiti.py:371 ../wapiti.py:372
 msgid "wapityDoc"
 msgstr ""
 " Wapiti - Escáner de vulnerabilidades de aplicaciones web\n"
@@ -120,7 +120,8 @@ msgstr ""
 " \n"
 " -u\n"
 " --underline\n"
-" \tPara resaltar en color los parámetros de las vulnerabilidades en la salida\n"
+" \tPara resaltar en color los parámetros de las vulnerabilidades en la "
+"salida\n"
 " \n"
 " -v <level>\n"
 " --verbose <level>\n"
@@ -139,70 +140,87 @@ msgstr ""
 " \tSi el tipo de informe seleccionado es HTML, este parámetro debe ser un "
 "directorio\n"
 " \n"
+" -i <file>\n"
+" --continue <file>\n"
+" \tEste parámetro indica a Wapiti que debe continuar el escaneo a partir de los "
+"datos del archivo especificado. Este fichero debe contener información de un "
+"escaneo previo.\n"
+" \tEl fichero es opcional, si no se especifica, Wapiti toma un archivo por "
+"defecto de la carpeta \"scans\".\n"
+" \n"
+" -k <file>\n"
+" --attack <file>\n"
+" \tEste parámetro le indica a Wapiti que debe realizar los ataques sin escanear "
+"de nuevo el sitio web, siguiendo la información del fichero que se le pasa.\n"
+" \tEl fichero es opcional, si no se especifica, Wapiti toma un archivo por "
+"defecto de la carpeta \"scans\".\n"
+" \n"
 " -h\n"
 " --help\n"
 " \tPara sacar este mensaje de uso de Wapiti"
 
-#: ../wapiti.py:452
+#: ../wapiti.py:452 ../wapiti.py:475
 msgid "Wapiti-SVN (wapiti.sourceforge.net)"
 msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
 
-#: ../net/lswww.py:138 ../net/lswww.py:161
+#: ../net/lswww.py:138 ../net/lswww.py:161 ../net/lswww.py:143
+#: ../net/lswww.py:167
 msgid "Invalid link argument"
 msgstr "Argumento link (URL) inválido"
 
-#: ../net/lswww.py:471
+#: ../net/lswww.py:471 ../net/lswww.py:519 ../net/lswww.py:509
 msgid "URLs"
 msgstr "URLs"
 
-#: ../net/lswww.py:478
+#: ../net/lswww.py:478 ../net/lswww.py:526 ../net/lswww.py:516
 msgid "Forms Info"
 msgstr "Información de los formularios"
 
-#: ../net/lswww.py:480
+#: ../net/lswww.py:480 ../net/lswww.py:528 ../net/lswww.py:518
 msgid "From"
 msgstr "De"
 
-#: ../net/lswww.py:481
+#: ../net/lswww.py:481 ../net/lswww.py:529 ../net/lswww.py:519
 msgid "To"
 msgstr "A"
 
-#: ../net/lswww.py:489
+#: ../net/lswww.py:489 ../net/lswww.py:537 ../net/lswww.py:527
 msgid "Upload Scripts"
 msgstr "Scripts de subida"
 
-#: ../net/lswww.py:676
+#: ../net/lswww.py:676 ../net/lswww.py:724 ../net/lswww.py:722
 msgid "Forms"
 msgstr "Formularios"
 
-#: ../net/lswww.py:679
+#: ../net/lswww.py:679 ../net/lswww.py:727 ../net/lswww.py:725
 msgid "Form"
 msgstr "Formulario"
 
-#: ../net/lswww.py:683
+#: ../net/lswww.py:683 ../net/lswww.py:731 ../net/lswww.py:729
 msgid "Method"
 msgstr "Metodo"
 
-#: ../net/lswww.py:684
+#: ../net/lswww.py:684 ../net/lswww.py:732 ../net/lswww.py:730
 msgid "Intputs"
 msgstr "Entradas"
 
-#: ../net/lswww.py:689
+#: ../net/lswww.py:689 ../net/lswww.py:737 ../net/lswww.py:735
 msgid "Selects"
 msgstr "Seleccionables (Selects)"
 
-#: ../net/lswww.py:694
+#: ../net/lswww.py:694 ../net/lswww.py:742 ../net/lswww.py:740
 msgid "TextAreas"
 msgstr "Areas de texto"
 
-#: ../net/lswww.py:699
+#: ../net/lswww.py:699 ../net/lswww.py:747 ../net/lswww.py:745
 msgid "URLS"
 msgstr "URLs"
 
 #: ../net/lswww.py:783
 msgid "lswwwDoc"
 msgstr ""
-" lswww explora un sitio web y extrae los enlaces y formularios (incluyendo sus campos).\n"
+" lswww explora un sitio web y extrae los enlaces y formularios (incluyendo "
+"sus campos).\n"
 " \n"
 " Usage: python lswww.py http://server.com/base/url/ [opciones]\n"
 " \n"
@@ -252,6 +270,14 @@ msgstr ""
 " \tDefine el límite de URL a leer con el mismo patrón\n"
 " \tUsar esta opción para prevenir bucles infinitos\n"
 " \tEste parámetro debe ser mayor de 0\n"
+" \n"
+" -i <file>\n"
+" --continue <file>\n"
+" \tEste parámetro indica a Wapiti que debe continuar el escaneo a partir de los "
+"datos del archivo especificado. Este fichero debe contener información de un "
+"escaneo previo.\n"
+" \tEl fichero es opcional, si no se especifica, Wapiti toma un archivo por "
+"defecto de la carpeta \"scans\".\n"
 " \n"
 " -h\n"
 " --help\n"
@@ -434,16 +460,14 @@ msgstr "Error HTTP 500"
 
 #: ../attack/vulnerabilitiesdescriptions.py:3
 msgid "500 Error description"
-msgstr "Error interno del servidor. El servidor encontró un inesperado condición que "
-"le impiden el cumplimiento de la solicitud."
-"<ul>"
-"  <li><a href='http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>"
-"      Consorcio World Wide Web: HTTP/1.1 Definiciones de códigos de estado (en inglés)"
-"      </a></li>"
-"  <li><a href='http://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_Error'>"
-"      Wikipedia: Lista de códigos de estado de HTTP (en inglés)"
-"      </a></li>"
-"</ul>"
+msgstr ""
+"Error interno del servidor. El servidor encontró un inesperado condición que "
+"le impiden el cumplimiento de la solicitud.<ul>  <li><a href='http://www.w3."
+"org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>      Consorcio World Wide "
+"Web: HTTP/1.1 Definiciones de códigos de estado (en inglés)      </a></li>  "
+"<li><a href='http://en.wikipedia.org/wiki/"
+"List_of_HTTP_status_codes#5xx_Server_Error'>      Wikipedia: Lista de "
+"códigos de estado de HTTP (en inglés)      </a></li></ul>"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:3
 msgid "SQL Injection"
@@ -451,19 +475,33 @@ msgstr "Inyección SQL"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:4
 msgid "SQL Injection description"
-msgstr "La inyección SQL es una técnica que explota una vulnerabilidad que ocurre en la base de datos de una aplicación."
+msgstr ""
+"La inyección SQL es una técnica que explota una vulnerabilidad que ocurre en "
+"la base de datos de una aplicación."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:5
 msgid "SQL Injection solution"
-msgstr "Para protegerse contra las inyecciones SQL, las entradas de información que el usuario introduce en la aplicación no deben ser directamente colocadas en sentencias SQL. En vez de eso, las entradas deben ser limipiadas o filtradas o bien se deben usar sentencias parametrizadas."
+msgstr ""
+"Para protegerse contra las inyecciones SQL, las entradas de información que "
+"el usuario introduce en la aplicación no deben ser directamente colocadas en "
+"sentencias SQL. En vez de eso, las entradas deben ser limipiadas o filtradas "
+"o bien se deben usar sentencias parametrizadas."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:18
 msgid "Blind SQL Injection description"
-msgstr "La inyección SQL ciega es una técnica que explota una vulnerabilidad que ocurre en la base de datos de una aplicación. Este tipo de vulnerabilidad es dificil de detectar que la inyección SQL normal porque no muestra mensajes de error en la página web."
+msgstr ""
+"La inyección SQL ciega es una técnica que explota una vulnerabilidad que "
+"ocurre en la base de datos de una aplicación. Este tipo de vulnerabilidad es "
+"dificil de detectar que la inyección SQL normal porque no muestra mensajes "
+"de error en la página web."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:19
 msgid "Blind SQL Injection solution"
-msgstr "Para protegerse contra las inyecciones SQL, las entradas de información que el usuario introduce en la aplicación no deben ser directamente colocadas en sentencias SQL. En vez de eso, las entradas deben ser limipiadas o filtradas o bien se deben usar sentencias parametrizadas."
+msgstr ""
+"Para protegerse contra las inyecciones SQL, las entradas de información que "
+"el usuario introduce en la aplicación no deben ser directamente colocadas en "
+"sentencias SQL. En vez de eso, las entradas deben ser limipiadas o filtradas "
+"o bien se deben usar sentencias parametrizadas."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:31
 msgid "File Handling"
@@ -471,19 +509,28 @@ msgstr "Manejo de archivos"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:32
 msgid "File Handling description"
-msgstr "Este ataque es también conocido como Path Transversal or Directory Transversal, su objetivo acceder a directorios y ficheros que son almacenados fuera del directorio en el que se encuentre la aplicación web. El atacante intenta explorar los ditectorios guardados en el servidor web usando algunas técnicas como por ejemplo, la manipulación de variables que referencian ficheros con secuencias de 'punto punto barra (../)' y sus variantes para mover hasta el directorio raíz para navegar a través del sistema de archivos."
+msgstr ""
+"Este ataque es también conocido como Path Transversal or Directory "
+"Transversal, su objetivo acceder a directorios y ficheros que son "
+"almacenados fuera del directorio en el que se encuentre la aplicación web. "
+"El atacante intenta explorar los ditectorios guardados en el servidor web "
+"usando algunas técnicas como por ejemplo, la manipulación de variables que "
+"referencian ficheros con secuencias de 'punto punto barra (../)' y sus "
+"variantes para mover hasta el directorio raíz para navegar a través del "
+"sistema de archivos."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:33
 msgid "File Handling solution"
-msgstr "Preferiblemente no usar las entradas de un usuario cuando se manejen llamadas al sistema de ficheros"
-"<br>"
-"Usar indices mejor que porciones del nombre del fichero cuando se usen ficheros de lenguaje (por ejemplo el valor 5 para la entrada de datos de usuario por el nombre Checoslovaco, en vez de esperar que el usuario introduzca 'Checoslovaco')."
-"<br>"
-"Asegurar que el usuario no pueda la ruta entera a un fichero."
-"<br>"
-"Validar la entrada de datos del usuario, solo aceptando las bien conocidas."
-"<br>"
-"Usar jaulas (chrooted jails) y tener políticas de acceso para restringir por quien puede ser obtenido o salvado un fichero."
+msgstr ""
+"Preferiblemente no usar las entradas de un usuario cuando se manejen "
+"llamadas al sistema de ficheros<br>Usar indices mejor que porciones del "
+"nombre del fichero cuando se usen ficheros de lenguaje (por ejemplo el valor "
+"5 para la entrada de datos de usuario por el nombre Checoslovaco, en vez de "
+"esperar que el usuario introduzca 'Checoslovaco').<br>Asegurar que el "
+"usuario no pueda la ruta entera a un fichero.<br>Validar la entrada de datos "
+"del usuario, solo aceptando las bien conocidas.<br>Usar jaulas (chrooted "
+"jails) y tener políticas de acceso para restringir por quien puede ser "
+"obtenido o salvado un fichero."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:45
 msgid "Cross Site Scripting"
@@ -491,11 +538,25 @@ msgstr "Cross Site Scripting"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:46
 msgid "Cross Site Scripting description"
-msgstr "Cross-site scripting (XSS) es un tipo de vulnerabilidad de sistemas infomáticos que se encuentra comunmente en aplicaciones web que permite la inyección de código por usuarios maliciosos dentro de las páginas vistas por otros usuarios. Normalmente el código inyectado sueles ser HTML y lenguajes del lado cliente."
+msgstr ""
+"Cross-site scripting (XSS) es un tipo de vulnerabilidad de sistemas "
+"infomáticos que se encuentra comunmente en aplicaciones web que permite la "
+"inyección de código por usuarios maliciosos dentro de las páginas vistas por "
+"otros usuarios. Normalmente el código inyectado sueles ser HTML y lenguajes "
+"del lado cliente."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:47
 msgid "Cross Site Scripting solution"
-msgstr "La mejor forma de proteger una aplicación web de los ataques XSS es asegurarse de que la aplicacion realiza validación de todas las cabeceras, cookies, query strings, campos de formularios y campos ocultos. La codificación de los datos proporcionados por el usuario en el servidor puede también defenderse de vulnerabilidades XSS mediante la prevencion de inserción de script transmitidos por los usuarios desde formularios. Las aplicaciones puede ganar una significativa protección de los ataques basados en JavaScript mediante la conversión apropiada codificación en HTML de los siguientes caracteres: &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -"
+msgstr ""
+"La mejor forma de proteger una aplicación web de los ataques XSS es "
+"asegurarse de que la aplicacion realiza validación de todas las cabeceras, "
+"cookies, query strings, campos de formularios y campos ocultos. La "
+"codificación de los datos proporcionados por el usuario en el servidor puede "
+"también defenderse de vulnerabilidades XSS mediante la prevencion de "
+"inserción de script transmitidos por los usuarios desde formularios. Las "
+"aplicaciones puede ganar una significativa protección de los ataques basados "
+"en JavaScript mediante la conversión apropiada codificación en HTML de los "
+"siguientes caracteres: &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:59
 msgid "CRLF"
@@ -503,11 +564,23 @@ msgstr "CRLF"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:60
 msgid "CRLF description"
-msgstr "El término CRLF se refiere al retorno de carro (ASCII 13, \\r) y al salto de línea(ASCII 10, \\n). Suelen usarse para delimitar la terminación de una línea, sin embargo, funcionan de forma diferente en los sistemas operativos más populares hoy en día. Por ejemplo: en Windows tanto el retorno de carro (CR) como el salto de línea (LF) son requeridos para indicar el final de la línea, mientras que en Linux/UNIX solo se necesita un salto de línea (LF). Esta combinación de retorno de carro y salto de línea se usa por ejemplo cuando se presiona 'Intro' en el teclado. Dependiendo de la aplicación que se esté usando, la presión de 'Intro' normalmente indica a la aplicación el comienzo de una nueva línea o el envío de un comando."
+msgstr ""
+"El término CRLF se refiere al retorno de carro (ASCII 13, \\r) y al salto de "
+"línea(ASCII 10, \\n). Suelen usarse para delimitar la terminación de una "
+"línea, sin embargo, funcionan de forma diferente en los sistemas operativos "
+"más populares hoy en día. Por ejemplo: en Windows tanto el retorno de carro "
+"(CR) como el salto de línea (LF) son requeridos para indicar el final de la "
+"línea, mientras que en Linux/UNIX solo se necesita un salto de línea (LF). "
+"Esta combinación de retorno de carro y salto de línea se usa por ejemplo "
+"cuando se presiona 'Intro' en el teclado. Dependiendo de la aplicación que "
+"se esté usando, la presión de 'Intro' normalmente indica a la aplicación el "
+"comienzo de una nueva línea o el envío de un comando."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:61
 msgid "CRLF solution"
-msgstr "Comprobar los parámetros enviados por el usuario y evitando que se inserten CRLF mediante su filtrado."
+msgstr ""
+"Comprobar los parámetros enviados por el usuario y evitando que se inserten "
+"CRLF mediante su filtrado."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:73
 msgid "Commands execution"
@@ -515,11 +588,16 @@ msgstr "Ejecución de comandos"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:74
 msgid "Commands execution description"
-msgstr "Este ataque consiste en ejecutar comandos del sistema en el servidor. El atacante intenta inyector estos comandos en los parametros de la petición al servidor."
+msgstr ""
+"Este ataque consiste en ejecutar comandos del sistema en el servidor. El "
+"atacante intenta inyector estos comandos en los parametros de la petición al "
+"servidor."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:75
 msgid "Commands execution solution"
-msgstr "Preferiblemente no usar las entradas de un usuario cuando se manejen llamadas al sistema de ficheos"
+msgstr ""
+"Preferiblemente no usar las entradas de un usuario cuando se manejen "
+"llamadas al sistema de ficheos"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:83
 msgid "Resource consumption"
@@ -527,8 +605,78 @@ msgstr "Consumo de recursos"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:84
 msgid "Resource consumption description"
-msgstr "Un atacante puede formar a una víctima a consumir más recursos de los que le está permitido consumir debido al nivel de acceso del atacante. El programa puede potencialmente fallar liberando un recurso del sistema o puede liberarlo incorrectamente. Si un recurso no es adecuadamente liberado no estará disponible para poder ser reutilizado. También puede ser un falso positivo debido al corto timeout usado en el para realizar el ataque."
+msgstr ""
+"Un atacante puede formar a una víctima a consumir más recursos de los que le "
+"está permitido consumir debido al nivel de acceso del atacante. El programa "
+"puede potencialmente fallar liberando un recurso del sistema o puede "
+"liberarlo incorrectamente. Si un recurso no es adecuadamente liberado no "
+"estará disponible para poder ser reutilizado. También puede ser un falso "
+"positivo debido al corto timeout usado en el para realizar el ataque."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:85
 msgid "Resource consumption solution"
-msgstr "Configurar adecuadamente el software para evitar el consumo de memoria o la caída del sistema."
+msgstr ""
+"Configurar adecuadamente el software para evitar el consumo de memoria o la "
+"caída del sistema."
+
+#: ../wapiti.py:481 ../wapiti.py:483 ../net/lswww.py:463 ../net/lswww.py:465
+#: ../net/lswww.py:472
+msgid "File"
+msgstr "Archivo"
+
+#: ../wapiti.py:481
+msgid "loaded, Wapiti will use it to perform the attacks"
+msgstr "cargado, Wapiti lo usará para realizar los ataques"
+
+#: ../wapiti.py:483 ../net/lswww.py:465 ../net/lswww.py:472
+msgid "not found, Wapiti will scan again the web site"
+msgstr "no encontrado, Wapiti escaneará de nuevo el sitio web"
+
+#: ../net/lswww.py:463
+msgid "loaded, the scan continues"
+msgstr "cargado, el escaneo continua"
+
+#: ../net/lswww.py:506 ../net/lswww.py:489 ../net/lswww.py:496
+msgid "Notice"
+msgstr "Aviso"
+
+#: ../net/lswww.py:508 ../net/lswww.py:498
+msgid "Scan stopped, the data has been saved in the file"
+msgstr "Escaneo detenido, la información ha sido guardada en el fichero"
+
+#: ../net/lswww.py:509 ../net/lswww.py:499
+msgid "To continue this scan, you should launch Wapiti with"
+msgstr "Para continuar el escaneo se debe lanzar Wapiti con la opción"
+
+#: ../net/lswww.py:509 ../net/lswww.py:492 ../net/lswww.py:499
+msgid "parameter"
+msgstr "como parametro"
+
+#: ../attack/vulnerabilitiesdescriptions.py:2
+msgid "500 HTTP Error code"
+msgstr "Código de error HTTP 500"
+
+#: ../wapiti.py:491
+msgid ""
+"Attack process interrupted. To perform again the attack, lauch Wapiti with "
+"\"-i\" or \"-k\" parameter."
+msgstr ""
+"Proceso de ataque interrumpido. Para realizar de nuevo el mismo ataque lanza "
+"Wapiti con el parametro \"-i\" o \"-k\""
+
+#: ../net/lswww.py:465
+msgid "URLs to browse"
+msgstr "URL a escanear"
+
+#: ../net/lswww.py:468
+msgid "URLs browsed"
+msgstr "URL escaneadas"
+
+#: ../net/lswww.py:491
+msgid "This scan has been saved in the file"
+msgstr "El escaneo ha sido guardado en el fichero"
+
+#: ../net/lswww.py:492
+msgid ""
+"You can use it to perform attacks without scanning again the web site with"
+msgstr "Puede ser usado para realizar ataques sin necesidad de escanear nuevamente el sitio web con"
