@@ -282,6 +282,10 @@ Supported options are:
     given URL. Use it to prevent infinite loops."""
     self.HTTP.setNice(nice)
 
+  def setScope(self, scope):
+    """Set the scope of the crawler for the analysis of the web pages"""
+    self.HTTP.setScope(scope)
+
   def setColor(self):
     "Put colors in the console output (terminal must support colors)"
     self.color = 1
@@ -396,12 +400,14 @@ if __name__ == "__main__":
     if '-h' in sys.argv or '--help' in sys.argv:
       print doc
       sys.exit(0)
-    wap = Wapiti(sys.argv[1])
+    url = sys.argv[1]
+    wap = Wapiti(url)
     try:
-      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:ki",
+      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",
           ["help", "underline", "proxy=", "start=", "exclude=", "cookie=",
             "auth=", "remove=", "verbose=", "timeout=", "module=",
-            "outputfile", "reportType", "nice=", "attack", "continue"])
+            "outputfile", "reportType", "nice=", "attack", "continue",
+            "scope="])
     except getopt.GetoptError, e:
       print e
       sys.exit(2)
@@ -467,18 +473,20 @@ if __name__ == "__main__":
         if (a.find("html", 0) == 0) or (a.find("xml", 0) == 0) \
           or (a.find("txt", 0) == 0):
             wap.setReportGeneratorType(a)
+      if o in ("-b", "--scope"):
+        wap.setScope(a)
       if o in ("-k", "--attack"):
-        attackFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+sys.argv[1].split("://")[1]+'.xml'
+        attackFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+(url.split("://")[1]).split("/")[0]+'.xml'
       if o in ("-i", "--continue"):
-        crawlerFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+sys.argv[1].split("://")[1]+'.xml'
+        crawlerFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+(url.split("://")[1]).split("/")[0]+'.xml'
     try:
-      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:",
+      opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:b:",
           ["help", "underline", "proxy=", "start=", "exclude=", "cookie=",
             "auth=", "remove=", "verbose=", "timeout=", "module=",
-            "outputfile", "reportType", "nice=", "attack", "continue"])
+            "outputfile", "reportType", "nice=", "attack=", "continue=",
+            "scope="])
     except getopt.GetoptError, e:
-      print e
-      sys.exit(2)
+      ""
     for o, a in opts:
       if o in ("-k", "--attack"):
         if a!= "" and a[0] != '-':

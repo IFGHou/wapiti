@@ -162,6 +162,10 @@ class HTTP:
     given URL. Use it to prevent infinite loops."""
     self.myls.setNice(nice)
 
+  def setScope(self, scope):
+    """Set the scope of the crawler for the analysis of the web pages"""
+    self.myls.setScope(scope)
+
   def verbosity(self, vb):
     "Define the level of verbosity of the output."
     self.myls.verbosity(vb)

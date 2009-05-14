@@ -116,6 +116,11 @@ Supported options are:
 	To print this usage message
   """
 
+  SCOPE_DOMAIN  = "domain"
+  SCOPE_FOLDER  = "folder"
+  SCOPE_PAGE    = "page"
+  SCOPE_DEFAULT = "default"
+
   rooturl = None
   root = ""
   server = ""
@@ -135,6 +140,7 @@ Supported options are:
   timeout = 6
   h = None
   global_headers = {}
+  scope = None
 
   persister = None
 
@@ -144,15 +150,16 @@ Supported options are:
   def __init__(self, rooturl, crawlerFile=None):
     self.rooturl = rooturl
     root = rooturl
-    if root[-1] != "/":
+    if root[-1] != "/" and (root.split("://")[1]).find("/") == -1:
       root += "/"
     if(self.__checklink(root)):
       print _("Invalid link argument")
       sys.exit(0)
 
     server = (root.split("://")[1]).split("/")[0]
-    self.root = root
-    self.server = server
+    self.root     = root   # Initial URL
+    self.server   = server # Domain
+    self.scopeURL = root   # Scope of the analysis
     
     self.tobrowse.append(root)
     self.persister = CrawlerPersister()
@@ -168,6 +175,13 @@ Supported options are:
   def setNice(self, nice=0):
     """Set the maximum of urls to visit with the same pattern"""
     self.nice = nice
+
+  def setScope(self, scope):
+    self.scope = scope
+    if scope==self.SCOPE_FOLDER:
+      self.scopeURL = "/".join(self.root.split("/")[:-1])+"/"
+    elif scope==self.SCOPE_DOMAIN:
+      self.scopeURL = "http://"+self.server
 
   def addStartURL(self, url):
     if(self.__checklink(url)):
@@ -367,7 +381,7 @@ Supported options are:
 
   def __inzone(self, url):
     """Make sure the url is under the root url"""
-    if(url.find(self.root, 0) == 0):
+    if(url.find(self.scopeURL, 0) == 0):
       return 0
     else:
       return 1
@@ -460,6 +474,7 @@ Supported options are:
     if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
+    # load of the crawler status if a file is passed to it.
     if crawlerFile!=None:
       if self.persister.isDataForUrl(crawlerFile) == 1:
         self.persister.loadXML(crawlerFile)
@@ -491,6 +506,8 @@ Supported options are:
               sys.stderr.write('.')
             elif self.verbose == 2:
               sys.stderr.write(lien+"\n")
+        if(self.scope == self.SCOPE_PAGE):
+          self.tobrowse = []
       self.saveCrawlerData()
       print ""
       print " "+_("Notice")+" "
@@ -850,9 +867,10 @@ if __name__ == "__main__":
     myls = lswww(sys.argv[1])
     myls.verbosity(1)
     try:
-      opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:i",
+      opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:ib:",
           ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
-            "remove=", "verbose=", "timeout=", "nice=", "export=", "continue"])
+           "remove=", "verbose=", "timeout=", "nice=", "export=", "continue",
+           "scope="])
     except getopt.GetoptError, e:
       print e
       sys.exit(2)
@@ -887,16 +905,18 @@ if __name__ == "__main__":
           myls.setNice(int(a))
       if o in ("-e", "--export"):
         xmloutput = a
+      if o in ("-b", "--scope"):
+        myls.setScope(a)
       if o in ("-i", "--continue"):
         crawlerPersister = CrawlerPersister()
         crawlerFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+sys.argv[1].split("://")[1]+'.xml'
     try:
-      opts, args = getopt.getopt(sys.argv[1:], "hp:s:x:c:a:r:v:t:n:e:i:",
+      opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:i:b:",
           ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
-            "remove=", "verbose=", "timeout=", "nice=", "export=", "continue="])
+           "remove=", "verbose=", "timeout=", "nice=", "export=", "continue=",
+           "scope="])
     except getopt.GetoptError, e:
-      print e
-      sys.exit(2)
+      ""
     for o, a in opts:
       if o in ("-i", "--continue"):
         if a!= '' and a[0] != '-':
