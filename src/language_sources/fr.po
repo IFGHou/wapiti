@@ -18,43 +18,43 @@ msgstr ""
 
 #: ../wapiti.py:192 ../wapiti.py:196
 msgid "No links or forms found in this page !"
-msgstr "No links or forms found in this page !"
+msgstr "Aucun liens ni formulaires trouvés dans cette page !"
 
 #: ../wapiti.py:193 ../wapiti.py:197
 msgid "Make sure the url is correct."
-msgstr "Make sure the url is correct."
+msgstr "Assurez vous que l'url est valide."
 
 #: ../wapiti.py:199 ../wapiti.py:203
 msgid "Attacking urls (GET)"
-msgstr "Attacking urls (GET)"
+msgstr "Attaque des urls (GET)"
 
 #: ../wapiti.py:205 ../wapiti.py:209
 msgid "Attacking forms (POST)"
-msgstr "Attacking forms (POST)"
+msgstr "Attaque des formulaires (POST)"
 
 #: ../wapiti.py:211 ../wapiti.py:215
 msgid "Looking for permanent XSS"
-msgstr "Looking for permanent XSS"
+msgstr "Recherche de XSS permanents"
 
 #: ../wapiti.py:216 ../wapiti.py:220
 msgid "Upload scripts found"
-msgstr "Upload scripts found"
+msgstr "Scripts d'upload trouvés"
 
 #: ../wapiti.py:226 ../wapiti.py:230
 msgid "Report"
-msgstr "Report"
+msgstr "Rapport"
 
 #: ../wapiti.py:228 ../wapiti.py:232
 msgid "A report has been generated in the file"
-msgstr "A report has been generated in the file"
+msgstr "Un rapport a été généré dans le fichier"
 
 #: ../wapiti.py:230 ../wapiti.py:234
 msgid "Open"
-msgstr "Open"
+msgstr "Ouvrez"
 
 #: ../wapiti.py:231 ../wapiti.py:235
 msgid "with a browser to see this report."
-msgstr "with a browser to see this report"
+msgstr "avec un navigateur pour voir ce rapport."
 
 #: ../wapiti.py:331 ../wapiti.py:335
 msgid "attackGET"
@@ -67,105 +67,102 @@ msgstr "attackPOST"
 #: ../wapiti.py:371 ../wapiti.py:372
 msgid "wapityDoc"
 msgstr ""
-"Wapiti-SVN - A web application vulnerability scanner \n"
+"Wapiti-SVN - Un scanneur de vulnérabilités pour applications web \n"
 " \n"
-" Usage: python wapiti.py http://server.com/base/url/ [options] \n"
+" Mode d'emploi : python wapiti.py http://server.com/base/url/ [options] \n"
 " \n"
-" Supported options are: \n"
+" Les options possibles sont les suivantes : \n"
 " -s <url> \n"
 " --start <url> \n"
-" \tTo specify an url to start with \n"
+" \tCommencer le scan par l'url spécifiée \n"
 "  \n"
 " -x <url> \n"
 " --exclude <url> \n"
-" \tTo exclude an url from the scan (for example logout scripts) \n"
-" \tYou can also use a wildcard (*) \n"
-" \tExample : -x http://server/base/?page=*&module=test \n"
-" \tor -x http://server/base/admin/* to exclude a directory \n"
+" \tPour exclure une url du scan (par exemple un script de déconnexion) \n"
+" \tL'usage de l'astérisque (*) est autorisé \n"
+" \tExemple : -x http://server/base/?page=*&module=test \n"
+" \tou -x http://server/base/admin/* pour exclure un répertoire \n"
 " \n"
 " -p <url_proxy> \n"
 " --proxy <url_proxy> \n"
-" \tTo specify a proxy \n"
-" \tExample: -p http://proxy:port/ \n"
+" \tSpécifier l'utilisation d'un proxy \n"
+" \tExemple: -p http://proxy:port/ \n"
 " \n"
 " -c <cookie_file> \n"
 " --cookie <cookie_file> \n"
-" \tTo use a cookie \n"
+" \tUtiliser un cookie pour les requêtes \n"
 " \n"
 " -t <timeout> \n"
 " --timeout <timeout> \n"
-" \tTo fix the timeout (in seconds) \n"
+" \tDéfinir le temps d'attente (en secondes) \n"
 " \n"
 " -a <login%password> \n"
 " --auth <login%password> \n"
-" \tSet credentials for HTTP authentication \n"
-" \tDoesn't work with Python 2.4 \n"
+" \tSpécifier des identifiants pour l'authentification HTTP \n"
 " \n"
 " -r <parameter_name> \n"
 " --remove <parameter_name> \n"
-" \tRemove a parameter from URLs \n"
+" \tRetirer un paramêtre de toutes les URLs \n"
 " \n"
 " -n <limit> \n"
 " --nice <limit> \n"
-" \tDefine a limit of urls to read with the same pattern \n"
-" \tUse this option to prevent endless loops \n"
-" \tMust be greater than 0 \n"
+" \tDéfinir une limite pour le nombre d'urls à traiter basées sur le même format (pattern) \n"
+" \tUtiliser cette option pour éviter d'entrer dans des boucles infinies \n"
+" \tCette valeur doit être supérieur à 0 \n"
 " \n"
 " -b <scope>\n"
 " --scope <scope>\n"
-" \tSet the scope of the scan:\n"
-" \t\t+ \"page\":  to analyse only the page passed in the URL\n"
-" \t\t+ \"folder\":to analyse all the links to the pages which are in the same "
-"folder as the URL passed to Wapiti.\n"
-" \t\t+ \"domain\":to analyse all the links to the pages which are in the same "
-"domain as the URL passed to Wapiti.\n"
-" \tIf no scope is set, Wapiti scans all the tree under the given URL.\n"
+" \tDéfinir le périmêtre du scan :\n"
+" \t\t+ \"page\" :  analyser uniquement la page passée dans l'URL\n"
+" \t\t+ \"folder\" : analyser toutes les pages trouvées dans l'arborescence "
+"passée comme URL à Wapiti.\n"
+" \t\t+ \"domain\" :analyser toutes les pages trouvées dans le domaine spécifié "
+"dans l'URL passée à Wapiti.\n"
+" \tPar défaut, Wapiti scanne l'arborescence sous l'URL définie en argument principal.\n"
 " \n"
 " -m <module> \n"
 " --module <module> \n"
-" \tUse a predefined set of scan/attack options \n"
-" \tGET_ALL: only use GET request (no POST) \n"
-" \tGET_XSS: only XSS attacks with HTTP GET method \n"
-" \tPOST_XSS: only XSS attacks with HTTP POST method \n"
+" \tSe servir d'un jeu d'attaques et de méthodes prédéfinies \n"
+" \tGET_ALL: n'utiliser que les requêtes GET (pas de POST) \n"
+" \tGET_XSS: n'effectuer que des attaques XSS sur des requêtes HTTP GET \n"
+" \tPOST_XSS: uniquement les XSS mais avec les requêtes HTTP POST \n"
 " \n"
 " -u \n"
 " --underline \n"
-" \tUse color to highlight vulnerables parameters in output \n"
+" \tUtiliser les couleurs du terminal pour mettre en valeur les paramêtres vulnérables \n"
 " \n"
 " -v <level> \n"
 " --verbose <level> \n"
-" \tSet the verbosity level \n"
-" \t0: quiet (default), 1: print each url, 2: print every attack \n"
+" \tDéfinie la verbosité des résultats \n"
+" \t0: silencieux (défaut), 1: affiche chaque url, 2: affiche chaque attaque en détail \n"
 " \n"
 " -f <type_file> \n"
 " --reportType <type_file> \n"
-" \tSet the type of the report \n"
-" \txml: Report in XML format \n"
-" \thtml: Report in HTML format \n"
+" \tDéfinir le format du rapport \n"
+" \txml: Rapport au format XML \n"
+" \thtml: Rapport au format HTML \n"
 " \n"
 " -o <output> \n"
 " --output <output_file> \n"
-" \tSet the name of the report file \n"
-" \tIf the selected report type is 'html', this parameter must be a "
-"directory \n"
+" \tSpéficier le nom du fichier où enregistrer le rapport \n"
+" \tSi le rapport est au format html, ce paramêtre doit être un répertoire \n "
 " \n"
 " -i <file>\n"
 " --continue <file>\n"
-" \tThis parameter indicates Wapiti to continue with the scan from the specified "
-"file, this file should contain data from a previous scan.\n"
-" \tThe file is optional, if it is not specified, Wapiti takes the default file"
-"from \"scans\" folder.\n"
+" \tReprendre une session de scan en chargeant les paramêtres sauvegardés dans "
+"le fichier.\n"
+" \tSi le paramêtre est appelé sans argument, Wapiti charge la session depuis un fichier par défaut "
+"présent dans le dossier \"scans\".\n"
 " \n"
 " -k <file>\n"
 " --attack <file>\n"
-" \tThis parameter indicates Wapiti to perform attacks without scanning again the "
-"website and following the data of this file.\n"
-" \tThe file is optional, if it is not specified, Wapiti takes the default file "
-"from \"scans\" folder.\n"
+" \tLancer directement les attaques en chargeant les URLs présentes dans ce fichier (ne pas "
+"laisser lswww faire un scan préalable).\n"
+" \tSi le fichier n'est pas spécifié, Wapiti charge un fichier par défaut dans le dossier \"scans\".\n"
 " \n"
 " -h \n"
 " --help \n"
-" \tTo print this usage message"
+" \tAfficher ce message d'aide"
 
 #: ../wapiti.py:452 ../wapiti.py:475
 msgid "Wapiti-SVN (wapiti.sourceforge.net)"
@@ -174,7 +171,7 @@ msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
 #: ../net/lswww.py:138 ../net/lswww.py:161 ../net/lswww.py:143
 #: ../net/lswww.py:167
 msgid "Invalid link argument"
-msgstr "Invalid link argument"
+msgstr "Le lien passé en argument est invalide"
 
 #: ../net/lswww.py:471 ../net/lswww.py:519 ../net/lswww.py:509
 msgid "URLs"
@@ -182,31 +179,31 @@ msgstr "URLs"
 
 #: ../net/lswww.py:478 ../net/lswww.py:526 ../net/lswww.py:516
 msgid "Forms Info"
-msgstr "Forms Info"
+msgstr "Infos sur les formulaires"
 
 #: ../net/lswww.py:480 ../net/lswww.py:528 ../net/lswww.py:518
 msgid "From"
-msgstr "From"
+msgstr "En provenance de"
 
 #: ../net/lswww.py:481 ../net/lswww.py:529 ../net/lswww.py:519
 msgid "To"
-msgstr "To"
+msgstr "vers"
 
 #: ../net/lswww.py:489 ../net/lswww.py:537 ../net/lswww.py:527
 msgid "Upload Scripts"
-msgstr "Upload Scripts"
+msgstr "Scripts d'upload"
 
 #: ../net/lswww.py:676 ../net/lswww.py:724 ../net/lswww.py:722
 msgid "Forms"
-msgstr "Forms"
+msgstr "Formulaires"
 
 #: ../net/lswww.py:679 ../net/lswww.py:727 ../net/lswww.py:725
 msgid "Form"
-msgstr "Form"
+msgstr "Formulaire"
 
 #: ../net/lswww.py:683 ../net/lswww.py:731 ../net/lswww.py:729
 msgid "Method"
-msgstr "Method"
+msgstr "Méthode"
 
 #: ../net/lswww.py:684 ../net/lswww.py:732 ../net/lswww.py:730
 msgid "Intputs"
@@ -227,77 +224,76 @@ msgstr "URLS"
 #: ../net/lswww.py:783
 msgid "lswwwDoc"
 msgstr ""
-" lswww explore a website and extract links and forms fields.\n"
+" lswww explore un site web et extrait les liens et formulaires trouvés.\n"
 " \n"
-"  Usage: python lswww.py http://server.com/base/url/ [options]\n"
+"  Mode d'emploi : python lswww.py http://server.com/base/url/ [options]\n"
 " \n"
-"  Supported options are:\n"
+"  Les options disponibles sont :\n"
 " -s <url>\n"
 " --start <url>\n"
-" \tTo specify an url to start with\n"
+" \tCommencer le scan par l'url spécifiée\n"
 " \n"
 " -x <url>\n"
 " --exclude <url>\n"
-" \tTo exclude an url from the scan (for example logout scripts)\n"
-" \tYou can also use a wildcard (*)\n"
-" \tExample : -x http://server/base/?page=*&module=test\n"
-" \tor -x http://server/base/admin/* to exclude a directory\n"
+" \tExclure une url du scan (par exemple les scripts de déconnexion)\n"
+" \tL'utilisation de l'astérisque (*) est autorisée\n"
+" \tExemple : -x http://server/base/?page=*&module=test\n"
+" \tou -x http://server/base/admin/* to exclude a directory\n"
 " \n"
 " -p <url_proxy>\n"
 " --proxy <url_proxy>\n"
-" \tTo specify a proxy\n"
+" \tSpécifier un proxy à utiliser\n"
 " \tExemple: -p http://proxy:port/\n"
 " \n"
 " -c <cookie_file>\n"
 " --cookie <cookie_file>\n"
-" \tTo use a cookie\n"
+" \tUtiliser un cookie pour les requêtes\n"
 " \n"
 " -a <login%password>\n"
 " --auth <login%password>\n"
-" \tSet credentials for HTTP authentication\n"
-" \tDoesn't work with Python 2.4\n"
+" \tDéfinir des identifiants pour l'authentication HTTP\n"
 " \n"
 " -r <parameter_name>\n"
 " --remove <parameter_name>\n"
-" \tRemove a parameter from URLs\n"
+" \tRetirer un paramêtre de chaque URL\n"
 " \n"
 " -v <level>\n"
 " --verbose <level>\n"
-" \tSet verbosity level\n"
-" \t  0: only print results\n"
-" \t  1: print a dot for each url found (default)\n"
-" \t  2: print each url\n"
+" \tDéfinir le niveau de verbosité\n"
+" \t  0: afficher uniquement les résultats\n"
+" \t  1: afficher un point pour chaque url trouvée (défaut)\n"
+" \t  2: afficher chaque url au moment de leur découverte\n"
 " \n"
 " -t <timeout>\n"
 " --timeout <timeout>\n"
-" \tSet the timeout (in seconds)\n"
+" \tDéfinir un temps d'attente (en secondes)\n"
 " \n"
 " -n <limit>\n"
 " --nice <limit>\n"
-" \tDefine a limit of urls to read with the same pattern\n"
-" \tUse this option to prevent endless loops\n"
-" \tMust be greater than 0\n"
+" \tDefinir une limite d'urls à traiter formées sur le même modèle (pattern)\n"
+" \tCette option peut empêcher de tomber dans des boucles infinies de scan\n"
+" \tLa valeur doit être supérieure à 0\n"
 " \n"
 " -b <scope>\n"
 " --scope <scope>\n"
-" \tSet the scope of the scan:\n"
-" \t\t+ \"page\":  to analyse only the page passed in the URL\n"
-" \t\t+ \"folder\":to analyse all the links to the pages which are in the same "
-"folder as the URL passed to Wapiti.\n"
-" \t\t+ \"domain\":to analyse all the links to the pages which are in the same "
-"domain as the URL passed to Wapiti.\n"
-" \tIf no scope is set, Wapiti scans all the tree under the given URL.\n"
+" \tDéfinir le périmêtre du scan :\n"
+" \t\t+ \"page\" : analyser toutes les pages présentes sous l'URL principale\n"
+" \t\t+ \"folder\" : analyser toutes les pages présentes sous la même arborescence "
+"que la page passée en argument principal à Wapiti.\n"
+" \t\t+ \"domain\" : analyser toutes les pages sous le même domaine que l'URL "
+"principale passée à Wapiti.\n"
+" \tSi aucun argument n'est définie, Wapiti scanne chaque page sous l'URL principale..\n"
 " \n"
 " -i <file>\n"
 " --continue <file>\n"
-" \tThis parameter indicates Wapiti to continue with the scan from the specified "
-"file, this file should contain data from a previous scan.\n"
-" \tThe file is optional, if it is not specified, Wapiti takes the default file"
-"from \"scans\" folder.\n"
+" \tReprendre une précédente session de scan là où elle avait été laissée en chargeant "
+"les données depuis le fichier spé&ifié en paramêtre.\n"
+" \tSi aucun fichier n'est spécifié, Wapiti se sert d'un fichier de sauvegarde par défaut "
+"présent dans le dossier \"scans\".\n"
 " \n"
 " -h\n"
 " --help\n"
-" \tTo print this usage message"
+" \tAfficher ce message d'aide"
 
 #: ../attack/crlfattack.py:48 ../attack/crlfattack.py:53
 #: ../attack/execattack.py:80 ../attack/execattack.py:86
@@ -307,7 +303,7 @@ msgstr "(QUERY_STRING)"
 
 #: ../attack/crlfattack.py:49
 msgid "CRLF Injection (QUERY_STRING) in"
-msgstr "CRLF Injection (QUERY_STRING) in"
+msgstr "Injection CRLF (QUERY_STRING) dans"
 
 #: ../attack/crlfattack.py:50 ../attack/crlfattack.py:73
 #: ../attack/execattack.py:88 ../attack/execattack.py:97
@@ -322,18 +318,18 @@ msgstr "CRLF Injection (QUERY_STRING) in"
 #: ../attack/xssattack.py:386 ../attack/xssattack.py:440
 #: ../attack/xssattack.py:497
 msgid "Evil url"
-msgstr "Evil url"
+msgstr "URL malicieuse"
 
 #: ../attack/crlfattack.py:54 ../attack/filehandlingattack.py:100
 #: ../attack/filehandlingattack.py:101
 msgid "Timeout (QUERY_STRING) in"
-msgstr "Timeout (QUERY_STRING) in"
+msgstr "Timeout (QUERY_STRING) dans"
 
 #: ../attack/crlfattack.py:55 ../attack/crlfattack.py:83
 #: ../attack/execattack.py:77 ../attack/execattack.py:119
 #: ../attack/filehandlingattack.py:102 ../attack/filehandlingattack.py:145
 msgid "caused by"
-msgstr "caused by"
+msgstr "provoqué par"
 
 #: ../attack/crlfattack.py:72 ../attack/crlfattack.py:82
 #: ../attack/execattack.py:118 ../attack/execattack.py:130
@@ -343,7 +339,7 @@ msgstr "caused by"
 #: ../attack/sqlinjectionattack.py:257 ../attack/xssattack.py:275
 #: ../attack/xssattack.py:330 ../attack/xssattack.py:385
 msgid "in"
-msgstr "in"
+msgstr "dans"
 
 #: ../attack/crlfattack.py:82 ../attack/execattack.py:118
 #: ../attack/filehandlingattack.py:144
@@ -353,19 +349,19 @@ msgstr "Timeout"
 #: ../attack/execattack.py:76 ../attack/execattack.py:171
 #: ../attack/filehandlingattack.py:198
 msgid "Timeout in"
-msgstr "Timeout in"
+msgstr "Timeout dans"
 
 #: ../attack/execattack.py:87 ../attack/filehandlingattack.py:109
 #: ../attack/filehandlingattack.py:110 ../attack/sqlinjectionattack.py:99
 msgid "(QUERY_STRING) in"
-msgstr "(QUERY_STRING) in"
+msgstr "(QUERY_STRING) dans"
 
 #: ../attack/execattack.py:96 ../attack/execattack.py:144
 #: ../attack/filehandlingattack.py:119 ../attack/filehandlingattack.py:167
 #: ../attack/sqlinjectionattack.py:107 ../attack/sqlinjectionattack.py:151
 #: ../attack/sqlinjectionattack.py:233 ../attack/sqlinjectionattack.py:275
 msgid "500 HTTP Error code with"
-msgstr "500 HTTP Error code with"
+msgstr "Code d'erreur HTTP 500 avec"
 
 #: ../attack/execattack.py:172 ../attack/execattack.py:186
 #: ../attack/execattack.py:197 ../attack/filehandlingattack.py:199
@@ -376,7 +372,7 @@ msgstr "500 HTTP Error code with"
 #: ../attack/xssattack.py:380 ../attack/xssattack.py:434
 #: ../attack/xssattack.py:491
 msgid "with params"
-msgstr "with params"
+msgstr "avec les paramêtres"
 
 #: ../attack/execattack.py:173 ../attack/execattack.py:184
 #: ../attack/execattack.py:187 ../attack/execattack.py:198
@@ -388,68 +384,68 @@ msgstr "with params"
 #: ../attack/xssattack.py:326 ../attack/xssattack.py:381
 #: ../attack/xssattack.py:435 ../attack/xssattack.py:492
 msgid "coming from"
-msgstr "coming from"
+msgstr "en provenance de"
 
 #: ../attack/execattack.py:177 ../attack/filehandlingattack.py:197
 msgid "Timeout coming from"
-msgstr "Timeout coming from"
+msgstr "Timeout en provenance de"
 
 #: ../attack/execattack.py:194 ../attack/filehandlingattack.py:217
 #: ../attack/sqlinjectionattack.py:196 ../attack/sqlinjectionattack.py:316
 msgid "500 HTTP Error code coming from"
-msgstr "500 HTTP Error code coming from"
+msgstr "Code d'erreur HTTP 500 en provenance de"
 
 #: ../attack/execattack.py:196 ../attack/filehandlingattack.py:219
 #: ../attack/sqlinjectionattack.py:198 ../attack/sqlinjectionattack.py:318
 msgid "500 HTTP Error code in"
-msgstr "500 HTTP Error code in"
+msgstr "Erreur HTTP 500 dans"
 
 #: ../attack/sqlinjectionattack.py:223
 msgid "Blind SQL Injection (QUERY_STRING)"
-msgstr "Blind SQL Injection (QUERY_STRING)"
+msgstr "Injection SQL aveugle (QUERY_STRING)"
 
 #: ../attack/sqlinjectionattack.py:224
 msgid "Blind SQL Injection (QUERY_STRING) in"
-msgstr "Blind SQL Injection (QUERY_STRING) in"
+msgstr "Injection SQL aveugle (QUERY_STRING) dans"
 
 #: ../attack/sqlinjectionattack.py:256 ../attack/sqlinjectionattack.py:257
 #: ../attack/sqlinjectionattack.py:263 ../attack/sqlinjectionattack.py:264
 #: ../config/vulnerabilities/vulnerabilities.xml:17
 msgid "Blind SQL Injection"
-msgstr "Blind SQL Injection"
+msgstr "Injection SQL aveugle"
 
 #: ../attack/sqlinjectionattack.py:302
 msgid "Blind SQL Injection coming from"
-msgstr "Blind SQL Injection coming from"
+msgstr "Injection iSQL aveugle en provenance de"
 
 #: ../attack/sqlinjectionattack.py:303
 msgid "Blind SQL Injection in"
-msgstr "Blind SQL Injection in"
+msgstr "Injection SQL aveugle dans"
 
 #: ../attack/xssattack.py:132 ../attack/xssattack.py:135
 #: ../attack/xssattack.py:155
 msgid "Found permanent XSS in"
-msgstr "Found permanent XSS in"
+msgstr "XSS permanent trouvé dans"
 
 #: ../attack/xssattack.py:132 ../attack/xssattack.py:135
 msgid "with"
-msgstr "with"
+msgstr "avec"
 
 #: ../attack/xssattack.py:153
 msgid "Found permanent XSS attacked by"
-msgstr "Found permanent XSS attacked by"
+msgstr "XSS permanent XSS en provenance de"
 
 #: ../attack/xssattack.py:154
 msgid "with field"
-msgstr "with field"
+msgstr "avec le champ"
 
 #: ../attack/xssattack.py:156
 msgid "attacked by"
-msgstr "attacked by"
+msgstr "en provenance de"
 
 #: ../attack/xssattack.py:156
 msgid "with fields"
-msgstr "with fields"
+msgstr "avec les champs"
 
 #: ../attack/xssattack.py:261 ../attack/xssattack.py:266
 #: ../attack/xssattack.py:275 ../attack/xssattack.py:278
@@ -468,32 +464,32 @@ msgstr "XSS"
 #: ../attack/xssattack.py:379 ../attack/xssattack.py:433
 #: ../attack/xssattack.py:490
 msgid "Found XSS in"
-msgstr "Found XSS in"
+msgstr "XSS trouvé dans"
 
 #: ../attack/vulnerabilitiesdescriptions.py:2
 msgid "500 HTTP Error code"
-msgstr "500 HTTP Error code"
+msgstr "Code d'erreur HTTP 500"
 
 #: ../attack/vulnerabilitiesdescriptions.py:3
 msgid "500 Error description"
 msgstr ""
-"Internal Server Error. The server encountered an unexpected condition which "
-"prevented it from fulfilling the request.<ul>  <li><a href='http://www.w3."
+"Erreur interne au serveur. Le serveur a fait face à une situation inattendue qui "
+"l'a empêché de traiter convenablement la requête.<ul>  <li><a href='http://www.w3."
 "org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>      World Wide Web "
 "Consortium: HTTP/1.1 Status Code Definitions      </a></li>  <li><a "
 "href='http://en.wikipedia.org/wiki/"
-"List_of_HTTP_status_codes#5xx_Server_Error'>      Wikipedia: List of HTTP "
-"status codes      </a></li></ul>"
+"List_of_HTTP_status_codes#5xx_Server_Error'>      Wikipedia: Liste des codes de "
+"status HTTP      </a></li></ul>"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:3
 msgid "SQL Injection"
-msgstr "SQL Injection"
+msgstr "Injection SQL"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:4
-msgid "SQL Injection description"
+msgid "Description des Injection SQL"
 msgstr ""
-"SQL injection is a technique that exploits a vulnerability occurring in the "
-"database of an application."
+"Les injections SQL sont une technique qui exploite une vulnérabilité qui s'exécute au sein "
+"d'une base de donnée."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:5
 msgid "SQL Injection solution"
@@ -660,22 +656,22 @@ msgid ""
 "Attack process interrupted. To perform again the attack, lauch Wapiti with "
 "\"-i\" or \"-k\" parameter."
 msgstr ""
-"Attack process interrupted. To perform again the attack, lauch Wapiti with "
-"\"-i\" or \"-k\" parameter."
+"Le processus d'attaque a été stoppé. Pour le reprendre plus tard, lancez Wapiti avec "
+"les paramêtres \"-i\" ou \"-k\"."
 
 #: ../net/lswww.py:465
 msgid "URLs to browse"
-msgstr "URLs to browse"
+msgstr "URLs à traiter"
 
 #: ../net/lswww.py:468
 msgid "URLs browsed"
-msgstr "URLs browse"
+msgstr "URLs traitées"
 
 #: ../net/lswww.py:491
 msgid "This scan has been saved in the file"
-msgstr "This scan has been saved in the file"
+msgstr "Cette session de scan a été enregistrée dans le fichier"
 
 #: ../net/lswww.py:492
 msgid ""
 "You can use it to perform attacks without scanning again the web site with"
-msgstr "You can use it to perform attacks without scanning again the web site with"
+msgstr "Vous pouvez l'utiliser pour lancer directements les attaques sans avoir à scanner le site à nouveau"
