@@ -248,7 +248,7 @@ Supported options are:
       print _("Open")+" "+self.outputFile+ \
             "/index.html "+_("with a browser to see this report.")
 
-  def setTimeOut(self, timeout = 6):
+  def setTimeOut(self, timeout = 6.0):
     "Set the timeout for the time waiting for a HTTP response"
     self.HTTP.setTimeOut(timeout)
 

@@ -727,7 +727,7 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
                     self.sock = socket.socket(af, socktype, proto)
                 # Different from httplib: support timeouts.
                 if self.timeout is not None:
-                    self.sock.settimeout(self.timeout)
+                    self.sock.settimeout(float(self.timeout))
                     # End of difference from httplib.
                 if self.debuglevel > 0:
                     print "connect: (%s, %s)" % (self.host, self.port)
@@ -762,7 +762,7 @@ class HTTPSConnectionWithTimeout(httplib.HTTPSConnection):
         else:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if self.timeout is not None:
-            sock.settimeout(self.timeout)
+            sock.settimeout(float(self.timeout))
         sock.connect((self.host, self.port))
         ssl = socket.ssl(sock, self.key_file, self.cert_file)
         self.sock = httplib.FakeSocket(sock, ssl)

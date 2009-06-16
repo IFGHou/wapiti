@@ -674,7 +674,7 @@ class linkParser(HTMLParser.HTMLParser):
         l.sort()
         self.liens.append(self.current_form_url.split("?")[0]+"?"+"&".join(l))
 
-class linkParser2():
+class linkParser2:
   verbose = 0
 
   """Extract urls in 'a' href HTML tags"""

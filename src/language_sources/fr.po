@@ -472,7 +472,7 @@ msgstr "Code d'erreur HTTP 500"
 
 #: ../attack/vulnerabilitiesdescriptions.py:3
 msgid "500 Error description"
-msgstr ""
+msgstr "Description du code d'erreur 500"
 "Erreur interne au serveur. Le serveur a fait face à une situation inattendue qui "
 "l'a empêché de traiter convenablement la requête.<ul>  <li><a href='http://www.w3."
 "org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>      World Wide Web "
@@ -486,58 +486,52 @@ msgid "SQL Injection"
 msgstr "Injection SQL"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:4
-msgid "Description des Injection SQL"
-msgstr ""
+msgid "SQL Injection description"
+""
 "Les injections SQL sont une technique qui exploite une vulnérabilité qui s'exécute au sein "
 "d'une base de donnée."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:5
 msgid "SQL Injection solution"
 msgstr ""
-"To protect against SQL injection, user input must not directly be embedded "
-"in SQL statements. Instead, user input must be escaped or filtered or "
-"parameterized statements must be used."
+"Pour se protéger des injections SQL, les données fournies par les utilisateurs ne "
+"doivent pas être utilisées telles-quelles dans les requêtes SQL mais doivent faire "
+"l'objet de vérifications (filtres, échappements) approfondies."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:18
 msgid "Blind SQL Injection description"
 msgstr ""
-"Blind SQL injection is a technique that exploits a vulnerability occurring "
-"in the database of an application. This kind of vulnerability is harder to "
-"detect than basic SQL injections because no error message will be displayed "
-"on the webpage."
+"Les techniques d'injections SQL en aveugle exploite des vulnérabilités qui "
+"s'exécutent au sein d'une base de données. Ce type de vulnérabilités est plus difficile à "
+"détecter en raison de l'absence de messages d'erreur renvoyés par l'application web."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:19
 msgid "Blind SQL Injection solution"
 msgstr ""
-"To protect against SQL injection, user input must not directly be embedded "
-"in SQL statements. Instead, user input must be escaped or filtered or "
-"parameterized statements must be used."
+"Pour se protéger des injections SQL, les données fournies par les utilisateurs ne "
+"doivent pas être utilisées telles-quelles dans les requêtes SQL mais doivent faire "
+"l'objet de vérifications (filtres, échappements) approfondies."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:31
 msgid "File Handling"
-msgstr "File Handling"
+msgstr "Attaques sur la gestion des fichiers"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:32
 msgid "File Handling description"
 msgstr ""
-"This attack is also known as Path Transversal or Directory Transversal, its "
-"aim is the access to files and directories that are stored outside the web "
-"root folder. The attacker tries to explore the directories stored in the web "
-"server. The attacker uses some techniques, for instance, the manipulation of "
-"variables that reference files with 'dot-dot-slash (../)' sequences and its "
-"variations to move up to root directory to navigate through the file system."
+"Ces techniques permet à l'attaquant d'accèder à des fichiers auxquels il n'est pas "
+"sensé accèder car en dehors de la racine du serveur web. En utilisant certaines "
+"séquences comme '../', il peut remonter dans l'arborescence pour ainsi lister des "
+"répertoires ou obtenir le contenu de fichiers."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:33
 msgid "File Handling solution"
 msgstr ""
-"Prefer working without user input when using file system calls<br>Use "
-"indexes rather than actual portions of file names when templating or using "
-"language files (ie value 5 from the user submission = Czechoslovakian, "
-"rather than expecting the user to return 'Czechoslovakian').<br>Ensure the "
-"user cannot supply all parts of the path – surround it with your path code."
-"<br>Validate the user’s input by only accepting known good – do not sanitize "
-"the data.<br>Use chrooted jails and code access policies to restrict where "
-"the files can be obtained or saved to."
+"Ne laissez pas aux utilisateurs la possibilité de choisir une ou plusieurs parties "
+"du nom d'un fichier ou d'un répertoire. Générez vous même des noms aléatoire en cas "
+"de création ou utilisez des correspondances en cas de templates (un ID numérique "
+"correspondant à une chaine de caractères.<br />Utilisez des jails chroot et des "
+"restrictions d'accès pour limiter le nombre de fichiers accessibles par le serveur."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:45
 msgid "Cross Site Scripting"
@@ -546,110 +540,104 @@ msgstr "Cross Site Scripting"
 #: ../config/vulnerabilities/vulnerabilities.xml:46
 msgid "Cross Site Scripting description"
 msgstr ""
-"Cross-site scripting (XSS) is a type of computer security vulnerability "
-"typically found in web applications which allow code injection by malicious "
-"web users into the web pages viewed by other users. Examples of such code "
-"include HTML code and client-side scripts."
+"Le Cross-site scripting (XSS) est une catégorie de vulnérabilité web qui "
+"permet d'exécuter du code dans le navigateur des visiteurs du site. Leur "
+"exploitation peut par exemple permettre le détournement d'une session "
+"qui a été ouverte sur un site par un utilisateur valide."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:47
 msgid "Cross Site Scripting solution"
 msgstr ""
-"The best way to protect a web application from XSS attacks is ensure that "
-"the application performs validation of all headers, cookies, query strings, "
-"form fields, and hidden fields. Encoding user supplied output in the server "
-"side can also defeat XSS vulnerabilities by preventing inserted scripts from "
-"being transmitted to users in an executable form. Applications can gain "
-"significant protection from javascript based attacks by converting the "
-"following characters in all generated output to the appropriate HTML entity "
-"encoding:  &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -."
+"Afin de se protéger des attaques XSS, il faut s'assurer que les données retournées "
+"dans une page ne contiennent pas certains caractères interprétés par le navigateur.<br />"
+"Certains caractères considérés dangereux peuvent être remplacés par leur code d'entité HTML."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:59
 msgid "CRLF"
-msgstr "CRLF"
+msgstr "Attaques CRLF"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:60
 msgid "CRLF description"
 msgstr ""
-"The term CRLF refers to Carriage Return (ASCII 13, \\r) Line Feed (ASCII 10, "
-"\\n). They're used to note the termination of a line, however, dealt with "
-"differently in today’s popular Operating Systems. For example: in Windows "
-"both a CR and LF are required to note the end of a line, whereas in Linux/"
-"UNIX a LF is only required. This combination of CR and LR is used for "
-"example when pressing 'Enter' on the keyboard. Depending on the application "
-"being used, pressing 'Enter' generally instructs the application to start a "
-"new line, or to send a command."
+"Le terme CRLF fait référence à Carriage Return (ASCII 13, \\r) Line Feed "
+"(ASCII 10, \\n). Dans le protocole HTTP, ces deux caractères à la suite permettent "
+"entre autres de passer à la ligne d'entête suivante.<br />Un script qui insère directement "
+"dans ses entêtes des données fournies par l'utilisateur peut alors se voir injecter "
+"des lignes d'entêtes qui seront interprétées par le navigateur de la victime."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:61
 msgid "CRLF solution"
 msgstr ""
-"Check the submitted parameters and do not allow CRLF to be injected by "
-"filtering CRLF"
+"Vérifiez que les couples nom / valeur retournés dans les entêtes HTTP ne contiennent pas "
+"la suite de caractères CRLF."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:73
 msgid "Commands execution"
-msgstr "Commands execution"
+msgstr "Exécution de commandes"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:74
 msgid "Commands execution description"
 msgstr ""
-"This attack consists in executing system commands on the server. The "
-"attacker tries to inject this commands in the request parameters"
+"Ce type d'attaque consiste à faire exécuter des commandes sur le serveur. L'attaquant tente "
+"d'injecter les commandes dans les paramêtres de requêtes qui lui sont accessibles."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:75
 msgid "Commands execution solution"
-msgstr "Prefer working without user input when using file system calls"
+msgstr "Evitez autant que possible de vous servir de données utilisateur dans vous "
+" appels de commandes."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:83
 msgid "Resource consumption"
-msgstr "Resource consumption"
+msgstr "Epuisement de ressources"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:84
 msgid "Resource consumption description"
 msgstr ""
-"An attacker can force a victim to consume more resources than should be "
-"allowed for the attacker's level of access. The program can potentially fail "
-"to release or incorrectly release a system resource. A resource is not "
-"properly cleared and made available for re-use. It can also be a false-"
-"positive due to a too short timeout used for the scan."
+"Un attaquant peut faire en sorte que le serveur consomme plus de ressources qu'il en utilise "
+"en temps normal. Certains défauts de conception peuvent rendre une ressource indisponible "
+"pendant un laps de temps après son accès. En répétant certaines requêtes mal gérées par le serveur "
+"ce dernier peut arriver à saturation.<br />"
+"Des faux positifs lors du scan peuvent aussi apparaîtrent sous cette catégorie en raison d'un "
+"timeout choisi trop faible."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:85
 msgid "Resource consumption solution"
 msgstr ""
-"Configure properly the software giving the ressource to avoid memory "
-"consumption or system load."
+"Alléger les requêtes effectuées par l'application web pour les rendre moins gourmandes en "
+"utilisation mémoire et CPU."
 
 #: ../wapiti.py:481 ../wapiti.py:483 ../net/lswww.py:463 ../net/lswww.py:465
 #: ../net/lswww.py:472
 msgid "File"
-msgstr "File"
+msgstr "Fichier"
 
 #: ../wapiti.py:481
 msgid "loaded, Wapiti will use it to perform the attacks"
-msgstr "loaded, Wapiti will use it to perform the attacks"
+msgstr "chargé, Wapiti l'utilisera pour ses attaques"
 
 #: ../wapiti.py:483 ../net/lswww.py:465 ../net/lswww.py:472
 msgid "not found, Wapiti will scan again the web site"
-msgstr "not found, Wapiti will scan again the web site"
+msgstr "non trouvé, Wapiti va lancer un nouveau scan du site web"
 
 #: ../net/lswww.py:463
 msgid "loaded, the scan continues"
-msgstr "loaded, the scan continues"
+msgstr "chargé, le scan continue"
 
 #: ../net/lswww.py:506 ../net/lswww.py:489 ../net/lswww.py:496
 msgid "Notice"
-msgstr "Notice"
+msgstr "Note"
 
 #: ../net/lswww.py:508 ../net/lswww.py:498
 msgid "Scan stopped, the data has been saved in the file"
-msgstr "Scan stopped, the data has been saved in the file"
+msgstr "Scan mis en pause, les données ont été sauvées dans le fichier"
 
 #: ../net/lswww.py:509 ../net/lswww.py:499
 msgid "To continue this scan, you should launch Wapiti with"
-msgstr "To continue this scan, you should launch Wapiti with"
+msgstr "Afin de reprendre le scan, lancez Wapiti avec"
 
 #: ../net/lswww.py:509 ../net/lswww.py:492 ../net/lswww.py:499
 msgid "parameter"
-msgstr "parameter"
+msgstr "paramêtres"
 
 #: ../wapiti.py:491
 msgid ""
