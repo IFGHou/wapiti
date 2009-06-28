@@ -6,6 +6,7 @@ import socket
 import os
 import cgi
 import httplib2
+import libcookie
 
 class HTTPResponse:
   data = ""
@@ -42,7 +43,7 @@ class HTTP:
   auth_basic = []
   timeout = 6
   h = None
-  global_headers = {}
+  cookiejar = None
 
   def __init__(self,root):
     self.root = root
@@ -60,17 +61,7 @@ class HTTP:
       proxy = httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port,
           proxy_user=proxy_usr, proxy_pass=proxy_pwd)
 
-    try:
-      import cookielib
-    except ImportError:
-      pass
-    else:
-      if self.cookie != "":
-        cj = cookielib.LWPCookieJar()
-        if os.path.isfile(self.cookie):
-          cj.load(self.cookie,ignore_discard = True)
-          # "Cookie" is sent lowercase... have to check why
-          self.global_headers["Cookie"] = "; ".join(cook.name+"="+cook.value for cook in cj)
+    self.cookiejar = libcookie.libcookie(self.server)
 
     self.h = httplib2.Http(cache = None, timeout = self.timeout, proxy_info = proxy)
     self.h.follow_redirects=False
@@ -94,7 +85,7 @@ class HTTP:
     data = ""
     code = "0"
     info = {}
-    _headers = self.global_headers
+    _headers = self.cookiejar.headers_url(target)
     _headers.update(http_headers)
     if post_data == None:
       info,data = self.h.request(target, headers = _headers)
@@ -145,7 +136,9 @@ class HTTP:
   def setCookieFile(self, cookie):
     "Load session data from a cookie file"
     self.cookie = cookie
-    self.myls.setCookieFile(cookie)
+    if os.path.isfile(self.cookie):
+      self.cookiejar.loadfile(self.cookie)
+      self.myls.setCookieFile(cookie)
 
   def setAuthCredentials(self, auth_basic):
     "Set credentials to use if the website require an authentification."

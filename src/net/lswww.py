@@ -29,13 +29,7 @@ import httplib2
 from htmlentitydefs import name2codepoint as n2cp
 from xml.dom import minidom
 from crawlerpersister import CrawlerPersister
-
-try:
-	import cookielib
-except ImportError:
-	cookielibhere = 0
-else:
-	cookielibhere = 1
+import libcookie
 
 try:
 	import tidy
@@ -140,6 +134,7 @@ Supported options are:
   timeout = 6
   h = None
   global_headers = {}
+  cookiejar = None
   scope = None
 
   persister = None
@@ -218,7 +213,7 @@ Supported options are:
     socket.setdefaulttimeout(self.timeout)
 
     try:
-      info, data = self.h.request(url, headers = self.global_headers)
+      info, data = self.h.request(url, headers = self.cookiejar.headers_url(url))
     except socket.timeout:
       self.excluded.append(url)
       return 0
@@ -465,11 +460,9 @@ Supported options are:
                             proxy_info = proxy)
     self.h.follow_redirects = False
 
-    if self.cookie != "" and cookielibhere == 1:
-      cj = cookielib.LWPCookieJar()
-      if os.path.isfile(self.cookie):
-        cj.load(self.cookie, ignore_discard = True)
-        self.global_headers["Cookie"] = "; ".join(cook.name+"="+cook.value for cook in cj)
+    self.cookiejar = libcookie.libcookie(self.server)
+    if os.path.isfile(self.cookie):
+      self.cookiejar.loadfile(self.cookie)
 
     if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])

@@ -18,8 +18,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import urllib, urllib2, urlparse, cookielib
+import urllib
+import urllib2
+import urlparse
 import sys, socket, lswww, HTMLParser
+import libcookie
+import os
+
 try:
   import tidy
 except ImportError:
@@ -27,124 +32,105 @@ except ImportError:
 else:
   tidyhere = 1
 
-if len(sys.argv)!=3:
+if len(sys.argv) != 3:
   sys.stderr.write("Usage: python getcookie.py <cookie_file> <url_with_form>\n")
   sys.exit(1)
 
 COOKIEFILE = sys.argv[1]
-url=sys.argv[2]
+url = sys.argv[2]
 
 # Some websites/webapps like Webmin send a first cookie to see if the browser support them
-# so we must collect these test-cookies durring authentification.
-cj = cookielib.LWPCookieJar()
+# so we must collect these test-cookies during authentification.
+lc = libcookie.libcookie(url)
+lc.loadfile(COOKIEFILE)
 
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-urllib2.install_opener(opener)
-
-current=url.split("#")[0]
-current=current.split("?")[0]
-currentdir="/".join(current.split("/")[:-1])+"/"
-proto=url.split("://")[0]
+current = url.split("#")[0]
+current = current.split("?")[0]
+currentdir = "/".join(current.split("/")[:-1])+"/"
+proto = url.split("://")[0]
 agent =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
-req=urllib2.Request(url)
+req = urllib2.Request(url)
 socket.setdefaulttimeout(6)
 try:
-  fd=urllib2.urlopen(req)
+  fd = urllib2.urlopen(req)
 except IOError:
   print "Error getting url"
   sys.exit(1)
+
+lc.add(fd)
+
 try:
-  htmlSource=fd.read()
+  htmlSource = fd.read()
 except socket.timeout:
   print "Error fetching page"
   sys.exit(1)
-p=lswww.linkParser(url)
+p = lswww.linkParser(url)
 try:
   p.feed(htmlSource)
-except HTMLParser.HTMLParseError,err:
-  if tidyhere==1:
+except HTMLParser.HTMLParseError, err:
+  if tidyhere == 1:
     options = dict(output_xhtml=1, add_xml_decl=1, indent=1, tidy_mark=0)
-    htmlSource=str(tidy.parseString(htmlSource,**options))
+    htmlSource = str(tidy.parseString(htmlSource, **options))
     try:
       p.reset()
       p.feed(htmlSource)
-    except HTMLParser.HTMLParseError,err:
+    except HTMLParser.HTMLParseError, err:
       pass
 
-if len(p.forms)==0:
+if len(p.forms) == 0:
   print "No forms found in this page !"
   sys.exit(1)
 
-myls=lswww.lswww(url)
-i=0
-nchoice=0
-if len(p.forms)>1:
+myls = lswww.lswww(url)
+i = 0
+nchoice = 0
+if len(p.forms) > 1:
   print "Choose the form you want to use :"
   for form in p.forms:
     print
-    print "%d) %s" % (i,myls.correctlink(form[0],current,currentdir,proto))
-    for field,value in form[1].items():
-      print "\t"+field+" ("+value+")"
-    i=i+1
-  ok=False
-  while ok==False:
-    choice=raw_input("Enter a number : ")
+    print "%d) %s" % (i, myls.correctlink(form[0], current, currentdir, proto))
+    for field, value in form[1].items():
+      print "\t" + field + " ("+value+")"
+    i += 1
+  ok = False
+  while ok == False:
+    choice = raw_input("Enter a number : ")
     if choice.isdigit():
-      nchoice=int(choice)
-      if nchoice<i and nchoice>=0:
-        ok=True
+      nchoice = int(choice)
+      if nchoice < i and nchoice >= 0:
+        ok = True
 
-form=p.forms[nchoice]
+form = p.forms[nchoice]
 print "Please enter values for the folling form :"
-print "url = "+myls.correctlink(form[0],current,currentdir,proto)
+print "url = " + myls.correctlink(form[0], current, currentdir, proto)
 
-d={}
-for field,value in form[1].items():
-  str=raw_input(field+" ("+value+") : ")
-  d[field]=str
+d = {}
+for field, value in form[1].items():
+  str = raw_input(field+" ("+value+") : ")
+  d[field] = str
 
 form[1].update(d)
-url=myls.correctlink(form[0],current,currentdir,proto)
+url = myls.correctlink(form[0], current, currentdir, proto)
 
-server=urlparse.urlparse(url)[1]
-script=urlparse.urlparse(url)[2]
-if urlparse.urlparse(url)[4]!="":
-  script+="?"+urlparse.urlparse(url)[4]
-params=urllib.urlencode(form[1])
-
+server = urlparse.urlparse(url)[1]
+script = urlparse.urlparse(url)[2]
+if urlparse.urlparse(url)[4] != "":
+  script += "?"+urlparse.urlparse(url)[4]
+params = urllib.urlencode(form[1])
 
 txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
               'Referer' : sys.argv[2]}
+
+path = os.path.dirname(urllib2.urlparse.urlparse(url)[2])
+txheaders.update( lc.headers(server, path) )
 
 try:
     req = urllib2.Request(url, params, txheaders)
     handle = urllib2.urlopen(req)
 except IOError, e:
-    print "Erreur lors de l'ouverture de",url
+    print "Erreur lors de l'ouverture de", url
     sys.exit(1)
 
-if len(cj)>0:
-  for index, cookie in enumerate(cj):
-      print index,':',cookie
-  cj.save(COOKIEFILE,ignore_discard=True)
-else:
-  fd=open(COOKIEFILE,"w")
-  fd.write("#LWP-Cookies-2.0\n")
-  for cook in handle.headers.getheaders("set-cookie"):
-    fd.write("Set-Cookie3: ")
-    if cook.find(";")>=0:
-      s=""
-      for tupl in cook.split(";"):
-        if tupl.find("=")>=0:
-          s+=tupl.split("=",1)[0]+'="'+tupl.split("=",1)[1]+'"'
-        else:
-          s+=tupl
-        s+="; "
-      fd.write(s)
-      print s
-    else:
-      fd.write(cook)
-      print cook
-    fd.write("\n")
-  fd.close()
+lc.add(handle)
+lc.save(COOKIEFILE)

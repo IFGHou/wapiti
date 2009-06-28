@@ -18,58 +18,43 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os, sys
-import urllib2, urllib, cookielib
+# http://216.38.57.37/openads/www/delivery/lg.php
+# http://www.amazon.com/
+# http://login.live.com/
+# http://www.runescape.com/
+# http://pcdemo.dnsalias.com/
+# http://rmadilo.com/
+# http://www.t-music.cz/
+# http://www.vbulletin.com/forum/
 
-if len(sys.argv)<4:
+import sys
+import urllib2, urllib
+import libcookie
+
+if len(sys.argv) < 4:
   sys.stderr.write("Usage python cookie.py <cookie_file> <url> <arg1=val1> ...\n")
   sys.exit(1)
 
-COOKIEFILE=sys.argv[1]
-url=sys.argv[2]
-data=sys.argv[3:]
-liste=[]
+cookiefile = sys.argv[1]
+url = sys.argv[2]
+data = sys.argv[3:]
+liste = []
 for l in data:
-  liste.append(tuple(l.split("=")))
-params=urllib.urlencode(liste)
-
-cj = cookielib.LWPCookieJar()
-
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-urllib2.install_opener(opener)
+  liste.append( tuple( l.split("=") ) )
+params = urllib.urlencode(liste)
 
 txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
 try:
-    req = urllib2.Request(url, params, txheaders)
+    req = urllib2.Request(url, params, headers=txheaders)
     handle = urllib2.urlopen(req)
-
 except IOError, e:
     print "Erreur lors de l'ouverture de",url
     print e
     sys.exit(1)
 
-if len(cj)>0:
-  for index, cookie in enumerate(cj):
-      print index,':',cookie
-  cj.save(COOKIEFILE,ignore_discard=True)
-else:
-  fd=open(COOKIEFILE,"w")
-  fd.write("#LWP-Cookies-2.0\n")
-  for cook in handle.headers.getheaders("set-cookie"):
-    fd.write("Set-Cookie3: ")
-    if cook.find(";")>=0:
-      s=""
-      for tupl in cook.split(";"):
-        if tupl.find("=")>=0:
-          s+=tupl.split("=",1)[0]+'="'+tupl.split("=",1)[1]+'"'
-        else:
-          s+=tupl
-        s+="; "
-      fd.write(s)
-      print s
-    else:
-      fd.write(cook)
-      print cook
-    fd.write("\n")
-  fd.close()
+lc = libcookie.libcookie(url)
+lc.loadfile(cookiefile)
+lc.add(handle)
+lc.save(cookiefile)
+print lc.headers("localhost","/iDB/")
