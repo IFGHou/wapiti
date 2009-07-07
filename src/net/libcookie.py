@@ -146,7 +146,7 @@ class libcookie:
               node = nodes[0]
 
             for biscuit in node.getElementsByTagName("cookie"):
-              if biscuit.getAttribute("name") == name:
+              if biscuit.getAttribute("name") == name and biscuit.getAttribute("path") == path:
                 node.removeChild(biscuit)
 
             # here we are in the good domain node
