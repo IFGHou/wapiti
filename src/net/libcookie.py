@@ -43,7 +43,7 @@ class libcookie:
       self.dom = minidom.parse(cookiefile)
       self.cookies = self.dom.firstChild
     except IOError, err:
-      print err
+      print "File not found, creating..."
       self.dom = minidom.Document()
       self.cookies = self.dom.createElement("cookies")
       self.dom.appendChild(self.cookies)
@@ -232,19 +232,25 @@ class libcookie:
           curr = nodes[0]
         else:
           found = 0
+
+        # work on subdomain cookies
         if subdomain == 1 and len(domains) == 1:
           # we make a check on parentNode to make sure it will search only direct childs nodes
           for biscuit in [x for x in curr.getElementsByTagName("cookie") if x.parentNode == curr]:
-            cookie_str += "$Version=1; " + biscuit.getAttribute("name") + "=" + biscuit.getAttribute("value") + "; "
-            cookie_str += "$Path=\"" + biscuit.getAttribute("path") + "\"; "
-            cookie_str += "$Domain=." + ".".join( hostname.split(".")[1:] ) + "\"; "
+            cookie_str += '$Version="1"; ' + biscuit.getAttribute("name") + '="' + biscuit.getAttribute("value") + '"; '
+            cookie_str += '$Path="' + biscuit.getAttribute("path") + '"; '
+            cookie_str += '$Domain=".' + ".".join( hostname.split(".")[1:] ) + '"; '
 
     if found == 1:
       biscuits = [x for x in curr.getElementsByTagName("cookie") if path.startswith( x.getAttribute("path") ) ]
-      cookie_str += "; ".join( [biscuit.getAttribute("name") + "=" + biscuit.getAttribute("value") for biscuit in biscuits] )
+      for biscuit in biscuits:
+        cookie_str += biscuit.getAttribute("name") + '="' + biscuit.getAttribute("value") + '"; '
+        cookie_str += '$Path="' + biscuit.getAttribute("path") + '"; '
 
     if cookie_str == "":
       return {}
+    if cookie_str.endswith("; "):
+      cookie_str = cookie_str[:-2]
     return {"Cookie": cookie_str}
 
   def headers_url(self, url):
