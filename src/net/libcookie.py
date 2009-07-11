@@ -48,6 +48,79 @@ class libcookie:
       self.cookies = self.dom.createElement("cookies")
       self.dom.appendChild(self.cookies)
 
+  def add_node(self,cookie_dict):
+    # no domain is set in the cookie
+    if cookie_dict["domain"] == "":
+      # working with an IP address
+      if re.match("[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", self.target):
+        nodes = [node for node in self.cookies.getElementsByTagName("domain") if node.hasAttribute("name") and node.getAttribute("name") == self.target]
+        if len(nodes) == 0:
+          node = self.dom.createElement("domain")
+          node.setAttribute("name", self.target)
+          self.cookies.appendChild(node)
+        else:
+          node = nodes[0]
+
+        for biscuit in node.getElementsByTagName("cookie"):
+          if biscuit.getAttribute("name") == cookie_dict["name"] and biscuit.getAttribute("path") == cookie_dict["path"]:
+            node.removeChild(biscuit)
+
+        # here we are in the good domain node
+        cnode = self.dom.createElement("cookie")
+        cnode.setAttribute("name", cookie_dict["name"])
+        cnode.setAttribute("value", cookie_dict["value"])
+        cnode.setAttribute("version", cookie_dict["version"])
+        # keep some space
+        if cookie_dict["expires"] != None:
+          cnode.setAttribute("expires", str(cookie_dict["expires"]))
+        if cookie_dict["path"] != "":
+          cnode.setAttribute("path", cookie_dict["path"])
+
+        # verifs a faire ici : vider la node si besoin avant
+        node.appendChild(cnode)
+
+      # working with a hostname
+      else:
+        cookie_dict["domain"] = self.target
+
+    # a domain is defined in the cookie
+    if cookie_dict["domain"] != "":
+      domains = [x for x in cookie_dict["domain"].split(".") if x != ""]
+
+      curr = self.cookies
+      while domains != []:
+        domain = domains.pop(-1)
+
+        nodes = [node for node in curr.getElementsByTagName("domain") if node.hasAttribute("name") and node.getAttribute("name") == domain]
+        if len(nodes) == 0:
+          # oups... we must create all subdomain nodes and break the loop
+          node = self.dom.createElement("domain")
+          node.setAttribute("name", domain)
+          curr.appendChild(node)
+        else:
+          node = nodes[0]
+
+        curr = node
+
+        if domains == []:
+          for biscuit in curr.getElementsByTagName("cookie"):
+            if biscuit.getAttribute("name") == cookie_dict["name"]:
+              curr.removeChild(biscuit)
+
+          # here we are in the good domain node
+          cnode = self.dom.createElement("cookie")
+          cnode.setAttribute("name", cookie_dict["name"])
+          cnode.setAttribute("value", cookie_dict["value"])
+          cnode.setAttribute("version", cookie_dict["version"])
+          # keep some space
+          if cookie_dict["expires"] != None:
+            cnode.setAttribute("expires", str(cookie_dict["expires"]))
+          if cookie_dict["path"] != "":
+            cnode.setAttribute("path", cookie_dict["path"])
+
+          # verifs a faire ici : vider la node si besoin avant
+          curr.appendChild(cnode)
+
   def add(self, handle):
     ref_date = time.time()
     tmp_date = ""
@@ -62,6 +135,11 @@ class libcookie:
         except ValueError:
           continue
 
+    if handle.headers.getheaders("set-cookie2") != []:
+      version = "2"
+    else:
+      version = "0"
+
     for cook in handle.headers.getheaders("set-cookie") + handle.headers.getheaders("set-cookie2"):
       name = ""
       value = ""
@@ -69,7 +147,6 @@ class libcookie:
       domain = ""
       path = ""
       max_age = None
-      version = 0
 
       brk = 0
 
@@ -118,9 +195,9 @@ class libcookie:
 
             if k == "domain":
               domain = v
-
-            if k == "version":
-              version = int(v)
+            
+            if k == "version" and version == "0":
+              version = 1
 
           if tupl.find("secure") >= 0:
             pass
@@ -133,75 +210,14 @@ class libcookie:
         if path == "":
           path = os.path.dirname(urllib2.urlparse.urlparse(self.url)[2]) + "/"
 
-        # no domain is set in the cookie
-        if domain == "":
-          # working with an IP address
-          if re.match("[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", self.target):
-            nodes = [node for node in self.cookies.getElementsByTagName("domain") if node.hasAttribute("name") and node.getAttribute("name") == self.target]
-            if len(nodes) == 0:
-              node = self.dom.createElement("domain")
-              node.setAttribute("name", self.target)
-              self.cookies.appendChild(node)
-            else:
-              node = nodes[0]
-
-            for biscuit in node.getElementsByTagName("cookie"):
-              if biscuit.getAttribute("name") == name and biscuit.getAttribute("path") == path:
-                node.removeChild(biscuit)
-
-            # here we are in the good domain node
-            cnode = self.dom.createElement("cookie")
-            cnode.setAttribute("name", name)
-            cnode.setAttribute("value", value)
-            # keep some space
-            if expires != None:
-              cnode.setAttribute("expires", str(expires))
-            if path != "":
-              cnode.setAttribute("path", path)
-
-            # verifs a faire ici : vider la node si besoin avant
-            node.appendChild(cnode)
-
-          # working with a hostname
-          else:
-            domain = self.target
-
-        # a domain is defined in the cookie
-        if domain != "":
-          domains = [x for x in domain.split(".") if x != ""]
-
-          curr = self.cookies
-          while domains != []:
-            domain = domains.pop(-1)
-
-            nodes = [node for node in curr.getElementsByTagName("domain") if node.hasAttribute("name") and node.getAttribute("name") == domain]
-            if len(nodes) == 0:
-              # oups... we must create all subdomain nodes and break the loop
-              node = self.dom.createElement("domain")
-              node.setAttribute("name", domain)
-              curr.appendChild(node)
-            else:
-              node = nodes[0]
-
-            curr = node
-
-            if domains == []:
-              for biscuit in curr.getElementsByTagName("cookie"):
-                if biscuit.getAttribute("name") == name:
-                  curr.removeChild(biscuit)
-
-              # here we are in the good domain node
-              cnode = self.dom.createElement("cookie")
-              cnode.setAttribute("name", name)
-              cnode.setAttribute("value", value)
-              # keep some space
-              if expires != None:
-                cnode.setAttribute("expires", str(expires))
-              if path != "":
-                cnode.setAttribute("path", path)
-
-              # verifs a faire ici : vider la node si besoin avant
-              curr.appendChild(cnode)
+        self.add_node(
+            {"name":name,
+             "value":value,
+             "domain": domain,
+             "path":path,
+             "expires": expires,
+             "version": version
+             })
 
       else:
         print cook
@@ -211,6 +227,7 @@ class libcookie:
       return {}
     curr = self.cookies
     cookie_str = ""
+    version_min = 2
     found = 1
 
     if re.match("[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", hostname):
@@ -237,20 +254,36 @@ class libcookie:
         if subdomain == 1 and len(domains) == 1:
           # we make a check on parentNode to make sure it will search only direct childs nodes
           for biscuit in [x for x in curr.getElementsByTagName("cookie") if x.parentNode == curr]:
-            cookie_str += '$Version="1"; ' + biscuit.getAttribute("name") + '="' + biscuit.getAttribute("value") + '"; '
+            if biscuit.getAttribute("version") < version_min:
+              version_min = int( biscuit.getAttribute("version") )
+            cookie_str += biscuit.getAttribute("name") + '="' + biscuit.getAttribute("value") + '"; '
             cookie_str += '$Path="' + biscuit.getAttribute("path") + '"; '
             cookie_str += '$Domain=".' + ".".join( hostname.split(".")[1:] ) + '"; '
 
     if found == 1:
       biscuits = [x for x in curr.getElementsByTagName("cookie") if path.startswith( x.getAttribute("path") ) ]
       for biscuit in biscuits:
+        if biscuit.getAttribute("version") < version_min:
+          version_min = int( biscuit.getAttribute("version") )
         cookie_str += biscuit.getAttribute("name") + '="' + biscuit.getAttribute("value") + '"; '
         cookie_str += '$Path="' + biscuit.getAttribute("path") + '"; '
 
     if cookie_str == "":
       return {}
+
     if cookie_str.endswith("; "):
       cookie_str = cookie_str[:-2]
+
+    # Old Netscape cookies : no $Version, no path neither domain.
+    # Add a Cookie2 header for information
+    if version_min == 0:
+      cookie_str = ";".join( [x for x in cookie_str.split(";") if not x.startswith(" $")] )
+      return {"Cookie": cookie_str, "Cookie2": '$Version="1"'} 
+
+    # RFC 2109 and RFC 2965 cookies
+    else:
+      cookie_str = '$Version="1"; ' + cookie_str
+
     return {"Cookie": cookie_str}
 
   def headers_url(self, url):
