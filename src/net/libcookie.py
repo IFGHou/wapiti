@@ -197,7 +197,7 @@ class libcookie:
               domain = v
             
             if k == "version" and version == "0":
-              version = 1
+              version = "1"
 
           if tupl.find("secure") >= 0:
             pass
