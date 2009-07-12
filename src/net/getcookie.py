@@ -43,6 +43,7 @@ url = sys.argv[2]
 # so we must collect these test-cookies during authentification.
 lc = libcookie.libcookie(url)
 lc.loadfile(COOKIEFILE)
+lc.delete(urlparse.urlparse(url)[1])
 
 current = url.split("#")[0]
 current = current.split("?")[0]
@@ -123,7 +124,7 @@ txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
               'Referer' : sys.argv[2]}
 
 path = os.path.dirname(urllib2.urlparse.urlparse(url)[2])
-txheaders.update( lc.headers(server, path) )
+txheaders.update( lc.headers_url(url) )
 
 try:
     req = urllib2.Request(url, params, txheaders)

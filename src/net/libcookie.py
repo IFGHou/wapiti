@@ -222,6 +222,32 @@ class libcookie:
       else:
         print cook
 
+  def delete(self, hostname):
+    if self.cookies == None:
+      return
+    curr = self.cookies
+    found = 1
+
+    if re.match("[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", hostname):
+      nodes = [node for node in self.cookies.getElementsByTagName("domain") if node.hasAttribute("name") and node.getAttribute("name") == hostname]
+      if len(nodes) == 0:
+        return {}
+      else:
+        curr = nodes[0]
+    else:
+      domains = hostname.split(".")
+
+      while domains != []:
+        domain = domains.pop(-1)
+        nodes = [node for node in curr.getElementsByTagName("domain") if node.hasAttribute("name") and node.getAttribute("name") == domain]
+        if len(nodes) != 0:
+          curr = nodes[0]
+        else:
+          found = 0
+
+    if found == 1:
+      self.cookies.removeChild(curr)
+
   def headers(self, hostname, path):
     if self.cookies == None:
       return {}
@@ -254,7 +280,7 @@ class libcookie:
         if subdomain == 1 and len(domains) == 1:
           # we make a check on parentNode to make sure it will search only direct childs nodes
           for biscuit in [x for x in curr.getElementsByTagName("cookie") if x.parentNode == curr]:
-            if biscuit.getAttribute("version") < version_min:
+            if int( biscuit.getAttribute("version") ) < version_min:
               version_min = int( biscuit.getAttribute("version") )
             cookie_str += biscuit.getAttribute("name") + '="' + biscuit.getAttribute("value") + '"; '
             cookie_str += '$Path="' + biscuit.getAttribute("path") + '"; '
@@ -263,7 +289,7 @@ class libcookie:
     if found == 1:
       biscuits = [x for x in curr.getElementsByTagName("cookie") if path.startswith( x.getAttribute("path") ) ]
       for biscuit in biscuits:
-        if biscuit.getAttribute("version") < version_min:
+        if int( biscuit.getAttribute("version") ) < version_min:
           version_min = int( biscuit.getAttribute("version") )
         cookie_str += biscuit.getAttribute("name") + '="' + biscuit.getAttribute("value") + '"; '
         cookie_str += '$Path="' + biscuit.getAttribute("path") + '"; '
@@ -278,6 +304,7 @@ class libcookie:
     # Add a Cookie2 header for information
     if version_min == 0:
       cookie_str = ";".join( [x for x in cookie_str.split(";") if not x.startswith(" $")] )
+      cookie_str = cookie_str.replace('"','')
       return {"Cookie": cookie_str, "Cookie2": '$Version="1"'} 
 
     # RFC 2109 and RFC 2965 cookies
