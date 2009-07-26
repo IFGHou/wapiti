@@ -80,7 +80,7 @@ class HTTP:
     "Return the url of the pages used for file uploads."
     return self.myls.getUploads()
 
-  def send(self, target, post_data = None, http_headers = {}):
+  def send(self, target, post_data = None, http_headers = {}, method=""):
     "Send a HTTP Request. GET or POST (if post_data is set)."
     data = ""
     code = "0"
@@ -88,10 +88,16 @@ class HTTP:
     _headers = self.cookiejar.headers_url(target)
     _headers.update(http_headers)
     if post_data == None:
-      info,data = self.h.request(target, headers = _headers)
+      if method != "":
+        info,data = self.h.request(target, method, headers = _headers)
+      else:
+        info,data = self.h.request(target, headers = _headers)
     else:
       _headers.update({'Content-type': 'application/x-www-form-urlencoded'})
-      info, data = self.h.request(target, "POST", headers = _headers, body = post_data)
+      if method != "":
+        info, data = self.h.request(target, method, headers = _headers, body = post_data)
+      else:
+        info, data = self.h.request(target, "POST", headers = _headers, body = post_data)
     code = info['status']
     return HTTPResponse(data, code, info)
 

@@ -1,0 +1,6 @@
+~
+.backup
+.bck
+.old
+.save
+.bak
