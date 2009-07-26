@@ -26,7 +26,7 @@ from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescri
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-class SQLInjectionAttack(Attack):
+class mod_sql(Attack):
   """
   This class implements an SQL Injection attack
   """
@@ -34,11 +34,11 @@ class SQLInjectionAttack(Attack):
   CONFIG_FILE = "blindSQLPayloads.txt"
   blind_sql_payloads = []
   TIME_TO_SLEEP = 6
+  name = "sql"
 
-  def __init__(self,HTTP,xmlRepGenerator,timeout):
+  def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)
     self.blind_sql_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
-    self.TIME_TO_SLEEP = str(1 + int(timeout))
 
   def __findPatternInResponse(self,data):
     if data.find("You have an error in your SQL syntax")>=0:
@@ -68,6 +68,9 @@ class SQLInjectionAttack(Attack):
     if data.find("Sybase message:")>=0:
       return "Sybase Injection"
     return ""
+
+  def setTimeout(self,timeout):
+    self.TIME_TO_SLEEP = str(1 + int(timeout))
 
   def attackGET(self,page,dict,attackedGET):
     """This method performs the SQL Injection attack with method GET"""

@@ -26,12 +26,14 @@ from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescri
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-class FileHandlingAttack(Attack):
+class mod_file(Attack):
   """
   This class implements a file handling attack
   """
 
   CONFIG_FILE = "fileHandlingPayloads.txt"
+ 
+  name = "file"
 
   warning_messages = [
       ("java.io.FileNotFoundException:",        "Java include/open"),

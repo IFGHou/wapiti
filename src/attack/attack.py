@@ -31,10 +31,15 @@ class Attack:
     """
     verbose = 0
     color   = 0
+
+    name = "attack"
     
     reportGen = None
     HTTP      = None
     auxText   = None
+
+    doGET = True
+    doPOST = True
     
     CONFIG_DIR_NAME = "config/attacks"
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
@@ -54,3 +59,9 @@ class Attack:
     def loadPayloads(self,fileName):
         """This method loads the payloads for an attack from the specified file"""
         return self.auxText.readLines(fileName)
+
+    def attackGET(self, page, dict, attackedGET):
+      return
+
+    def attackPOST(self,form,attackedPOST):
+      return

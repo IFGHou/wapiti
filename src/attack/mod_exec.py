@@ -26,12 +26,14 @@ from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescri
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-class ExecAttack(Attack):
+class mod_exec(Attack):
   """
   This class implements a command execution attack
   """
 
   CONFIG_FILE = "execPayloads.txt"
+
+  name = "exec"
 
   def __init__(self,HTTP,xmlRepGenerator):
     Attack.__init__(self,HTTP,xmlRepGenerator)

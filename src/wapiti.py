@@ -34,11 +34,8 @@ from net import HTTP
 from report.htmlreportgenerator import HTMLReportGenerator
 from report.xmlreportgenerator import XMLReportGenerator
 from report.txtreportgenerator import TXTReportGenerator
-from attack.sqlinjectionattack import SQLInjectionAttack
-from attack.filehandlingattack import FileHandlingAttack
-from attack.execattack import ExecAttack
-from attack.crlfattack import CRLFAttack
-from attack.xssattack import XSSAttack
+
+
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
 from net.crawlerpersister import CrawlerPersister
 
@@ -88,12 +85,10 @@ Supported options are:
   Use this option to prevent endless loops
   Must be greater than 0
 
--m <module>
---module <module>
-	Use a predefined set of scan/attack options
-	GET_ALL: only use GET request (no POST)
-	GET_XSS: only XSS attacks with HTTP GET method
-	POST_XSS: only XSS attacks with HTTP POST method
+-m <module_options>
+--module <module_options>
+  Set the modules and HTTP methods to use for attacks.
+  Example: -m "-all,xss:get,exec:post"
 
 -u
 --underline
@@ -147,22 +142,11 @@ Supported options are:
   COPY_REPORT_DIR = "generated_report"
   outputFile = ""
 
-  doGET = 1
-  doPOST = 1
-  doExec = 1
-  doFileHandling = 1
-  doInjection = 1
-  doXSS = 1
-  doCRLF = 1
+  options = ""
 
   HTTP = None
   reportGen = None
 
-  xssAttack          = None
-  sqlInjectionAttack = None
-  fileHandlingAttack = None
-  execAttack         = None
-  crlfAttack         = None
   attacks = []
 
 
@@ -188,17 +172,66 @@ Supported options are:
 
   def __initAttacks(self):
     self.__initReport()
-    self.sqlInjectionAttack = SQLInjectionAttack(self.HTTP, self.reportGen, self.HTTP.getTimeOut())
-    self.fileHandlingAttack = FileHandlingAttack(self.HTTP, self.reportGen)
-    self.execAttack         = ExecAttack        (self.HTTP, self.reportGen)
-    self.crlfAttack         = CRLFAttack        (self.HTTP, self.reportGen)
-    self.xssAttack          = XSSAttack         (self.HTTP, self.reportGen)
-    self.attacks = [self.sqlInjectionAttack, self.fileHandlingAttack,
-                    self.execAttack, self.crlfAttack, self.xssAttack]
+
+    attack = __import__("attack")
+
+    for mod_name in attack.modules:
+      print "[*] Loading",mod_name
+      mod = __import__("attack." + mod_name, fromlist=attack.modules) # on charge le module
+      mod_instance = getattr(mod, mod_name)(self.HTTP, self.reportGen) # on appelle le constructeur
+      if hasattr(mod_instance, "setTimeout"):
+        mod_instance.setTimeout(self.HTTP.getTimeOut())
+      self.attacks.append(mod_instance)
+
     for attack in self.attacks:
       attack.setVerbose(self.verbose)
       if self.color == 1:
         attack.setColor()
+
+    if self.options != "":
+      opts = self.options.split(",")
+
+      for opt in opts:
+        method = ""
+        if opt.find(":")>0:
+          module, method = opt.split(":",1)
+        else:
+          module = opt
+
+        # desactivate some module options
+        if module.startswith("-"):
+          module = module[1:]
+          if module == "all":
+            for x in self.attacks:
+              if method == "get" or method == "":
+                x.doGET = False
+              if method == "post" or method == "":
+                x.doPOST = False
+          else:
+            for x in self.attacks:
+              if x.name == module:
+                if method == "get" or method == "":
+                  x.doGET = False
+                if method == "post" or method == "":
+                  x.doPOST = False
+
+        # activate some module options
+        else:
+          if module.startswith("+"):
+            module = module[1:]
+          if module == "all":
+            for x in self.attacks:
+              if method == "get" or method == "":
+                x.doGET = True
+              if method == "post" or method == "":
+                x.doPOST = True
+          else:
+            for x in self.attacks:
+              if x.name == module:
+                if method == "get" or method == "":
+                  x.doGET = True
+                if method == "post" or method == "":
+                  x.doPOST = True
 
   def browse(self,crawlerFile):
     "Extract hyperlinks and forms from the webpages found on the website"
@@ -213,23 +246,21 @@ Supported options are:
 
     self.__initAttacks()
 
-    if self.doGET == 1:
-      print "\n"+_("Attacking urls (GET)")+"..."
-      print "-----------------------"
-      for url in self.urls:
-        if url.find("?") != -1:
-          self.__attackGET(url)
-    if self.doPOST == 1:
-      print "\n"+_("Attacking forms (POST)")+"..."
-      print "-------------------------"
-      for form in self.forms:
-        if form[1] != {}:
-          self.__attackPOST(form)
-    if self.doXSS == 1:
-      print "\n"+_("Looking for permanent XSS")
-      print "-------------------------"
-      for url in self.urls:
-        self.xssAttack.permanentXSS(url)
+
+    print "\n"+_("Attacking urls (GET)")+"..."
+    print "-----------------------"
+    for url in self.urls:
+      if url.find("?") != -1:
+        self.__attackGET(url)
+
+    print "\n"+_("Attacking forms (POST)")+"..."
+    print "-------------------------"
+    for form in self.forms:
+      if form[1] != {}:
+        self.__attackPOST(form)
+
+# TODO : re-implement permanent XSS
+
     if self.HTTP.getUploads() != []:
       print "\n"+_("Upload scripts found")+":"
       print "----------------------"
@@ -295,44 +326,9 @@ Supported options are:
     self.verbose = vb
     self.HTTP.verbosity(vb)
 
-  # following set* functions can be used to create scan modes
-  def setGlobal(self, var = 0):
+  def setModules(self, options = ""):
     """Activate or desactivate (default) all attacks"""
-    self.doGET = var
-    self.doPOST = var
-    self.doFileHandling = var
-    self.doExec = var
-    self.doInjection = var
-    self.doXSS = var
-    self.doCRLF = var
-
-  def setGET(self, get = 1):
-    "Define if HTTP GET attacks will be launched."
-    self.doGET = get
-
-  def setPOST(self, post = 1):
-    "Define if HTTP POST attacks will be launched."
-    self.doPOST = post
-
-  def setFileHandling(self, fh = 1):
-    "Define if we must look for file handling vulnerabilities."
-    self.doFileHandling = fh
-
-  def setExec(self, cmds = 1):
-    "Define if we must look for command execution vulnerabilities."
-    self.doExec = cmds
-
-  def setInjection(self, inject = 1):
-    "Define if we must look for SQL injection vulnerabilities."
-    self.doInjection = inject
-
-  def setXSS(self, xss = 1):
-    "Define if we must look for XSS vulnerabilities."
-    self.doXSS = xss
-
-  def setCRLF(self, crlf = 1):
-    "Define if we must look for CRLF vulnerabilities."
-    self.doCRLF = crlf
+    self.options = options
 
   def setReportGeneratorType(self, repGentype = "xml"):
     "Set the format of the generated report. Can be xml, html of txt"
@@ -356,35 +352,23 @@ Supported options are:
       for param in params:
         dictio[param.split('=')[0]] = param.split('=')[1]
 
-    if self.doFileHandling == 1:
-      self.fileHandlingAttack.attackGET(page, dictio, self.attackedGET)
-    if self.doExec == 1:
-      self.execAttack        .attackGET(page, dictio, self.attackedGET)
-    if self.doInjection == 1:
-      if self.sqlInjectionAttack.attackGET(page, dictio, self.attackedGET)==0:
-        # if no SQL injection was found by errors in page, try blind sql
-        # maybe we can add an option to force this. same for POST.
-        self.sqlInjectionAttack.blindGET(page, dictio, self.attackedGET)
-    if self.doXSS == 1:
-      self.xssAttack         .attackGET(page, dictio, self.attackedGET)
-    if self.doCRLF == 1:
-      self.crlfAttack        .attackGET(page, dictio, self.attackedGET)
+    for x in self.attacks:
+      if x.doGET == True:
+        x.attackGET(page, dictio, self.attackedGET)
+
+# TODO : re-implement blind SQL injection
 
   def __attackPOST(self, form):
     "Launch attacks based on HTTP POST method."
     if self.verbose == 1:
       print "+ "+_("attackPOST")+" "+form[0]
       print "  ", form[1]
-    if self.doFileHandling == 1:
-      self.fileHandlingAttack.attackPOST(form, self.attackedPOST)
-    if self.doExec == 1:
-      self.execAttack        .attackPOST(form, self.attackedPOST)
-    if self.doInjection == 1:
-      if self.sqlInjectionAttack.attackPOST(form, self.attackedPOST)==0:
-        self.sqlInjectionAttack.blindPOST(form, self.attackedPOST)
-    if self.doXSS == 1:
-      self.xssAttack         .attackPOST(form, self.attackedPOST)
 
+    for x in self.attacks:
+      if x.doPOST == True:
+        x.attackPOST(form, self.attackedPOST)
+
+# TODO : re-implement blind SQL injection
 
 if __name__ == "__main__":
   doc = _("wapityDoc")
@@ -443,30 +427,7 @@ if __name__ == "__main__":
         if str.isdigit(a):
           wap.setTimeOut(int(a))
       if o in ("-m", "--module"):
-        if a == "GET_XSS":
-          wap.setGlobal()
-          wap.setGET()
-          wap.setXSS()
-        elif a == "GET_SQL":
-          wap.setGlobal()
-          wap.setGET()
-          wap.setInjection()
-        elif a == "POST_XSS":
-          wap.setGlobal()
-          wap.setPOST()
-          wap.setXSS()
-        elif a == "POST_SQL":
-          wap.setGlobal()
-          wap.setPOST()
-          wap.setInjection()
-        elif a == "GET_ALL":
-          wap.setPOST(0)
-        elif a == "POST_ALL":
-          wap.setGET(0)
-        elif a == "GET_FILE":
-          wap.setGlobal()
-          wap.setGET()
-          wap.setFileHandling()
+        wap.setModules(a)
       if o in ("-o", "--outputfile"):
         wap.setOutputFile(a)
       if o in ("-f", "--reportType"):

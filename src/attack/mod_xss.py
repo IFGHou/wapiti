@@ -7,7 +7,7 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 
-class XSSAttack(Attack):
+class mod_xss(Attack):
   """
   This class implements a cross site scripting attack
   """
@@ -26,6 +26,8 @@ class XSSAttack(Attack):
   # only trick here must be on character encoding, filter bypassing, stuff like that
   # form the simplest to the most complex, Wapiti will stop on the first working
   independant_payloads = []
+  
+  name = "xss"
 
   xss_history = {} # will be removed later
   HTTP = None
