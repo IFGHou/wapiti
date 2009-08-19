@@ -119,7 +119,7 @@ Supported options are:
   root = ""
   server = ""
   tobrowse = []
-  browsed = []
+  browsed = {}
   proxy = ""
   excluded = []
   forms = []
@@ -201,6 +201,8 @@ Supported options are:
 
   def browse(self, url):
     """Extract urls from a webpage and add them to the list of urls to browse if they aren't in the exclusion list"""
+    # return an empty dictionnary => won't be logged
+
     # We don't need destination anchors
     current = url.split("#")[0]
     # Url without query string
@@ -216,7 +218,7 @@ Supported options are:
       info, data = self.h.request(url, headers = self.cookiejar.headers_url(url))
     except socket.timeout:
       self.excluded.append(url)
-      return 0
+      return {}
 
     code = info['status']
 
@@ -227,16 +229,16 @@ Supported options are:
       if not info.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
         if (current.split(".")[-1] not in self.allowed) and current[-1] != "/":
-          return 1
+          return info
       elif info["content-type"].find("text") == -1:
-        return 1
+        return info
     # Manage redirections
     if info.has_key("location"):
       redir = self.correctlink(info["location"], current, currentdir, proto)
       if redir != None:
         if(self.__inzone(redir) == 0):
           # Is the document already visited of forbidden ?
-          if (redir in self.browsed) or (redir in self.tobrowse) or \
+          if (redir in self.browsed.keys()) or (redir in self.tobrowse) or \
               self.isExcluded(redir):
             pass
           else:
@@ -277,13 +279,13 @@ Supported options are:
       if lien != None:
         if(self.__inzone(lien) == 0):
           # Is the document already visited of forbidden ?
-          if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
+          if (lien in self.browsed.keys()) or (lien in self.tobrowse) or self.isExcluded(lien):
             pass
           elif self.nice>0:
             if self.__countMatches(lien) >= self.nice:
               # don't waste time next time we found it
               self.excluded.append(lien)
-              return 0
+              return {}
             else:
               self.tobrowse.append(lien)
           else:
@@ -297,9 +299,9 @@ Supported options are:
     # We automaticaly exclude 404 urls
     if code == "404":
       self.excluded.append(url)
-      return 0
+      #return {} # exclude from scan but can be useful for some modules maybe
 
-    return 1
+    return info
 
 
   def correctlink(self, lien, current, currentdir, proto):
@@ -399,15 +401,15 @@ Supported options are:
           start = url.find("=", i)
           i = url.find("&", start)
           if i != -1:
-            for u in self.browsed:
+            for u in self.browsed.keys():
               if u.startswith(url[:start]+"=") and u.endswith(url[i:]):
                 matches += 1
           else:
-            for u in self.browsed:
+            for u in self.browsed.keys():
               if u.startswith(url[:start]+"="):
                 matches += 1
       else:#QUERY_STRING
-        for a in [u for u in self.browsed if u.find("=")<0]:
+        for a in [u for u in self.browsed.keys() if u.find("=")<0]:
           if a.startswith(url.split("?")[0]):
             matches += 1
     return matches
@@ -472,6 +474,7 @@ Supported options are:
       if self.persister.isDataForUrl(crawlerFile) == 1:
         self.persister.loadXML(crawlerFile)
         self.tobrowse = self.persister.getToBrose()
+        # TODO: change xml file for browsed urls
         self.browsed  = self.persister.getBrowsed()
         self.forms    = self.persister.getForms()
         self.uploads  = self.persister.getUploads()
@@ -481,7 +484,7 @@ Supported options are:
           for x in self.tobrowse:
             print "    + "+x
           print " * "+_("URLs browsed")
-          for x in self.browsed:
+          for x in self.browsed.keys():
             print "    + "+x
       else:
         print _("File")+" "+crawlerFile+" "+_("not found, Wapiti will scan again the web site")
@@ -492,9 +495,10 @@ Supported options are:
     try:
       while len(self.tobrowse)>0:
         lien = self.tobrowse.pop(0)
-        if (lien not in self.browsed and lien not in self.excluded):
-          if self.browse(lien):
-            self.browsed.append(lien)
+        if (lien not in self.browsed.keys() and lien not in self.excluded):
+          headers = self.browse(lien)
+          if headers != {}:
+            self.browsed[lien] = headers
             if self.verbose == 1:
               sys.stderr.write('.')
             elif self.verbose == 2:
@@ -522,9 +526,10 @@ Supported options are:
 
   def printLinks(self):
     """Print found URLs on standard output"""
-    self.browsed.sort()
+    l = self.browsed.keys()
+    l.sort()
     sys.stderr.write("\n+ "+_("URLs")+":\n")
-    for lien in self.browsed:
+    for lien in l:
       print lien
 
   def printForms(self):
@@ -551,7 +556,7 @@ Supported options are:
     items = xml.createElement("items")
     xml.appendChild(items)
 
-    for lien in self.browsed:
+    for lien in self.browsed.keys():
       get = xml.createElement("get")
       get.setAttribute("url", lien)
       items.appendChild(get)
@@ -578,7 +583,6 @@ Supported options are:
     fd.close()
 
   def getLinks(self):
-    self.browsed.sort()
     return self.browsed
 
   def getForms(self):
@@ -591,6 +595,7 @@ Supported options are:
   def saveCrawlerData(self):
     self.persister.setRootURL(self.rooturl);
     self.persister.setToBrose(self.tobrowse);
+    # TODO: xml structure
     self.persister.setBrowsed(self.browsed);
     self.persister.setForms  (self.forms);
     self.persister.setUploads(self.uploads);

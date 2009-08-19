@@ -42,7 +42,7 @@ class mod_xss(Attack):
     Attack.__init__(self, HTTP, xmlRepGenerator)
     self.independant_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
-  def attackGET(self, page, dict, attackedGET):
+  def attackGET(self, page, dict, attackedGET, headers = {}):
     """This method performs the cross site scripting attack (XSS attack) with method GET"""
     # page est l'url de script
     # dict est l'ensembre des variables et leurs valeurs
@@ -84,7 +84,7 @@ class mod_xss(Attack):
             if self.findXSS(data, page, tmp, k, code):
               break
 
-  def attackPOST(self,form,attackedPOST):
+  def attackPOST(self, form, attackedPOST):
     """This method performs the cross site scripting attack (XSS attack) with method POST"""
     headers = {"Accept": "text/plain"}
     page = form[0]

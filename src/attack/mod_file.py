@@ -76,7 +76,7 @@ class mod_file(Attack):
         break
     return err, inc, warn
 
-  def attackGET(self, page, dict, attackedGET):
+  def attackGET(self, page, dict, attackedGET, headers = {}):
     """This method performs the file handling attack with method GET"""
     if dict == {}:
       warn = 0

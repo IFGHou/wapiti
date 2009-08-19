@@ -60,7 +60,7 @@ class Attack:
         """This method loads the payloads for an attack from the specified file"""
         return self.auxText.readLines(fileName)
 
-    def attackGET(self, page, dict, attackedGET):
+    def attackGET(self, page, dict, attackedGET, headers = {}):
       return
 
     def attackPOST(self,form,attackedPOST):

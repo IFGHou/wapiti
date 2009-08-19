@@ -40,7 +40,7 @@ class mod_backup(Attack):
     return err
 
 
-  def attackGET(self, page, dict, attackGET):
+  def attackGET(self, page, dict, attackGET, headers = {}):
     for k in self.payloads:
       url = page + k
       

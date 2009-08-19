@@ -55,7 +55,7 @@ class mod_exec(Attack):
       warn=1
     return err,cmd,warn
 
-  def attackGET(self,page,dict,attackedGET):
+  def attackGET(self,page,dict,attackedGET, headers = {}):
     """This method performs the command execution with method GET"""
     if dict == {}:
       warn = 0

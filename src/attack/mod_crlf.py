@@ -2,6 +2,7 @@ import socket
 from attack import Attack
 #import base
 from vulnerability import Vulnerability
+import httplib
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -37,15 +38,15 @@ class mod_crlf(Attack):
     Attack.__init__(self, HTTP, xmlRepGenerator)
 
   # Won't work with PHP >= 4.4.2
-  def attackGET(self, page, dict, attackedGET):
+  def attackGET(self, page, dict, attackedGET, headers = {}):
     """This method performs the CRLF attack with method GET"""
     payload="http://www.google.fr\r\nWapiti: SVN version"
     if dict == {}:
       err = ""
-      url = page+"?"+payload
+      url = page + "?" + payload
       if url not in attackedGET:
         if self.verbose == 2:
-          print "+ "+url
+          print "+ " + page + "?http://www.google.fr\\r\\nWapiti: SVN version"
         try:
           if self.HTTP.send(url).getInfo().has_key('Wapiti'):
             self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -57,6 +58,9 @@ class mod_crlf(Attack):
                             page, payload, err+" "+_("(QUERY_STRING)"))
           print _("Timeout (QUERY_STRING) in"), page
           print "\t"+_("caused by")+":", url
+        except httplib.BadStatusLine:
+          #print "Error: The server did not understand this request"
+          pass
         attackedGET.append(url)
     else:
       for k in dict.keys():
@@ -85,5 +89,7 @@ class mod_crlf(Attack):
                               page, self.HTTP.encode(tmp), err+" ("+k+")")
             print _("Timeout")+" ("+k+") "+_("in"), page
             print "\t"+_("caused by")+":", url
+          except httplib.BadStatusLine:
+            print "Error: The server did not understand this request"
           attackedGET.append(url)
 

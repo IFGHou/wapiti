@@ -128,7 +128,7 @@ Supported options are:
 --help
 	To print this usage message"""
 
-  urls  = []
+  urls  = {}
   forms = []
   attackedGET  = []
   attackedPOST = []
@@ -239,7 +239,7 @@ Supported options are:
 
   def attack(self):
     "Launch the attacks based on the preferences set by the command line"
-    if self.urls == [] and self.forms == []:
+    if self.urls == {} and self.forms == []:
       print _("No links or forms found in this page !")
       print _("Make sure the url is correct.")
       sys.exit(1)
@@ -249,9 +249,10 @@ Supported options are:
 
     print "\n"+_("Attacking urls (GET)")+"..."
     print "-----------------------"
-    for url in self.urls:
-      if url.find("?") != -1:
-        self.__attackGET(url)
+    for url, headers in self.urls.items():
+      #if url.find("?") != -1:
+      # some modules don't need query strings
+      self.__attackGET(url, headers)
 
     print "\n"+_("Attacking forms (POST)")+"..."
     print "-------------------------"
@@ -338,23 +339,29 @@ Supported options are:
     "Set the filename where the report will be written"
     self.outputFile = outputFile
 
-  def __attackGET(self, url):
+  def __attackGET(self, url, headers):
     "Launch attacks based on HTTP GET methods"
-    page = url.split('?')[0]
-    query = url.split('?')[1]
-    params = query.split('&')
     dictio = {}
+    params = []
+    page = url
+
+    if url.find("?") >= 0:
+      page = url.split('?')[0]
+      query = url.split('?')[1]
+      if query.find("&") >= 0:
+        params = query.split('&')
+        if query.find("=") >= 0:
+          for param in params:
+            dictio[param.split('=')[0]] = param.split('=')[1]
 
     if self.verbose == 1:
       print "+ "+_("attackGET")+" "+url
-      print "  ", params
-    if query.find("=") >= 0:
-      for param in params:
-        dictio[param.split('=')[0]] = param.split('=')[1]
+      if params != []:
+        print "  ", params
 
     for x in self.attacks:
       if x.doGET == True:
-        x.attackGET(page, dictio, self.attackedGET)
+        x.attackGET(page, dictio, self.attackedGET, headers)
 
 # TODO : re-implement blind SQL injection
 
@@ -456,11 +463,13 @@ if __name__ == "__main__":
         if a!= '' and a[0] != '-':
           crawlerFile = a
     print _("Wapiti-SVN (wapiti.sourceforge.net)")
-    if attackFile!=None:
+    if attackFile != None:
       if crawlerPersister.isDataForUrl(attackFile) == 1:
         crawlerPersister.loadXML(attackFile)
+        # TODO: xml structure
         wap.urls  = crawlerPersister.getBrowsed()
         wap.forms = crawlerPersister.getForms()
+        # wap.uploads = crawlerPersister.getUploads()
         print _("File")+" "+attackFile+" "+_("loaded, Wapiti will use it to perform the attacks")
       else:
         print _("File")+" "+attackFile+" "+_("not found, Wapiti will scan again the web site")

@@ -36,11 +36,11 @@ class mod_sql(Attack):
   TIME_TO_SLEEP = 6
   name = "sql"
 
-  def __init__(self,HTTP,xmlRepGenerator):
-    Attack.__init__(self,HTTP,xmlRepGenerator)
+  def __init__(self, HTTP, xmlRepGenerator):
+    Attack.__init__(self, HTTP, xmlRepGenerator)
     self.blind_sql_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
-  def __findPatternInResponse(self,data):
+  def __findPatternInResponse(self, data):
     if data.find("You have an error in your SQL syntax")>=0:
       return "MySQL Injection"
     if data.find("supplied argument is not a valid MySQL")>0:
@@ -69,10 +69,10 @@ class mod_sql(Attack):
       return "Sybase Injection"
     return ""
 
-  def setTimeout(self,timeout):
+  def setTimeout(self, timeout):
     self.TIME_TO_SLEEP = str(1 + int(timeout))
 
-  def attackGET(self,page,dict,attackedGET):
+  def attackGET(self, page, dict, attackedGET, headers = {}):
     """This method performs the SQL Injection attack with method GET"""
     # about this payload : http://shiflett.org/blog/2006/jan/addslashes-versus-mysql-real-escape-string
     payload = "\xBF'\"("

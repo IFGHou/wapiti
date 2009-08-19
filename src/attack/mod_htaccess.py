@@ -23,24 +23,20 @@ class mod_htaccess(Attack):
     Attack.__init__(self,HTTP,xmlRepGenerator)
     
   #this function return code signification when htaccess protection enabled
-  def __returnErrorByCode(self,code):
+  def __returnErrorByCode(self, code):
     err = ""
     if code == "401":
       err = "Authorization Required"
-    if code == "402":
+    elif code == "402":
       err = "Payment Required"
-    if code == "403":
+    elif code == "403":
       err = "Forbidden"
-      
-    #code = 1xx -> information
-    #code = 2xx -> success
-    if code[0] == "1" or code[0] == "2":
+    else:
       err = "ok"
-    
     return err
 
 
-  def attackGET(self,page,dict,attackedGET):
+  def attackGET(self,page,dict,attackedGET, headers = {}):
     err = ""
     url = page
     err500 = 0
@@ -49,10 +45,10 @@ class mod_htaccess(Attack):
       if self.verbose == 2:
         print "+ "+url
       
-      data1, code1 = self.HTTP.send(url).getPageCode()
-      err1 = self.__returnErrorByCode(code1)
+      err1 = self.__returnErrorByCode(headers["status"])
       
       if err1 != "ok":
+        data1 = self.HTTP.send(url).getPage()
         #htaccess protection detected
         print "\033[1;31m/!\ Found HtAccess protection : ",url,"\033[1;m"
         
@@ -65,10 +61,10 @@ class mod_htaccess(Attack):
           
           #print output informations by verbosity option
           if self.verbose == 1 or self.verbose == 2:
-            print "\033[1;36m|HTTP Code : ",code1,":",err1,"\033[1;m"
+            print "\033[1;36m|HTTP Code : ", headers["status"], ":", err1, "\033[1;m"
           if self.verbose == 2:
             print "\033[1;33mCode source :\033[1;m"
-            print "\033[1;41m",data1,"\033[1;m"
+            print "\033[1;41m", data1, "\033[1;m"
           
           #report xml generator (ROMULUS) not implemented for htaccess
           self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, url,"",err+" HtAccess")

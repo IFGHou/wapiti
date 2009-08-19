@@ -16,6 +16,7 @@ class CrawlerPersister:
   TO_BROWSE = "toBrowse"
   BROWSED   = "browsed"
   URL = "url"
+  URL_DATA = "url_data"
   FORMS    = "forms"
   FORM     = "form"
   FORM_URL = "url"
@@ -25,14 +26,19 @@ class CrawlerPersister:
   INPUT_NAME  = "name"
   INPUT_VALUE = "value"
   UPLOADS = "uploads"
+  URI = "uri"
+  HEADER = "header"
+  HEADER_NAME = "name"
+  HEADER_VALUE = "value"
 
   toBrowse = []
-  browsed  = []
+  browsed  = {}
   urls     = []
   inputs   = {}
   form     = []
   forms    = []
   uploads  = []
+  headers  = {}
   rootURL = ""
 
   tag = ""
@@ -71,9 +77,14 @@ class CrawlerPersister:
     root.appendChild(toBrowseEl)
 
     browsedEl = xml.createElement(self.BROWSED)
-    for url in self.browsed:
-      urlEl = xml.createElement(self.URL)
-      urlEl.appendChild(xml.createTextNode(url))
+    for url, headers in self.browsed.items():
+      urlEl = xml.createElement(self.URL_DATA)
+      urlEl.setAttribute(self.URI, url)
+      for k, v in headers.items():
+        headEl = xml.createElement(self.HEADER)
+        headEl.setAttribute(self.HEADER_NAME, k)
+        headEl.setAttribute(self.HEADER_VALUE, v)
+        urlEl.appendChild(headEl)
       browsedEl.appendChild(urlEl)
     root.appendChild(browsedEl)
 
@@ -145,8 +156,14 @@ class CrawlerPersister:
       self.array = self.inputs
     elif name == self.UPLOADS:
       self.array = self.uploads
+    elif name == self.URL_DATA:
+      self.url = attrs[self.URI]
+      self.headers = {}
     elif name == self.URL:
       self.tag = self.URL
+      self.url = ""
+    elif name == self.HEADER:
+      self.headers[attrs[self.HEADER_NAME]] = attrs[self.HEADER_VALUE]
     elif name == self.ROOT_URL:
       self.tag = self.ROOT_URL
     elif name == self.INPUTS:
@@ -159,7 +176,10 @@ class CrawlerPersister:
 
 
   def __end_element(self, name):
-    if name == self.URL:
+    if name == self.URL_DATA:
+      self.array[self.url] = self.headers
+      headers = {}
+    elif name == self.URL:
       self.array.append(self.url)
     elif name == self.FORM:
       self.form[1] = self.inputs
@@ -171,10 +191,10 @@ class CrawlerPersister:
 
 
   def __char_data(self, data):
-    if self.tag == self.URL:
-      self.url = data.strip(" ");
-    elif self.tag == self.ROOT_URL:
+    if self.tag == self.ROOT_URL:
       self.rootURL = data.strip(" ");
+    elif self.tag == self.URL:
+      self.url = data.strip(" ")
     self.tag = ""
 
   
