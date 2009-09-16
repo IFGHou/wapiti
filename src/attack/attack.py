@@ -44,6 +44,9 @@ class Attack:
     CONFIG_DIR_NAME = "config/attacks"
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
     CONFIG_DIR = BASE_DIR+"/"+CONFIG_DIR_NAME
+
+    # The priority of the module, from 0 (first) to 10 (last). Default is 5
+    PRIORITY = 5
     
     def __init__(self,HTTP,reportGen):
         self.HTTP = HTTP

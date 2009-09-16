@@ -23,7 +23,6 @@ class mod_backup(Attack):
   doGET = False
   doPOST = False
 
-
   def __init__(self, HTTP, xmlRepGenerator):
     Attack.__init__(self, HTTP, xmlRepGenerator)
     self.payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)

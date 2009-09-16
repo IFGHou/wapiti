@@ -183,6 +183,8 @@ Supported options are:
         mod_instance.setTimeout(self.HTTP.getTimeOut())
       self.attacks.append(mod_instance)
 
+      self.attacks.sort(lambda a, b: a.PRIORITY - b.PRIORITY)
+
     for attack in self.attacks:
       attack.setVerbose(self.verbose)
       if self.color == 1:
