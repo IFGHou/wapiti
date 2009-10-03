@@ -39,15 +39,15 @@ class mod_backup(Attack):
     return err
 
 
-  def attackGET(self, page, dict, attackGET, headers = {}):
+  def attackGET(self, page, dict, headers = {}):
     for k in self.payloads:
       url = page + k
       
       if self.verbose==1 or self.verbose==2:
         print "+ "+url
 
-      if url not in attackGET:
-        attackGET.append(url)
+      if url not in self.attackedGET:
+        self.attackedGET.append(url)
         try:
           data,code = self.HTTP.send(url).getPageCode()
           err = self.__returnErrorByCode(code)

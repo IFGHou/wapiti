@@ -130,8 +130,6 @@ Supported options are:
 
   urls  = {}
   forms = []
-  attackedGET  = []
-  attackedPOST = []
 
   color   = 0
   verbose = 0
@@ -357,25 +355,29 @@ Supported options are:
             dictio[param.split('=')[0]] = param.split('=')[1]
 
     if self.verbose == 1:
-      print "+ "+_("attackGET")+" "+url
+      print "+ " + _("attackGET") + " "+url
       if params != []:
         print "  ", params
 
     for x in self.attacks:
       if x.doGET == True:
-        x.attackGET(page, dictio, self.attackedGET, headers)
+        if x.require != []:
+          x.loadRequire([y for y in self.attacks if y.name in x.require])
+        x.attackGET(page, dictio, headers)
 
 # TODO : re-implement blind SQL injection
 
   def __attackPOST(self, form):
     "Launch attacks based on HTTP POST method."
     if self.verbose == 1:
-      print "+ "+_("attackPOST")+" "+form[0]
+      print "+ " + _("attackPOST") + " " + form[0]
       print "  ", form[1]
 
     for x in self.attacks:
       if x.doPOST == True:
-        x.attackPOST(form, self.attackedPOST)
+        if x.require != []:
+          x.loadRequire([y for y in self.attacks if y.name in x.require])
+        x.attackPOST(form)
 
 # TODO : re-implement blind SQL injection
 

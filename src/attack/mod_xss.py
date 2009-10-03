@@ -42,14 +42,14 @@ class mod_xss(Attack):
     Attack.__init__(self, HTTP, xmlRepGenerator)
     self.independant_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
-  def attackGET(self, page, dict, attackedGET, headers = {}):
+  def attackGET(self, page, dict, headers = {}):
     """This method performs the cross site scripting attack (XSS attack) with method GET"""
     # page est l'url de script
     # dict est l'ensembre des variables et leurs valeurs
     if dict == {}:
       url = page+"?__XSS__"
-      if url not in attackedGET:
-        attackedGET.append(url)
+      if url not in self.attackedGET:
+        self.attackedGET.append(url)
         err = ""
         code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
         url = page+"?"+code
@@ -67,8 +67,8 @@ class mod_xss(Attack):
         tmp = dict.copy()
         tmp[k] = "__XSS__"
         url = page+"?"+self.HTTP.uqe(tmp)
-        if url not in attackedGET:
-          attackedGET.append(url)
+        if url not in self.attackedGET:
+          self.attackedGET.append(url)
           # genere un identifiant unique a rechercher ensuite dans la page
           code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
           tmp[k] = code
@@ -84,7 +84,7 @@ class mod_xss(Attack):
             if self.findXSS(data, page, tmp, k, code):
               break
 
-  def attackPOST(self, form, attackedPOST):
+  def attackPOST(self, form):
     """This method performs the cross site scripting attack (XSS attack) with method POST"""
     headers = {"Accept": "text/plain"}
     page = form[0]
@@ -94,8 +94,8 @@ class mod_xss(Attack):
       log = params.copy()
 
       log[k] = "__XSS__"
-      if (page,log) not in attackedPOST:
-        attackedPOST.append((page, log))
+      if (page,log) not in self.attackedPOST:
+        self.attackedPOST.append((page, log))
         code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
         tmp[k] = code
         # will only memorize the last used payload (working or not) but the code will always be the good

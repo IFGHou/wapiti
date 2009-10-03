@@ -40,7 +40,21 @@ class Attack:
 
     doGET = True
     doPOST = True
+
+    # List of modules (strs) that must be launched before the current module
+    # Must be defined in the code of the module
+    require = []
+    # List of modules (objects) that must be launched before the current module
+    # Must be left empty in the code
+    deps = []
     
+    # List of attack's url already launched in the current module
+    attackedGET  = []
+    attackedPOST = []
+
+    vulnerableGET  = []
+    vulnerablePOST = []
+
     CONFIG_DIR_NAME = "config/attacks"
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
     CONFIG_DIR = BASE_DIR+"/"+CONFIG_DIR_NAME
@@ -63,8 +77,11 @@ class Attack:
         """This method loads the payloads for an attack from the specified file"""
         return self.auxText.readLines(fileName)
 
-    def attackGET(self, page, dict, attackedGET, headers = {}):
+    def attackGET(self, page, dict, headers = {}):
       return
 
-    def attackPOST(self,form,attackedPOST):
+    def attackPOST(self, form):
       return
+
+    def loadRequire(self, obj = []):
+      self.deps = obj
