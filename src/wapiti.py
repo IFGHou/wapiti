@@ -173,8 +173,9 @@ Supported options are:
 
     attack = __import__("attack")
 
+    print "[*] Loading modules :"
+    print "\t"+ ", ".join(attack.modules)
     for mod_name in attack.modules:
-      print "[*] Loading",mod_name
       mod = __import__("attack." + mod_name, fromlist=attack.modules) # on charge le module
       mod_instance = getattr(mod, mod_name)(self.HTTP, self.reportGen) # on appelle le constructeur
       if hasattr(mod_instance, "setTimeout"):
@@ -246,21 +247,41 @@ Supported options are:
 
     self.__initAttacks()
 
+    for x in self.attacks:
+      if x.doGET == False and x.doPOST == False:
+        continue
+      print "[+] Launching", x.name, "attacks"
+      if x.require != []:
+        x.loadRequire([y for y in self.attacks if y.name in x.require])
 
-    print "\n"+_("Attacking urls (GET)")+"..."
-    print "-----------------------"
-    for url, headers in self.urls.items():
-      #if url.find("?") != -1:
-      # some modules don't need query strings
-      self.__attackGET(url, headers)
+      if hasattr(x, "attack"):
+        x.attack(self.urls, self.forms)
+      else:
+        if x.doGET == True:
+          for url, headers in self.urls.items():
+            dictio = {}
+            params = []
+            page = url
 
-    print "\n"+_("Attacking forms (POST)")+"..."
-    print "-------------------------"
-    for form in self.forms:
-      if form[1] != {}:
-        self.__attackPOST(form)
+            if url.find("?") >= 0:
+              page = url.split('?')[0]
+              query = url.split('?')[1]
+              params = query.split('&')
+              if query.find("=") >= 0:
+                for param in params:
+                  dictio[param.split('=')[0]] = param.split('=')[1]
 
-# TODO : re-implement permanent XSS
+            if self.verbose == 1:
+              print "+ " + _("attackGET") + " "+url
+              if params != []:
+                print "  ", params
+
+            x.attackGET(page, dictio, headers)
+
+        if x.doPOST == True:
+          for form in self.forms:
+            if form[1] != {}:
+              x.attackPOST(form)
 
     if self.HTTP.getUploads() != []:
       print "\n"+_("Upload scripts found")+":"
@@ -338,47 +359,6 @@ Supported options are:
   def setOutputFile(self, outputFile):
     "Set the filename where the report will be written"
     self.outputFile = outputFile
-
-  def __attackGET(self, url, headers):
-    "Launch attacks based on HTTP GET methods"
-    dictio = {}
-    params = []
-    page = url
-
-    if url.find("?") >= 0:
-      page = url.split('?')[0]
-      query = url.split('?')[1]
-      params = query.split('&')
-      if query.find("=") >= 0:
-        for param in params:
-          dictio[param.split('=')[0]] = param.split('=')[1]
-
-    if self.verbose == 1:
-      print "+ " + _("attackGET") + " "+url
-      if params != []:
-        print "  ", params
-
-    for x in self.attacks:
-      if x.doGET == True:
-        if x.require != []:
-          x.loadRequire([y for y in self.attacks if y.name in x.require])
-        x.attackGET(page, dictio, headers)
-
-# TODO : re-implement blind SQL injection
-
-  def __attackPOST(self, form):
-    "Launch attacks based on HTTP POST method."
-    if self.verbose == 1:
-      print "+ " + _("attackPOST") + " " + form[0]
-      print "  ", form[1]
-
-    for x in self.attacks:
-      if x.doPOST == True:
-        if x.require != []:
-          x.loadRequire([y for y in self.attacks if y.name in x.require])
-        x.attackPOST(form)
-
-# TODO : re-implement blind SQL injection
 
 if __name__ == "__main__":
   doc = _("wapityDoc")

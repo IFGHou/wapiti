@@ -29,7 +29,6 @@ class mod_xss(Attack):
   
   name = "xss"
 
-  xss_history = {} # will be removed later
   HTTP = None
 
   # two dict for permanent XSS scanning
