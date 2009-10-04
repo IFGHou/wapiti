@@ -348,11 +348,10 @@ Supported options are:
     if url.find("?") >= 0:
       page = url.split('?')[0]
       query = url.split('?')[1]
-      if query.find("&") >= 0:
-        params = query.split('&')
-        if query.find("=") >= 0:
-          for param in params:
-            dictio[param.split('=')[0]] = param.split('=')[1]
+      params = query.split('&')
+      if query.find("=") >= 0:
+        for param in params:
+          dictio[param.split('=')[0]] = param.split('=')[1]
 
     if self.verbose == 1:
       print "+ " + _("attackGET") + " "+url
