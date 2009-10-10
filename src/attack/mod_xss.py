@@ -268,15 +268,18 @@ class mod_xss(Attack):
 
             if referer != "":
               print _("Found XSS in"), page
-              print "  "+_("with params")+" =", self.HTTP.encode(params)
-              print "  "+_("coming from"), referer
+              if self.color == 0:
+                print "  " + _("with params") + " =", self.HTTP.encode(params)
+              else:
+                print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
+              print "  " + _("coming from"), referer
 
             else:
               if self.color == 0:
-                print _("XSS")+" ("+var+") "+_("in"), page
-                print "\t"+_("Evil url")+":", url
+                print _("XSS") + " (" + var + ") " + _("in"), page
+                print "\t" + _("Evil url") + ":", url
               else:
-                print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
             return True
 
       # this should not happen but you never know...
@@ -323,7 +326,10 @@ class mod_xss(Attack):
 
               if referer != "":
                 print _("Found XSS in"), page
-                print "  "+_("with params")+" =", self.HTTP.encode(params)
+                if self.color == 0:
+                  print "  " + _("with params") + " =", self.HTTP.encode(params)
+                else:
+                  print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
                 print "  "+_("coming from"), referer
 
               else:
@@ -331,7 +337,7 @@ class mod_xss(Attack):
                   print _("XSS")+" ("+var+") "+_("in"), page
                   print "\t"+_("Evil url")+":", url
                 else:
-                  print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                  print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
               return True
 
       elif elem['type'] == "tag":
@@ -378,7 +384,10 @@ class mod_xss(Attack):
                                   _("XSS")+" ("+var+")")
               if referer != "":
                 print _("Found XSS in"), page
-                print "  "+_("with params")+" =", self.HTTP.encode(params)
+                if self.color == 0:
+                  print "  " + _("with params") + " =", self.HTTP.encode(params)
+                else:
+                  print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
                 print "  "+_("coming from"), referer
 
               else:
@@ -386,7 +395,7 @@ class mod_xss(Attack):
                   print _("XSS")+" ("+var+") "+_("in"), page
                   print "\t"+_("Evil url")+":", url
                 else:
-                  print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                  print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
               return True
 
         else:
@@ -432,7 +441,10 @@ class mod_xss(Attack):
                                   _("XSS")+" ("+var+")")
               if referer != "":
                 print _("Found XSS in"), page
-                print "  "+_("with params")+" =", self.HTTP.encode(params)
+                if self.color == 0:
+                  print "  " + _("with params") + " =", self.HTTP.encode(params)
+                else:
+                  print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
                 print "  "+_("coming from"), referer
 
               else:
@@ -440,7 +452,7 @@ class mod_xss(Attack):
                   print _("XSS")+" ("+var+") in", page
                   print "\t"+_("Evil url")+":", url
                 else:
-                  print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                  print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
               return True
 
       # another common one
@@ -489,7 +501,10 @@ class mod_xss(Attack):
 
             if referer != "":
               print _("Found XSS in"), page
-              print "  "+_("with params")+" =", self.HTTP.encode(params)
+              if self.color == 0:
+                print "  "+_("with params")+" =", self.HTTP.encode(params)
+              else:
+                print "  "+_("with params")+" =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
               print "  "+_("coming from"), referer
 
             else:
@@ -497,7 +512,7 @@ class mod_xss(Attack):
                 print _("XSS")+" ("+var+") in", page
                 print "\t"+_("Evil url")+":", url
               else:
-                print _("XSS"), ":", url.replace(var+"=", "\033[0;31m"+var+"\033[0;0m=")
+                print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
             return True
 
       data = data.replace(code, "none", 1)#reduire la zone de recherche

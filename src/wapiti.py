@@ -250,38 +250,12 @@ Supported options are:
     for x in self.attacks:
       if x.doGET == False and x.doPOST == False:
         continue
+      print
       print "[+] Launching", x.name, "attacks"
       if x.require != []:
         x.loadRequire([y for y in self.attacks if y.name in x.require])
 
-      if hasattr(x, "attack"):
-        x.attack(self.urls, self.forms)
-      else:
-        if x.doGET == True:
-          for url, headers in self.urls.items():
-            dictio = {}
-            params = []
-            page = url
-
-            if url.find("?") >= 0:
-              page = url.split('?')[0]
-              query = url.split('?')[1]
-              params = query.split('&')
-              if query.find("=") >= 0:
-                for param in params:
-                  dictio[param.split('=')[0]] = param.split('=')[1]
-
-            if self.verbose == 1:
-              print "+ " + _("attackGET") + " "+url
-              if params != []:
-                print "  ", params
-
-            x.attackGET(page, dictio, headers)
-
-        if x.doPOST == True:
-          for form in self.forms:
-            if form[1] != {}:
-              x.attackPOST(form)
+      x.attack(self.urls, self.forms)
 
     if self.HTTP.getUploads() != []:
       print "\n"+_("Upload scripts found")+":"

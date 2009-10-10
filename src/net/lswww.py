@@ -272,6 +272,31 @@ Supported options are:
         p = linkParser2(url, self.verbose)
         p.feed(htmlSource)
 
+    # Sometimes the page is badcoded but the parser doesn't see the error
+    # So if we got no links we can force a correction of the page
+    if len(p.liens) == 0:
+      if tidyhere == 1:
+        options = dict(output_xhtml = 1, add_xml_decl = 1,
+            indent = 1, tidy_mark = 0)
+        htmlSource = str(tidy.parseString(htmlSource, **options))
+        try:
+          p.reset()
+          p.feed(htmlSource)
+        except HTMLParser.HTMLParseError, err:
+          pass
+      elif BeautifulSouphere == 1:
+        htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+        try:
+          p.reset()
+          p.feed(htmlSource)
+        except HTMLParser.HTMLParseError, err:
+          p = linkParser2(url, self.verbose)
+          p.feed(htmlSource)
+      # last chance
+      else:
+        p = linkParser2(url, self.verbose)
+        p.feed(htmlSource)
+
     for lien in p.uploads:
       self.uploads.append(self.correctlink(lien, current, currentdir, proto))
     for lien in p.liens:

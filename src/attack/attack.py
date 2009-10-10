@@ -59,6 +59,10 @@ class Attack:
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
     CONFIG_DIR = BASE_DIR+"/"+CONFIG_DIR_NAME
 
+    # Color codes
+    STD = "\033[0;0m"
+    RED = "\033[0;31m"
+
     # The priority of the module, from 0 (first) to 10 (last). Default is 5
     PRIORITY = 5
     
@@ -85,3 +89,30 @@ class Attack:
 
     def loadRequire(self, obj = []):
       self.deps = obj
+
+    def attack(self, urls, forms):
+      if self.doGET == True:
+        for url, headers in urls.items():
+          dictio = {}
+          params = []
+          page = url
+
+          if url.find("?") >= 0:
+            page = url.split('?')[0]
+            query = url.split('?')[1]
+            params = query.split('&')
+            if query.find("=") >= 0:
+              for param in params:
+                dictio[param.split('=')[0]] = param.split('=')[1]
+
+          if self.verbose == 1:
+            print "+ " + _("attackGET") + " "+url
+            if params != []:
+              print "  ", params
+
+          self.attackGET(page, dictio, headers)
+
+      if self.doPOST == True:
+        for form in forms:
+          if form[1] != {}:
+            self.attackPOST(form)
