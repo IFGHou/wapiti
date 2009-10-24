@@ -61,7 +61,10 @@ class Attack:
 
     # Color codes
     STD = "\033[0;0m"
-    RED = "\033[0;31m"
+    RED = "\033[1;31m"
+    YELLOW = "\033[1;33m"
+    CYAN = "\033[1;36m"
+    GB = "\033[0;30m\033[47m"
 
     # The priority of the module, from 0 (first) to 10 (last). Default is 5
     PRIORITY = 5

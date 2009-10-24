@@ -59,7 +59,7 @@ class mod_blindsql(Attack):
 
       for payload in self.blind_sql_payloads:
         payload = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
-        url = page+"?__TIME__"
+        url = page + "?__TIME__"
         if url not in self.attackedGET:
           self.attackedGET.append(url)
           url = page + "?" + payload
@@ -103,19 +103,15 @@ class mod_blindsql(Attack):
             try:
               data, code = self.HTTP.send(url).getPageCode()
             except socket.timeout:
+              self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
+                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                              url, self.HTTP.encode(tmp),
+                                              _("Blind SQL Injection") + " (" + k + ")")
               if self.color == 0:
-                self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
-                                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                url, self.HTTP.encode(tmp),
-                                                _("Blind SQL Injection") + " (" + k + ")")
                 print _("Blind SQL Injection") + " (" + k + ") " + _("in"), page
                 print "\t" + _("Evil url") + ":", url
               else:
-                self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
-                                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                url, self.HTTP.encode(tmp),
-                                                _("Blind SQL Injection") + ": " + url.replace(k + "=", "\033[0;31m" + k + "\033[0;0m="))
-                print _("Blind SQL Injection") + ":", url.replace(k + "=", "\033[0;31m" + k + "\033[0;0m=")
+                print _("Blind SQL Injection") + ":", url.replace(k + "=", self.RED + k + self.STD + "=")
               # ok, one of the payloads worked
               # log the url and exit
               self.attackedGET.append(url_to_log)
@@ -125,7 +121,7 @@ class mod_blindsql(Attack):
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp),
-                                                VulDescrip.ERROR_500 + "<br>" + VulDescrip.ERROR_500_DESCRIPTION)
+                                                VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
                 print _("500 HTTP Error code with")
                 print "\t" + _("Evil url") + ":", url
 
@@ -151,7 +147,7 @@ class mod_blindsql(Attack):
 
           headers = {"Accept": "text/plain"}
           if self.verbose == 2:
-            print "+ "+page
+            print "+ " + page
             print "  ", tmp
           try:
             data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
@@ -161,7 +157,11 @@ class mod_blindsql(Attack):
                                             page, self.HTTP.encode(tmp),
                                             _("Blind SQL Injection coming from") + " "+form[2])
             print _("Blind SQL Injection in"), page
-            print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+            if self.color == 1:
+              print "  " + _("with params") + " =", \
+                    self.HTTP.encode(tmp).replace(k + "=", self.RED + k + "=" + self.STD)
+            else:
+              print "  " + _("with params") + " =", self.HTTP.encode(tmp)
             print "  " + _("coming from"), form[2]
 
             # one of the payloads worked. log the form and exit

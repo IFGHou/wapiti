@@ -50,14 +50,14 @@ class mod_crlf(Attack):
         try:
           if self.HTTP.send(url).getInfo().has_key('Wapiti'):
             self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              page, payload, err+" "+_("(QUERY_STRING)"))
+                              page, payload, err + " " + _("(QUERY_STRING)"))
             print _("CRLF Injection (QUERY_STRING) in"), page
-            print "\t"+_("Evil url")+":", url
+            print "\t" + _("Evil url") + ":", url
         except socket.timeout:
           self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                            page, payload, err+" "+_("(QUERY_STRING)"))
+                            page, payload, err + " " + _("(QUERY_STRING)"))
           print _("Timeout (QUERY_STRING) in"), page
-          print "\t"+_("caused by")+":", url
+          print "\t" + _("caused by") + ":", url
         except httplib.BadStatusLine:
           #print "Error: The server did not understand this request"
           pass
@@ -67,28 +67,25 @@ class mod_crlf(Attack):
         err = ""
         tmp = dict.copy()
         tmp[k] = payload
-        url = page+"?"+self.HTTP.encode(tmp)
+        url = page + "?" + self.HTTP.encode(tmp)
         if url not in self.attackedGET:
           if self.verbose == 2:
-            print "+ "+url
+            print "+ " + url
           try:
             if self.HTTP.send(url).getInfo().has_key('Wapiti'):
               err = "CRLF Injection"
+              self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                page, self.HTTP.encode(tmp), err + " (" + k + ")")
               if self.color == 0:
-                self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  page, self.HTTP.encode(tmp), err+" ("+k+")")
-                print err, "("+k+") "+_("in"), page
-                print "\t"+_("Evil url")+":", url
+                print err, "(" + k + ") " + _("in"), page
+                print "\t" + _("Evil url") + ":", url
               else:
-                self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  page, self.HTTP.encode(tmp).
-                                  err+" : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
-                print err, ":", url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m=")
+                print err, ":", url.replace(k + "=", self.RED + k + "=" + self.STD)
           except socket.timeout:
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                              page, self.HTTP.encode(tmp), err+" ("+k+")")
-            print _("Timeout")+" ("+k+") "+_("in"), page
-            print "\t"+_("caused by")+":", url
+                              page, self.HTTP.encode(tmp), err + " (" + k + ")")
+            print _("Timeout") + " (" + k + ") " + _("in"), page
+            print "\t" + _("caused by") + ":", url
           except httplib.BadStatusLine:
             print "Error: The server did not understand this request"
           self.attackedGET.append(url)

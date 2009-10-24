@@ -125,24 +125,21 @@ class mod_exec(Attack):
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
+            self.reportGen.logVulnerability(Vulnerability.EXEC,
+                                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                            url, self.HTTP.encode(tmp), err+" ("+k+")")
             if self.color == 0:
-              self.reportGen.logVulnerability(Vulnerability.EXEC,
-                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp), err+" ("+k+")")
-              print err, "("+k+") "+_("in"), page
+              print err, "(" + k + ") " + _("in"), page
               print "\t" + _("Evil url") + ":", url
             else:
-              self.reportGen.logVulnerability(Vulnerability.EXEC,Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp),
-                                              err+" : "+url.replace(k+"=", "\033[0;31m"+k+"\033[0;0m="))
-              print err, ":", url.replace(k + "=", "\033[0;31m" + k + "\033[0;0m=")
+              print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
           else:
             if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp),
-                                              VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
+                                              VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
 

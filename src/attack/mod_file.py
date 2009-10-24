@@ -117,7 +117,7 @@ class mod_file(Attack):
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url, self.HTTP.quote(payload),
-                                VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
+                                VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
     for k in dict.keys():
@@ -142,30 +142,27 @@ class mod_file(Attack):
             err = ""
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                              url,self.HTTP.encode(tmp), err+" ("+k+")")
+                              url,self.HTTP.encode(tmp), err + " (" + k + ")")
             print _("Timeout") + " (" + k + ") " + _("in"), page
             print "\t" + _("caused by") + ":", url
           else:
             err, inc, warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
+            self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                              url,self.HTTP.encode(tmp), err + " (" + k + ")")
             if self.color == 0:
-              self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url,self.HTTP.encode(tmp), err+" ("+k+")")
               print err, "(" + k + ") " + _("in"), page
               print "\t" + _("Evil url") + ":", url
             else:
-              self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,url, self.HTTP.encode(tmp),
-                                err + " : "+url.replace(k + "=", "\033[0;31m" + k + "\033[0;0m="))
-              print err, ":", url.replace(k + "=", "\033[0;31m" + k + "\033[0;0m=")
+              print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
           else:
             if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url, self.HTTP.encode(tmp),
-                                VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
+                                VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
 
@@ -216,7 +213,7 @@ class mod_file(Attack):
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp),
-                                              _("500 HTTP Error code coming from") + " " + form[2] + "<br>"+
+                                              _("500 HTTP Error code coming from") + " " + form[2] + "<br />"+
                                               VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code in"), page
               print "  " + _("with params")+" =", self.HTTP.encode(tmp)

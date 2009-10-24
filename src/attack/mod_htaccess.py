@@ -50,9 +50,13 @@ class mod_htaccess(Attack):
       if err1 != "ok":
         data1 = self.HTTP.send(url).getPage()
         #htaccess protection detected
-        print "\033[1;31m/!\ Found HtAccess protection : ", url, "\033[1;m"
+        if self.color == 1:
+          print self.RED + "/!\ Found HtAccess protection : ", url + self.STD
+        else:
+          print "/!\ Found HtAccess protection : ", url
+
         
-        data2, code2 = self.HTTP.send(url, method="ABC").getPageCode()
+        data2, code2 = self.HTTP.send(url, method = "ABC").getPageCode()
         err2 = self.__returnErrorByCode(code2)
         
         
@@ -60,29 +64,48 @@ class mod_htaccess(Attack):
           #htaccess bypass success
           
           #print output informations by verbosity option
-          if self.verbose == 1 or self.verbose == 2:
-            print "\033[1;36m|HTTP Code : ", headers["status"], ":", err1, "\033[1;m"
+          if self.verbose >= 1:
+            if self.color == 1:
+              print self.CYAN + "|HTTP Code : ", headers["status"], ":", err1 + self.STD
+            else:
+              print "|HTTP Code : ", headers["status"], ":", err1
+
           if self.verbose == 2:
-            print "\033[1;33mCode source :\033[1;m"
-            print "\033[1;41m", data1, "\033[1;m"
+            if self.color == 1:
+              print self.YELLOW + "Code source :" + self.STD
+              print self.GB + data1 + self.STD
+            else:
+              print "Code source :"
+              print data1
           
           #report xml generator (ROMULUS) not implemented for htaccess
           self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, url,"",err+" HtAccess")
-          print "\033[1;31m\t.htaccess bypass : ", url, "\033[1;m"
+          if self.color ==1:
+            print self.RED + "\t.htaccess bypass : ", url + self.STD
+          else:
+            print "\t.htaccess bypass : ", url
 
           #print output informations by verbosity option
-          if self.verbose == 1 or self.verbose == 2:
-            print "\033[1;36m|HTTP Code : ", code2, "\033[1;m"
+          if self.verbose >= 1:
+            if self.color ==1:
+              print self.CYAN + "|HTTP Code : ", code2 + self.STD
+            else:
+              print "|HTTP Code : ", code2
+
           if self.verbose == 2:
-            print "\033[1;33mCode source :\033[1;m"
-            print "\033[1;41m", data2, "\033[1;m"
+            if self.color == 1:
+              print self.YELLOW + "Code source :" + self.STD
+              print self.GB + data2 + self.STD
+            else:
+              print "Code source :"
+              print data2
 
         else:
           if code1 == 500 and err500 == 0:
             err500 = 1
             self.reportGen.logVulnerability(Vulnerability.EXEC, Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "", VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
             print "500 HTTP Error code with"
-            print "\tEvil url:",url
+            print "\tEvil url:", url
             
           #add the url with the url attacked
         self.attackedGET.append(url)

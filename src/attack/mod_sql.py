@@ -132,19 +132,15 @@ class mod_sql(Attack):
             err = self.__findPatternInResponse(data)
           if err != "":
             vuln_found += 1
+            self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+                                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                            url, self.HTTP.encode(tmp),
+                                            err + " (" + k + ")")
             if self.color == 0:
-              self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp),
-                                              err + " (" + k + ")")
               print err, "(" + k + ") " + _("in"), page
               print "\t" + _("Evil url") + ":", url
             else:
-              self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url,self.HTTP.encode(tmp),
-                                              err + " : " + url.replace(k + "=", "\033[0;31m" + k + "\033[0;0m="))
-              print err, ":", url.replace(k + "=", "\033[0;31m" + k + "\033[0;0m=")
+              print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
 
             tmp[k] = "__PAYLOAD__"
             self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp))
@@ -193,7 +189,11 @@ class mod_sql(Attack):
                                           page, self.HTTP.encode(tmp),
                                           err + " " + _("coming from") + " " + form[2])
           print err, _("in"), page
-          print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+          if self.color == 1:
+            print "  " + _("with params") + " =", \
+                self.HTTP.encode(tmp).replace(k + "=", self.RED + k + "=" + self.STD)
+          else:
+            print "  " + _("with params") + " =", self.HTTP.encode(tmp)
           print "  " + _("coming from"), form[2]
 
           tmp[k] = "__PAYLOAD__"

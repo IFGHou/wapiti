@@ -251,10 +251,16 @@ Supported options are:
       if x.doGET == False and x.doPOST == False:
         continue
       print
-      print "[+] Launching", x.name, "attacks"
       if x.require != []:
-        x.loadRequire([y for y in self.attacks if y.name in x.require])
+        t = [y.name for y in self.attacks if y.name in x.require and (y.doGET or y.doPOST)]
+        if x.require != t:
+          print "[!] Missing dependecies for module", x.name + ":"
+          print "\t" , ",".join([y for y in x.require if y not in t])
+          continue
+        else:
+          x.loadRequire([y for y in self.attacks if y.name in x.require])
 
+      print "[+] Launching", x.name, "attacks"
       x.attack(self.urls, self.forms)
 
     if self.HTTP.getUploads() != []:

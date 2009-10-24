@@ -872,6 +872,15 @@ class linkParser2:
     entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
     return entity_re.subn(self.__substitute_entity, string)[0]
 
+  def reset(self):
+    self.liens = []
+    self.forms = []
+    self.form_values = {}
+    self.inform = 0
+    self.current_form_url = ""
+    self.uploads = []
+    self.current_form_method = "get"
+
 if __name__ == "__main__":
   def _(text):
     return text
