@@ -43,7 +43,7 @@ class mod_backup(Attack):
     for k in self.payloads:
       url = page + k
       
-      if self.verbose >= 1:
+      if self.verbose == 2:
         print "+ " + url
 
       if url not in self.attackedGET:

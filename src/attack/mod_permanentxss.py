@@ -68,7 +68,7 @@ class mod_permanentxss(Attack):
                 print _("Found permanent XSS in"), url, _("with"),attack_url
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
-                                _("Found permanent XSS in")+" "+url+" "+_("with")+" "+attack_url)
+                                _("Found permanent XSS in") + " " + url + " " + _("with") + " " + attack_url)
                 break
 
       headers = {"Accept": "text/plain"}

@@ -48,7 +48,7 @@ class mod_crlf(Attack):
         if self.verbose == 2:
           print "+ " + page + "?http://www.google.fr\\r\\nWapiti: SVN version"
         try:
-          if self.HTTP.send(url).getInfo().has_key('Wapiti'):
+          if self.HTTP.send(url).getInfo().has_key('wapiti'):
             self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               page, payload, err + " " + _("(QUERY_STRING)"))
             print _("CRLF Injection (QUERY_STRING) in"), page
@@ -72,7 +72,7 @@ class mod_crlf(Attack):
           if self.verbose == 2:
             print "+ " + url
           try:
-            if self.HTTP.send(url).getInfo().has_key('Wapiti'):
+            if self.HTTP.send(url).getInfo().has_key('wapiti'):
               err = "CRLF Injection"
               self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 page, self.HTTP.encode(tmp), err + " (" + k + ")")
@@ -80,7 +80,7 @@ class mod_crlf(Attack):
                 print err, "(" + k + ") " + _("in"), page
                 print "\t" + _("Evil url") + ":", url
               else:
-                print err, ":", url.replace(k + "=", self.RED + k + "=" + self.STD)
+                print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
           except socket.timeout:
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               page, self.HTTP.encode(tmp), err + " (" + k + ")")
