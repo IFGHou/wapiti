@@ -159,7 +159,7 @@ class mod_blindsql(Attack):
             print _("Blind SQL Injection in"), page
             if self.color == 1:
               print "  " + _("with params") + " =", \
-                    self.HTTP.encode(tmp).replace(k + "=", self.RED + k + "=" + self.STD)
+                    self.HTTP.encode(tmp).replace(k + "=", self.RED + k + self.STD + "=")
             else:
               print "  " + _("with params") + " =", self.HTTP.encode(tmp)
             print "  " + _("coming from"), form[2]

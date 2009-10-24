@@ -41,7 +41,7 @@ class mod_permanentxss(Attack):
 
   def __init__(self, HTTP, xmlRepGenerator):
     Attack.__init__(self, HTTP, xmlRepGenerator)
-    self.independant_payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
+    self.independant_payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
 
   # permanent XSS
   def attack(self, urls, forms):
@@ -65,7 +65,17 @@ class mod_permanentxss(Attack):
               except socket.timeout:
                 dat = ""
               if self.validXSS(dat, code):
-                print _("Found permanent XSS in"), url, _("with"),attack_url
+                if self.color == 0:
+                  print _("Found permanent XSS in"), url, _("with"), attack_url
+                else:
+                  end = attack_url.index(code) - 1
+                  start = attack_url.rfind("&", 0, end)
+                  if start == -1:
+                    start =  attack_url.rfind("?", 0, end)
+                  k = attack_url[start+1:end]
+                  print _("Found permanent XSS in"), url
+                  print "  " + _("with"), attack_url.replace(k + "=", self.RED + k + self.STD + "=")
+
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
                                 _("Found permanent XSS in") + " " + url + " " + _("with") + " " + attack_url)
@@ -88,16 +98,21 @@ class mod_permanentxss(Attack):
                   if self.validXSS(dat,code):
                     self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY, url,"",
-                                _("Found permanent XSS attacked by")+" "+self.POST_XSS[code][0]+
-                                " "+_("with field")+" "+self.HTTP.uqe(self.POST_XSS[code][1]))
-                    print _("Found permanent XSS in"), self.POST_XSS[code][0]
-                    print "  "+_("attacked by"), self.POST_XSS[code][2], _("with fields"), self.HTTP.uqe(tmp)
+                                _("Found permanent XSS attacked by") + " " + self.POST_XSS[code][0] + \
+                                " " + _("with field") + " " + self.HTTP.uqe(self.POST_XSS[code][1]))
+                    print _("Found permanent XSS in"), url
+                    if self.color ==1:
+                      print "  " + _("attacked by"), self.POST_XSS[code][2], _("with fields"), \
+                          self.HTTP.uqe(tmp).replace(k + "=", self.RED + k + self.STD + "=")
+                    else:
+                      print "  " + _("attacked by"), self.POST_XSS[code][2], _("with fields"), self.HTTP.uqe(tmp)
+                    if url != self.POST_XSS[code][0]:
+                      print "  " + _("injected from ") + self.POST_XSS[code][0]
                     break
 
   def validXSS(self,page,code):
     soup = BeautifulSoup.BeautifulSoup(page)
     for x in soup.findAll("script"):
-      #if x.string != None: print "-"+x.string+"-"
       if x.string != None and x.string in [t.replace("__XSS__", code) for t in self.script_ok]:
         return True
       elif x.has_key("src"):

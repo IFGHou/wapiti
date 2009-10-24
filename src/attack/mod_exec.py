@@ -108,7 +108,7 @@ class mod_exec(Attack):
         url = page + "?" + self.HTTP.encode(tmp)
         if url not in self.attackedGET:
           if self.verbose == 2:
-            print "+ "+url
+            print "+ " + url
           self.attackedGET.append(url)
           if cmd == 1: continue
           try:
@@ -176,14 +176,20 @@ class mod_exec(Attack):
                                             _("Timeout coming from") + " " + form[2])
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
+
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.EXEC,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp),
                                             err + " " + _("coming from") + " " + form[2])
             print err, _("in"), page
-            print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+            if self.color == 1:
+              print "  " + _("with params") + " =", \
+                  self.HTTP.encode(tmp).replace(k + "=", self.RED + k + self.STD + "=")
+            else:
+              print "  " + _("with params") + " =", self.HTTP.encode(tmp)
             print "  " + _("coming from"), form[2]
+
           else:
             if code == "500" and err500 == 0:
               err500 = 1

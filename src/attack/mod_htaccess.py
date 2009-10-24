@@ -50,10 +50,8 @@ class mod_htaccess(Attack):
       if err1 != "ok":
         data1 = self.HTTP.send(url).getPage()
         #htaccess protection detected
-        if self.color == 1:
-          print self.RED + "/!\ Found HtAccess protection : ", url + self.STD
-        else:
-          print "/!\ Found HtAccess protection : ", url
+        if self.verbose >= 1:
+          print "Found HtAccess protection : ", url
 
         
         data2, code2 = self.HTTP.send(url, method = "ABC").getPageCode()
@@ -81,9 +79,9 @@ class mod_htaccess(Attack):
           #report xml generator (ROMULUS) not implemented for htaccess
           self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, url,"",err+" HtAccess")
           if self.color ==1:
-            print self.RED + "\t.htaccess bypass : ", url + self.STD
+            print self.RED + "\t.htaccess bypass vulnerability : ", url + self.STD
           else:
-            print "\t.htaccess bypass : ", url
+            print "\t.htaccess bypass vulnerability : ", url
 
           #print output informations by verbosity option
           if self.verbose >= 1:
