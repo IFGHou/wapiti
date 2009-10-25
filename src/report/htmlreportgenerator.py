@@ -44,7 +44,7 @@ class HTMLReportGenerator(XMLReportGenerator):
 		/css (contains the stylesheet files)
 		/images (contains the required images)
     """
-    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
+    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
     REPORT_DIR = "report_template"
     REPORT_XML_FILE = "vulnerabilities.xml"
     
@@ -55,12 +55,12 @@ class HTMLReportGenerator(XMLReportGenerator):
 	"""
         if os.path.exists(fileName):
             rmtree(fileName)
-        copytree(self.BASE_DIR+"/"+self.REPORT_DIR,fileName)
+        copytree(self.BASE_DIR + "/" + self.REPORT_DIR, fileName)
 	
 	"""
         Create a xml file with a report of the vulnerabilities calling the Base class
         """
-        XMLReportGenerator.generateReport(self, fileName+"/"+self.REPORT_XML_FILE)
+        XMLReportGenerator.generateReport(self, fileName + "/" + self.REPORT_XML_FILE)
 
 
 if __name__ == "__main__":
@@ -78,15 +78,15 @@ if __name__ == "__main__":
         xmlGen.addVulnerabilityType(XSS)
         xmlGen.addVulnerabilityType(CRLF)
         xmlGen.addVulnerabilityType(EXEC)
-        xmlGen.logVulnerability("SQL Inyection","1","url1","parameter1","info1")
-        xmlGen.logVulnerability("SQL Inyection","2","url2","parameter2","info2")
-        xmlGen.logVulnerability("SQL Inyection","2","url3","parameter3","info3")
-        xmlGen.logVulnerability("SQL Inyection","3","url4","parameter4","info4")
-        xmlGen.logVulnerability("Cross Site Scripting","3","url5","parameter5","info5")
-        xmlGen.logVulnerability("Cross Site Scripting","3","url6","parameter6","info6")
-        xmlGen.logVulnerability("Cross Site Scripting","2","url7","parameter7","info7")
-        xmlGen.logVulnerability("Cross Site Scripting","1","url8","parameter8","info8")
-        xmlGen.logVulnerability("Google Hacking","2","url9","parameter9","info9")
+        xmlGen.logVulnerability("SQL Inyection", "1", "url1", "parameter1", "info1")
+        xmlGen.logVulnerability("SQL Inyection", "2", "url2", "parameter2", "info2")
+        xmlGen.logVulnerability("SQL Inyection", "2", "url3", "parameter3", "info3")
+        xmlGen.logVulnerability("SQL Inyection", "3", "url4", "parameter4", "info4")
+        xmlGen.logVulnerability("Cross Site Scripting", "3", "url5", "parameter5", "info5")
+        xmlGen.logVulnerability("Cross Site Scripting", "3", "url6", "parameter6", "info6")
+        xmlGen.logVulnerability("Cross Site Scripting", "2", "url7", "parameter7", "info7")
+        xmlGen.logVulnerability("Cross Site Scripting", "1", "url8", "parameter8", "info8")
+        xmlGen.logVulnerability("Google Hacking", "2", "url9", "parameter9", "info9")
         """xmlGen.printToFile("sampleReport.xml")"""
 	xmlGen.generateReport("hola")
 	

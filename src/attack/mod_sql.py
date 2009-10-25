@@ -105,8 +105,8 @@ class mod_sql(Attack):
           if code == "500":
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url,payload,
-                                            VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
+                                            url, payload,
+                                            VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
             print _("500 HTTP Error code with")
             print "\t" + _("Evil url") + ":", url
         self.attackedGET.append(url)
@@ -150,7 +150,7 @@ class mod_sql(Attack):
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp),
-                                              VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
+                                              VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
           self.attackedGET.append(url)

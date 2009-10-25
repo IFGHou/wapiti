@@ -68,17 +68,19 @@ class mod_permanentxss(Attack):
                 if self.color == 0:
                   print _("Found permanent XSS in"), url, _("with"), attack_url
                 else:
-                  end = attack_url.index(code) - 1
-                  start = attack_url.rfind("&", 0, end)
+                  end = self.GET_XSS[code].index(code) - 1
+                  start = self.GET_XSS[code].rfind("&", 0, end)
                   if start == -1:
-                    start =  attack_url.rfind("?", 0, end)
-                  k = attack_url[start+1:end]
+                    start =  self.GET_XSS[code].rfind("?", 0, end)
+                  k = self.GET_XSS[code][start+1:end]
                   print _("Found permanent XSS in"), url
                   print "  " + _("with"), attack_url.replace(k + "=", self.RED + k + self.STD + "=")
 
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
-                                _("Found permanent XSS in") + " " + url + " " + _("with") + " " + attack_url)
+                                _("Found permanent XSS in") + \
+                                    " " + url + " " + \
+                                    _("with") + " " + self.HTTP.escape(attack_url))
                 break
 
       headers = {"Accept": "text/plain"}
@@ -95,11 +97,11 @@ class mod_permanentxss(Attack):
                     dat = self.HTTP.send(url).getPage()
                   except socket.timeout:
                     dat = ""
-                  if self.validXSS(dat,code):
+                  if self.validXSS(dat, code):
                     self.reportGen.logVulnerability(Vulnerability.XSS,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY, url,"",
+                                Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
                                 _("Found permanent XSS attacked by") + " " + self.POST_XSS[code][0] + \
-                                " " + _("with field") + " " + self.HTTP.uqe(self.POST_XSS[code][1]))
+                                " " + _("with fields") + " " + self.HTTP.encode(self.POST_XSS[code][1])) #CHANGE from uqe to encode
                     print _("Found permanent XSS in"), url
                     if self.color ==1:
                       print "  " + _("attacked by"), self.POST_XSS[code][2], _("with fields"), \

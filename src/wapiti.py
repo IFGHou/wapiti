@@ -276,10 +276,10 @@ Supported options are:
     self.reportGen.generateReport(self.outputFile)
     print "\n"+_("Report")
     print "------"
-    print _("A report has been generated in the file")+" "+self.outputFile
+    print _("A report has been generated in the file") + " " + self.outputFile
     if self.reportGeneratorType == "html":
-      print _("Open")+" "+self.outputFile+ \
-            "/index.html "+_("with a browser to see this report.")
+      print _("Open") + " " + self.outputFile+ \
+            "/index.html " + _("with a browser to see this report.")
 
   def setTimeOut(self, timeout = 6.0):
     "Set the timeout for the time waiting for a HTTP response"

@@ -77,7 +77,8 @@ class mod_htaccess(Attack):
               print data1
           
           #report xml generator (ROMULUS) not implemented for htaccess
-          self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, url,"",err+" HtAccess")
+          self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, \
+              url, "", err + " HtAccess")
           if self.color ==1:
             print self.RED + "\t.htaccess bypass vulnerability : ", url + self.STD
           else:
@@ -101,7 +102,8 @@ class mod_htaccess(Attack):
         else:
           if code1 == 500 and err500 == 0:
             err500 = 1
-            self.reportGen.logVulnerability(Vulnerability.EXEC, Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "", VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
+            self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, \
+                url, "", VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
             print "500 HTTP Error code with"
             print "\tEvil url:", url
             

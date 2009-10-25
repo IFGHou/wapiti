@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-08 14:00+0200\n"
+"POT-Creation-Date: 2009-10-25 17:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../wapiti.py:192 ../wapiti.py:196
+#: ../wapiti.py:192 ../wapiti.py:196 ../wapiti.py:244
 msgid "No links or forms found in this page !"
 msgstr "¡No se han encontrado enlaces ni formularios en esta página!"
 
-#: ../wapiti.py:193 ../wapiti.py:197
+#: ../wapiti.py:193 ../wapiti.py:197 ../wapiti.py:245
 msgid "Make sure the url is correct."
 msgstr "Asegurate de que la URL es correcta"
 
@@ -36,23 +36,23 @@ msgstr "Atacando formularios (POST)"
 msgid "Looking for permanent XSS"
 msgstr "Buscando XSS permantentes"
 
-#: ../wapiti.py:216 ../wapiti.py:220
+#: ../wapiti.py:216 ../wapiti.py:220 ../wapiti.py:267
 msgid "Upload scripts found"
 msgstr "Scripts de upload encontrados"
 
-#: ../wapiti.py:226 ../wapiti.py:230
+#: ../wapiti.py:226 ../wapiti.py:230 ../wapiti.py:277
 msgid "Report"
 msgstr "Informe"
 
-#: ../wapiti.py:228 ../wapiti.py:232
+#: ../wapiti.py:228 ../wapiti.py:232 ../wapiti.py:279
 msgid "A report has been generated in the file"
 msgstr "Un informe ha sido generado en el fichero"
 
-#: ../wapiti.py:230 ../wapiti.py:234
+#: ../wapiti.py:230 ../wapiti.py:234 ../wapiti.py:281
 msgid "Open"
 msgstr "Abre"
 
-#: ../wapiti.py:231 ../wapiti.py:235
+#: ../wapiti.py:231 ../wapiti.py:235 ../wapiti.py:282
 msgid "with a browser to see this report."
 msgstr "con un navegador para ver el informe"
 
@@ -64,7 +64,7 @@ msgstr "Ataque GET"
 msgid "attackPOST"
 msgstr "Ataque POST"
 
-#: ../wapiti.py:371 ../wapiti.py:372
+#: ../wapiti.py:371 ../wapiti.py:372 ../wapiti.py:344
 msgid "wapityDoc"
 msgstr ""
 " Wapiti - Escáner de vulnerabilidades de aplicaciones web\n"
@@ -115,11 +115,12 @@ msgstr ""
 " --scope <scope>\n"
 " \tEstablece el ambito del escaneo de Wapiti:\n"
 " \t\t+ \"page\":   para analizar solamente la página pasada en la URL\n"
-" \t\t+ \"folder\": para analizar todos los enlaces a las página que están en la "
-"misma caperta que la de la URL pasada a Wapiti.\n"
-" \t\t+ \"domain\": para analizar todos los enlaces a las página que están en el "
-"mismo dominio que la de la URL pasada a Wapiti.\n"
-" \tSi el ámbito no se indica, Wapiti escanea todo el árbol bajo la URL dada.\n"
+" \t\t+ \"folder\": para analizar todos los enlaces a las página que están en "
+"la misma caperta que la de la URL pasada a Wapiti.\n"
+" \t\t+ \"domain\": para analizar todos los enlaces a las página que están en "
+"el mismo dominio que la de la URL pasada a Wapiti.\n"
+" \tSi el ámbito no se indica, Wapiti escanea todo el árbol bajo la URL "
+"dada.\n"
 " \n"
 " -m <module>\n"
 " --module <module>\n"
@@ -152,16 +153,17 @@ msgstr ""
 " \n"
 " -i <file>\n"
 " --continue <file>\n"
-" \tEste parámetro indica a Wapiti que debe continuar el escaneo a partir de los "
-"datos del archivo especificado. Este fichero debe contener información de un "
-"escaneo previo.\n"
+" \tEste parámetro indica a Wapiti que debe continuar el escaneo a partir de "
+"los datos del archivo especificado. Este fichero debe contener información "
+"de un escaneo previo.\n"
 " \tEl fichero es opcional, si no se especifica, Wapiti toma un archivo por "
 "defecto de la carpeta \"scans\".\n"
 " \n"
 " -k <file>\n"
 " --attack <file>\n"
-" \tEste parámetro le indica a Wapiti que debe realizar los ataques sin escanear "
-"de nuevo el sitio web, siguiendo la información del fichero que se le pasa.\n"
+" \tEste parámetro le indica a Wapiti que debe realizar los ataques sin "
+"escanear de nuevo el sitio web, siguiendo la información del fichero que se "
+"le pasa.\n"
 " \tEl fichero es opcional, si no se especifica, Wapiti toma un archivo por "
 "defecto de la carpeta \"scans\".\n"
 " \n"
@@ -169,60 +171,72 @@ msgstr ""
 " --help\n"
 " \tPara sacar este mensaje de uso de Wapiti"
 
-#: ../wapiti.py:452 ../wapiti.py:475
+#: ../wapiti.py:452 ../wapiti.py:475 ../wapiti.py:428
 msgid "Wapiti-SVN (wapiti.sourceforge.net)"
 msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
 
 #: ../net/lswww.py:138 ../net/lswww.py:161 ../net/lswww.py:143
-#: ../net/lswww.py:167
+#: ../net/lswww.py:167 ../net/lswww.py:151 ../net/lswww.py:183
 msgid "Invalid link argument"
 msgstr "Argumento link (URL) inválido"
 
 #: ../net/lswww.py:471 ../net/lswww.py:519 ../net/lswww.py:509
+#: ../net/lswww.py:556
 msgid "URLs"
 msgstr "URLs"
 
 #: ../net/lswww.py:478 ../net/lswww.py:526 ../net/lswww.py:516
+#: ../net/lswww.py:563
 msgid "Forms Info"
 msgstr "Información de los formularios"
 
 #: ../net/lswww.py:480 ../net/lswww.py:528 ../net/lswww.py:518
+#: ../net/lswww.py:565
 msgid "From"
 msgstr "De"
 
 #: ../net/lswww.py:481 ../net/lswww.py:529 ../net/lswww.py:519
+#: ../net/lswww.py:566
 msgid "To"
 msgstr "A"
 
 #: ../net/lswww.py:489 ../net/lswww.py:537 ../net/lswww.py:527
+#: ../net/lswww.py:574
 msgid "Upload Scripts"
 msgstr "Scripts de subida"
 
 #: ../net/lswww.py:676 ../net/lswww.py:724 ../net/lswww.py:722
+#: ../net/lswww.py:769
 msgid "Forms"
 msgstr "Formularios"
 
 #: ../net/lswww.py:679 ../net/lswww.py:727 ../net/lswww.py:725
+#: ../net/lswww.py:772
 msgid "Form"
 msgstr "Formulario"
 
 #: ../net/lswww.py:683 ../net/lswww.py:731 ../net/lswww.py:729
+#: ../net/lswww.py:776
 msgid "Method"
 msgstr "Metodo"
 
 #: ../net/lswww.py:684 ../net/lswww.py:732 ../net/lswww.py:730
+#: ../net/lswww.py:777
 msgid "Intputs"
 msgstr "Entradas"
 
 #: ../net/lswww.py:689 ../net/lswww.py:737 ../net/lswww.py:735
+#: ../net/lswww.py:782
 msgid "Selects"
 msgstr "Seleccionables (Selects)"
 
 #: ../net/lswww.py:694 ../net/lswww.py:742 ../net/lswww.py:740
+#: ../net/lswww.py:787
 msgid "TextAreas"
 msgstr "Areas de texto"
 
 #: ../net/lswww.py:699 ../net/lswww.py:747 ../net/lswww.py:745
+#: ../net/lswww.py:792
 msgid "URLS"
 msgstr "URLs"
 
@@ -285,17 +299,18 @@ msgstr ""
 " --scope <scope>\n"
 " \tEstablece el ambito del escaneo de Wapiti:\n"
 " \t\t+ \"page\":   para analizar solamente la página pasada en la URL\n"
-" \t\t+ \"folder\": para analizar todos los enlaces a las página que están en la "
-"misma caperta que la de la URL pasada a Wapiti.\n"
-" \t\t+ \"domain\": para analizar todos los enlaces a las página que están en el "
-"mismo dominio que la de la URL pasada a Wapiti.\n"
-" \tSi el ámbito no se indica, Wapiti escanea todo el árbol bajo la URL dada.\n"
+" \t\t+ \"folder\": para analizar todos los enlaces a las página que están en "
+"la misma caperta que la de la URL pasada a Wapiti.\n"
+" \t\t+ \"domain\": para analizar todos los enlaces a las página que están en "
+"el mismo dominio que la de la URL pasada a Wapiti.\n"
+" \tSi el ámbito no se indica, Wapiti escanea todo el árbol bajo la URL "
+"dada.\n"
 " \n"
 " -i <file>\n"
 " --continue <file>\n"
-" \tEste parámetro indica a Wapiti que debe continuar el escaneo a partir de los "
-"datos del archivo especificado. Este fichero debe contener información de un "
-"escaneo previo.\n"
+" \tEste parámetro indica a Wapiti que debe continuar el escaneo a partir de "
+"los datos del archivo especificado. Este fichero debe contener información "
+"de un escaneo previo.\n"
 " \tEl fichero es opcional, si no se especifica, Wapiti toma un archivo por "
 "defecto de la carpeta \"scans\".\n"
 " \n"
@@ -305,11 +320,13 @@ msgstr ""
 
 #: ../attack/crlfattack.py:48 ../attack/crlfattack.py:53
 #: ../attack/execattack.py:80 ../attack/execattack.py:86
-#: ../attack/sqlinjectionattack.py:98
+#: ../attack/sqlinjectionattack.py:98 ../attack/mod_crlf.py:53
+#: ../attack/mod_crlf.py:58 ../attack/mod_exec.py:82 ../attack/mod_exec.py:88
+#: ../attack/mod_sql.py:98
 msgid "(QUERY_STRING)"
 msgstr "(QUERY_STRING)"
 
-#: ../attack/crlfattack.py:49
+#: ../attack/crlfattack.py:49 ../attack/mod_crlf.py:54
 msgid "CRLF Injection (QUERY_STRING) in"
 msgstr "Inyección CRLF (QUERY_STRING) en"
 
@@ -324,18 +341,33 @@ msgstr "Inyección CRLF (QUERY_STRING) en"
 #: ../attack/sqlinjectionattack.py:258 ../attack/sqlinjectionattack.py:276
 #: ../attack/xssattack.py:276 ../attack/xssattack.py:331
 #: ../attack/xssattack.py:386 ../attack/xssattack.py:440
-#: ../attack/xssattack.py:497
+#: ../attack/xssattack.py:497 ../attack/mod_crlf.py:55
+#: ../attack/mod_crlf.py:81 ../attack/mod_exec.py:90 ../attack/mod_exec.py:99
+#: ../attack/mod_exec.py:133 ../attack/mod_exec.py:144
+#: ../attack/mod_file.py:113 ../attack/mod_file.py:122
+#: ../attack/mod_file.py:156 ../attack/mod_file.py:167
+#: ../attack/mod_sql.py:100 ../attack/mod_sql.py:111 ../attack/mod_sql.py:141
+#: ../attack/mod_sql.py:155 ../attack/mod_blindsql.py:75
+#: ../attack/mod_blindsql.py:84 ../attack/mod_blindsql.py:112
+#: ../attack/mod_blindsql.py:126 ../attack/mod_xss.py:279
+#: ../attack/mod_xss.py:337 ../attack/mod_xss.py:395 ../attack/mod_xss.py:452
+#: ../attack/mod_xss.py:512 ../attack/mod_xss.py:229 ../attack/mod_xss.py:287
+#: ../attack/mod_xss.py:345 ../attack/mod_xss.py:402 ../attack/mod_xss.py:462
 msgid "Evil url"
 msgstr "URL vulnerable"
 
 #: ../attack/crlfattack.py:54 ../attack/filehandlingattack.py:100
-#: ../attack/filehandlingattack.py:101
+#: ../attack/filehandlingattack.py:101 ../attack/mod_crlf.py:59
+#: ../attack/mod_file.py:102 ../attack/mod_file.py:103
 msgid "Timeout (QUERY_STRING) in"
 msgstr "Timeout (QUERY_STRING) en"
 
 #: ../attack/crlfattack.py:55 ../attack/crlfattack.py:83
 #: ../attack/execattack.py:77 ../attack/execattack.py:119
 #: ../attack/filehandlingattack.py:102 ../attack/filehandlingattack.py:145
+#: ../attack/mod_crlf.py:60 ../attack/mod_crlf.py:88 ../attack/mod_exec.py:79
+#: ../attack/mod_exec.py:121 ../attack/mod_file.py:104
+#: ../attack/mod_file.py:147
 msgid "caused by"
 msgstr "causado por"
 
@@ -346,21 +378,32 @@ msgstr "causado por"
 #: ../attack/sqlinjectionattack.py:137 ../attack/sqlinjectionattack.py:188
 #: ../attack/sqlinjectionattack.py:257 ../attack/xssattack.py:275
 #: ../attack/xssattack.py:330 ../attack/xssattack.py:385
+#: ../attack/mod_crlf.py:80 ../attack/mod_crlf.py:87 ../attack/mod_exec.py:120
+#: ../attack/mod_exec.py:132 ../attack/mod_exec.py:185
+#: ../attack/mod_file.py:146 ../attack/mod_file.py:155
+#: ../attack/mod_file.py:207 ../attack/mod_sql.py:140 ../attack/mod_sql.py:191
+#: ../attack/mod_blindsql.py:111 ../attack/mod_xss.py:278
+#: ../attack/mod_xss.py:336 ../attack/mod_xss.py:394 ../attack/mod_xss.py:228
+#: ../attack/mod_xss.py:286 ../attack/mod_xss.py:344
 msgid "in"
 msgstr "en"
 
 #: ../attack/crlfattack.py:82 ../attack/execattack.py:118
-#: ../attack/filehandlingattack.py:144
+#: ../attack/filehandlingattack.py:144 ../attack/mod_crlf.py:87
+#: ../attack/mod_exec.py:120 ../attack/mod_file.py:146
 msgid "Timeout"
 msgstr "Timeout"
 
 #: ../attack/execattack.py:76 ../attack/execattack.py:171
-#: ../attack/filehandlingattack.py:198
+#: ../attack/filehandlingattack.py:198 ../attack/mod_exec.py:78
+#: ../attack/mod_exec.py:170 ../attack/mod_file.py:197
 msgid "Timeout in"
 msgstr "Timeout en"
 
 #: ../attack/execattack.py:87 ../attack/filehandlingattack.py:109
 #: ../attack/filehandlingattack.py:110 ../attack/sqlinjectionattack.py:99
+#: ../attack/mod_exec.py:89 ../attack/mod_file.py:111
+#: ../attack/mod_file.py:112 ../attack/mod_sql.py:99
 msgid "(QUERY_STRING) in"
 msgstr "(QUERY_STRING) en"
 
@@ -368,6 +411,10 @@ msgstr "(QUERY_STRING) en"
 #: ../attack/filehandlingattack.py:119 ../attack/filehandlingattack.py:167
 #: ../attack/sqlinjectionattack.py:107 ../attack/sqlinjectionattack.py:151
 #: ../attack/sqlinjectionattack.py:233 ../attack/sqlinjectionattack.py:275
+#: ../attack/mod_exec.py:98 ../attack/mod_exec.py:143
+#: ../attack/mod_file.py:121 ../attack/mod_file.py:166
+#: ../attack/mod_sql.py:110 ../attack/mod_sql.py:154
+#: ../attack/mod_blindsql.py:83 ../attack/mod_blindsql.py:125
 msgid "500 HTTP Error code with"
 msgstr "Error HTTP 500 con"
 
@@ -378,7 +425,20 @@ msgstr "Error HTTP 500 con"
 #: ../attack/sqlinjectionattack.py:304 ../attack/sqlinjectionattack.py:319
 #: ../attack/xssattack.py:270 ../attack/xssattack.py:325
 #: ../attack/xssattack.py:380 ../attack/xssattack.py:434
-#: ../attack/xssattack.py:491
+#: ../attack/xssattack.py:491 ../attack/mod_exec.py:171
+#: ../attack/mod_exec.py:187 ../attack/mod_exec.py:190
+#: ../attack/mod_exec.py:202 ../attack/mod_file.py:198
+#: ../attack/mod_file.py:209 ../attack/mod_file.py:212
+#: ../attack/mod_file.py:224 ../attack/mod_sql.py:193 ../attack/mod_sql.py:196
+#: ../attack/mod_sql.py:211 ../attack/mod_blindsql.py:161
+#: ../attack/mod_blindsql.py:164 ../attack/mod_blindsql.py:179
+#: ../attack/mod_xss.py:271 ../attack/mod_xss.py:273 ../attack/mod_xss.py:329
+#: ../attack/mod_xss.py:331 ../attack/mod_xss.py:387 ../attack/mod_xss.py:389
+#: ../attack/mod_xss.py:444 ../attack/mod_xss.py:446 ../attack/mod_xss.py:504
+#: ../attack/mod_xss.py:506 ../attack/mod_xss.py:221 ../attack/mod_xss.py:223
+#: ../attack/mod_xss.py:279 ../attack/mod_xss.py:281 ../attack/mod_xss.py:337
+#: ../attack/mod_xss.py:339 ../attack/mod_xss.py:394 ../attack/mod_xss.py:396
+#: ../attack/mod_xss.py:454 ../attack/mod_xss.py:456
 msgid "with params"
 msgstr "con parámetros"
 
@@ -391,67 +451,98 @@ msgstr "con parámetros"
 #: ../attack/sqlinjectionattack.py:320 ../attack/xssattack.py:271
 #: ../attack/xssattack.py:326 ../attack/xssattack.py:381
 #: ../attack/xssattack.py:435 ../attack/xssattack.py:492
+#: ../attack/mod_exec.py:172 ../attack/mod_exec.py:184
+#: ../attack/mod_exec.py:191 ../attack/mod_exec.py:203
+#: ../attack/mod_file.py:199 ../attack/mod_file.py:206
+#: ../attack/mod_file.py:213 ../attack/mod_file.py:225
+#: ../attack/mod_sql.py:190 ../attack/mod_sql.py:197 ../attack/mod_sql.py:212
+#: ../attack/mod_blindsql.py:165 ../attack/mod_blindsql.py:180
+#: ../attack/mod_xss.py:274 ../attack/mod_xss.py:332 ../attack/mod_xss.py:390
+#: ../attack/mod_xss.py:447 ../attack/mod_xss.py:507 ../attack/mod_xss.py:224
+#: ../attack/mod_xss.py:282 ../attack/mod_xss.py:340 ../attack/mod_xss.py:397
+#: ../attack/mod_xss.py:457
 msgid "coming from"
 msgstr "viniendo de"
 
 #: ../attack/execattack.py:177 ../attack/filehandlingattack.py:197
+#: ../attack/mod_exec.py:176 ../attack/mod_file.py:196
 msgid "Timeout coming from"
 msgstr "Timeout viniendo de"
 
 #: ../attack/execattack.py:194 ../attack/filehandlingattack.py:217
 #: ../attack/sqlinjectionattack.py:196 ../attack/sqlinjectionattack.py:316
+#: ../attack/mod_exec.py:199 ../attack/mod_file.py:221
+#: ../attack/mod_sql.py:208 ../attack/mod_blindsql.py:176
 msgid "500 HTTP Error code coming from"
 msgstr "Error HTTP 500 viniendo de"
 
 #: ../attack/execattack.py:196 ../attack/filehandlingattack.py:219
 #: ../attack/sqlinjectionattack.py:198 ../attack/sqlinjectionattack.py:318
+#: ../attack/mod_exec.py:201 ../attack/mod_file.py:223
+#: ../attack/mod_sql.py:210 ../attack/mod_blindsql.py:178
 msgid "500 HTTP Error code in"
 msgstr "Error HTTP 500 en"
 
-#: ../attack/sqlinjectionattack.py:223
+#: ../attack/sqlinjectionattack.py:223 ../attack/mod_blindsql.py:73
 msgid "Blind SQL Injection (QUERY_STRING)"
 msgstr "Inyección ciega SQL (QUERY_STRING)"
 
-#: ../attack/sqlinjectionattack.py:224
+#: ../attack/sqlinjectionattack.py:224 ../attack/mod_blindsql.py:74
 msgid "Blind SQL Injection (QUERY_STRING) in"
 msgstr "Inyección ciega SQL (QUERY_STRING) en"
 
 #: ../attack/sqlinjectionattack.py:256 ../attack/sqlinjectionattack.py:257
 #: ../attack/sqlinjectionattack.py:263 ../attack/sqlinjectionattack.py:264
 #: ../config/vulnerabilities/vulnerabilities.xml:17
+#: ../attack/mod_blindsql.py:109 ../attack/mod_blindsql.py:111
+#: ../attack/mod_blindsql.py:114
 msgid "Blind SQL Injection"
 msgstr "Inyección ciega SQL"
 
-#: ../attack/sqlinjectionattack.py:302
+#: ../attack/sqlinjectionattack.py:302 ../attack/mod_blindsql.py:158
 msgid "Blind SQL Injection coming from"
 msgstr "Inyección ciega SQL viniendo de"
 
-#: ../attack/sqlinjectionattack.py:303
+#: ../attack/sqlinjectionattack.py:303 ../attack/mod_blindsql.py:159
 msgid "Blind SQL Injection in"
 msgstr "Inyección ciega SQL en"
 
 #: ../attack/xssattack.py:132 ../attack/xssattack.py:135
-#: ../attack/xssattack.py:155
+#: ../attack/xssattack.py:155 ../attack/mod_xss.py:133
+#: ../attack/mod_xss.py:136 ../attack/mod_xss.py:156
+#: ../attack/mod_permanentxss.py:69 ../attack/mod_permanentxss.py:76
+#: ../attack/mod_permanentxss.py:81 ../attack/mod_permanentxss.py:103
+#: ../attack/mod_permanentxss.py:105
 msgid "Found permanent XSS in"
 msgstr "Encontrado XSS permanente en"
 
 #: ../attack/xssattack.py:132 ../attack/xssattack.py:135
+#: ../attack/mod_xss.py:133 ../attack/mod_xss.py:136
+#: ../attack/mod_permanentxss.py:69 ../attack/mod_permanentxss.py:77
+#: ../attack/mod_permanentxss.py:81 ../attack/mod_permanentxss.py:83
 msgid "with"
 msgstr "con"
 
-#: ../attack/xssattack.py:153
+#: ../attack/xssattack.py:153 ../attack/mod_xss.py:154
+#: ../attack/mod_permanentxss.py:101 ../attack/mod_permanentxss.py:103
 msgid "Found permanent XSS attacked by"
 msgstr "Encontrados XSS permanentes atacados mediante"
 
-#: ../attack/xssattack.py:154
+#: ../attack/xssattack.py:154 ../attack/mod_xss.py:155
+#: ../attack/mod_permanentxss.py:102
 msgid "with field"
 msgstr "con campo"
 
-#: ../attack/xssattack.py:156
+#: ../attack/xssattack.py:156 ../attack/mod_xss.py:157
+#: ../attack/mod_permanentxss.py:105 ../attack/mod_permanentxss.py:108
+#: ../attack/mod_permanentxss.py:107 ../attack/mod_permanentxss.py:110
 msgid "attacked by"
 msgstr "atacado por"
 
-#: ../attack/xssattack.py:156
+#: ../attack/xssattack.py:156 ../attack/mod_xss.py:157
+#: ../attack/mod_permanentxss.py:105 ../attack/mod_permanentxss.py:108
+#: ../attack/mod_permanentxss.py:104 ../attack/mod_permanentxss.py:107
+#: ../attack/mod_permanentxss.py:110
 msgid "with fields"
 msgstr "con campos"
 
@@ -465,12 +556,29 @@ msgstr "con campos"
 #: ../attack/xssattack.py:439 ../attack/xssattack.py:442
 #: ../attack/xssattack.py:482 ../attack/xssattack.py:487
 #: ../attack/xssattack.py:496 ../attack/xssattack.py:499
+#: ../attack/mod_xss.py:261 ../attack/mod_xss.py:266 ../attack/mod_xss.py:278
+#: ../attack/mod_xss.py:281 ../attack/mod_xss.py:319 ../attack/mod_xss.py:324
+#: ../attack/mod_xss.py:336 ../attack/mod_xss.py:339 ../attack/mod_xss.py:378
+#: ../attack/mod_xss.py:383 ../attack/mod_xss.py:394 ../attack/mod_xss.py:397
+#: ../attack/mod_xss.py:435 ../attack/mod_xss.py:440 ../attack/mod_xss.py:451
+#: ../attack/mod_xss.py:454 ../attack/mod_xss.py:494 ../attack/mod_xss.py:499
+#: ../attack/mod_xss.py:511 ../attack/mod_xss.py:514 ../attack/mod_xss.py:211
+#: ../attack/mod_xss.py:216 ../attack/mod_xss.py:228 ../attack/mod_xss.py:231
+#: ../attack/mod_xss.py:269 ../attack/mod_xss.py:274 ../attack/mod_xss.py:286
+#: ../attack/mod_xss.py:289 ../attack/mod_xss.py:328 ../attack/mod_xss.py:333
+#: ../attack/mod_xss.py:344 ../attack/mod_xss.py:347 ../attack/mod_xss.py:385
+#: ../attack/mod_xss.py:390 ../attack/mod_xss.py:401 ../attack/mod_xss.py:404
+#: ../attack/mod_xss.py:444 ../attack/mod_xss.py:449 ../attack/mod_xss.py:461
+#: ../attack/mod_xss.py:464
 msgid "XSS"
 msgstr "XSS"
 
 #: ../attack/xssattack.py:269 ../attack/xssattack.py:324
 #: ../attack/xssattack.py:379 ../attack/xssattack.py:433
-#: ../attack/xssattack.py:490
+#: ../attack/xssattack.py:490 ../attack/mod_xss.py:269
+#: ../attack/mod_xss.py:327 ../attack/mod_xss.py:385 ../attack/mod_xss.py:442
+#: ../attack/mod_xss.py:502 ../attack/mod_xss.py:219 ../attack/mod_xss.py:277
+#: ../attack/mod_xss.py:335 ../attack/mod_xss.py:392 ../attack/mod_xss.py:452
 msgid "Found XSS in"
 msgstr "Encontrado XSS en"
 
@@ -640,35 +748,39 @@ msgstr ""
 "caída del sistema."
 
 #: ../wapiti.py:481 ../wapiti.py:483 ../net/lswww.py:463 ../net/lswww.py:465
-#: ../net/lswww.py:472
+#: ../net/lswww.py:472 ../wapiti.py:436 ../wapiti.py:438 ../net/lswww.py:506
+#: ../net/lswww.py:515
 msgid "File"
 msgstr "Archivo"
 
-#: ../wapiti.py:481
+#: ../wapiti.py:481 ../wapiti.py:436
 msgid "loaded, Wapiti will use it to perform the attacks"
 msgstr "cargado, Wapiti lo usará para realizar los ataques"
 
-#: ../wapiti.py:483 ../net/lswww.py:465 ../net/lswww.py:472
+#: ../wapiti.py:483 ../net/lswww.py:465 ../net/lswww.py:472 ../wapiti.py:438
+#: ../net/lswww.py:515
 msgid "not found, Wapiti will scan again the web site"
 msgstr "no encontrado, Wapiti escaneará de nuevo el sitio web"
 
-#: ../net/lswww.py:463
+#: ../net/lswww.py:463 ../net/lswww.py:506
 msgid "loaded, the scan continues"
 msgstr "cargado, el escaneo continua"
 
 #: ../net/lswww.py:506 ../net/lswww.py:489 ../net/lswww.py:496
+#: ../net/lswww.py:535 ../net/lswww.py:542
 msgid "Notice"
 msgstr "Aviso"
 
-#: ../net/lswww.py:508 ../net/lswww.py:498
+#: ../net/lswww.py:508 ../net/lswww.py:498 ../net/lswww.py:544
 msgid "Scan stopped, the data has been saved in the file"
 msgstr "Escaneo detenido, la información ha sido guardada en el fichero"
 
-#: ../net/lswww.py:509 ../net/lswww.py:499
+#: ../net/lswww.py:509 ../net/lswww.py:499 ../net/lswww.py:545
 msgid "To continue this scan, you should launch Wapiti with"
 msgstr "Para continuar el escaneo se debe lanzar Wapiti con la opción"
 
 #: ../net/lswww.py:509 ../net/lswww.py:492 ../net/lswww.py:499
+#: ../net/lswww.py:538 ../net/lswww.py:545
 msgid "parameter"
 msgstr "como parametro"
 
@@ -676,7 +788,7 @@ msgstr "como parametro"
 msgid "500 HTTP Error code"
 msgstr "Código de error HTTP 500"
 
-#: ../wapiti.py:491
+#: ../wapiti.py:491 ../wapiti.py:446
 msgid ""
 "Attack process interrupted. To perform again the attack, lauch Wapiti with "
 "\"-i\" or \"-k\" parameter."
@@ -684,19 +796,25 @@ msgstr ""
 "Proceso de ataque interrumpido. Para realizar de nuevo el mismo ataque lanza "
 "Wapiti con el parametro \"-i\" o \"-k\""
 
-#: ../net/lswww.py:465
+#: ../net/lswww.py:465 ../net/lswww.py:508
 msgid "URLs to browse"
 msgstr "URL a escanear"
 
-#: ../net/lswww.py:468
+#: ../net/lswww.py:468 ../net/lswww.py:511
 msgid "URLs browsed"
 msgstr "URL escaneadas"
 
-#: ../net/lswww.py:491
+#: ../net/lswww.py:491 ../net/lswww.py:537
 msgid "This scan has been saved in the file"
 msgstr "El escaneo ha sido guardado en el fichero"
 
-#: ../net/lswww.py:492
+#: ../net/lswww.py:492 ../net/lswww.py:538
 msgid ""
 "You can use it to perform attacks without scanning again the web site with"
-msgstr "Puede ser usado para realizar ataques sin necesidad de escanear nuevamente el sitio web con"
+msgstr ""
+"Puede ser usado para realizar ataques sin necesidad de escanear nuevamente "
+"el sitio web con"
+
+#: ../attack/mod_permanentxss.py:110 ../attack/mod_permanentxss.py:112
+msgid "injected from "
+msgstr ""

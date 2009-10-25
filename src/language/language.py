@@ -37,10 +37,10 @@ class Language:
   """
 
   LANG_DIR = 'config/language/'
-  AVAILABLE_LANGS = ["es","en","fr"];
+  AVAILABLE_LANGS = ["es", "en", "fr"];
 
-  BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
-  LANG_PATH = BASE_DIR+"/"+LANG_DIR
+  BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
+  LANG_PATH = BASE_DIR + "/" + LANG_DIR
 
   def configure(self, lang=None):
     """
@@ -48,7 +48,7 @@ class Language:
     loads the language indicated as parameter or if the parameter is not specified,
     it will take the default language of the operating system.
     """
-    if lang==None: #if lang is not specified, default language is got
+    if lang == None: #if lang is not specified, default language is got
       defLocale  = locale.getdefaultlocale()
       langCounty = defLocale[0]   #en_UK
       lang       = langCounty[:2] #en

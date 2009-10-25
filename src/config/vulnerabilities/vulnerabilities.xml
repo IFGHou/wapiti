@@ -90,4 +90,14 @@
 			</reference>
 		</references>
 	</vulnerability>
+	<vulnerability name="Htaccess Bypass">
+		<description>Htaccess bypass description</description>
+		<solution text="Htaccess bypass solution"/>
+		<references>
+			<reference>
+        <title>http://blog.teusink.net/2009/07/common-apache-htaccess-misconfiguration.html</title>
+        <url>http://blog.teusink.net/2009/07/common-apache-htaccess-misconfiguration.html</url>
+			</reference>
+		</references>
+	</vulnerability>
 </vulnerabilities>

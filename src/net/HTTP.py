@@ -115,7 +115,7 @@ class HTTP:
 
   def escape(self,url):
     "Change special characters in their html entities representation."
-    return cgi.escape(url)
+    return cgi.escape(url, quote = True).replace("'", "%27")
 
   def setTimeOut(self, timeout = 6):
     "Set the time to wait for a response from the server."

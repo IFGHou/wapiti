@@ -26,7 +26,7 @@
 from xml.dom.minidom import Document
 from reportgenerator import ReportGenerator
 
-WAPITI_VERSION = "Wapiti 2.1.0";
+WAPITI_VERSION = "Wapiti SVN";
 
 class XMLReportGenerator(ReportGenerator):
     """
@@ -62,21 +62,21 @@ class XMLReportGenerator(ReportGenerator):
         self.__xmlDoc = Document()
         report = self.__addReport()
         generated = self.__xmlDoc.createElement("generatedBy")
-        generated.setAttribute("id",WAPITI_VERSION);
+        generated.setAttribute("id", WAPITI_VERSION);
         report.appendChild(generated)
         self.__vulnerabilityTypeList = self.__xmlDoc.createElement("bugTypeList")
         report.appendChild(self.__vulnerabilityTypeList)
 
     def __addReport(self):
         report = self.__xmlDoc.createElement("report")
-        report.setAttribute("type","security")
+        report.setAttribute("type", "security")
         self.__xmlDoc.appendChild(report)
         return report
 
     def __addToVulnerabilityTypeList(self,vulnerabilityType):
         self.__vulnerabilityTypeList.appendChild(vulnerabilityType)
 
-    def addVulnerabilityType(self,name,description="",solution="",references={}):
+    def addVulnerabilityType(self, name, description = "", solution = "", references = {}):
         """
         This method adds a vulnerability type, it can be invoked to include in the
         report the type. 
@@ -86,18 +86,18 @@ class XMLReportGenerator(ReportGenerator):
         in the report
         """
         vulnerabilityType = self.__xmlDoc.createElement("bugType")
-        vulnerabilityType.setAttribute("name",name)
+        vulnerabilityType.setAttribute("name", name)
         vulnerabilityType.appendChild(self.__xmlDoc.createElement("bugList"))
         self.__addToVulnerabilityTypeList(vulnerabilityType)
-        if description!= "":
+        if description != "":
           descriptionNode = self.__xmlDoc.createElement("description")
           descriptionNode.appendChild(self.__xmlDoc.createCDATASection(description))
           vulnerabilityType.appendChild(descriptionNode)
-        if solution!= "":
+        if solution != "":
           solutionNode = self.__xmlDoc.createElement("solution")
           solutionNode.appendChild(self.__xmlDoc.createCDATASection(solution))
           vulnerabilityType.appendChild(solutionNode)
-        if references!= "":
+        if references != "":
           referencesNode = self.__xmlDoc.createElement("references")
           for ref in references:
             referenceNode = self.__xmlDoc.createElement("reference")
@@ -121,14 +121,14 @@ class XMLReportGenerator(ReportGenerator):
             vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
         vulnerabilityType.childNodes[0].appendChild(vulnerability)
 
-    def logVulnerability(self,vulnerabilityTypeName,level,url,parameter,info):
+    def logVulnerability(self,vulnerabilityTypeName, level, url, parameter, info):
         """
         Store the information about the vulnerability to be printed later.
         The method printToFile(fileName) can be used to save in a file the
         vulnerabilities notified through the current method.
         """
         vulnerability = self.__xmlDoc.createElement("bug")
-        vulnerability.setAttribute("level",level)
+        vulnerability.setAttribute("level", level)
         urlNode = self.__xmlDoc.createElement("url")
         urlNode.appendChild(self.__xmlDoc.createTextNode(url))
         vulnerability.appendChild(urlNode)
@@ -147,9 +147,9 @@ class XMLReportGenerator(ReportGenerator):
         """
         f = open(fileName,"w")
         try:
-            f.write(self.__xmlDoc.toprettyxml(indent="    ",encoding="UTF-8"))
+          f.write(self.__xmlDoc.toprettyxml(indent="    ", encoding="UTF-8"))
         finally:
-            f.close()
+          f.close()
 
 if __name__ == "__main__":
     
@@ -166,15 +166,15 @@ if __name__ == "__main__":
         xmlGen.addVulnerabilityType(XSS)
         xmlGen.addVulnerabilityType(CRLF)
         xmlGen.addVulnerabilityType(EXEC)
-        xmlGen.logVulnerability("SQL Inyection","1","url1","parameter1","info1")
-        xmlGen.logVulnerability("SQL Inyection","2","url2","parameter2","info2")
-        xmlGen.logVulnerability("SQL Inyection","2","url3","parameter3","info3")
-        xmlGen.logVulnerability("SQL Inyection","3","url4","parameter4","info4")
-        xmlGen.logVulnerability("Cross Site Scripting","3","url5","parameter5","info5")
-        xmlGen.logVulnerability("Cross Site Scripting","3","url6","parameter6","info6")
-        xmlGen.logVulnerability("Cross Site Scripting","2","url7","parameter7","info7")
-        xmlGen.logVulnerability("Cross Site Scripting","1","url8","parameter8","info8")
-        xmlGen.logVulnerability("Google Hacking","2","url9","parameter9","info9")
+        xmlGen.logVulnerability("SQL Inyection", "1", "url1", "parameter1", "info1")
+        xmlGen.logVulnerability("SQL Inyection", "2", "url2", "parameter2", "info2")
+        xmlGen.logVulnerability("SQL Inyection", "2", "url3", "parameter3", "info3")
+        xmlGen.logVulnerability("SQL Inyection", "3", "url4", "parameter4", "info4")
+        xmlGen.logVulnerability("Cross Site Scripting", "3", "url5", "parameter5", "info5")
+        xmlGen.logVulnerability("Cross Site Scripting", "3", "url6", "parameter6", "info6")
+        xmlGen.logVulnerability("Cross Site Scripting", "2", "url7", "parameter7", "info7")
+        xmlGen.logVulnerability("Cross Site Scripting", "1", "url8", "parameter8", "info8")
+        xmlGen.logVulnerability("Google Hacking", "2", "url9", "parameter9", "info9")
         xmlGen.printToFile("sampleReport.xml")
     except SystemExit:
         pass
