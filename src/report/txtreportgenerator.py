@@ -45,24 +45,13 @@ class TXTReportGenerator(ReportGenerator):
     </report>
     """
 
-    SQL_INJECTION = "SQL Injection"
-    FILE_HANDLING = "File Handling"
-    XSS = "Cross Site Scripting"
-    CRLF = "CRLF"
-    EXEC = "Commands execution"
-
-    __sqlVulns=[]
-    __fileVulns=[]
-    __xssVulns=[]
-    __crlfVulns=[]
-    __execVulns=[]
-
-    __vulnTypes={}
+    __vulnTypes = {}
+    __vulns = {}
 
     def __init__(self):
       pass
 
-    def addVulnerabilityType(self,name,description="",solution="",references={}):
+    def addVulnerabilityType(self, name, description="", solution="", references={}):
         """
         This method adds a vulnerability type, it can be invoked to include in the
         report the type. 
@@ -73,38 +62,23 @@ class TXTReportGenerator(ReportGenerator):
         """
 
         if name not in self.__vulnTypes.keys():
-          self.__vulnTypes[name]={'desc':description,'sol':solution,'ref':references}
+          self.__vulnTypes[name] = {'desc':description, 'sol':solution, 'ref':references}
           #ref : title / url
+        if name not in self.__vulns.keys():
+          self.__vulns[name] = []
 
-    def __addToVulnerabilityList(self,vulnerabilityTypeName,vulnerability):
-        vulnerabilityType = None
-        for node in self.__vulnerabilityTypeList.childNodes:
-            if node.nodeType == node.ELEMENT_NODE and node.getAttribute("name") == vulnerabilityTypeName:
-                vulnerabilityType = node
-                break
-        if vulnerabilityType == None:
-            vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
-        vulnerabilityType.childNodes[0].appendChild(vulnerability)
-
-    def logVulnerability(self,vulnerabilityTypeName,level,url,parameter,info):
+    def logVulnerability(self, vulnerabilityTypeName, level, url, parameter, info):
         """
         Store the information about the vulnerability to be printed later.
         The method printToFile(fileName) can be used to save in a file the
         vulnerabilities notified through the current method.
         """
 
-        if vulnerabilityTypeName==self.SQL_INJECTION:
-          self.__sqlVulns.append([level,url,parameter,info])
-        elif vulnerabilityTypeName==self.FILE_HANDLING: 
-          self.__fileVulns.append([level,url,parameter,info])
-        elif vulnerabilityTypeName==self.XSS:
-          self.__xssVulns.append([level,url,parameter,info])
-        elif vulnerabilityTypeName==self.CRLF:
-          self.__crlfVulns.append([level,url,parameter,info])
-        elif vulnerabilityTypeName==self.EXEC:
-          self.__execVulns.append([level,url,parameter,info])
+        if vulnerabilityTypeName not in self.__vulns.keys():
+          self.__vulns[vulnerabilityTypeName] = []
+        self.__vulns[vulnerabilityTypeName].append([level, url, parameter, info])
 
-    def generateReport(self,fileName):
+    def generateReport(self, fileName):
         """
         Create a xml file with a report of the vulnerabilities which have been logged with 
         the method logVulnerability(vulnerabilityTypeName,level,url,parameter,info)
@@ -112,38 +86,16 @@ class TXTReportGenerator(ReportGenerator):
         f = open(fileName,"w")
         try:
             f.write("Vulnerabilities report -- Wapiti\n")
-            f.write("  http://wapiti.sourceforge.net\n\n")
-            for name in self.__vulnTypes.keys():
-                if name==self.SQL_INJECTION and self.__sqlVulns!=[]:
-                    f.write("SQL Injections vulnerabilities:\n")
-                    for vuln in self.__sqlVulns:
-                        f.write("    in url "+vuln[1]+"\n")
-                        f.write("    with parameters "+vuln[2]+"\n")
+            f.write("  http://wapiti.sourceforge.net/\n\n")
+            for name in self.__vulns.keys():
+
+                if self.__vulns[name] != []:
+                    f.write(name + ":\n")
+                    for vuln in self.__vulns[name]:
+                        f.write("    in url " + vuln[1] + "\n")
+                        f.write("    with parameters " + vuln[2] + "\n")
                         f.write("\n")
-                elif name==self.FILE_HANDLING and self.__fileVulns!=[]:
-                    f.write("File Handling vulnerabilities:\n")
-                    for vuln in self.__fileVulns:
-                        f.write("    in url "+vuln[1]+"\n")
-                        f.write("    with parameters "+vuln[2]+"\n")
-                        f.write("\n")
-                elif name==self.XSS and self.__xssVulns!=[]:
-                    f.write("Cross Site Scripting vulnerabilities:\n")
-                    for vuln in self.__xssVulns:
-                        f.write("    in url "+vuln[1]+"\n")
-                        f.write("    with parameters "+vuln[2]+"\n")
-                        f.write("\n")
-                elif name==self.CRLF and self.__crlfVulns!=[]:
-                    f.write("CRLF Injection vulnerabilities:\n")
-                    for vuln in self.__crlfVulns:
-                        f.write("    in url "+vuln[1]+"\n")
-                        f.write("    with parameters "+vuln[2]+"\n")
-                        f.write("\n")
-                elif name==self.EXEC and self.__execVulns!=[]:
-                    f.write("Command Execution vulnerabilities:\n")
-                    for vuln in self.__execVulns:
-                        f.write("    in url "+vuln[1]+"\n")
-                        f.write("    with parameters "+vuln[2]+"\n")
-                        f.write("\n")
+
             f.write("This report has been generated by Wapiti Web Application Scanner\n")
         finally:
             f.close()

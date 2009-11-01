@@ -207,12 +207,12 @@ class mod_xss(Attack):
             if params != {}:
               self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                self.HTTP.escape(url), self.HTTP.encode(params),
+                                url, self.HTTP.encode(params),
                                 _("XSS") + " (" + var + ")")
             else:
               self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                self.HTTP.escape(url), self.HTTP.escape(url.split("?")[1]),
+                                url, url.split("?")[1],
                                 _("XSS") + " (" + var + ")")
 
             if referer != "":
@@ -265,12 +265,12 @@ class mod_xss(Attack):
               if params != {}:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  self.HTTP.escape(url), self.HTTP.encode(params),
+                                  url, self.HTTP.encode(params),
                                   _("XSS") + "  (" + var + ")")
               else:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  self.HTTP.escape(url), self.HTTP.escape(url.split("?")[1]),
+                                  url, url.split("?")[1],
                                   _("XSS") + "  (" + var + ")")
 
               if referer != "":
@@ -324,12 +324,12 @@ class mod_xss(Attack):
               if params != {}:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  self.HTTP.escape(url), self.HTTP.encode(params),
+                                  url, self.HTTP.encode(params),
                                   _("XSS") + " (" + var + ")")
               else:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  self.HTTP.escape(url), self.HTTP.escape(url.split("?")[1]),
+                                  url, url.split("?")[1], \
                                   _("XSS") + " (" + var + ")")
               if referer != "":
                 print _("Found XSS in"), page
@@ -381,12 +381,12 @@ class mod_xss(Attack):
               if params != {}:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  self.HTTP.escape(url), self.HTTP.encode(params),
+                                  url, self.HTTP.encode(params),
                                   _("XSS") + " (" + var + ")")
               else:
                 self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  self.HTTP.escape(url), self.HTTP.escape(url.split("?")[1]),
+                                  url, url.split("?")[1],
                                   _("XSS") + " (" + var + ")")
               if referer != "":
                 print _("Found XSS in"), page
@@ -445,7 +445,7 @@ class mod_xss(Attack):
             else:
               self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                self.HTTP.escape(url), self.HTTP.escape(url.split("?")[1]),
+                                url, url.split("?")[1],
                                 _("XSS") + " (" + var + ")")
 
             if referer != "":

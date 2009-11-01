@@ -22,7 +22,19 @@
 
 function cleanHTMLTags(str)
 {
-    return str.replace("<", "&lt;", 'g').replace(">", "&gt;", 'g');
+    str = str.replace(/&/g, "&amp;");
+    str = str.replace(/>/g, "&gt;");
+    str = str.replace(/</g, "&lt;");
+    str = str.replace(/"/g, "&quot;");
+    str = str.replace(/'/g, "&#039;")
+    return str;
+/* Does not convert quotes
+    var el = document.createElement("div");
+    el.innerText = el.textContent = s;
+    s = el.innerHTML;
+    delete el;
+    return s;
+*/
 }
 
 function processTextForLink(str)

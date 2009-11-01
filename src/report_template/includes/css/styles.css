@@ -10,6 +10,7 @@ body {
 
 }
 a,a:link,a:visited,a:active {
+ cursor: pointer;
  cursor: hand;
  color: #003788;
  text-decoration:none;
