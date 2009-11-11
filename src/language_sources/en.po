@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-25 17:24+0100\n"
+"POT-Creation-Date: 2009-11-11 19:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -315,7 +315,7 @@ msgstr ""
 #: ../attack/execattack.py:80 ../attack/execattack.py:86
 #: ../attack/sqlinjectionattack.py:98 ../attack/mod_crlf.py:53
 #: ../attack/mod_crlf.py:58 ../attack/mod_exec.py:82 ../attack/mod_exec.py:88
-#: ../attack/mod_sql.py:98
+#: ../attack/mod_sql.py:98 ../attack/mod_exec.py:84 ../attack/mod_exec.py:90
 msgid "(QUERY_STRING)"
 msgstr "(QUERY_STRING)"
 
@@ -346,6 +346,8 @@ msgstr "CRLF Injection (QUERY_STRING) in"
 #: ../attack/mod_xss.py:337 ../attack/mod_xss.py:395 ../attack/mod_xss.py:452
 #: ../attack/mod_xss.py:512 ../attack/mod_xss.py:229 ../attack/mod_xss.py:287
 #: ../attack/mod_xss.py:345 ../attack/mod_xss.py:402 ../attack/mod_xss.py:462
+#: ../attack/mod_exec.py:92 ../attack/mod_exec.py:101
+#: ../attack/mod_exec.py:135 ../attack/mod_exec.py:146
 msgid "Evil url"
 msgstr "Evil url"
 
@@ -360,7 +362,8 @@ msgstr "Timeout (QUERY_STRING) in"
 #: ../attack/filehandlingattack.py:102 ../attack/filehandlingattack.py:145
 #: ../attack/mod_crlf.py:60 ../attack/mod_crlf.py:88 ../attack/mod_exec.py:79
 #: ../attack/mod_exec.py:121 ../attack/mod_file.py:104
-#: ../attack/mod_file.py:147
+#: ../attack/mod_file.py:147 ../attack/mod_exec.py:81
+#: ../attack/mod_exec.py:123
 msgid "caused by"
 msgstr "caused by"
 
@@ -377,26 +380,29 @@ msgstr "caused by"
 #: ../attack/mod_file.py:207 ../attack/mod_sql.py:140 ../attack/mod_sql.py:191
 #: ../attack/mod_blindsql.py:111 ../attack/mod_xss.py:278
 #: ../attack/mod_xss.py:336 ../attack/mod_xss.py:394 ../attack/mod_xss.py:228
-#: ../attack/mod_xss.py:286 ../attack/mod_xss.py:344
+#: ../attack/mod_xss.py:286 ../attack/mod_xss.py:344 ../attack/mod_exec.py:122
+#: ../attack/mod_exec.py:134 ../attack/mod_exec.py:187
 msgid "in"
 msgstr "in"
 
 #: ../attack/crlfattack.py:82 ../attack/execattack.py:118
 #: ../attack/filehandlingattack.py:144 ../attack/mod_crlf.py:87
 #: ../attack/mod_exec.py:120 ../attack/mod_file.py:146
+#: ../attack/mod_exec.py:122
 msgid "Timeout"
 msgstr "Timeout"
 
 #: ../attack/execattack.py:76 ../attack/execattack.py:171
 #: ../attack/filehandlingattack.py:198 ../attack/mod_exec.py:78
 #: ../attack/mod_exec.py:170 ../attack/mod_file.py:197
+#: ../attack/mod_exec.py:80 ../attack/mod_exec.py:172
 msgid "Timeout in"
 msgstr "Timeout in"
 
 #: ../attack/execattack.py:87 ../attack/filehandlingattack.py:109
 #: ../attack/filehandlingattack.py:110 ../attack/sqlinjectionattack.py:99
 #: ../attack/mod_exec.py:89 ../attack/mod_file.py:111
-#: ../attack/mod_file.py:112 ../attack/mod_sql.py:99
+#: ../attack/mod_file.py:112 ../attack/mod_sql.py:99 ../attack/mod_exec.py:91
 msgid "(QUERY_STRING) in"
 msgstr "(QUERY_STRING) in"
 
@@ -408,6 +414,7 @@ msgstr "(QUERY_STRING) in"
 #: ../attack/mod_file.py:121 ../attack/mod_file.py:166
 #: ../attack/mod_sql.py:110 ../attack/mod_sql.py:154
 #: ../attack/mod_blindsql.py:83 ../attack/mod_blindsql.py:125
+#: ../attack/mod_exec.py:100 ../attack/mod_exec.py:145
 msgid "500 HTTP Error code with"
 msgstr "500 HTTP Error code with"
 
@@ -431,7 +438,9 @@ msgstr "500 HTTP Error code with"
 #: ../attack/mod_xss.py:506 ../attack/mod_xss.py:221 ../attack/mod_xss.py:223
 #: ../attack/mod_xss.py:279 ../attack/mod_xss.py:281 ../attack/mod_xss.py:337
 #: ../attack/mod_xss.py:339 ../attack/mod_xss.py:394 ../attack/mod_xss.py:396
-#: ../attack/mod_xss.py:454 ../attack/mod_xss.py:456
+#: ../attack/mod_xss.py:454 ../attack/mod_xss.py:456 ../attack/mod_exec.py:173
+#: ../attack/mod_exec.py:189 ../attack/mod_exec.py:192
+#: ../attack/mod_exec.py:204
 msgid "with params"
 msgstr "with params"
 
@@ -453,12 +462,15 @@ msgstr "with params"
 #: ../attack/mod_xss.py:274 ../attack/mod_xss.py:332 ../attack/mod_xss.py:390
 #: ../attack/mod_xss.py:447 ../attack/mod_xss.py:507 ../attack/mod_xss.py:224
 #: ../attack/mod_xss.py:282 ../attack/mod_xss.py:340 ../attack/mod_xss.py:397
-#: ../attack/mod_xss.py:457
+#: ../attack/mod_xss.py:457 ../attack/mod_exec.py:174
+#: ../attack/mod_exec.py:186 ../attack/mod_exec.py:193
+#: ../attack/mod_exec.py:205
 msgid "coming from"
 msgstr "coming from"
 
 #: ../attack/execattack.py:177 ../attack/filehandlingattack.py:197
 #: ../attack/mod_exec.py:176 ../attack/mod_file.py:196
+#: ../attack/mod_exec.py:178
 msgid "Timeout coming from"
 msgstr "Timeout coming from"
 
@@ -466,6 +478,7 @@ msgstr "Timeout coming from"
 #: ../attack/sqlinjectionattack.py:196 ../attack/sqlinjectionattack.py:316
 #: ../attack/mod_exec.py:199 ../attack/mod_file.py:221
 #: ../attack/mod_sql.py:208 ../attack/mod_blindsql.py:176
+#: ../attack/mod_exec.py:201
 msgid "500 HTTP Error code coming from"
 msgstr "500 HTTP Error code coming from"
 
@@ -473,6 +486,7 @@ msgstr "500 HTTP Error code coming from"
 #: ../attack/sqlinjectionattack.py:198 ../attack/sqlinjectionattack.py:318
 #: ../attack/mod_exec.py:201 ../attack/mod_file.py:223
 #: ../attack/mod_sql.py:210 ../attack/mod_blindsql.py:178
+#: ../attack/mod_exec.py:203
 msgid "500 HTTP Error code in"
 msgstr "500 HTTP Error code in"
 

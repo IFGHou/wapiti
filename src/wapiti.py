@@ -164,9 +164,9 @@ Supported options are:
     xmlParser = VulnerabilityXMLParser()
     xmlParser.parse(BASE_DIR+"/config/vulnerabilities/vulnerabilities.xml")
     for vul in xmlParser.getVulnerabilities():
-      if vul.getName()!="Resource consumption":
-        self.reportGen.addVulnerabilityType(_(vul.getName()).decode('utf-8'), _(vul.getDescription()).decode('utf-8'),
-                                            _(vul.getSolution()).decode('utf-8'), vul.getReferences())
+      if vul.getName() != "Resource consumption":
+        self.reportGen.addVulnerabilityType(_(vul.getName()), _(vul.getDescription()),
+                                            _(vul.getSolution()), vul.getReferences())
 
   def __initAttacks(self):
     self.__initReport()
