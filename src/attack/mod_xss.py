@@ -58,7 +58,9 @@ class mod_xss(Attack):
         except socket.timeout:
           data = ""
         if data.find(code) >= 0:
-          self.findXSS(data, page, {}, "", code)
+          payloads = self.generate_payloads(data, code)
+          if payloads != []:
+            self.findXSS(page, {}, "", code, "", payloads)
 
     else:
       for k in dict.keys():
@@ -80,8 +82,9 @@ class mod_xss(Attack):
           # on effectue une recherche rapide sur l'indetifiant
           if data.find(code) >= 0:
             # identifiant est dans la page, il faut determiner ou
-            if self.findXSS(data, page, tmp, k, code):
-              break
+            payloads = self.generate_payloads(data, code)
+            if payloads != []:
+              self.findXSS(page, tmp, k, code, "", payloads)
 
   def attackPOST(self, form):
     """This method performs the cross site scripting attack (XSS attack) with method POST"""
@@ -106,8 +109,9 @@ class mod_xss(Attack):
         # rapid search on the code to check injection
         if data.find(code) >= 0:
           # found, now study where and what is possible
-          if self.findXSS(data, page, tmp, k, code, form[2]):
-            break
+          payloads = self.generate_payloads(data, code)
+          if payloads != []:
+            self.findXSS(page, tmp, k, code, form[2], payloads)
 
   # type/name/tag ex: attrval/img/src
   def study(self, obj, parent=None, keyword="", entries=[]):
@@ -144,14 +148,15 @@ class mod_xss(Attack):
           return True
     return False
 
-  # GET and POST methods here
-  def findXSS(self, data, page, args, var, code, referer = ""):
+  # generate a list of payloads based on where in the webpage the js-code will be injected
+  def generate_payloads(self, data, code):
     headers = {"Accept": "text/plain"}
-    params = args.copy()
     soup = BeautifulSoup.BeautifulSoup(data) # il faut garder la page non-retouchee en reserve...
     e = []
     self.study(soup, keyword = code, entries = e)
-    url = page
+
+    payloads = []
+
     for elem in e:
       payload = ""
       # traiter chaque entree au cas par cas
@@ -179,230 +184,23 @@ class mod_xss(Attack):
 
         # ok let's send the requests
         for xss in self.independant_payloads:
-          if params == {}:
-            url = page + "?" + payload + xss.replace("__XSS__", code)
-            try:
-              dat = self.HTTP.send(url).getPage()
-            except socket.timeout:
-              dat = ""
-            var = "QUERY_STRING"
-          else:
-            params[var] = payload + xss.replace("__XSS__", code)
-            if referer != "": #POST
-              if self.verbose == 2:
-                print "+ " + page
-                print "  ", params
-              try:
-                dat = self.HTTP.send(page, self.HTTP.uqe(params), headers).getPage()
-              except socket.timeout:
-                dat = ""
-            else:#GET
-              url = page + "?" + self.HTTP.uqe(params)
-              try:
-                dat = self.HTTP.send(url).getPage()
-              except socket.timeout:
-                dat = ""
-
-          if self.validXSS(dat, code):
-            if params != {}:
-              self.reportGen.logVulnerability(Vulnerability.XSS,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url, self.HTTP.encode(params),
-                                _("XSS") + " (" + var + ")")
-            else:
-              self.reportGen.logVulnerability(Vulnerability.XSS,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url, url.split("?")[1],
-                                _("XSS") + " (" + var + ")")
-
-            if referer != "":
-              print _("Found XSS in"), page
-              if self.color == 0:
-                print "  " + _("with params") + " =", self.HTTP.encode(params)
-              else:
-                print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
-              print "  " + _("coming from"), referer
-
-            else:
-              if self.color == 0:
-                print _("XSS") + " (" + var + ") " + _("in"), page
-                print "\t" + _("Evil url") + ":", url
-              else:
-                print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
-            return True
+          payloads.append(payload + xss.replace("__XSS__", code))
 
       # this should not happen but you never know...
       elif elem['type'] == "attrname": # name,tag
         #print "attrname"
         if code == elem['name']:
           for xss in self.independant_payloads:
-            if params == {}:
-              url = page + "?" + xss.replace("__XSS__",code)
-              try:
-                dat = self.HTTP.send(url).getPage()
-              except socket.timeout:
-                dat = ""
-              var = "QUERY_STRING"
-            else:
-              params[var] = '>' + xss.replace("__XSS__",code)
-
-              if referer != "": #POST
-                if self.verbose == 2:
-                  print "+ " + page
-                  print "  ", params
-                try:
-                  dat = self.HTTP.send(page, self.HTTP.uqe(params), headers).getPage()
-                except socket.timeout:
-                  dat = ""
-              else:
-                url = page + "?" + self.HTTP.uqe(params)
-                try:
-                  dat = self.HTTP.send(url).getPage()
-                except socket.timeout:
-                  dat=""
-
-            if self.validXSS(dat, code):
-              if params != {}:
-                self.reportGen.logVulnerability(Vulnerability.XSS,
-                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  url, self.HTTP.encode(params),
-                                  _("XSS") + "  (" + var + ")")
-              else:
-                self.reportGen.logVulnerability(Vulnerability.XSS,
-                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  url, url.split("?")[1],
-                                  _("XSS") + "  (" + var + ")")
-
-              if referer != "":
-                print _("Found XSS in"), page
-                if self.color == 0:
-                  print "  " + _("with params") + " =", self.HTTP.encode(params)
-                else:
-                  print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
-                print "  "+ _("coming from"), referer
-
-              else:
-                if self.color == 0:
-                  print _("XSS") + " (" + var + ") " + _("in"), page
-                  print "\t" + _("Evil url") + ":", url
-                else:
-                  print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
-              return True
+            payloads.append('>' + xss.replace("__XSS__",code))
 
       elif elem['type'] == "tag":
         if elem['value'].startswith(code):
           # use independant payloads, just remove the first character (<)
           for xss in self.independant_payloads:
-
-            if params == {}:
-              url = page + "?" + xss.replace("__XSS__", code)
-              try:
-                dat = self.HTTP.send(url).getPage()
-              except socket.timeout:
-                dat = ""
-              var = "QUERY_STRING"
-
-            else:
-              params[var] = xss.replace("__XSS__", code)[1:]
-
-              if referer != "": #POST
-                if self.verbose == 2:
-                  print "+ " + page
-                  print "  ", params
-                try:
-                  dat = self.HTTP.send(page, self.HTTP.uqe(params), headers).getPage()
-                except socket.timeout:
-                  dat = ""
-              else:
-                url = page + "?" + self.HTTP.uqe(params)
-                try:
-                  dat = self.HTTP.send(url).getPage()
-                except socket.timeout:
-                  dat = ""
-
-            if self.validXSS(dat, code):
-              if params != {}:
-                self.reportGen.logVulnerability(Vulnerability.XSS,
-                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  url, self.HTTP.encode(params),
-                                  _("XSS") + " (" + var + ")")
-              else:
-                self.reportGen.logVulnerability(Vulnerability.XSS,
-                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  url, url.split("?")[1], \
-                                  _("XSS") + " (" + var + ")")
-              if referer != "":
-                print _("Found XSS in"), page
-                if self.color == 0:
-                  print "  " + _("with params") + " =", self.HTTP.encode(params)
-                else:
-                  print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
-                print "  "+ _("coming from"), referer
-
-              else:
-                if self.color == 0:
-                  print _("XSS")+" ("+var+") "+_("in"), page
-                  print "\t"+_("Evil url")+":", url
-                else:
-                  print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
-              return True
-
+            payloads.append(xss.replace("__XSS__", code)[1:])
         else:
           for xss in self.independant_payloads:
-
-            if params == {}:
-              url = page + "?" + xss.replace("__XSS__", code)
-              try:
-                dat = self.HTTP.send(url).getPage()
-              except socket.timeout:
-                dat = ""
-              var = "QUERY_STRING"
-
-            else:
-              #close tag and inject independant payloads
-              params[var] = "/>" + xss.replace("__XSS__", code)
-
-              if referer != "": #POST
-                if self.verbose == 2:
-                  print "+ " + page
-                  print "  ", params
-                try:
-                  dat = self.HTTP.send(page, self.HTTP.uqe(params), headers).getPage()
-                except socket.timeout:
-                  dat = ""
-              else:
-                url = page + "?" + self.HTTP.uqe(params)
-                try:
-                  dat = self.HTTP.send(url).getPage()
-                except socket.timeout:
-                  dat = ""
-
-            if self.validXSS(dat, code):
-              if params != {}:
-                self.reportGen.logVulnerability(Vulnerability.XSS,
-                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  url, self.HTTP.encode(params),
-                                  _("XSS") + " (" + var + ")")
-              else:
-                self.reportGen.logVulnerability(Vulnerability.XSS,
-                                  Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                  url, url.split("?")[1],
-                                  _("XSS") + " (" + var + ")")
-              if referer != "":
-                print _("Found XSS in"), page
-                if self.color == 0:
-                  print "  " + _("with params") + " =", self.HTTP.encode(params)
-                else:
-                  print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
-                print "  "+ _("coming from"), referer
-
-              else:
-                if self.color == 0:
-                  print _("XSS") + " (" + var + ") in", page
-                  print "\t" + _("Evil url") + ":", url
-                else:
-                  print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
-              return True
+            payloads.append("/>" + xss.replace("__XSS__", code))
 
       # another common one
       elif elem['type'] == "text":
@@ -411,59 +209,77 @@ class mod_xss(Attack):
           payload = "</title>"
 
         for xss in self.independant_payloads:
-          if params == {}:
-            url = page + "?" + payload + xss.replace("__XSS__", code)
-            try:
-              dat = self.HTTP.send(url).getPage()
-            except socket.timeout:
-              dat = ""
-            var = "QUERY_STRING"
-          else:
-            params[var] = payload + xss.replace("__XSS__", code)
-
-            if referer != "": #POST
-              if self.verbose == 2:
-                print "+ " + page
-                print "  ", params
-              try:
-                dat = self.HTTP.send(page, self.HTTP.uqe(params), headers).getPage()
-              except socket.timeout:
-                dat = ""
-            else:
-              url = page + "?" + self.HTTP.uqe(params)
-              try:
-                dat = self.HTTP.send(url).getPage()
-              except socket.timeout:
-                dat = ""
-
-          if self.validXSS(dat, code):
-            if params != {}:
-              self.reportGen.logVulnerability(Vulnerability.XSS,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                page, self.HTTP.encode(params),
-                                _("XSS") + " (" + var + ")")
-            else:
-              self.reportGen.logVulnerability(Vulnerability.XSS,
-                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                url, url.split("?")[1],
-                                _("XSS") + " (" + var + ")")
-
-            if referer != "":
-              print _("Found XSS in"), page
-              if self.color == 0:
-                print "  "+ _("with params") + " =", self.HTTP.encode(params)
-              else:
-                print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
-              print "  "+ _("coming from"), referer
-
-            else:
-              if self.color == 0:
-                print _("XSS") + " (" + var + ") in", page
-                print "\t" + _("Evil url") + ":", url
-              else:
-                print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
-            return True
+          payloads.append(payload + xss.replace("__XSS__", code))
+        return payloads
 
       data = data.replace(code, "none", 1)#reduire la zone de recherche
+    return payloads
+
+
+  # Inject the js-code
+  # GET and POST methods here
+  def findXSS(self, page, args, var, code, referer, payloads):
+    headers = {"Accept": "text/plain"}
+    params = args.copy()
+    url = page
+
+    # ok let's send the requests
+    for payload in payloads:
+
+      if params == {}:
+        url = page + "?" + self.HTTP.quote(payload) #ADD quote
+        try:
+          dat = self.HTTP.send(url).getPage()
+        except socket.timeout:
+          dat = ""
+        var = "QUERY_STRING"
+
+      else:
+        params[var] = payload
+
+        if referer != "": #POST
+          if self.verbose == 2:
+            print "+ " + page
+            print "  ", params
+          try:
+            dat = self.HTTP.send(page, self.HTTP.encode(params), headers).getPage()
+          except socket.timeout:
+            dat = ""
+
+        else:#GET
+          url = page + "?" + self.HTTP.encode(params)
+          try:
+            dat = self.HTTP.send(url).getPage()
+          except socket.timeout:
+            dat = ""
+
+      if self.validXSS(dat, code):
+        if params != {}:
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            url, self.HTTP.encode(params),
+                            _("XSS") + " (" + var + ")")
+        else:
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            url, url.split("?")[1],
+                            _("XSS") + " (" + var + ")")
+
+        if referer != "":
+          print _("Found XSS in"), page
+          if self.color == 0:
+            print "  " + _("with params") + " =", self.HTTP.encode(params)
+          else:
+            print "  " + _("with params") + " =", self.HTTP.encode(params).replace(var + "=", self.RED + var + self.STD + "=")
+          print "  " + _("coming from"), referer
+
+        else:
+          if self.color == 0:
+            print _("XSS") + " (" + var + ") " + _("in"), page
+            print "\t" + _("Evil url") + ":", url
+          else:
+            print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
+        return True
+
     return False
 
