@@ -138,7 +138,7 @@ class mod_xss(Attack):
           #print "Found in text, tag", parent.name
           entries.append({"type":"text", "parent":parent.name})
 
-  def validXSS(self,page,code):
+  def validXSS(self, page, code):
     soup=BeautifulSoup.BeautifulSoup(page)
     for x in soup.findAll("script"):
       if x.string != None and x.string in [t.replace("__XSS__", code) for t in self.script_ok]:
@@ -228,6 +228,8 @@ class mod_xss(Attack):
 
       if params == {}:
         url = page + "?" + self.HTTP.quote(payload) #ADD quote
+        if self.verbose == 2:
+          print "+", url
         try:
           dat = self.HTTP.send(url).getPage()
         except socket.timeout:
@@ -239,7 +241,7 @@ class mod_xss(Attack):
 
         if referer != "": #POST
           if self.verbose == 2:
-            print "+ " + page
+            print "+", page
             print "  ", params
           try:
             dat = self.HTTP.send(page, self.HTTP.encode(params), headers).getPage()
@@ -248,6 +250,8 @@ class mod_xss(Attack):
 
         else:#GET
           url = page + "?" + self.HTTP.encode(params)
+          if self.verbose == 2:
+            print "+", url
           try:
             dat = self.HTTP.send(url).getPage()
           except socket.timeout:
@@ -281,5 +285,67 @@ class mod_xss(Attack):
             print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
         return True
 
+##########################################################
+###### try the same things but with raw characters #######
+
+      if params == {}:
+        url = page + "?" + payload
+        if self.verbose == 2:
+          print "+", url
+        try:
+          dat = self.HTTP.send(url).getPage()
+        except socket.timeout:
+          dat = ""
+        var = "QUERY_STRING"
+
+      else:
+        params[var] = payload
+
+        if referer != "": #POST
+          if self.verbose == 2:
+            print "+ " + page
+            print "  ", params
+          try:
+            dat = self.HTTP.send(page, self.HTTP.uqe(params), headers).getPage()
+          except socket.timeout:
+            dat = ""
+
+        else:#GET
+          url = page + "?" + self.HTTP.uqe(params)
+          if self.verbose == 2:
+            print "+", url
+          try:
+            dat = self.HTTP.send(url).getPage()
+          except socket.timeout:
+            dat = ""
+
+      if self.validXSS(dat, code):
+        if params != {}:
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.LOW_LEVEL_VULNERABILITY,
+                            url, self.HTTP.encode(params),
+                            _("XSS") + " (" + var + ")")
+        else:
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.LOW_LEVEL_VULNERABILITY,
+                            url, url.split("?")[1],
+                            _("XSS") + " (" + var + ")")
+
+        if referer != "":
+          print _("Found XSS in"), page
+          if self.color == 0:
+            print "  " + _("with params") + " =", self.HTTP.uqe(params)
+          else:
+            print "  " + _("with params") + " =", self.HTTP.uqe(params).replace(var + "=", self.RED + var + self.STD + "=")
+          print "  " + _("coming from"), referer
+
+        else:
+          if self.color == 0:
+            print _("XSS") + " (" + var + ") " + _("in"), page
+            print "\t" + _("Evil url") + ":", url
+          else:
+            print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
+        return True
+##########################################################
     return False
 
