@@ -89,9 +89,9 @@ class HTTP:
     _headers.update(http_headers)
     if post_data == None:
       if method != "":
-        info,data = self.h.request(target, method, headers = _headers)
+        info, data = self.h.request(target, method, headers = _headers)
       else:
-        info,data = self.h.request(target, headers = _headers)
+        info, data = self.h.request(target, headers = _headers)
     else:
       _headers.update({'Content-type': 'application/x-www-form-urlencoded'})
       if method != "":
