@@ -21,9 +21,10 @@ class mod_nikto(Attack):
 
   def __init__(self, HTTP, xmlRepGenerator):
     Attack.__init__(self, HTTP, xmlRepGenerator)
+    csv.register_dialect("nikto", quoting=csv.QUOTE_ALL, doublequote=False, escapechar="\\")
     try:
       fd = open(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
-      reader = csv.reader(fd)
+      reader = csv.reader(fd, "nikto")
       self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
       fd.close()
     except IOError:
@@ -31,12 +32,12 @@ class mod_nikto(Attack):
         print "Problem with local nikto database."
         print "Downloading from the web..."
         page = urllib2.urlopen("http://cirt.net/nikto/UPDATES/2.1.0/db_tests")
-        reader = csv.reader(page)
+        reader = csv.reader(page, "nikto")
         self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
         page.close()
 
         fd = open(self.CONFIG_DIR + "/" + self.CONFIG_FILE, "w")
-        writer = csv.writer(fd)
+        writer = csv.writer(fd, "nikto")
         writer.writerows(self.nikto_db)
         fd.close()
       except IOError:
@@ -46,10 +47,6 @@ class mod_nikto(Attack):
     for l in self.nikto_db:
       match = match_or = match_and = False
       fail = fail_or = False
-
-      # TODO: Fix bugs with csv format
-      if len(l) < 11:
-        continue
 
       if l[4] == "GET":
         l[3] = l[3].replace("@CGIDIRS","/cgi-bin/")
