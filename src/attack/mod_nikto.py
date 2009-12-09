@@ -4,7 +4,7 @@ from net.httplib2 import ServerNotFoundError
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-import urllib2, csv
+import urllib2, csv, re
 
 class mod_nikto(Attack):
   """
@@ -50,6 +50,9 @@ class mod_nikto(Attack):
 
       l[3] = l[3].replace("@CGIDIRS","/cgi-bin/")
       l[3] = l[3].replace("@ADMIN","/admin/")
+      l[3] = l[3].replace("@NUKE","/modules/")
+      l[3] = l[3].replace("@PHPMYADMIN","/phpMyAdmin/")
+      l[3] = l[3].replace("@POSTNUKE","/postnuke/")
       if l[3][0] == "@":
         continue
       if l[3][0] != "/":
@@ -115,8 +118,37 @@ class mod_nikto(Attack):
       if ((match or match_or) and match_and) and not (fail or fail_or):
         print "http://" + self.HTTP.server + l[3]
         print l[10]
+        refs = []
         if l[1] != "0":
-          print "\thttp://osvdb.org/show/osvdb/" + l[1]
+          refs.append("http://osvdb.org/show/osvdb/" + l[1])
+
+        # CERT
+        m = re.search("(CA\-[0-9]{4}-[0-9]{2})", l[10])
+        if m != None:
+          refs.append("http://www.cert.org/advisories/" + m.group(0) + ".html")
+        
+        # SecurityFocus
+        m = re.search("BID\-([0-9]{4})", l[10])
+        if m != None:
+          refs.append("http://www.securityfocus.com/bid/" + m.group(1))
+
+        # Mitre.org
+        m = re.search("((CVE|CAN)\-[0-9]{4}-[0-9]{4})", l[10])
+        if m != None:
+          refs.append("http://cve.mitre.org/cgi-bin/cvename.cgi?name=" + m.group(0))
+
+        # CERT Incidents
+        m = re.search("(IN\-[0-9]{4}\-[0-9]{2})", l[10])
+        if m != None:
+          refs.append("http://www.cert.org/incident_notes/" + m.group(0) + ".html")
+
+        # Microsoft Technet
+        m = re.search("(MS[0-9]{2}\-[0-9]{3})", l[10])
+        if m != None:
+          refs.append("http://www.microsoft.com/technet/security/bulletin/" + m.group(0) + ".asp")
+
+        if refs != []:
+          print "References:\n  " + "\n  ".join(refs)
         print
 
 
