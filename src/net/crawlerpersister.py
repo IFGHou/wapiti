@@ -152,8 +152,6 @@ class CrawlerPersister:
       self.array = self.toBrowse
     elif name == self.BROWSED:
       self.array = self.browsed
-    elif name == self.INPUTS:
-      self.array = self.inputs
     elif name == self.UPLOADS:
       self.array = self.uploads
     elif name == self.URL_DATA:
@@ -168,6 +166,7 @@ class CrawlerPersister:
       self.tag = self.ROOT_URL
     elif name == self.INPUTS:
       self.inputs = {}
+      self.array = self.inputs
     elif name == self.INPUT:
       self.inputs[attrs[self.INPUT_NAME]] = attrs[self.INPUT_VALUE]
     elif name == self.FORM:
