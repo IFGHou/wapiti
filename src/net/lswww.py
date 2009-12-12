@@ -173,14 +173,14 @@ Supported options are:
 
   def setScope(self, scope):
     self.scope = scope
-    if scope==self.SCOPE_FOLDER:
-      self.scopeURL = "/".join(self.root.split("/")[:-1])+"/"
-    elif scope==self.SCOPE_DOMAIN:
-      self.scopeURL = "http://"+self.server
+    if scope == self.SCOPE_FOLDER:
+      self.scopeURL = "/".join(self.root.split("/")[:-1]) + "/"
+    elif scope == self.SCOPE_DOMAIN:
+      self.scopeURL = "http://" + self.server
 
   def addStartURL(self, url):
     if(self.__checklink(url)):
-      print _("Invalid link argument")+":", url
+      print _("Invalid link argument") + ":", url
       sys.exit(0)
     if(self.__inzone(url) == 0):
       self.tobrowse.append(url)
@@ -208,7 +208,7 @@ Supported options are:
     # Url without query string
     current = current.split("?")[0]
     # Get the dirname of the file
-    currentdir = "/".join(current.split("/")[:-1])+"/"
+    currentdir = "/".join(current.split("/")[:-1]) + "/"
 
     # Timeout must not be too long to block big documents (for exemple a download script)
     # and not too short to give good results
@@ -350,14 +350,14 @@ Supported options are:
       else:
         # root-url related link
         if(lien[0] == '/'):
-          lien = proto+"://"+self.server+lien
+          lien = proto + "://" + self.server + lien
         else:
           # same page + query string
           if(lien[0] == '?'):
-            lien = current+lien
+            lien = current + lien
           # current directory related link
           else:
-            lien = currentdir+lien
+            lien = currentdir + lien
       # No destination anchor
       if lien.find("#") != -1:
         lien = lien.split("#")[0]
@@ -370,7 +370,7 @@ Supported options are:
           args = [i for i in args if i != "" and i.find("=") >= 0]
           for i in self.bad_params:
             for j in args:
-              if j.startswith(i+"="): args.remove(j)
+              if j.startswith(i + "="): args.remove(j)
           args = "&".join(args)
 
         # a hack for auto-generated Apache directory index
@@ -378,7 +378,7 @@ Supported options are:
             "C=N;O=A", "C=N;O=D", "C=S;O=A", "C=S;O=D"]:
           lien = lien.split("?")[0]
         else:
-          lien = lien.split("?")[0]+"?"+args
+          lien = lien.split("?")[0] + "?" + args
       # Remove the trailing '?' if its presence doesn't make sense
       if lien[-1:] == "?":
         lien = lien[:-1]
@@ -386,7 +386,7 @@ Supported options are:
       if lien.find("?") != -1:
         file = lien.split("?")[0]
         file = re.sub("[^:]//+", "/", file)
-        lien = file+"?"+lien.split("?")[1]
+        lien = file + "?"+lien.split("?")[1]
       # links going to a parrent directory (..)
       while re.search("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", lien) != None:
         lien = re.sub("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", "/", lien)
@@ -427,14 +427,14 @@ Supported options are:
           i = url.find("&", start)
           if i != -1:
             for u in self.browsed.keys():
-              if u.startswith(url[:start]+"=") and u.endswith(url[i:]):
+              if u.startswith(url[:start] + "=") and u.endswith(url[i:]):
                 matches += 1
           else:
             for u in self.browsed.keys():
-              if u.startswith(url[:start]+"="):
+              if u.startswith(url[:start] + "="):
                 matches += 1
       else:#QUERY_STRING
-        for a in [u for u in self.browsed.keys() if u.find("=")<0]:
+        for a in [u for u in self.browsed.keys() if u.find("=") < 0]:
           if a.startswith(url.split("?")[0]):
             matches += 1
     return matches
@@ -471,7 +471,7 @@ Supported options are:
     for block in blocks:
       i = string.find(block)
       if i == -1: return False
-      string = string[i+len(block):]
+      string = string[i + len(block):]
     return match
 
   def go(self,crawlerFile):
@@ -495,7 +495,7 @@ Supported options are:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
     # load of the crawler status if a file is passed to it.
-    if crawlerFile!=None:
+    if crawlerFile != None:
       if self.persister.isDataForUrl(crawlerFile) == 1:
         self.persister.loadXML(crawlerFile)
         self.tobrowse = self.persister.getToBrose()
@@ -503,16 +503,16 @@ Supported options are:
         self.browsed  = self.persister.getBrowsed()
         self.forms    = self.persister.getForms()
         self.uploads  = self.persister.getUploads()
-        print _("File")+" "+crawlerFile+" "+_("loaded, the scan continues")+":"
-        if self.verbose==2:
-          print " * "+_("URLs to browse")
+        print _("File") + " " + crawlerFile + " " + _("loaded, the scan continues") + ":"
+        if self.verbose == 2:
+          print " * " + _("URLs to browse")
           for x in self.tobrowse:
-            print "    + "+x
-          print " * "+_("URLs browsed")
+            print "    + " + x
+          print " * " + _("URLs browsed")
           for x in self.browsed.keys():
-            print "    + "+x
+            print "    + " + x
       else:
-        print _("File")+" "+crawlerFile+" "+_("not found, Wapiti will scan again the web site")
+        print _("File") + " " + crawlerFile + " " + _("not found, Wapiti will scan again the web site")
 
     # while url list isn't empty, continue browsing
     # if the user stop the scan with Ctrl+C, give him all found urls
@@ -527,22 +527,22 @@ Supported options are:
             if self.verbose == 1:
               sys.stderr.write('.')
             elif self.verbose == 2:
-              sys.stderr.write(lien+"\n")
+              sys.stderr.write(lien + "\n")
         if(self.scope == self.SCOPE_PAGE):
           self.tobrowse = []
       self.saveCrawlerData()
       print ""
-      print " "+_("Notice")+" "
+      print " " + _("Notice") + " "
       print "========"
-      print _("This scan has been saved in the file")+" "+self.persister.CRAWLER_DATA_DIR+'/'+self.server+".xml"
-      print _("You can use it to perform attacks without scanning again the web site with")+" \"-k\" "+_("parameter")
+      print _("This scan has been saved in the file") + " " + self.persister.CRAWLER_DATA_DIR + '/' + self.server + ".xml"
+      print _("You can use it to perform attacks without scanning again the web site with the \"-k\" parameter")
     except KeyboardInterrupt:
       self.saveCrawlerData()
       print ""
-      print " "+_("Notice")+" "
+      print " " + _("Notice") + " "
       print "========"
-      print _("Scan stopped, the data has been saved in the file")+" "+self.persister.CRAWLER_DATA_DIR+'/'+self.server+".xml"
-      print _("To continue this scan, you should launch Wapiti with")+" \"-i "+_("parameter")
+      print _("Scan stopped, the data has been saved in the file") + " " + self.persister.CRAWLER_DATA_DIR + '/' + self.server + ".xml"
+      print _("To continue this scan, you should launch Wapiti with the \"-i\" parameter")
       pass
 
   def verbosity(self, vb):
@@ -553,25 +553,25 @@ Supported options are:
     """Print found URLs on standard output"""
     l = self.browsed.keys()
     l.sort()
-    sys.stderr.write("\n+ "+_("URLs")+":\n")
+    sys.stderr.write("\n+ " + _("URLs") + ":\n")
     for lien in l:
       print lien
 
   def printForms(self):
     """Print found forms on standard output"""
     if self.forms != []:
-      sys.stderr.write("\n+ "+_("Forms Info")+":\n")
+      sys.stderr.write("\n+ "+_("Forms Info") + ":\n")
       for form in self.forms:
-        print _("From")+":", form[2]
-        print _("To")  +":", form[0]
+        print _("From") + ":", form[2]
+        print _("To")   + ":", form[0]
         for k, v in form[1].items():
-          print "\t"+k, ":", v
+          print "\t" + k, ":", v
         print
 
   def printUploads(self):
     """Print urls accepting uploads"""
     if self.uploads != []:
-      sys.stderr.write("\n+ "+_("Upload Scripts")+":\n")
+      sys.stderr.write("\n+ " + _("Upload Scripts") + ":\n")
       for up in self.uploads:
         print up
 
@@ -624,7 +624,7 @@ Supported options are:
     self.persister.setBrowsed(self.browsed);
     self.persister.setForms  (self.forms);
     self.persister.setUploads(self.uploads);
-    self.persister.saveXML(self.persister.CRAWLER_DATA_DIR+'/'+self.server+'.xml')
+    self.persister.saveXML(self.persister.CRAWLER_DATA_DIR + '/' + self.server + '.xml')
 
 class linkParser(HTMLParser.HTMLParser):
   """Extract urls in 'a' href HTML tags"""
@@ -695,7 +695,7 @@ class linkParser(HTMLParser.HTMLParser):
       else:
         l = ["=".join([k, v]) for k, v in self.form_values.items()]
         l.sort()
-        self.liens.append(self.current_form_url.split("?")[0]+"?"+"&".join(l))
+        self.liens.append(self.current_form_url.split("?")[0] + "?" + "&".join(l))
 
 class linkParser2:
   verbose = 0
@@ -766,29 +766,29 @@ class linkParser2:
         textAreasAttributes[i].append(self.__findTagAttributes(textArea))
 
     if(self.verbose == 3):
-      print "\n\n"+_("Forms")
+      print "\n\n" + _("Forms")
       print "====="
       for i in range(len(forms)):
-        print _("Form")+" "+str(i)
+        print _("Form") + " " + str(i)
         tmpdict = {}
         for k, v in dict(formsAttributes[i]).items():
           tmpdict[k.lower()] = v
-        print " * "+_("Method")+":  "+self.__decode_htmlentities(tmpdict['action'])
-        print " * "+_("Intputs")+": "
+        print " * " + _("Method") + ":  " + self.__decode_htmlentities(tmpdict['action'])
+        print " * " + _("Intputs") + ": "
         for j in range(len(inputsInForms[i])):
-          print "    + "+inputsInForms[i][j]
+          print "    + " + inputsInForms[i][j]
           for att in inputsAttributes[i][j]:
-            print "       - "+str(att)
-        print " * "+_("Selects")+": "
+            print "       - " + str(att)
+        print " * " + _("Selects") + ": "
         for j in range(len(selectsInForms[i])):
-          print "    + "+selectsInForms[i][j]
+          print "    + " + selectsInForms[i][j]
           for att in selectsAttributes[i][j]:
-            print "       - "+str(att)
-        print " * "+_("TextAreas")+": "
+            print "       - " + str(att)
+        print " * " + _("TextAreas")+": "
         for j in range(len(textAreasInForms[i])):
-          print "    + "+textAreasInForms[i][j]
+          print "    + " + textAreasInForms[i][j]
           for att in textAreasAttributes[i][j]:
-            print "       - "+str(att)
+            print "       - " + str(att)
       print "\n"+_("URLS")
       print "===="
 
@@ -854,7 +854,7 @@ class linkParser2:
       else:
         l = ["=".join([k, v]) for k, v in self.form_values.items()]
         l.sort()
-        self.liens.append(self.current_form_url.split("?")[0]+"?"+"&".join(l))
+        self.liens.append(self.current_form_url.split("?")[0] + "?" + "&".join(l))
 
   def __substitute_entity(self, match):
     ent = match.group(2)
@@ -941,7 +941,7 @@ if __name__ == "__main__":
         myls.setScope(a)
       if o in ("-i", "--continue"):
         crawlerPersister = CrawlerPersister()
-        crawlerFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+sys.argv[1].split("://")[1]+'.xml'
+        crawlerFile = crawlerPersister.CRAWLER_DATA_DIR + '/' + sys.argv[1].split("://")[1] + '.xml'
     try:
       opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:i:b:",
           ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
@@ -951,7 +951,7 @@ if __name__ == "__main__":
       ""
     for o, a in opts:
       if o in ("-i", "--continue"):
-        if a!= '' and a[0] != '-':
+        if a != '' and a[0] != '-':
           crawlerFile = a
 
     myls.go(crawlerFile)

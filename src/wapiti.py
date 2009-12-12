@@ -173,7 +173,7 @@ Supported options are:
 
     attack = __import__("attack")
 
-    print "[*] Loading modules :"
+    print "[*]", _("Loading modules"), ":"
     print "\t"+ ", ".join(attack.modules)
     for mod_name in attack.modules:
       mod = __import__("attack." + mod_name, fromlist=attack.modules) # on charge le module

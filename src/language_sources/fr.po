@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-11 19:31+0100\n"
+"POT-Creation-Date: 2009-12-12 15:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -350,6 +350,7 @@ msgstr "Injection CRLF (QUERY_STRING) dans"
 #: ../attack/mod_xss.py:345 ../attack/mod_xss.py:402 ../attack/mod_xss.py:462
 #: ../attack/mod_exec.py:92 ../attack/mod_exec.py:101
 #: ../attack/mod_exec.py:135 ../attack/mod_exec.py:146
+#: ../attack/mod_xss.py:283
 msgid "Evil url"
 msgstr "URL malicieuse"
 
@@ -384,6 +385,7 @@ msgstr "provoqué par"
 #: ../attack/mod_xss.py:336 ../attack/mod_xss.py:394 ../attack/mod_xss.py:228
 #: ../attack/mod_xss.py:286 ../attack/mod_xss.py:344 ../attack/mod_exec.py:122
 #: ../attack/mod_exec.py:134 ../attack/mod_exec.py:187
+#: ../attack/mod_xss.py:282
 msgid "in"
 msgstr "dans"
 
@@ -442,7 +444,7 @@ msgstr "Code d'erreur HTTP 500 avec"
 #: ../attack/mod_xss.py:339 ../attack/mod_xss.py:394 ../attack/mod_xss.py:396
 #: ../attack/mod_xss.py:454 ../attack/mod_xss.py:456 ../attack/mod_exec.py:173
 #: ../attack/mod_exec.py:189 ../attack/mod_exec.py:192
-#: ../attack/mod_exec.py:204
+#: ../attack/mod_exec.py:204 ../attack/mod_xss.py:275 ../attack/mod_xss.py:277
 msgid "with params"
 msgstr "avec les paramêtres"
 
@@ -466,7 +468,7 @@ msgstr "avec les paramêtres"
 #: ../attack/mod_xss.py:282 ../attack/mod_xss.py:340 ../attack/mod_xss.py:397
 #: ../attack/mod_xss.py:457 ../attack/mod_exec.py:174
 #: ../attack/mod_exec.py:186 ../attack/mod_exec.py:193
-#: ../attack/mod_exec.py:205
+#: ../attack/mod_exec.py:205 ../attack/mod_xss.py:278
 msgid "coming from"
 msgstr "en provenance de"
 
@@ -578,7 +580,9 @@ msgstr "avec les champs"
 #: ../attack/mod_xss.py:344 ../attack/mod_xss.py:347 ../attack/mod_xss.py:385
 #: ../attack/mod_xss.py:390 ../attack/mod_xss.py:401 ../attack/mod_xss.py:404
 #: ../attack/mod_xss.py:444 ../attack/mod_xss.py:449 ../attack/mod_xss.py:461
-#: ../attack/mod_xss.py:464
+#: ../attack/mod_xss.py:464 ../attack/mod_xss.py:265 ../attack/mod_xss.py:270
+#: ../attack/mod_xss.py:282 ../attack/mod_xss.py:285 ../attack/mod_xss.py:327
+#: ../attack/mod_xss.py:332
 msgid "XSS"
 msgstr "XSS"
 
@@ -588,6 +592,7 @@ msgstr "XSS"
 #: ../attack/mod_xss.py:327 ../attack/mod_xss.py:385 ../attack/mod_xss.py:442
 #: ../attack/mod_xss.py:502 ../attack/mod_xss.py:219 ../attack/mod_xss.py:277
 #: ../attack/mod_xss.py:335 ../attack/mod_xss.py:392 ../attack/mod_xss.py:452
+#: ../attack/mod_xss.py:273
 msgid "Found XSS in"
 msgstr "XSS trouvé dans"
 
@@ -768,15 +773,6 @@ msgstr "Note"
 msgid "Scan stopped, the data has been saved in the file"
 msgstr "Scan mis en pause, les données ont été sauvées dans le fichier"
 
-#: ../net/lswww.py:509 ../net/lswww.py:499 ../net/lswww.py:545
-msgid "To continue this scan, you should launch Wapiti with"
-msgstr "Afin de reprendre le scan, lancez Wapiti avec"
-
-#: ../net/lswww.py:509 ../net/lswww.py:492 ../net/lswww.py:499
-#: ../net/lswww.py:538 ../net/lswww.py:545
-msgid "parameter"
-msgstr "paramêtres"
-
 #: ../wapiti.py:491 ../wapiti.py:446
 msgid ""
 "Attack process interrupted. To perform again the attack, lauch Wapiti with "
@@ -806,4 +802,22 @@ msgstr ""
 
 #: ../attack/mod_permanentxss.py:110 ../attack/mod_permanentxss.py:112
 msgid "injected from "
+msgstr "injecté depuis "
+
+#: ../net/lswww.py:538
+msgid ""
+"You can use it to perform attacks without scanning again the web site with "
+"the \"-k\" parameter"
 msgstr ""
+"Vous pouvez l'utiliser pour lancer des attaques sans scanner à nouveau le "
+"siteweb avec le paramêtre \"-k\""
+
+#: ../net/lswww.py:545
+msgid ""
+"To continue this scan, you should launch Wapiti with the \"-i\" parameter"
+msgstr ""
+"Si vous souhaitez reprendre ce scan, relancez Wapiti avec le paramêtre \"-i\""
+
+#: ../wapiti.py:176
+msgid "Loading modules"
+msgstr "Chargement des modules"
