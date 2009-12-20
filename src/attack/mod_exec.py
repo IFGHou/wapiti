@@ -105,7 +105,7 @@ class mod_exec(Attack):
         err = ""
         tmp = dict.copy()
         tmp[k] = payload
-        url = page + "?" + self.HTTP.encode(tmp)
+        url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
         if url not in self.attackedGET:
           if self.verbose == 2:
             print "+ " + url
@@ -121,13 +121,13 @@ class mod_exec(Attack):
             print "\t" + _("caused by") + ":", url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp), err+" ("+k+")")
+                                            url, self.HTTP.encode(tmp, headers["link_encoding"]), err+" ("+k+")")
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.EXEC,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp), err+" ("+k+")")
+                                            url, self.HTTP.encode(tmp, headers["link_encoding"]), err+" ("+k+")")
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
               print "\t" + _("Evil url") + ":", url
@@ -138,7 +138,7 @@ class mod_exec(Attack):
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp),
+                                              url, self.HTTP.encode(tmp, headers["lienk_encoding"]),
                                               VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url

@@ -67,13 +67,13 @@ class mod_xss(Attack):
         err = ""
         tmp = dict.copy()
         tmp[k] = "__XSS__"
-        url = page + "?" + self.HTTP.uqe(tmp)
+        url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
         if url not in self.attackedGET:
           self.attackedGET.append(url)
           # genere un identifiant unique a rechercher ensuite dans la page
           code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
           tmp[k] = code
-          url = page + "?" + self.HTTP.uqe(tmp)
+          url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
           self.GET_XSS[code] = url
           try:
             data = self.HTTP.send(url).getPage()

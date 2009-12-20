@@ -67,7 +67,7 @@ class mod_crlf(Attack):
         err = ""
         tmp = dict.copy()
         tmp[k] = payload
-        url = page + "?" + self.HTTP.encode(tmp)
+        url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
         if url not in self.attackedGET:
           if self.verbose == 2:
             print "+ " + url
@@ -75,7 +75,7 @@ class mod_crlf(Attack):
             if self.HTTP.send(url).getInfo().has_key('wapiti'):
               err = "CRLF Injection"
               self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                page, self.HTTP.encode(tmp), err + " (" + k + ")")
+                                page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")")
               if self.color == 0:
                 print err, "(" + k + ") " + _("in"), page
                 print "\t" + _("Evil url") + ":", url
@@ -83,7 +83,7 @@ class mod_crlf(Attack):
                 print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
           except socket.timeout:
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                              page, self.HTTP.encode(tmp), err + " (" + k + ")")
+                              page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")")
             print _("Timeout") + " (" + k + ") " + _("in"), page
             print "\t" + _("caused by") + ":", url
           except httplib.BadStatusLine:

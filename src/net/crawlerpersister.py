@@ -66,24 +66,24 @@ class CrawlerPersister:
     xml.appendChild(root)
 
     rootUrlEl = xml.createElement(self.ROOT_URL)
-    rootUrlEl.appendChild(xml.createTextNode(self.rootURL))
+    rootUrlEl.appendChild(xml.createTextNode(self.rootURL.encode("UTF-8")))
     root.appendChild(rootUrlEl)
 
     toBrowseEl = xml.createElement(self.TO_BROWSE)
     for url in self.toBrowse:
       urlEl = xml.createElement(self.URL)
-      urlEl.appendChild(xml.createTextNode(url))
+      urlEl.appendChild(xml.createTextNode(url.encode("UTF-8")))
       toBrowseEl.appendChild(urlEl)
     root.appendChild(toBrowseEl)
 
     browsedEl = xml.createElement(self.BROWSED)
     for url, headers in self.browsed.items():
       urlEl = xml.createElement(self.URL_DATA)
-      urlEl.setAttribute(self.URI, url)
+      urlEl.setAttribute(self.URI, url.encode("UTF-8"))
       for k, v in headers.items():
         headEl = xml.createElement(self.HEADER)
-        headEl.setAttribute(self.HEADER_NAME, k)
-        headEl.setAttribute(self.HEADER_VALUE, v)
+        headEl.setAttribute(self.HEADER_NAME, k.encode("UTF-8"))
+        headEl.setAttribute(self.HEADER_VALUE, v.encode("UTF-8"))
         urlEl.appendChild(headEl)
       browsedEl.appendChild(urlEl)
     root.appendChild(browsedEl)
@@ -91,14 +91,14 @@ class CrawlerPersister:
     formsEl = xml.createElement(self.FORMS)
     for form in self.forms:
       formEl = xml.createElement(self.FORM)
-      formEl.setAttribute(self.FORM_URL, form[0])
-      formEl.setAttribute(self.FORM_TO, form[2])
+      formEl.setAttribute(self.FORM_URL, form[0].encode("UTF-8"))
+      formEl.setAttribute(self.FORM_TO, form[2].encode("UTF-8"))
 
       inputsEl = xml.createElement(self.INPUTS)
       for k, v in form[1].items():
         inputEl = xml.createElement(self.INPUT)
-        inputEl.setAttribute(self.INPUT_NAME, k)
-        inputEl.setAttribute(self.INPUT_VALUE, v)
+        inputEl.setAttribute(self.INPUT_NAME, k.encode("UTF-8"))
+        inputEl.setAttribute(self.INPUT_VALUE, v.encode("UTF-8"))
         inputsEl.appendChild(inputEl)
       formEl.appendChild(inputsEl)
       formsEl.appendChild(formEl)
@@ -107,7 +107,7 @@ class CrawlerPersister:
     uploadsEl = xml.createElement(self.UPLOADS)
     for url in self.uploads:
       urlEl = xml.createElement(self.URL)
-      urlEl.appendChild(xml.createTextNode(url))
+      urlEl.appendChild(xml.createTextNode(url.encode("UTF-8")))
       uploadsEl.appendChild(urlEl)
     root.appendChild(uploadsEl)
 

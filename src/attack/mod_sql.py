@@ -116,8 +116,8 @@ class mod_sql(Attack):
       for k in dict.keys():
         err = ""
         tmp = dict.copy()
-        tmp[k] = payload
-        url = page + "?" + self.HTTP.encode(tmp)
+        tmp[k] = "__PAYLOAD__"
+        url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload))
         if url not in self.attackedGET:
           if self.verbose == 2:
             print "+ "+url
@@ -134,7 +134,7 @@ class mod_sql(Attack):
             vuln_found += 1
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp),
+                                            url, self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload)),
                                             err + " (" + k + ")")
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
@@ -143,7 +143,7 @@ class mod_sql(Attack):
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
 
             tmp[k] = "__PAYLOAD__"
-            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp))
+            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload)))
 
           else:
             if code == "500":

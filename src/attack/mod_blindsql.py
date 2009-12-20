@@ -87,17 +87,17 @@ class mod_blindsql(Attack):
         tmp = dict.copy()
 
         tmp[k] = "__PAYLOAD__"
-        if page + "?" + self.HTTP.encode(tmp) in self.excludedGET:
+        if page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]) in self.excludedGET:
           return
 
         tmp[k] = "__TIME__"
-        url_to_log = page + "?" + self.HTTP.encode(tmp)
+        url_to_log = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
 
         for payload in self.blind_sql_payloads:
 
           if url_to_log not in self.attackedGET:
             tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
-            url = page + "?" + self.HTTP.encode(tmp)
+            url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
             if self.verbose == 2:
               print "+ " + url
             try:
@@ -105,7 +105,7 @@ class mod_blindsql(Attack):
             except socket.timeout:
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp),
+                                              url, self.HTTP.encode(tmp, headers["link_encoding"]),
                                               _("Blind SQL Injection") + " (" + k + ")")
               if self.color == 0:
                 print _("Blind SQL Injection") + " (" + k + ") " + _("in"), page
@@ -120,7 +120,7 @@ class mod_blindsql(Attack):
               if code == "500":
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                url, self.HTTP.encode(tmp),
+                                                url, self.HTTP.encode(tmp, headers["link_encoding"]),
                                                 VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
                 print _("500 HTTP Error code with")
                 print "\t" + _("Evil url") + ":", url

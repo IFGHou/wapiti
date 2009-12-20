@@ -136,6 +136,7 @@ Supported options are:
   global_headers = {}
   cookiejar = None
   scope = None
+  link_encoding = {}
 
   persister = None
 
@@ -221,6 +222,7 @@ Supported options are:
       return {}
 
     code = info['status']
+    page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
 
     proto = url.split("://")[0]
     if proto == "http" or proto == "https":
@@ -245,7 +247,10 @@ Supported options are:
             # No -> Will browse it soon
             self.tobrowse.append(redir)
 
-    htmlSource = data
+    if page_encoding != None:
+      htmlSource = unicode(data, page_encoding)
+    else:
+      htmlSource = data
     p = linkParser(url)
     try:
       p.feed(htmlSource)
@@ -316,6 +321,7 @@ Supported options are:
           else:
             # No -> Will browse it soon
             self.tobrowse.append(lien)
+          self.link_encoding[lien] = page_encoding
     for form in p.forms:
       action = self.correctlink(form[0], current, currentdir, proto)
       if action == None: action = current
@@ -608,6 +614,11 @@ Supported options are:
     fd.close()
 
   def getLinks(self):
+    for url in self.browsed.keys():
+      if url in self.link_encoding.keys():
+        self.browsed[url]["link_encoding"] = self.link_encoding[url]
+      else:
+        self.browsed[url]["link_encoding"] = None
     return self.browsed
 
   def getForms(self):
