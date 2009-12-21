@@ -150,18 +150,18 @@ class mod_blindsql(Attack):
             print "+ " + page
             print "  ", tmp
           try:
-            data, code = self.HTTP.send(page, self.HTTP.encode(tmp), headers).getPageCode()
+            data, code = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers).getPageCode()
           except socket.timeout:
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            page, self.HTTP.encode(tmp),
+                                            page, self.HTTP.encode(tmp, form[3]),
                                             _("Blind SQL Injection coming from") + " "+form[2])
             print _("Blind SQL Injection in"), page
             if self.color == 1:
               print "  " + _("with params") + " =", \
-                    self.HTTP.encode(tmp).replace(k + "=", self.RED + k + self.STD + "=")
+                    self.HTTP.encode(tmp, form[3]).replace(k + "=", self.RED + k + self.STD + "=")
             else:
-              print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+              print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
             print "  " + _("coming from"), form[2]
 
             # one of the payloads worked. log the form and exit
@@ -172,11 +172,11 @@ class mod_blindsql(Attack):
             if code == "500":
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              page, self.HTTP.encode(tmp),
+                                              page, self.HTTP.encode(tmp, form[3]),
                                               _("500 HTTP Error code coming from") + " " + form[2] + "<br>"+
                                               VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code in"), page
-              print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+              print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
               print "  " + _("coming from"), form[2]
       # none of the payloads worked. log the url and exit
       tmp[k] = "__TIME__"

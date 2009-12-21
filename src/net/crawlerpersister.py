@@ -30,6 +30,7 @@ class CrawlerPersister:
   HEADER = "header"
   HEADER_NAME = "name"
   HEADER_VALUE = "value"
+  ENCODING = "encoding"
 
   toBrowse = []
   browsed  = {}
@@ -48,10 +49,7 @@ class CrawlerPersister:
 
 
   def __init__(self):
-    self.form.append(0)
-    self.form.append(1)
-    self.form.append(2)
-
+    self.form = [0, 1, 2, 3]
 
   def isDataForUrl(self,fileName):
     return os.path.exists(fileName)
@@ -93,6 +91,8 @@ class CrawlerPersister:
       formEl = xml.createElement(self.FORM)
       formEl.setAttribute(self.FORM_URL, form[0].encode("UTF-8"))
       formEl.setAttribute(self.FORM_TO, form[2].encode("UTF-8"))
+      if form[3] != None:
+        formEl.setAttribute(self.ENCODING, form[3].encode("UTF-8"))
 
       inputsEl = xml.createElement(self.INPUTS)
       for k, v in form[1].items():
@@ -172,6 +172,10 @@ class CrawlerPersister:
     elif name == self.FORM:
       self.form[0] = attrs[self.FORM_URL]
       self.form[2] = attrs[self.FORM_TO]
+      if attrs.has_key(self.ENCODING):
+        self.form[3] = attrs[self.ENCODING]
+      else:
+        self.form[3] = None
 
 
   def __end_element(self, name):
@@ -183,10 +187,7 @@ class CrawlerPersister:
     elif name == self.FORM:
       self.form[1] = self.inputs
       self.forms.append(self.form)
-      self.form = []
-      self.form.append(0)
-      self.form.append(1)
-      self.form.append(2)
+      self.form = [0, 1, 2, 3]
 
 
   def __char_data(self, data):

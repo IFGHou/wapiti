@@ -325,8 +325,8 @@ Supported options are:
     for form in p.forms:
       action = self.correctlink(form[0], current, currentdir, proto)
       if action == None: action = current
-      form = (action, form[1], url)
-      if form not in self.forms: self.forms.append(form)
+      form = (action, form[1], url, page_encoding)
+      if form[0:3] not in [x[0:3] for x in self.forms]: self.forms.append(form)
     # We automaticaly exclude 404 urls
     if code == "404":
       self.excluded.append(url)
@@ -529,6 +529,9 @@ Supported options are:
         if (lien not in self.browsed.keys() and lien not in self.excluded):
           headers = self.browse(lien)
           if headers != {}:
+            if not headers.has_key("link_encoding"):
+              if self.link_encoding.has_key(lien):
+                headers["link_encoding"] = self.link_encoding[lien]
             self.browsed[lien] = headers
             if self.verbose == 1:
               sys.stderr.write('.')
@@ -614,11 +617,11 @@ Supported options are:
     fd.close()
 
   def getLinks(self):
-    for url in self.browsed.keys():
-      if url in self.link_encoding.keys():
-        self.browsed[url]["link_encoding"] = self.link_encoding[url]
-      else:
-        self.browsed[url]["link_encoding"] = None
+#    for url in self.browsed.keys():
+#      if url in self.link_encoding.keys():
+#        self.browsed[url]["link_encoding"] = self.link_encoding[url]
+#      else:
+#        self.browsed[url]["link_encoding"] = None
     return self.browsed
 
   def getForms(self):
