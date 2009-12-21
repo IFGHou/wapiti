@@ -9,6 +9,7 @@ xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/mod_xss.py -j
 xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/mod_permanentxss.py -j
 xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/mod_htaccess.py -j
 xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/mod_backup.py -j
+xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/mod_nikto.py -j
 xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/vulnerabilitiesdescriptions.py -j
 
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../wapiti.py -j
@@ -22,6 +23,7 @@ xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/mod_xss.py -j
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/mod_permanentxss.py -j
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/mod_htaccess.py -j
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/mod_backup.py -j
+xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/mod_nikto.py -j
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/vulnerabilitiesdescriptions.py -j
 
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../wapiti.py -j
@@ -35,5 +37,6 @@ xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/mod_xss.py -j
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/mod_permanentxss.py -j
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/mod_htaccess.py -j
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/mod_backup.py -j
+xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/mod_nikto.py -j
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/vulnerabilitiesdescriptions.py -j
 

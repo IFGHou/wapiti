@@ -45,13 +45,13 @@ class mod_exec(Attack):
       err = "Warning eval()"
       warn = 1
     if data.find("PATH=") >= 0 and data.find("PWD=") >= 0:
-      err = "Command execution"
+      err = _("Command execution")
       cmd = 1
     if data.find("Cannot execute a blank command in") >= 0 and warn == 0:
       err = "Warning exec"
       warn = 1
     if data.find("Fatal error</b>:  preg_replace") >= 0 and warn == 0:
-      err = "preg_replace injection"
+      err = _("preg_replace injection")
       warn = 1
     return err, cmd, warn
 
@@ -79,13 +79,13 @@ class mod_exec(Attack):
             print "\t" + _("caused by") + ":", url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.quote(payload), err+" "+_("(QUERY_STRING)"))
+                                            url, self.HTTP.quote(payload), err + " " + _("(QUERY_STRING)"))
           else: 
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.EXEC,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.quote(payload), err+" "+_("(QUERY_STRING)"))
+                                            url, self.HTTP.quote(payload), err + " " + _("(QUERY_STRING)"))
             print err, _("(QUERY_STRING) in"), page
             print "\t" + _("Evil url") + ":", url
           else:
@@ -94,7 +94,7 @@ class mod_exec(Attack):
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.quote(payload),
-                                              VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
+                                              VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
     for k in dict.keys():
@@ -139,7 +139,7 @@ class mod_exec(Attack):
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp, headers["lienk_encoding"]),
-                                              VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
+                                              VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
 
@@ -196,7 +196,7 @@ class mod_exec(Attack):
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp, form[3]),
-                                              _("500 HTTP Error code coming from")+" "+form[2]+"<br>"+
+                                              _("500 HTTP Error code coming from") + " " + form[2] + "\n" +
                                               VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code in"), page
               print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])

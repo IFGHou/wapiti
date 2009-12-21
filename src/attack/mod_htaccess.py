@@ -51,7 +51,7 @@ class mod_htaccess(Attack):
         data1 = self.HTTP.send(url).getPage()
         #htaccess protection detected
         if self.verbose >= 1:
-          print "Found HtAccess protection : ", url
+          print _("HtAccess protection found:"), url
 
         
         data2, code2 = self.HTTP.send(url, method = "ABC").getPageCode()
@@ -70,19 +70,19 @@ class mod_htaccess(Attack):
 
           if self.verbose == 2:
             if self.color == 1:
-              print self.YELLOW + "Code source :" + self.STD
+              print self.YELLOW + _("Source code:") + self.STD
               print self.GB + data1 + self.STD
             else:
-              print "Code source :"
+              print _("Source code:")
               print data1
           
           #report xml generator (ROMULUS) not implemented for htaccess
           self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, \
               url, "", err + " HtAccess")
           if self.color ==1:
-            print self.RED + "\t.htaccess bypass vulnerability : ", url + self.STD
+            print self.RED + "\t" + _(".htaccess bypass vulnerability:"), url + self.STD
           else:
-            print "\t.htaccess bypass vulnerability : ", url
+            print "\t" + _(".htaccess bypass vulnerability:"), url
 
           #print output informations by verbosity option
           if self.verbose >= 1:
@@ -93,19 +93,19 @@ class mod_htaccess(Attack):
 
           if self.verbose == 2:
             if self.color == 1:
-              print self.YELLOW + "Code source :" + self.STD
+              print self.YELLOW + _("Source code:") + self.STD
               print self.GB + data2 + self.STD
             else:
-              print "Code source :"
+              print _("Source code:")
               print data2
 
         else:
           if code1 == 500 and err500 == 0:
             err500 = 1
             self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, \
-                url, "", VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
-            print "500 HTTP Error code with"
-            print "\tEvil url:", url
+                url, "", VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
+            print _("500 HTTP Error code with")
+            print "\t" + _("Evil url") + ":",url
             
           #add the url with the url attacked
         self.attackedGET.append(url)

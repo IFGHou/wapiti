@@ -73,7 +73,7 @@ class mod_crlf(Attack):
             print "+ " + url
           try:
             if self.HTTP.send(url).getInfo().has_key('wapiti'):
-              err = "CRLF Injection"
+              err = _("CRLF Injection")
               self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")")
               if self.color == 0:

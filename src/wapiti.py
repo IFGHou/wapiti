@@ -162,11 +162,10 @@ Supported options are:
         self.reportGen = XMLReportGenerator()
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
     xmlParser = VulnerabilityXMLParser()
-    xmlParser.parse(BASE_DIR+"/config/vulnerabilities/vulnerabilities.xml")
+    xmlParser.parse(BASE_DIR + "/config/vulnerabilities/vulnerabilities.xml")
     for vul in xmlParser.getVulnerabilities():
-      if vul.getName() != "Resource consumption":
-        self.reportGen.addVulnerabilityType(_(vul.getName()), _(vul.getDescription()),
-                                            _(vul.getSolution()), vul.getReferences())
+      self.reportGen.addVulnerabilityType(_(vul.getName()), _(vul.getDescription()),
+                                          _(vul.getSolution()), vul.getReferences())
 
   def __initAttacks(self):
     self.__initReport()
@@ -254,17 +253,17 @@ Supported options are:
       if x.require != []:
         t = [y.name for y in self.attacks if y.name in x.require and (y.doGET or y.doPOST)]
         if x.require != t:
-          print "[!] Missing dependecies for module", x.name + ":"
+          print "[!]", _("Missing dependecies for module"), x.name , ":"
           print "\t" , ",".join([y for y in x.require if y not in t])
           continue
         else:
           x.loadRequire([y for y in self.attacks if y.name in x.require])
 
-      print "[+] Launching", x.name, "attacks"
+      print "[+]", _("Launching module"), x.name
       x.attack(self.urls, self.forms)
 
     if self.HTTP.getUploads() != []:
-      print "\n"+_("Upload scripts found")+":"
+      print "\n" + _("Upload scripts found") + ":"
       print "----------------------"
       for url in self.HTTP.getUploads():
         print url
@@ -274,7 +273,7 @@ Supported options are:
       else:
         self.outputFile = self.REPORT_FILE
     self.reportGen.generateReport(self.outputFile)
-    print "\n"+_("Report")
+    print "\n" + _("Report")
     print "------"
     print _("A report has been generated in the file") + " " + self.outputFile
     if self.reportGeneratorType == "html":
@@ -348,7 +347,7 @@ if __name__ == "__main__":
     crawlerPersister = CrawlerPersister();
     crawlerFile = None
     attackFile  = None
-    if len(sys.argv)<2:
+    if len(sys.argv) < 2:
       print doc
       sys.exit(0)
     if '-h' in sys.argv or '--help' in sys.argv:
@@ -420,10 +419,10 @@ if __name__ == "__main__":
       ""
     for o, a in opts:
       if o in ("-k", "--attack"):
-        if a!= "" and a[0] != '-':
+        if a != "" and a[0] != '-':
           attackFile = a
       if o in ("-i", "--continue"):
-        if a!= '' and a[0] != '-':
+        if a != '' and a[0] != '-':
           crawlerFile = a
     print _("Wapiti-SVN (wapiti.sourceforge.net)")
     if attackFile != None:

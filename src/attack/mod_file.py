@@ -67,7 +67,7 @@ class mod_file(Attack):
       err = "Windows include/fread"
       inc = 1
     if data.find("<title>Google</title>")>0:
-      err = "Remote include"
+      err = _("Remote include")
       inc = 1
     for pattern, funcname in self.warning_messages:
       if data.find(pattern) >= 0 and warn == 0:
@@ -117,7 +117,7 @@ class mod_file(Attack):
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url, self.HTTP.quote(payload),
-                                VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
+                                VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
     for k in dict.keys():
@@ -162,7 +162,7 @@ class mod_file(Attack):
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 url, self.HTTP.encode(tmp, headers["link_encoding"]),
-                                VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
+                                VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
 
@@ -218,7 +218,7 @@ class mod_file(Attack):
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp, form[3]),
-                                              _("500 HTTP Error code coming from") + " " + form[2] + "<br />"+
+                                              _("500 HTTP Error code coming from") + " " + form[2] + "\n"+
                                               VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code in"), page
               print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])

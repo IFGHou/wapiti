@@ -28,8 +28,8 @@ class mod_nikto(Attack):
       fd.close()
     except IOError:
       try:
-        print "Problem with local nikto database."
-        print "Downloading from the web..."
+        print _("Problem with local nikto database.")
+        print _("Downloading from the web...")
         page = urllib2.urlopen("http://cirt.net/nikto/UPDATES/2.1.0/db_tests")
         csv.register_dialect("nikto", quoting=csv.QUOTE_ALL, doublequote=False, escapechar="\\")
         reader = csv.reader(page, "nikto")
@@ -41,7 +41,7 @@ class mod_nikto(Attack):
         writer.writerows(self.nikto_db)
         fd.close()
       except IOError:
-        print "Error downloading Nikto database"
+        print _("Error downloading Nikto database")
 
   def attack(self, urls, forms):
     for l in self.nikto_db:
@@ -147,8 +147,21 @@ class mod_nikto(Attack):
         if m != None:
           refs.append("http://www.microsoft.com/technet/security/bulletin/" + m.group(0) + ".asp")
 
+        info = l[10]
         if refs != []:
-          print "References:\n  " + "\n  ".join(refs)
+          print _("References:") +"\n  " + "\n  ".join(refs)
+          info += "\n" + _("References:") + "\n"
+          info += "\n".join(['<a href="' + x + '">' + x + '</a>' for x in refs])
         print
 
+
+        if l[4] == "GET":
+          self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
+              "http://" + self.HTTP.server + l[3], "", info)
+        elif l[4] == "POST":
+          self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
+              "http://" + self.HTTP.server + l[3], l[11], info)
+        else:
+          self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
+              "http://" + self.HTTP.server + l[3], l[4] + " " + l[11], info)
 

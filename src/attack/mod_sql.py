@@ -39,31 +39,31 @@ class mod_sql(Attack):
 
   def __findPatternInResponse(self, data):
     if data.find("You have an error in your SQL syntax") >= 0:
-      return "MySQL Injection"
+      return _("MySQL Injection")
     if data.find("supplied argument is not a valid MySQL") > 0:
-      return "MySQL Injection"
+      return _("MySQL Injection")
     if data.find("[Microsoft][ODBC Microsoft Access Driver]") >= 0:
-      return "Access-Based SQL Injection"
+      return _("Access-Based SQL Injection")
     if data.find("[Microsoft][ODBC SQL Server Driver]") >= 0:
-      return "MSSQL-Based Injection"
+      return _("MSSQL-Based Injection")
     if data.find('Microsoft OLE DB Provider for ODBC Drivers</font> <font size="2" face="Arial">error') >= 0:
-      return "MSSQL-Based Injection"
+      return _("MSSQL-Based Injection")
     if data.find("Microsoft OLE DB Provider for ODBC Drivers") >= 0:
-      return "MSSQL-Based Injection"
+      return _("MSSQL-Based Injection")
     if data.find("java.sql.SQLException: Syntax error or access violation") >= 0:
-      return "Java.SQL Injection"
+      return _("Java.SQL Injection")
     if data.find("PostgreSQL query failed: ERROR: parser:") >= 0:
-      return "PostgreSQL Injection"
+      return _("PostgreSQL Injection")
     if data.find("XPathException") >= 0:
-      return "XPath Injection"
+      return _("XPath Injection")
     if data.find("supplied argument is not a valid ldap") >= 0 or data.find("javax.naming.NameNotFoundException") >= 0:
-      return "LDAP Injection"
+      return _("LDAP Injection")
     if data.find("DB2 SQL error:") >= 0:
-      return "DB2 Injection"
+      return _("DB2 Injection")
     if data.find("Dynamic SQL Error") >= 0:
-      return "Interbase Injection"
+      return _("Interbase Injection")
     if data.find("Sybase message:") >= 0:
-      return "Sybase Injection"
+      return _("Sybase Injection")
     return ""
 
   def setTimeout(self, timeout):
@@ -106,7 +106,7 @@ class mod_sql(Attack):
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             url, payload,
-                                            VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
+                                            VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
             print _("500 HTTP Error code with")
             print "\t" + _("Evil url") + ":", url
         self.attackedGET.append(url)
@@ -150,7 +150,7 @@ class mod_sql(Attack):
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp),
-                                              VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
+                                              VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
           self.attackedGET.append(url)
@@ -206,7 +206,7 @@ class mod_sql(Attack):
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, post_data,
-                                            _("500 HTTP Error code coming from") + " " + form[2] + "<br>"+
+                                            _("500 HTTP Error code coming from") + " " + form[2] + "\n"+
                                             VulDescrip.ERROR_500_DESCRIPTION)
             print _("500 HTTP Error code in"), page
             print "  " + _("with params") + " =", post_data

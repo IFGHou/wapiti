@@ -136,6 +136,7 @@ class XMLReportGenerator(ReportGenerator):
         parameterNode.appendChild(self.__xmlDoc.createTextNode(parameter))
         vulnerability.appendChild(parameterNode)
         infoNode = self.__xmlDoc.createElement("info")
+        info = info.replace("\n", "<br />")
         infoNode.appendChild(self.__xmlDoc.createTextNode(info))
         vulnerability.appendChild(infoNode)
         self.__addToVulnerabilityList(vulnerabilityTypeName,vulnerability)

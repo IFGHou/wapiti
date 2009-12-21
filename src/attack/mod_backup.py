@@ -53,11 +53,14 @@ class mod_backup(Attack):
           err = self.__returnErrorByCode(code)
           if err == "ok":
             if self.color == 1:
-              print self.RED + "Found backup file !" + self.STD
+              print self.RED + _("Found backup file !") + self.STD
               print self.RED + "    -> " + url + self.STD
             else:
-              print " + Found backup file !"
+              print " +", _("Found backup file !")
               print "   -> " + url
+            self.reportGen.logVulnerability(Vulnerability.BACKUP,
+                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                              url, "", _("Backup file found for") + " " + page)
             
         except socket.timeout:
           data = ""

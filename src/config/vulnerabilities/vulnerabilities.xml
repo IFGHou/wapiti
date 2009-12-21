@@ -100,4 +100,25 @@
 			</reference>
 		</references>
 	</vulnerability>
+	<vulnerability name="Backup file">
+		<description>Backup file description</description>
+		<solution text="Backup file solution"/>
+		<references>
+			<reference>
+        <title>Testing for Old, Backup and Unreferenced Files (OWASP-CM-006)</title>
+        <url>http://www.owasp.org/index.php/Testing_for_Old,_Backup_and_Unreferenced_Files_(OWASP-CM-006)</url>
+			</reference>
+		</references>
+	</vulnerability>
+	<vulnerability name="Potentially dangerous file">
+		<description>Potentially dangerous file description</description>
+		<solution text="Potentially dangerous file solution"/>
+		<references>
+			<reference>
+        <title>The Open Source Vulnerability Database</title>
+        <url>http://osvdb.org/</url>
+			</reference>
+		</references>
+	</vulnerability>
+
 </vulnerabilities>

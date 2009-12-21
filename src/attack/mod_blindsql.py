@@ -79,7 +79,7 @@ class mod_blindsql(Attack):
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, payload,
-                                              VulDescrip.ERROR_500+"<br>"+VulDescrip.ERROR_500_DESCRIPTION)
+                                              VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url
     else:
@@ -121,7 +121,7 @@ class mod_blindsql(Attack):
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp, headers["link_encoding"]),
-                                                VulDescrip.ERROR_500 + "<br />" + VulDescrip.ERROR_500_DESCRIPTION)
+                                                VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
                 print _("500 HTTP Error code with")
                 print "\t" + _("Evil url") + ":", url
 
@@ -155,7 +155,7 @@ class mod_blindsql(Attack):
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp, form[3]),
-                                            _("Blind SQL Injection coming from") + " "+form[2])
+                                            _("Blind SQL Injection coming from") + " " + form[2])
             print _("Blind SQL Injection in"), page
             if self.color == 1:
               print "  " + _("with params") + " =", \
@@ -173,7 +173,7 @@ class mod_blindsql(Attack):
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp, form[3]),
-                                              _("500 HTTP Error code coming from") + " " + form[2] + "<br>"+
+                                              _("500 HTTP Error code coming from") + " " + form[2] + "\n"+
                                               VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code in"), page
               print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
