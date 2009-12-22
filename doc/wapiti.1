@@ -1,5 +1,5 @@
 .\" Man page for the Wapiti project.
-.TH wapiti 1 http://wapiti.sourceforge.net/ "Version 2.1.0" http://wapiti.sourceforge.net/
+.TH wapiti 1 http://wapiti.sourceforge.net/ "SVN Version" http://wapiti.sourceforge.net/
 .SH NAME
 Wapiti \- A web application vulnerability scanner in Python.
 .SH SYNOPSIS
@@ -36,6 +36,22 @@ or
 .RE
 .RE
 .TP
+\fB\-b\fR, \fB\-\-scope\fR=\fISCOPE\fR
+Set the scope of the scan:
+.br
+.RS
+.RS
+page :  to analyse only the page passed in the URL
+.br
+folder : to analyse all the links to the pages which are in the
+same folder as the URL passed to Wapiti.
+.br
+domain : to analyse all the links to the pages which are in the
+same domain as the URL passed to Wapiti.
+.RE
+If no scope is set, Wapiti scans all the tree under the given URL.
+.RE
+.TP
 \fB\-p\fR, \fB\-\-proxy\fR=\fIPROXY_URL\fR
 To specify a proxy.
 .br
@@ -66,19 +82,28 @@ Define a limit of urls to read with the same pattern.
 .br
 Use this option to prevent endless loops. Must be greater than 0.
 .TP
-\fB\-m\fR, \fB\-\-module\fR=\fIMODULE\fR
-Use a predefined set of scan/attack options.
+\fB\-m\fR, \fB\-\-module\fR=\fIMODULE_OPTIONS\fR
+Set the modules and HTTP methods to use for attacks.
 .br
-Examples:
+Example:
+.br
 .RS
 .RS
-\-m GET_ALL : only use GET request (no POST)
-.br
-\-m GET_XSS : only XSS attacks with HTTP GET method
-.br
-\-m POST_XSS : only XSS attacks with HTTP POST method
+-m "-all,xss:get,exec:post"
 .RE
 .RE
+.TP
+\fB\-i\fR, \fB\-\-continue\fR=\fIFILE\fR
+This parameter indicates Wapiti to continue with the scan from the 
+specified file, this file should contain data from a previous scan.
+The file is optional, if it is not specified, Wapiti takes the default 
+filefrom "scans" folder.
+.TP
+\fB\-k\fR, \fB\-\-attack\fR=\fIFILE\fR
+This parameter indicates Wapiti to perform attacks without scanning again
+the website and following the data of this file.
+The file is optional, if it is not specified, Wapiti takes the default
+file from "scans" folder.
 .TP
 \fB\-u\fR, \fB\-\-underline\fR
 Use color to highlight vulnerables parameters in output.
@@ -112,7 +137,7 @@ David del Pozo
 .br
 Alberto Pastor
 .SH BUG REPORTS
-If you find a bug in Opera please report it to http://sourceforge.net/tracker/?group_id=168625
+If you find a bug in Wapiti please report it to http://sourceforge.net/tracker/?group_id=168625
 .SH SEE ALSO
 The README file that comes with Wapiti gives more detailed informations on the options.
 .\" Vim for teh win!

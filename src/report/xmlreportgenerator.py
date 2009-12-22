@@ -35,7 +35,7 @@ class XMLReportGenerator(ReportGenerator):
     method logVulnerability(vulnerabilityTypeName,level,url,parameter,info).
     The format of the file is XML and it has the following structure:
     <report type="security">
-        <generatedBy id="Wapiti 2.0"/>
+        <generatedBy id="Wapiti SVN"/>
             <bugTypeList>
                 <bugType name="SQL Injection">
                     <bugList/>
@@ -148,7 +148,7 @@ class XMLReportGenerator(ReportGenerator):
         """
         f = open(fileName,"w")
         try:
-          f.write(self.__xmlDoc.toprettyxml(indent="    ", encoding="UTF-8"))
+          f.write(self.__xmlDoc.toprettyxml(indent = "    ", encoding = "UTF-8"))
         finally:
           f.close()
 

@@ -1,4 +1,5 @@
 import socket
+import re
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
@@ -64,6 +65,10 @@ class mod_sql(Attack):
       return _("Interbase Injection")
     if data.find("Sybase message:") >= 0:
       return _("Sybase Injection")
+    ora_test = re.search("ORA-[0-9]{4,}", data)
+    if ora_test != None:
+      return _("Oracle Injection") + " " + ora_test.group(0)
+
     return ""
 
   def setTimeout(self, timeout):
@@ -134,7 +139,7 @@ class mod_sql(Attack):
             vuln_found += 1
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload)),
+                                            url, self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload)),
                                             err + " (" + k + ")")
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
@@ -143,13 +148,13 @@ class mod_sql(Attack):
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
 
             tmp[k] = "__PAYLOAD__"
-            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload)))
+            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload)))
 
           else:
             if code == "500":
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp),
+                                              url, self.HTTP.encode(tmp, headers["link_encoding"]),
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "\t" + _("Evil url") + ":", url

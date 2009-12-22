@@ -11,6 +11,8 @@ xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/mod_htaccess.py -j
 xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/mod_backup.py -j
 xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/mod_nikto.py -j
 xgettext --from-code=UTF-8 -d wapiti -o es.po ../attack/vulnerabilitiesdescriptions.py -j
+xgettext --from-code=UTF-8 -d wapiti -o es.po ../net/getcookie.py -j
+xgettext --from-code=UTF-8 -d wapiti -o es.po ../net/cookie.py -j
 
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../wapiti.py -j
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../net/lswww.py -j
@@ -25,6 +27,8 @@ xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/mod_htaccess.py -j
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/mod_backup.py -j
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/mod_nikto.py -j
 xgettext --from-code=UTF-8 -d wapiti -o en.po ../attack/vulnerabilitiesdescriptions.py -j
+xgettext --from-code=UTF-8 -d wapiti -o en.po ../net/getcookie.py -j
+xgettext --from-code=UTF-8 -d wapiti -o en.po ../net/cookie.py -j
 
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../wapiti.py -j
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../net/lswww.py -j
@@ -39,4 +43,5 @@ xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/mod_htaccess.py -j
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/mod_backup.py -j
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/mod_nikto.py -j
 xgettext --from-code=UTF-8 -d wapiti -o fr.po ../attack/vulnerabilitiesdescriptions.py -j
-
+xgettext --from-code=UTF-8 -d wapiti -o fr.po ../net/getcookie.py -j
+xgettext --from-code=UTF-8 -d wapiti -o fr.po ../net/cookie.py -j

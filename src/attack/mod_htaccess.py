@@ -79,14 +79,14 @@ class mod_htaccess(Attack):
           #report xml generator (ROMULUS) not implemented for htaccess
           self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, \
               url, "", err + " HtAccess")
-          if self.color ==1:
+          if self.color == 1:
             print self.RED + "\t" + _(".htaccess bypass vulnerability:"), url + self.STD
           else:
             print "\t" + _(".htaccess bypass vulnerability:"), url
 
           #print output informations by verbosity option
           if self.verbose >= 1:
-            if self.color ==1:
+            if self.color == 1:
               print self.CYAN + "|HTTP Code : ", code2 + self.STD
             else:
               print "|HTTP Code : ", code2

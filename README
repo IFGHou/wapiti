@@ -1,3 +1,4 @@
+                                WAPITI - VERSION SVN
                     Wapiti is a web application security auditor.
                       http://www.ict-romulus.eu/web/wapiti/home
                            http://wapiti.sourceforge.net/
@@ -23,6 +24,9 @@ It supports the following attacks :
 + LDAP Injection
 + Command Execution detection (eval(), system(), passtru()...)
 + CRLF Injection
++ Search for potentially dangerous files on the server
++ Bypass weak htaccess confihurations
++ Search for copies (backup) of scripts on the server
 
 It support both GET and POST HTTP methods,  warns when an upload form is
 found  and  make  the  difference  beetween  permanent  and pontual  XSS
@@ -40,13 +44,6 @@ How to get the best results
 ===========================
 
 Wapiti use the BeautifulSoup library as a HTML parser to correct bad html code.
-You can also install libTidy as an additional HTML parser. Just install the
-following applications :
-
-Tidy     - http://tidy.sourceforge.net/
-ctypes   - http://starship.python.net/crew/theller/ctypes/
-uTidyLib - http://utidylib.berlios.de/
-
 
 To find more vulnerabilities you can modify your PHP configuration to :
 safe_mode = Off
@@ -83,7 +80,7 @@ Supported options are:
 -p <url_proxy>
 --proxy <url_proxy>
 	To specify a proxy
-	Exemple: -p http://proxy:port/
+	Example: -p http://proxy:port/
 
   It is possible to use other types of proxy. Just change the protocol.
   socks://proxy:port/ or tor://proxy:port/ will use a SOCKSv5 proxy.
@@ -117,16 +114,39 @@ Supported options are:
   Use this option to prevent endless loops.
   Must be greater than 0
 
--m <module>
---module <module>
-	Use a predefined set of scan/attack options
-	GET_ALL: only use GET request (no POST)
-	GET_XSS: only XSS attacks with HTTP GET method
-	POST_XSS: only XSS attacks with HTTP POST method
-  GET_SQL: only SQL attacks with HTTP GET method
-  POST_SQL: only SQL attacks with HTTP POST method
-  GET_FILE: only File Handling attacks with HTTP GET method
-  If you want to create your own, look at the end of the wapiti.py file.
+-b <scope>
+--scope <scope>
+  Set the scope of the scan:
+    + "page" :  to analyse only the page passed in the URL
+    + "folder" : to analyse all the links to the pages which are in the
+                 same folder as the URL passed to Wapiti.
+    + "domain" : to analyse all the links to the pages which are in the
+                 same domain as the URL passed to Wapiti.
+  If no scope is set, Wapiti scans all the tree under the given URL.
+
+-i <file>
+--continue <file>
+  This parameter indicates Wapiti to continue with the scan from the
+  specified file, this file should contain data from a previous scan.
+  The file is optional, if it is not specified, Wapiti takes the default
+  file from the "scans" folder.
+
+-k <file>
+--attack <file>
+  This parameter indicates Wapiti to perform attacks without scanning again
+  the website and following the data of this file.
+  The file is optional, if it is not specified, Wapiti takes the default
+  file from the "scans" folder.
+
+-m <module_options>
+--module <module_options>
+  Set the modules and HTTP methods to use for attacks.
+  Example:
+    -m "-all,xss:get,exec:post"
+    Use only GET request for XSS and POST method for command execution injection
+
+    -m nikto,backup,htaccess
+    Activate optionnal modules to use every existing modules
 
 -u
 --underline
@@ -157,22 +177,31 @@ Files you will find on the src directory :
 .
 |-- attack # attack modules used for the vulnerabilities Wapiti can detect.
 |   |-- __init__.py
-|   |-- attack.py
-|   |-- crlfattack.py
-|   |-- execattack.py
-|   |-- filehandlingattack.py
-|   |-- sqlinjectionattack.py
-|   |-- vulnerabilitiesdescriptions.py
-|   `-- xssattack.py
+|   |-- attack.py       # Base for all attack modules
+|   |-- mod_backup.py   # This module search backup of scripts on the server
+|   |-- mod_blindsql.py # Time-based blind sql scanner
+|   |-- mod_crlf.py     # Search for CR/LF injection in HTTP headers
+|   |-- mod_exec.py     # Module used to detect command execution vulnerabilities
+|   |-- mod_file.py     # Search for include()/fread() and other file handling vulns
+|   |-- mod_htaccess.py # Try to bypass weak htaccess configurations
+|   |-- mod_nikto.py    # Use a Nikto database to search for potentially dangerous files
+|   |-- mod_permanentxss.py # Look for permanent XSS
+|   |-- mod_sql.py      # Standard error-based SQL injection scanner
+|   |-- mod_xss.py      # Module for XSS detection
+|   `-- vulnerabilitiesdescriptions.py
 |
 |-- config
 |   |-- attacks # The payloads injected for the attacks.
 |   |   |         You can take a look, add your owns or send us ideas :)
 |   |   |
+|   |   |-- backupPayloads.txt
 |   |   |-- blindSQLPayloads.txt
 |   |   |-- execPayloads.txt
 |   |   |-- fileHandlingPayloads.txt
 |   |   `-- xssPayloads.txt
+|   |
+|   |-- language # This directory contain the .mo files to display output in your language
+|   |
 |   `-- vulnerabilities # XML file defining the vulnerabilities. Used for the
 |       |                 generation of the report.
 |       `-- vulnerabilities.xml
@@ -182,12 +211,26 @@ Files you will find on the src directory :
 |   |-- auxtext.py
 |   `-- vulnerabilityxmlparser.py
 |
+|-- generated_report # Scan reports are generated in this directory
+|
+|-- language # Scripts used for internationalisation
+|   |-- __init__.py
+|   `-- language.py
+|
+|-- language_sources # Language files. You can add your own translation file here
+|   |-- en.po        # Please send your traductions 
+|   |-- es.po
+|   |-- fr.po
+|   |-- generateSources.sh # Generate .po files based on strings found in .py files
+|   `-- generateTranslations.sh # Generate .mo files from .po files.
+
 |-- net
 |   |-- BeautifulSoup.py # Parser to analyse HTML pages.
 |   |-- HTTP.py # wrapper to httplib2. Provide other functions (urlencode...)
 |   |-- __init__.py
 |   |-- cookie.py   # two tools to create a cookie file you can use with Wapiti
 |   |-- getcookie.py
+|   |-- crawlerpersister.py # Used to save a scan session and reload it later.
 |   |
 |   |-- httplib2 # We changed urllib2 for httplib2 because it use persistent 
 |   |   |          connections and makes Wapiti faster :)
@@ -202,7 +245,8 @@ Files you will find on the src directory :
 |   |-- lswww.py # lswww is the spider module of Wapiti. It is called everytime
 |   |              you scan a website. You can use it directly.
 |   |              See "python lswww.py -h"
-|   `-- lswwwv2.py
+|   |
+|   `-- libcookie.py # Home-made library to store cookies in XML format
 |
 |-- report # modules used to generate a scan report. HTML, XML or TXT formats.
 |   |-- __init__.py
@@ -240,6 +284,9 @@ Files you will find on the src directory :
 |   |       |-- svgchartpainter.js
 |   |       `-- wz_jsgraphics.js
 |   `-- index.html
+|
+|-- scans # Scan sessions or saved in XML format in this directory
+|
 |-- vulnerability.py
 `-- wapiti.py # The big one ;-)
 

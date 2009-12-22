@@ -24,13 +24,7 @@ import urlparse
 import sys, socket, lswww, HTMLParser
 import libcookie
 import os
-
-try:
-  import tidy
-except ImportError:
-  tidyhere = 0
-else:
-  tidyhere = 1
+import BeautifulSoup
 
 if len(sys.argv) != 3:
   sys.stderr.write("Usage: python getcookie.py <cookie_file> <url_with_form>\n")
@@ -47,7 +41,7 @@ lc.delete(urlparse.urlparse(url)[1])
 
 current = url.split("#")[0]
 current = current.split("?")[0]
-currentdir = "/".join(current.split("/")[:-1])+"/"
+currentdir = "/".join(current.split("/")[:-1]) + "/"
 proto = url.split("://")[0]
 agent =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
@@ -56,7 +50,7 @@ socket.setdefaulttimeout(6)
 try:
   fd = urllib2.urlopen(req)
 except IOError:
-  print "Error getting url"
+  print _("Error getting url")
   sys.exit(1)
 
 lc.add(fd)
@@ -64,51 +58,49 @@ lc.add(fd)
 try:
   htmlSource = fd.read()
 except socket.timeout:
-  print "Error fetching page"
+  print _("Error fetching page")
   sys.exit(1)
 p = lswww.linkParser(url)
 try:
   p.feed(htmlSource)
 except HTMLParser.HTMLParseError, err:
-  if tidyhere == 1:
-    options = dict(output_xhtml=1, add_xml_decl=1, indent=1, tidy_mark=0)
-    htmlSource = str(tidy.parseString(htmlSource, **options))
-    try:
-      p.reset()
-      p.feed(htmlSource)
-    except HTMLParser.HTMLParseError, err:
-      pass
+  htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+  try:
+    p.reset()
+    p.feed(htmlSource)
+  except HTMLParser.HTMLParseError, err:
+    pass
 
 if len(p.forms) == 0:
-  print "No forms found in this page !"
+  print _("No forms found in this page !")
   sys.exit(1)
 
 myls = lswww.lswww(url)
 i = 0
 nchoice = 0
 if len(p.forms) > 1:
-  print "Choose the form you want to use :"
+  print _("Choose the form you want to use :")
   for form in p.forms:
     print
     print "%d) %s" % (i, myls.correctlink(form[0], current, currentdir, proto))
     for field, value in form[1].items():
-      print "\t" + field + " ("+value+")"
+      print "\t" + field + " (" + value + ")"
     i += 1
   ok = False
   while ok == False:
-    choice = raw_input("Enter a number : ")
+    choice = raw_input(_("Enter a number : "))
     if choice.isdigit():
       nchoice = int(choice)
       if nchoice < i and nchoice >= 0:
         ok = True
 
 form = p.forms[nchoice]
-print "Please enter values for the folling form :"
+print _("Please enter values for the folling form :")
 print "url = " + myls.correctlink(form[0], current, currentdir, proto)
 
 d = {}
 for field, value in form[1].items():
-  str = raw_input(field+" ("+value+") : ")
+  str = raw_input(field + " (" + value + ") : ")
   d[field] = str
 
 form[1].update(d)
@@ -117,7 +109,7 @@ url = myls.correctlink(form[0], current, currentdir, proto)
 server = urlparse.urlparse(url)[1]
 script = urlparse.urlparse(url)[2]
 if urlparse.urlparse(url)[4] != "":
-  script += "?"+urlparse.urlparse(url)[4]
+  script += "?" + urlparse.urlparse(url)[4]
 params = urllib.urlencode(form[1])
 
 txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
@@ -130,7 +122,7 @@ try:
     req = urllib2.Request(url, params, txheaders)
     handle = urllib2.urlopen(req)
 except IOError, e:
-    print "Erreur lors de l'ouverture de", url
+    print _("Error getting url"), url
     sys.exit(1)
 
 lc.add(handle)

@@ -110,13 +110,12 @@ class HTTP:
     if encoding != None:
       tmp = {}
       for k, v in url.items():
-        tmp[k.encode(encoding)] = v.encode(encoding)
+        tmp[k.encode(encoding, "ignore")] = v.encode(encoding, "ignore")
       return urllib.urlencode(tmp)
     return urllib.urlencode(url)
 
   def uqe(self, url, encoding = None):
     "urlencode a string then interpret the hex characters (%41 will give 'A')."
-    #return urllib.unquote(urllib.urlencode(url))
     return urllib.unquote(self.encode(url, encoding))
 
   def escape(self,url):

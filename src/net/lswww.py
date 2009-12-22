@@ -30,20 +30,7 @@ from htmlentitydefs import name2codepoint as n2cp
 from xml.dom import minidom
 from crawlerpersister import CrawlerPersister
 import libcookie
-
-try:
-	import tidy
-except ImportError:
-	tidyhere = 0
-else:
-	tidyhere = 1
-
-try:
-	import BeautifulSoup
-except ImportError:
-	BeautifulSouphere = 0
-else:
-	BeautifulSouphere = 1
+import BeautifulSoup
 
 class lswww:
   """
@@ -248,57 +235,29 @@ Supported options are:
             self.tobrowse.append(redir)
 
     if page_encoding != None:
-      htmlSource = unicode(data, page_encoding)
+      htmlSource = unicode(data, page_encoding, "ignore")
     else:
       htmlSource = data
     p = linkParser(url)
     try:
       p.feed(htmlSource)
     except HTMLParser.HTMLParseError, err:
-      if tidyhere == 1:
-        options = dict(output_xhtml = 1, add_xml_decl = 1,
-            indent = 1, tidy_mark = 0)
-        htmlSource = str(tidy.parseString(htmlSource, **options))
-        try:
-          p.reset()
-          p.feed(htmlSource)
-        except HTMLParser.HTMLParseError, err:
-          pass
-      elif BeautifulSouphere == 1:
-        htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
-        try:
-          p.reset()
-          p.feed(htmlSource)
-        except HTMLParser.HTMLParseError, err:
-          p = linkParser2(url, self.verbose)
-          p.feed(htmlSource)
-      # last chance
-      else:
+      htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+      try:
+        p.reset()
+        p.feed(htmlSource)
+      except HTMLParser.HTMLParseError, err:
         p = linkParser2(url, self.verbose)
         p.feed(htmlSource)
 
     # Sometimes the page is badcoded but the parser doesn't see the error
     # So if we got no links we can force a correction of the page
     if len(p.liens) == 0:
-      if tidyhere == 1:
-        options = dict(output_xhtml = 1, add_xml_decl = 1,
-            indent = 1, tidy_mark = 0)
-        htmlSource = str(tidy.parseString(htmlSource, **options))
-        try:
-          p.reset()
-          p.feed(htmlSource)
-        except HTMLParser.HTMLParseError, err:
-          pass
-      elif BeautifulSouphere == 1:
-        htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
-        try:
-          p.reset()
-          p.feed(htmlSource)
-        except HTMLParser.HTMLParseError, err:
-          p = linkParser2(url, self.verbose)
-          p.feed(htmlSource)
-      # last chance
-      else:
+      htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+      try:
+        p.reset()
+        p.feed(htmlSource)
+      except HTMLParser.HTMLParseError, err:
         p = linkParser2(url, self.verbose)
         p.feed(htmlSource)
 
@@ -617,11 +576,6 @@ Supported options are:
     fd.close()
 
   def getLinks(self):
-#    for url in self.browsed.keys():
-#      if url in self.link_encoding.keys():
-#        self.browsed[url]["link_encoding"] = self.link_encoding[url]
-#      else:
-#        self.browsed[url]["link_encoding"] = None
     return self.browsed
 
   def getForms(self):
@@ -634,7 +588,6 @@ Supported options are:
   def saveCrawlerData(self):
     self.persister.setRootURL(self.rooturl);
     self.persister.setToBrose(self.tobrowse);
-    # TODO: xml structure
     self.persister.setBrowsed(self.browsed);
     self.persister.setForms  (self.forms);
     self.persister.setUploads(self.uploads);

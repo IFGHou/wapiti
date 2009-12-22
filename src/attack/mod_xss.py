@@ -139,7 +139,9 @@ class mod_xss(Attack):
           entries.append({"type":"text", "parent":parent.name})
 
   def validXSS(self, page, code):
-    soup=BeautifulSoup.BeautifulSoup(page)
+    if page == None or page == "":
+      return False
+    soup = BeautifulSoup.BeautifulSoup(page)
     for x in soup.findAll("script"):
       if x.string != None and x.string in [t.replace("__XSS__", code) for t in self.script_ok]:
         return True

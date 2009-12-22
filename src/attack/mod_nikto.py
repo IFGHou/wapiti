@@ -48,22 +48,22 @@ class mod_nikto(Attack):
       match = match_or = match_and = False
       fail = fail_or = False
 
-      l[3] = l[3].replace("@CGIDIRS","/cgi-bin/")
-      l[3] = l[3].replace("@ADMIN","/admin/")
-      l[3] = l[3].replace("@NUKE","/modules/")
-      l[3] = l[3].replace("@PHPMYADMIN","/phpMyAdmin/")
-      l[3] = l[3].replace("@POSTNUKE","/postnuke/")
+      l[3] = l[3].replace("@CGIDIRS", "/cgi-bin/")
+      l[3] = l[3].replace("@ADMIN", "/admin/")
+      l[3] = l[3].replace("@NUKE", "/modules/")
+      l[3] = l[3].replace("@PHPMYADMIN", "/phpMyAdmin/")
+      l[3] = l[3].replace("@POSTNUKE", "/postnuke/")
       if l[3][0] == "@":
         continue
       if l[3][0] != "/":
         l[3] = "/" + l[3]
 
       if l[4] == "GET":
-        resp = self.HTTP.send("http://"+self.HTTP.server+l[3])
+        resp = self.HTTP.send("http://" + self.HTTP.server + l[3])
       elif l[4] == "POST":
-        resp = self.HTTP.send("http://"+self.HTTP.server+l[3], l[11])
+        resp = self.HTTP.send("http://" + self.HTTP.server + l[3], l[11])
       else:
-        resp = self.HTTP.send("http://"+self.HTTP.server+l[3], l[11], method=l[4])
+        resp = self.HTTP.send("http://" + self.HTTP.server + l[3], l[11], method = l[4])
 
       page, code = resp.getPageCode()
       raw = " ".join([x + ": " + y for x,y in resp.getInfo().items()])

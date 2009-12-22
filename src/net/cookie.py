@@ -17,16 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-# http://216.38.57.37/openads/www/delivery/lg.php
-# http://www.amazon.com/
-# http://login.live.com/
-# http://www.runescape.com/
-# http://pcdemo.dnsalias.com/
-# http://rmadilo.com/
-# http://www.t-music.cz/
-# http://www.vbulletin.com/forum/
-
 import sys
 import urllib2, urllib
 import libcookie
@@ -49,7 +39,7 @@ try:
     req = urllib2.Request(url, params, headers=txheaders)
     handle = urllib2.urlopen(req)
 except IOError, e:
-    print "Erreur lors de l'ouverture de",url
+    print _("Error getting url"), url
     print e
     sys.exit(1)
 

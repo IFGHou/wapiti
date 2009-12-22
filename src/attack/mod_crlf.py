@@ -87,6 +87,6 @@ class mod_crlf(Attack):
             print _("Timeout") + " (" + k + ") " + _("in"), page
             print "\t" + _("caused by") + ":", url
           except httplib.BadStatusLine:
-            print "Error: The server did not understand this request"
+            print _("Error: The server did not understand this request")
           self.attackedGET.append(url)
 

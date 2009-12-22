@@ -175,8 +175,8 @@ Supported options are:
     print "[*]", _("Loading modules"), ":"
     print "\t"+ ", ".join(attack.modules)
     for mod_name in attack.modules:
-      mod = __import__("attack." + mod_name, fromlist=attack.modules) # on charge le module
-      mod_instance = getattr(mod, mod_name)(self.HTTP, self.reportGen) # on appelle le constructeur
+      mod = __import__("attack." + mod_name, fromlist=attack.modules)
+      mod_instance = getattr(mod, mod_name)(self.HTTP, self.reportGen)
       if hasattr(mod_instance, "setTimeout"):
         mod_instance.setTimeout(self.HTTP.getTimeOut())
       self.attacks.append(mod_instance)
@@ -193,8 +193,8 @@ Supported options are:
 
       for opt in opts:
         method = ""
-        if opt.find(":")>0:
-          module, method = opt.split(":",1)
+        if opt.find(":") > 0:
+          module, method = opt.split(":", 1)
         else:
           module = opt
 
@@ -406,9 +406,11 @@ if __name__ == "__main__":
       if o in ("-b", "--scope"):
         wap.setScope(a)
       if o in ("-k", "--attack"):
-        attackFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+(url.split("://")[1]).split("/")[0]+'.xml'
+        attackFile = crawlerPersister.CRAWLER_DATA_DIR + '/' + \
+            (url.split("://")[1]).split("/")[0] + '.xml'
       if o in ("-i", "--continue"):
-        crawlerFile = crawlerPersister.CRAWLER_DATA_DIR+'/'+(url.split("://")[1]).split("/")[0]+'.xml'
+        crawlerFile = crawlerPersister.CRAWLER_DATA_DIR + '/' + \
+            (url.split("://")[1]).split("/")[0] + '.xml'
     try:
       opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:b:",
           ["help", "underline", "proxy=", "start=", "exclude=", "cookie=",
@@ -432,9 +434,11 @@ if __name__ == "__main__":
         wap.urls  = crawlerPersister.getBrowsed()
         wap.forms = crawlerPersister.getForms()
         # wap.uploads = crawlerPersister.getUploads()
-        print _("File")+" "+attackFile+" "+_("loaded, Wapiti will use it to perform the attacks")
+        print _("File") + " " + attackFile + " " + \
+            _("loaded, Wapiti will use it to perform the attacks")
       else:
-        print _("File")+" "+attackFile+" "+_("not found, Wapiti will scan again the web site")
+        print _("File") + " " + attackFile + " " + \
+            _("not found, Wapiti will scan again the web site")
         wap.browse(crawlerFile)
     else:
       wap.browse(crawlerFile)
