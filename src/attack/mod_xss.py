@@ -326,15 +326,15 @@ class mod_xss(Attack):
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.LOW_LEVEL_VULNERABILITY,
                             url, self.HTTP.encode(params, encoding),
-                            _("XSS") + " (" + var + ")")
+                            _("Raw XSS") + " (" + var + ")")
         else:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.LOW_LEVEL_VULNERABILITY,
                             url, url.split("?")[1],
-                            _("XSS") + " (" + var + ")")
+                            _("Raw XSS") + " (" + var + ")")
 
         if referer != "":
-          print _("Found XSS in"), page
+          print _("Found raw XSS in"), page
           if self.color == 0:
             print "  " + _("with params") + " =", self.HTTP.uqe(params, encoding)
           else:
@@ -343,10 +343,10 @@ class mod_xss(Attack):
 
         else:
           if self.color == 0:
-            print _("XSS") + " (" + var + ") " + _("in"), page
+            print _("Raw XSS") + " (" + var + ") " + _("in"), page
             print "\t" + _("Evil url") + ":", url
           else:
-            print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
+            print _("Raw XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
         return True
 ##########################################################
     return False
