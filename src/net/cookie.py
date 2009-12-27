@@ -21,6 +21,10 @@ import sys
 import urllib2, urllib
 import libcookie
 
+if "_" not in dir():
+  def _(s):
+    return s
+
 if len(sys.argv) < 4:
   sys.stderr.write("Usage python cookie.py <cookie_file> <url> <arg1=val1> ...\n")
   sys.exit(1)
@@ -45,5 +49,5 @@ except IOError, e:
 
 lc = libcookie.libcookie(url)
 lc.loadfile(cookiefile)
-lc.add(handle)
+lc.add(handle, handle.read())
 lc.save(cookiefile)

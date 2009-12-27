@@ -160,7 +160,10 @@ Supported options are:
         self.reportGen = TXTReportGenerator()
     else: #default
         self.reportGen = XMLReportGenerator()
-    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
+    if "__file__" in dir():
+      BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
+    else:
+      BASE_DIR = os.getcwd()
     xmlParser = VulnerabilityXMLParser()
     xmlParser.parse(BASE_DIR + "/config/vulnerabilities/vulnerabilities.xml")
     for vul in xmlParser.getVulnerabilities():

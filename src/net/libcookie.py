@@ -23,6 +23,7 @@ import urllib2
 from xml.dom import minidom
 import re
 import time
+import BeautifulSoup
 
 class libcookie:
 
@@ -121,7 +122,7 @@ class libcookie:
           # verifs a faire ici : vider la node si besoin avant
           curr.appendChild(cnode)
 
-  def add(self, handle):
+  def add(self, handle, page = ""):
     ref_date = time.time()
     tmp_date = ""
     if len(handle.headers.getheaders("date")) == 1:
@@ -150,7 +151,7 @@ class libcookie:
 
       brk = 0
 
-      if cook.find(";") >= 0:
+      if cook.find("=") >= 0:
         tuples = [x.strip() for x in cook.split(";")]
         name, value = tuples.pop(0).split("=", 1)
         name = name.strip()
@@ -208,8 +209,11 @@ class libcookie:
         print name, "=", value
 
         if path == "":
-          path = os.path.dirname(urllib2.urlparse.urlparse(self.url)[2]) + "/"
+          path = os.path.dirname(urllib2.urlparse.urlparse(self.url)[2])
+          if not path.endswith("/"):
+            path = path + "/"
 
+        print name, "=", value
         self.add_node(
             {"name":name,
              "value":value,
@@ -221,6 +225,88 @@ class libcookie:
 
       else:
         print cook
+
+    if handle.headers.getheaders("set-cookie") + handle.headers.getheaders("set-cookie2") == []:
+      if page != "":
+        soup = BeautifulSoup.BeautifulSoup(page)
+        meta = soup.find("meta", {'http-equiv': lambda v: v != None and v.lower()=='set-cookie'})
+        if meta != None:
+          cook = meta["content"]
+          name = ""
+          value = ""
+          expires = None
+          domain = ""
+          path = ""
+          max_age = None
+          expired = False
+
+          if cook.find("=") >= 0:
+            tuples = [x.strip() for x in cook.split(";")]
+            name, value = tuples.pop(0).split("=", 1)
+            name = name.strip()
+            value = value.strip()
+            if value[0] == '"' and value[-1] == '"':
+              value = value[1:-1]
+
+            for tupl in tuples:
+              if tupl.find("=") > 0:
+                k, v = tupl.split("=", 1)
+                k = k.strip().lower()
+                v = v.strip()
+
+                if v[0] == '"' and v[-1] == '"':
+                  v = v[1:-1]
+
+                if k == "path":
+                  path = v
+
+                if k == "expires":
+                  for regexp in ["%a, %d-%b-%Y %H:%M:%S %Z",
+                      "%a %b %d %H:%M:%S %Y %Z",
+                      "%a, %b %d %H:%M:%S %Y %Z",
+                      "%a, %d %b %Y %H:%M:%S %Z"]:
+                    try:
+                      expires = time.mktime( time.strptime(v, regexp) )
+                    except ValueError:
+                      continue
+
+                  if ref_date > expires:
+                    expired = True
+
+                if k == "comment":
+                  print "Comment:", v
+
+                if k == "max-age":
+                  max_age = int(v)
+                  if max_age == 0:
+                    expired = True
+                  else:
+                    expires = ref_date + max_age
+
+                if k == "domain":
+                  domain = v
+                
+                if k == "version" and version == "0":
+                  version = "1"
+
+              if tupl.find("secure") >= 0:
+                pass
+
+            if path == "":
+              path = os.path.dirname(urllib2.urlparse.urlparse(self.url)[2])
+              if not path.endswith("/"):
+                path = path + "/"
+
+            if expired == False:
+              print name, "=", value
+              self.add_node(
+                  {"name":name,
+                   "value":value,
+                   "domain": domain,
+                   "path":path,
+                   "expires": expires,
+                   "version": version
+                   })
 
   def delete(self, hostname):
     if self.cookies == None:
@@ -246,7 +332,9 @@ class libcookie:
           found = 0
 
     if found == 1:
-      self.cookies.removeChild(curr)
+      for x in curr.childNodes:
+        curr.removeChild(x)
+    #  self.cookies.removeChild(curr) # a NotFoundErr was raised
 
   def headers(self, hostname, path):
     if self.cookies == None:

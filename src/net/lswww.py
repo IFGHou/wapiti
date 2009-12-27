@@ -298,6 +298,10 @@ Supported options are:
     """Transform relatives urls in absolutes ones"""
     # No leading or trailing whitespaces
     lien = lien.strip()
+
+    if lien == "":
+      return current
+
     if lien == "..":
       lien = "../"
     # bad protocols
@@ -305,7 +309,7 @@ Supported options are:
     if llien.find("telnet:", 0) == 0 or llien.find("ftp:", 0) == 0 or \
     llien.find("mailto:", 0) == 0 or llien.find("javascript:", 0) == 0 or \
     llien.find("news:", 0) == 0 or llien.find("file:", 0) == 0 or \
-    llien.find("gopher:", 0) == 0 or llien.find("irc:", 0) == 0 or lien == "":
+    llien.find("gopher:", 0) == 0 or llien.find("irc:", 0) == 0:
       return None
     # Good protocols or relatives links
     else:

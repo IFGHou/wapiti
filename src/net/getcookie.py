@@ -26,6 +26,10 @@ import libcookie
 import os
 import BeautifulSoup
 
+if "_" not in dir():
+  def _(s):
+    return s
+
 if len(sys.argv) != 3:
   sys.stderr.write("Usage: python getcookie.py <cookie_file> <url_with_form>\n")
   sys.exit(1)
@@ -53,13 +57,12 @@ except IOError:
   print _("Error getting url")
   sys.exit(1)
 
-lc.add(fd)
-
 try:
   htmlSource = fd.read()
 except socket.timeout:
   print _("Error fetching page")
   sys.exit(1)
+
 p = lswww.linkParser(url)
 try:
   p.feed(htmlSource)
@@ -70,6 +73,8 @@ except HTMLParser.HTMLParseError, err:
     p.feed(htmlSource)
   except HTMLParser.HTMLParseError, err:
     pass
+
+lc.add(fd, htmlSource)
 
 if len(p.forms) == 0:
   print _("No forms found in this page !")
@@ -125,5 +130,6 @@ except IOError, e:
     print _("Error getting url"), url
     sys.exit(1)
 
-lc.add(handle)
+htmlSource = handle.read()
+lc.add(handle, htmlSource)
 lc.save(COOKIEFILE)
