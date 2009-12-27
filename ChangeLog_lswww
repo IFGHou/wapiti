@@ -1,3 +1,17 @@
+27/12/2009
+	Version 2.3.0
+	Internationalization and translation to english and spanish when called from
+	Wapiti.
+	Ability to save a scan session and restore it later (-i)
+	Added option -b to set the scope of the scan based on the root url given as
+	argument.
+	Fixed bug ID 2779441 "Python Version 2.5 required?"
+	Use an home made cookie library instead or urllib2's one.
+	Keep aditionnal informations on the webpages (headers + encoding)
+	Use BeautifulSoup to detect webpage encoding and handle parsing errors.
+	Fixed a bug when "a href" or "form action" have an empty string as value.
+	Better support of Unicode.
+
 26/03/2009
 	Version 2.2.0
 	Fixed bug ID 2433127 with HTTP 404 error codes.
