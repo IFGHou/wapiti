@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-22 15:44+0100\n"
+"POT-Creation-Date: 2009-12-28 18:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../wapiti.py:192 ../wapiti.py:196 ../wapiti.py:244 ../wapiti.py:243
+#: ../wapiti.py:246
 msgid "No links or forms found in this page !"
 msgstr "Aucun liens ni formulaires trouvés dans cette page !"
 
 #: ../wapiti.py:193 ../wapiti.py:197 ../wapiti.py:245 ../wapiti.py:244
+#: ../wapiti.py:247
 msgid "Make sure the url is correct."
 msgstr "Assurez vous que l'url est valide."
 
@@ -37,22 +39,27 @@ msgid "Looking for permanent XSS"
 msgstr "Recherche de XSS permanents"
 
 #: ../wapiti.py:216 ../wapiti.py:220 ../wapiti.py:267 ../wapiti.py:266
+#: ../wapiti.py:269
 msgid "Upload scripts found"
 msgstr "Scripts d'upload trouvés"
 
 #: ../wapiti.py:226 ../wapiti.py:230 ../wapiti.py:277 ../wapiti.py:276
+#: ../wapiti.py:279
 msgid "Report"
 msgstr "Rapport"
 
 #: ../wapiti.py:228 ../wapiti.py:232 ../wapiti.py:279 ../wapiti.py:278
+#: ../wapiti.py:281
 msgid "A report has been generated in the file"
 msgstr "Un rapport a été généré dans le fichier"
 
 #: ../wapiti.py:230 ../wapiti.py:234 ../wapiti.py:281 ../wapiti.py:280
+#: ../wapiti.py:283
 msgid "Open"
 msgstr "Ouvrez"
 
 #: ../wapiti.py:231 ../wapiti.py:235 ../wapiti.py:282 ../wapiti.py:281
+#: ../wapiti.py:284
 msgid "with a browser to see this report."
 msgstr "avec un navigateur pour voir ce rapport."
 
@@ -65,6 +72,7 @@ msgid "attackPOST"
 msgstr "attackPOST"
 
 #: ../wapiti.py:371 ../wapiti.py:372 ../wapiti.py:344 ../wapiti.py:343
+#: ../wapiti.py:346
 msgid "wapityDoc"
 msgstr ""
 "Wapiti-SVN - Un scanneur de vulnérabilités pour applications web \n"
@@ -170,7 +178,7 @@ msgstr ""
 " \tAfficher ce message d'aide"
 
 #: ../wapiti.py:452 ../wapiti.py:475 ../wapiti.py:428 ../wapiti.py:427
-#: ../wapiti.py:429
+#: ../wapiti.py:429 ../wapiti.py:432
 msgid "Wapiti-SVN (wapiti.sourceforge.net)"
 msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
 
@@ -183,61 +191,73 @@ msgstr "Le lien passé en argument est invalide"
 
 #: ../net/lswww.py:471 ../net/lswww.py:519 ../net/lswww.py:509
 #: ../net/lswww.py:556 ../net/lswww.py:565 ../net/lswww.py:524
+#: ../net/lswww.py:532
 msgid "URLs"
 msgstr "URLs"
 
 #: ../net/lswww.py:478 ../net/lswww.py:526 ../net/lswww.py:516
 #: ../net/lswww.py:563 ../net/lswww.py:572 ../net/lswww.py:531
+#: ../net/lswww.py:539
 msgid "Forms Info"
 msgstr "Infos sur les formulaires"
 
 #: ../net/lswww.py:480 ../net/lswww.py:528 ../net/lswww.py:518
 #: ../net/lswww.py:565 ../net/lswww.py:574 ../net/lswww.py:533
+#: ../net/lswww.py:541
 msgid "From"
 msgstr "En provenance de"
 
 #: ../net/lswww.py:481 ../net/lswww.py:529 ../net/lswww.py:519
 #: ../net/lswww.py:566 ../net/lswww.py:575 ../net/lswww.py:534
+#: ../net/lswww.py:542
 msgid "To"
 msgstr "vers"
 
 #: ../net/lswww.py:489 ../net/lswww.py:537 ../net/lswww.py:527
 #: ../net/lswww.py:574 ../net/lswww.py:583 ../net/lswww.py:542
+#: ../net/lswww.py:550
 msgid "Upload Scripts"
 msgstr "Scripts d'upload"
 
 #: ../net/lswww.py:676 ../net/lswww.py:724 ../net/lswww.py:722
 #: ../net/lswww.py:769 ../net/lswww.py:783 ../net/lswww.py:736
+#: ../net/lswww.py:744
 msgid "Forms"
 msgstr "Formulaires"
 
 #: ../net/lswww.py:679 ../net/lswww.py:727 ../net/lswww.py:725
 #: ../net/lswww.py:772 ../net/lswww.py:786 ../net/lswww.py:739
+#: ../net/lswww.py:747
 msgid "Form"
 msgstr "Formulaire"
 
 #: ../net/lswww.py:683 ../net/lswww.py:731 ../net/lswww.py:729
 #: ../net/lswww.py:776 ../net/lswww.py:790 ../net/lswww.py:743
+#: ../net/lswww.py:751
 msgid "Method"
 msgstr "Méthode"
 
 #: ../net/lswww.py:684 ../net/lswww.py:732 ../net/lswww.py:730
 #: ../net/lswww.py:777 ../net/lswww.py:791 ../net/lswww.py:744
+#: ../net/lswww.py:752
 msgid "Intputs"
 msgstr "Inputs"
 
 #: ../net/lswww.py:689 ../net/lswww.py:737 ../net/lswww.py:735
 #: ../net/lswww.py:782 ../net/lswww.py:796 ../net/lswww.py:749
+#: ../net/lswww.py:757
 msgid "Selects"
 msgstr "Selects"
 
 #: ../net/lswww.py:694 ../net/lswww.py:742 ../net/lswww.py:740
 #: ../net/lswww.py:787 ../net/lswww.py:801 ../net/lswww.py:754
+#: ../net/lswww.py:762
 msgid "TextAreas"
 msgstr "TextAreas"
 
 #: ../net/lswww.py:699 ../net/lswww.py:747 ../net/lswww.py:745
 #: ../net/lswww.py:792 ../net/lswww.py:806 ../net/lswww.py:759
+#: ../net/lswww.py:767
 msgid "URLS"
 msgstr "URLS"
 
@@ -357,6 +377,8 @@ msgstr "Injection CRLF (QUERY_STRING) dans"
 #: ../attack/mod_xss.py:283 ../attack/mod_htaccess.py:108
 #: ../attack/mod_sql.py:105 ../attack/mod_sql.py:116 ../attack/mod_sql.py:146
 #: ../attack/mod_sql.py:160 ../attack/mod_xss.py:285 ../attack/mod_xss.py:347
+#: ../attack/mod_blindsql.py:76 ../attack/mod_blindsql.py:86
+#: ../attack/mod_blindsql.py:115 ../attack/mod_blindsql.py:130
 msgid "Evil url"
 msgstr "URL malicieuse"
 
@@ -393,6 +415,7 @@ msgstr "provoqué par"
 #: ../attack/mod_exec.py:134 ../attack/mod_exec.py:187
 #: ../attack/mod_xss.py:282 ../attack/mod_sql.py:193 ../attack/mod_sql.py:145
 #: ../attack/mod_sql.py:198 ../attack/mod_xss.py:284 ../attack/mod_xss.py:346
+#: ../attack/mod_blindsql.py:114
 msgid "in"
 msgstr "dans"
 
@@ -428,7 +451,8 @@ msgstr "(QUERY_STRING) dans"
 #: ../attack/mod_blindsql.py:83 ../attack/mod_blindsql.py:125
 #: ../attack/mod_exec.py:100 ../attack/mod_exec.py:145
 #: ../attack/mod_htaccess.py:107 ../attack/mod_sql.py:115
-#: ../attack/mod_sql.py:159
+#: ../attack/mod_sql.py:159 ../attack/mod_blindsql.py:85
+#: ../attack/mod_blindsql.py:129
 msgid "500 HTTP Error code with"
 msgstr "Code d'erreur HTTP 500 avec"
 
@@ -457,7 +481,8 @@ msgstr "Code d'erreur HTTP 500 avec"
 #: ../attack/mod_exec.py:204 ../attack/mod_xss.py:275 ../attack/mod_xss.py:277
 #: ../attack/mod_sql.py:195 ../attack/mod_sql.py:198 ../attack/mod_sql.py:212
 #: ../attack/mod_sql.py:200 ../attack/mod_sql.py:203 ../attack/mod_sql.py:217
-#: ../attack/mod_xss.py:341
+#: ../attack/mod_xss.py:341 ../attack/mod_blindsql.py:166
+#: ../attack/mod_blindsql.py:169 ../attack/mod_blindsql.py:185
 msgid "with params"
 msgstr "avec les paramêtres"
 
@@ -484,6 +509,7 @@ msgstr "avec les paramêtres"
 #: ../attack/mod_exec.py:205 ../attack/mod_xss.py:278 ../attack/mod_sql.py:192
 #: ../attack/mod_sql.py:199 ../attack/mod_sql.py:213 ../attack/mod_sql.py:204
 #: ../attack/mod_sql.py:218 ../attack/mod_xss.py:280 ../attack/mod_xss.py:342
+#: ../attack/mod_blindsql.py:170 ../attack/mod_blindsql.py:186
 msgid "coming from"
 msgstr "en provenance de"
 
@@ -498,6 +524,7 @@ msgstr "Timeout en provenance de"
 #: ../attack/mod_exec.py:199 ../attack/mod_file.py:221
 #: ../attack/mod_sql.py:208 ../attack/mod_blindsql.py:176
 #: ../attack/mod_exec.py:201 ../attack/mod_sql.py:209 ../attack/mod_sql.py:214
+#: ../attack/mod_blindsql.py:182
 msgid "500 HTTP Error code coming from"
 msgstr "Code d'erreur HTTP 500 en provenance de"
 
@@ -506,14 +533,17 @@ msgstr "Code d'erreur HTTP 500 en provenance de"
 #: ../attack/mod_exec.py:201 ../attack/mod_file.py:223
 #: ../attack/mod_sql.py:210 ../attack/mod_blindsql.py:178
 #: ../attack/mod_exec.py:203 ../attack/mod_sql.py:211 ../attack/mod_sql.py:216
+#: ../attack/mod_blindsql.py:184
 msgid "500 HTTP Error code in"
 msgstr "Erreur HTTP 500 dans"
 
 #: ../attack/sqlinjectionattack.py:223 ../attack/mod_blindsql.py:73
+#: ../attack/mod_blindsql.py:74
 msgid "Blind SQL Injection (QUERY_STRING)"
 msgstr "Injection SQL aveugle (QUERY_STRING)"
 
 #: ../attack/sqlinjectionattack.py:224 ../attack/mod_blindsql.py:74
+#: ../attack/mod_blindsql.py:75
 msgid "Blind SQL Injection (QUERY_STRING) in"
 msgstr "Injection SQL aveugle (QUERY_STRING) dans"
 
@@ -521,15 +551,18 @@ msgstr "Injection SQL aveugle (QUERY_STRING) dans"
 #: ../attack/sqlinjectionattack.py:263 ../attack/sqlinjectionattack.py:264
 #: ../config/vulnerabilities/vulnerabilities.xml:17
 #: ../attack/mod_blindsql.py:109 ../attack/mod_blindsql.py:111
-#: ../attack/mod_blindsql.py:114
+#: ../attack/mod_blindsql.py:114 ../attack/mod_blindsql.py:112
+#: ../attack/mod_blindsql.py:117
 msgid "Blind SQL Injection"
 msgstr "Injection SQL aveugle"
 
 #: ../attack/sqlinjectionattack.py:302 ../attack/mod_blindsql.py:158
+#: ../attack/mod_blindsql.py:163
 msgid "Blind SQL Injection coming from"
 msgstr "Injection SQL aveugle en provenance de"
 
 #: ../attack/sqlinjectionattack.py:303 ../attack/mod_blindsql.py:159
+#: ../attack/mod_blindsql.py:164
 msgid "Blind SQL Injection in"
 msgstr "Injection SQL aveugle dans"
 
@@ -766,37 +799,41 @@ msgstr ""
 #: ../net/lswww.py:472 ../wapiti.py:436 ../wapiti.py:438 ../net/lswww.py:506
 #: ../net/lswww.py:515 ../net/lswww.py:512 ../net/lswww.py:521
 #: ../wapiti.py:435 ../wapiti.py:437 ../wapiti.py:440 ../net/lswww.py:471
-#: ../net/lswww.py:480
+#: ../net/lswww.py:480 ../wapiti.py:443 ../net/lswww.py:479
+#: ../net/lswww.py:488
 msgid "File"
 msgstr "Fichier"
 
 #: ../wapiti.py:481 ../wapiti.py:436 ../wapiti.py:435 ../wapiti.py:438
+#: ../wapiti.py:441
 msgid "loaded, Wapiti will use it to perform the attacks"
 msgstr "chargé, Wapiti l'utilisera pour ses attaques"
 
 #: ../wapiti.py:483 ../net/lswww.py:465 ../net/lswww.py:472 ../wapiti.py:438
 #: ../net/lswww.py:515 ../net/lswww.py:521 ../wapiti.py:437 ../wapiti.py:441
-#: ../net/lswww.py:480
+#: ../net/lswww.py:480 ../wapiti.py:444 ../net/lswww.py:488
 msgid "not found, Wapiti will scan again the web site"
 msgstr "non trouvé, Wapiti va lancer un nouveau scan du site web"
 
 #: ../net/lswww.py:463 ../net/lswww.py:506 ../net/lswww.py:512
-#: ../net/lswww.py:471
+#: ../net/lswww.py:471 ../net/lswww.py:479
 msgid "loaded, the scan continues"
 msgstr "chargé, le scan continue"
 
 #: ../net/lswww.py:506 ../net/lswww.py:489 ../net/lswww.py:496
 #: ../net/lswww.py:535 ../net/lswww.py:542 ../net/lswww.py:544
 #: ../net/lswww.py:551 ../net/lswww.py:503 ../net/lswww.py:510
+#: ../net/lswww.py:511 ../net/lswww.py:518
 msgid "Notice"
 msgstr "Note"
 
 #: ../net/lswww.py:508 ../net/lswww.py:498 ../net/lswww.py:544
-#: ../net/lswww.py:553 ../net/lswww.py:512
+#: ../net/lswww.py:553 ../net/lswww.py:512 ../net/lswww.py:520
 msgid "Scan stopped, the data has been saved in the file"
 msgstr "Scan mis en pause, les données ont été sauvées dans le fichier"
 
 #: ../wapiti.py:491 ../wapiti.py:446 ../wapiti.py:445 ../wapiti.py:449
+#: ../wapiti.py:452
 msgid ""
 "Attack process interrupted. To perform again the attack, lauch Wapiti with "
 "\"-i\" or \"-k\" parameter."
@@ -805,17 +842,17 @@ msgstr ""
 "Wapiti avec les paramêtres \"-i\" ou \"-k\"."
 
 #: ../net/lswww.py:465 ../net/lswww.py:508 ../net/lswww.py:514
-#: ../net/lswww.py:473
+#: ../net/lswww.py:473 ../net/lswww.py:481
 msgid "URLs to browse"
 msgstr "URLs à traiter"
 
 #: ../net/lswww.py:468 ../net/lswww.py:511 ../net/lswww.py:517
-#: ../net/lswww.py:476
+#: ../net/lswww.py:476 ../net/lswww.py:484
 msgid "URLs browsed"
 msgstr "URLs traitées"
 
 #: ../net/lswww.py:491 ../net/lswww.py:537 ../net/lswww.py:546
-#: ../net/lswww.py:505
+#: ../net/lswww.py:505 ../net/lswww.py:513
 msgid "This scan has been saved in the file"
 msgstr "Cette session de scan a été enregistrée dans le fichier"
 
@@ -831,6 +868,7 @@ msgid "injected from "
 msgstr "injecté depuis "
 
 #: ../net/lswww.py:538 ../net/lswww.py:547 ../net/lswww.py:506
+#: ../net/lswww.py:514
 msgid ""
 "You can use it to perform attacks without scanning again the web site with "
 "the \"-k\" parameter"
@@ -839,12 +877,13 @@ msgstr ""
 "siteweb avec le paramêtre \"-k\""
 
 #: ../net/lswww.py:545 ../net/lswww.py:554 ../net/lswww.py:513
+#: ../net/lswww.py:521
 msgid ""
 "To continue this scan, you should launch Wapiti with the \"-i\" parameter"
 msgstr ""
 "Si vous souhaitez reprendre ce scan, relancez Wapiti avec le paramêtre \"-i\""
 
-#: ../wapiti.py:176 ../wapiti.py:175
+#: ../wapiti.py:176 ../wapiti.py:175 ../wapiti.py:178
 msgid "Loading modules"
 msgstr "Chargement des modules"
 
@@ -934,11 +973,11 @@ msgstr ""
 "La configuration du htaccess doit être minutieusement vérifiée pour ne pas "
 "laisser une porte d'entrée à un éventuel attaquant."
 
-#: ../wapiti.py:256
+#: ../wapiti.py:256 ../wapiti.py:259
 msgid "Missing dependecies for module"
 msgstr "Dépendances manquantes pour le module"
 
-#: ../wapiti.py:262
+#: ../wapiti.py:262 ../wapiti.py:265
 msgid "Launching module"
 msgstr "Lancement du module"
 
@@ -1018,26 +1057,27 @@ msgid "Oracle Injection"
 msgstr "Injection Oracle"
 
 #: ../net/getcookie.py:53 ../net/getcookie.py:125 ../net/cookie.py:42
+#: ../net/getcookie.py:57 ../net/getcookie.py:130 ../net/cookie.py:46
 msgid "Error getting url"
 msgstr "Erreur lors de l'ouverture de l'url"
 
-#: ../net/getcookie.py:61
+#: ../net/getcookie.py:61 ../net/getcookie.py:63
 msgid "Error fetching page"
 msgstr "Erreur lors de la lecture de la page"
 
-#: ../net/getcookie.py:75
+#: ../net/getcookie.py:75 ../net/getcookie.py:80
 msgid "No forms found in this page !"
 msgstr "Aucun formulaire trouvé dans cette page !"
 
-#: ../net/getcookie.py:82
+#: ../net/getcookie.py:82 ../net/getcookie.py:87
 msgid "Choose the form you want to use :"
 msgstr "Choisissez le formulaire à utiliser :"
 
-#: ../net/getcookie.py:91
+#: ../net/getcookie.py:91 ../net/getcookie.py:96
 msgid "Enter a number : "
 msgstr "Entrez un numéro : "
 
-#: ../net/getcookie.py:98
+#: ../net/getcookie.py:98 ../net/getcookie.py:103
 msgid "Please enter values for the folling form :"
 msgstr "Veuillez entrez les valeurs pour le formulaire :"
 

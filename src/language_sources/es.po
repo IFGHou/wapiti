@@ -1,14 +1,14 @@
-# Spanish translation
-# Copyright (C) 2009
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Informática Gesfor (David del Pozo González & Alberto Pastor Nieto), 2009.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-22 15:44+0100\n"
+"POT-Creation-Date: 2009-12-28 18:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../wapiti.py:192 ../wapiti.py:196 ../wapiti.py:244 ../wapiti.py:243
+#: ../wapiti.py:246
 msgid "No links or forms found in this page !"
 msgstr "¡No se han encontrado enlaces ni formularios en esta página!"
 
 #: ../wapiti.py:193 ../wapiti.py:197 ../wapiti.py:245 ../wapiti.py:244
+#: ../wapiti.py:247
 msgid "Make sure the url is correct."
 msgstr "Asegúrate de que la URL es correcta"
 
@@ -37,22 +39,27 @@ msgid "Looking for permanent XSS"
 msgstr "Buscando XSS permantentes"
 
 #: ../wapiti.py:216 ../wapiti.py:220 ../wapiti.py:267 ../wapiti.py:266
+#: ../wapiti.py:269
 msgid "Upload scripts found"
 msgstr "Scripts de upload encontrados"
 
 #: ../wapiti.py:226 ../wapiti.py:230 ../wapiti.py:277 ../wapiti.py:276
+#: ../wapiti.py:279
 msgid "Report"
 msgstr "Informe"
 
 #: ../wapiti.py:228 ../wapiti.py:232 ../wapiti.py:279 ../wapiti.py:278
+#: ../wapiti.py:281
 msgid "A report has been generated in the file"
 msgstr "Un informe ha sido generado en el fichero"
 
 #: ../wapiti.py:230 ../wapiti.py:234 ../wapiti.py:281 ../wapiti.py:280
+#: ../wapiti.py:283
 msgid "Open"
 msgstr "Abre"
 
 #: ../wapiti.py:231 ../wapiti.py:235 ../wapiti.py:282 ../wapiti.py:281
+#: ../wapiti.py:284
 msgid "with a browser to see this report."
 msgstr "con un navegador para ver el informe"
 
@@ -65,6 +72,7 @@ msgid "attackPOST"
 msgstr "Ataque POST"
 
 #: ../wapiti.py:371 ../wapiti.py:372 ../wapiti.py:344 ../wapiti.py:343
+#: ../wapiti.py:346
 msgid "wapityDoc"
 msgstr ""
 " Wapiti - Escáner de vulnerabilidades de aplicaciones web\n"
@@ -170,7 +178,7 @@ msgstr ""
 " \tPara sacar este mensaje de uso de Wapiti"
 
 #: ../wapiti.py:452 ../wapiti.py:475 ../wapiti.py:428 ../wapiti.py:427
-#: ../wapiti.py:429
+#: ../wapiti.py:429 ../wapiti.py:432
 msgid "Wapiti-SVN (wapiti.sourceforge.net)"
 msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
 
@@ -183,61 +191,73 @@ msgstr "Argumento link (URL) inválido"
 
 #: ../net/lswww.py:471 ../net/lswww.py:519 ../net/lswww.py:509
 #: ../net/lswww.py:556 ../net/lswww.py:565 ../net/lswww.py:524
+#: ../net/lswww.py:532
 msgid "URLs"
 msgstr "URLs"
 
 #: ../net/lswww.py:478 ../net/lswww.py:526 ../net/lswww.py:516
 #: ../net/lswww.py:563 ../net/lswww.py:572 ../net/lswww.py:531
+#: ../net/lswww.py:539
 msgid "Forms Info"
 msgstr "Información de los formularios"
 
 #: ../net/lswww.py:480 ../net/lswww.py:528 ../net/lswww.py:518
 #: ../net/lswww.py:565 ../net/lswww.py:574 ../net/lswww.py:533
+#: ../net/lswww.py:541
 msgid "From"
 msgstr "De"
 
 #: ../net/lswww.py:481 ../net/lswww.py:529 ../net/lswww.py:519
 #: ../net/lswww.py:566 ../net/lswww.py:575 ../net/lswww.py:534
+#: ../net/lswww.py:542
 msgid "To"
 msgstr "A"
 
 #: ../net/lswww.py:489 ../net/lswww.py:537 ../net/lswww.py:527
 #: ../net/lswww.py:574 ../net/lswww.py:583 ../net/lswww.py:542
+#: ../net/lswww.py:550
 msgid "Upload Scripts"
 msgstr "Scripts de subida"
 
 #: ../net/lswww.py:676 ../net/lswww.py:724 ../net/lswww.py:722
 #: ../net/lswww.py:769 ../net/lswww.py:783 ../net/lswww.py:736
+#: ../net/lswww.py:744
 msgid "Forms"
 msgstr "Formularios"
 
 #: ../net/lswww.py:679 ../net/lswww.py:727 ../net/lswww.py:725
 #: ../net/lswww.py:772 ../net/lswww.py:786 ../net/lswww.py:739
+#: ../net/lswww.py:747
 msgid "Form"
 msgstr "Formulario"
 
 #: ../net/lswww.py:683 ../net/lswww.py:731 ../net/lswww.py:729
 #: ../net/lswww.py:776 ../net/lswww.py:790 ../net/lswww.py:743
+#: ../net/lswww.py:751
 msgid "Method"
 msgstr "Metodo"
 
 #: ../net/lswww.py:684 ../net/lswww.py:732 ../net/lswww.py:730
 #: ../net/lswww.py:777 ../net/lswww.py:791 ../net/lswww.py:744
+#: ../net/lswww.py:752
 msgid "Intputs"
 msgstr "Entradas"
 
 #: ../net/lswww.py:689 ../net/lswww.py:737 ../net/lswww.py:735
 #: ../net/lswww.py:782 ../net/lswww.py:796 ../net/lswww.py:749
+#: ../net/lswww.py:757
 msgid "Selects"
 msgstr "Seleccionables (Selects)"
 
 #: ../net/lswww.py:694 ../net/lswww.py:742 ../net/lswww.py:740
 #: ../net/lswww.py:787 ../net/lswww.py:801 ../net/lswww.py:754
+#: ../net/lswww.py:762
 msgid "TextAreas"
 msgstr "Áreas de texto"
 
 #: ../net/lswww.py:699 ../net/lswww.py:747 ../net/lswww.py:745
 #: ../net/lswww.py:792 ../net/lswww.py:806 ../net/lswww.py:759
+#: ../net/lswww.py:767
 msgid "URLS"
 msgstr "URLs"
 
@@ -360,6 +380,8 @@ msgstr "Inyección CRLF (QUERY_STRING) en"
 #: ../attack/mod_xss.py:283 ../attack/mod_htaccess.py:108
 #: ../attack/mod_sql.py:105 ../attack/mod_sql.py:116 ../attack/mod_sql.py:146
 #: ../attack/mod_sql.py:160 ../attack/mod_xss.py:285 ../attack/mod_xss.py:347
+#: ../attack/mod_blindsql.py:76 ../attack/mod_blindsql.py:86
+#: ../attack/mod_blindsql.py:115 ../attack/mod_blindsql.py:130
 msgid "Evil url"
 msgstr "URL vulnerable"
 
@@ -396,6 +418,7 @@ msgstr "causado por"
 #: ../attack/mod_exec.py:134 ../attack/mod_exec.py:187
 #: ../attack/mod_xss.py:282 ../attack/mod_sql.py:193 ../attack/mod_sql.py:145
 #: ../attack/mod_sql.py:198 ../attack/mod_xss.py:284 ../attack/mod_xss.py:346
+#: ../attack/mod_blindsql.py:114
 msgid "in"
 msgstr "en"
 
@@ -431,7 +454,8 @@ msgstr "(QUERY_STRING) en"
 #: ../attack/mod_blindsql.py:83 ../attack/mod_blindsql.py:125
 #: ../attack/mod_exec.py:100 ../attack/mod_exec.py:145
 #: ../attack/mod_htaccess.py:107 ../attack/mod_sql.py:115
-#: ../attack/mod_sql.py:159
+#: ../attack/mod_sql.py:159 ../attack/mod_blindsql.py:85
+#: ../attack/mod_blindsql.py:129
 msgid "500 HTTP Error code with"
 msgstr "Error HTTP 500 con"
 
@@ -460,7 +484,8 @@ msgstr "Error HTTP 500 con"
 #: ../attack/mod_exec.py:204 ../attack/mod_xss.py:275 ../attack/mod_xss.py:277
 #: ../attack/mod_sql.py:195 ../attack/mod_sql.py:198 ../attack/mod_sql.py:212
 #: ../attack/mod_sql.py:200 ../attack/mod_sql.py:203 ../attack/mod_sql.py:217
-#: ../attack/mod_xss.py:341
+#: ../attack/mod_xss.py:341 ../attack/mod_blindsql.py:166
+#: ../attack/mod_blindsql.py:169 ../attack/mod_blindsql.py:185
 msgid "with params"
 msgstr "con parámetros"
 
@@ -487,6 +512,7 @@ msgstr "con parámetros"
 #: ../attack/mod_exec.py:205 ../attack/mod_xss.py:278 ../attack/mod_sql.py:192
 #: ../attack/mod_sql.py:199 ../attack/mod_sql.py:213 ../attack/mod_sql.py:204
 #: ../attack/mod_sql.py:218 ../attack/mod_xss.py:280 ../attack/mod_xss.py:342
+#: ../attack/mod_blindsql.py:170 ../attack/mod_blindsql.py:186
 msgid "coming from"
 msgstr "viniendo de"
 
@@ -501,6 +527,7 @@ msgstr "Timeout viniendo de"
 #: ../attack/mod_exec.py:199 ../attack/mod_file.py:221
 #: ../attack/mod_sql.py:208 ../attack/mod_blindsql.py:176
 #: ../attack/mod_exec.py:201 ../attack/mod_sql.py:209 ../attack/mod_sql.py:214
+#: ../attack/mod_blindsql.py:182
 msgid "500 HTTP Error code coming from"
 msgstr "Error HTTP 500 viniendo de"
 
@@ -509,14 +536,17 @@ msgstr "Error HTTP 500 viniendo de"
 #: ../attack/mod_exec.py:201 ../attack/mod_file.py:223
 #: ../attack/mod_sql.py:210 ../attack/mod_blindsql.py:178
 #: ../attack/mod_exec.py:203 ../attack/mod_sql.py:211 ../attack/mod_sql.py:216
+#: ../attack/mod_blindsql.py:184
 msgid "500 HTTP Error code in"
 msgstr "Error HTTP 500 en"
 
 #: ../attack/sqlinjectionattack.py:223 ../attack/mod_blindsql.py:73
+#: ../attack/mod_blindsql.py:74
 msgid "Blind SQL Injection (QUERY_STRING)"
 msgstr "Inyección ciega SQL (QUERY_STRING)"
 
 #: ../attack/sqlinjectionattack.py:224 ../attack/mod_blindsql.py:74
+#: ../attack/mod_blindsql.py:75
 msgid "Blind SQL Injection (QUERY_STRING) in"
 msgstr "Inyección ciega SQL (QUERY_STRING) en"
 
@@ -524,15 +554,18 @@ msgstr "Inyección ciega SQL (QUERY_STRING) en"
 #: ../attack/sqlinjectionattack.py:263 ../attack/sqlinjectionattack.py:264
 #: ../config/vulnerabilities/vulnerabilities.xml:17
 #: ../attack/mod_blindsql.py:109 ../attack/mod_blindsql.py:111
-#: ../attack/mod_blindsql.py:114
+#: ../attack/mod_blindsql.py:114 ../attack/mod_blindsql.py:112
+#: ../attack/mod_blindsql.py:117
 msgid "Blind SQL Injection"
 msgstr "Inyección ciega SQL"
 
 #: ../attack/sqlinjectionattack.py:302 ../attack/mod_blindsql.py:158
+#: ../attack/mod_blindsql.py:163
 msgid "Blind SQL Injection coming from"
 msgstr "Inyección ciega SQL viniendo de"
 
 #: ../attack/sqlinjectionattack.py:303 ../attack/mod_blindsql.py:159
+#: ../attack/mod_blindsql.py:164
 msgid "Blind SQL Injection in"
 msgstr "Inyección ciega SQL en"
 
@@ -623,8 +656,8 @@ msgstr "Error HTTP 500"
 #: ../attack/vulnerabilitiesdescriptions.py:3
 msgid "500 Error description"
 msgstr ""
-"Error interno del servidor. El servidor encontró una condición inesperada que "
-"le impide llevar a cabo la solicitud.<ul>  <li><a href='http://www.w3."
+"Error interno del servidor. El servidor encontró una condición inesperada "
+"que le impide llevar a cabo la solicitud.<ul>  <li><a href='http://www.w3."
 "org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5'>      Consorcio World Wide "
 "Web: HTTP/1.1 Definiciones de códigos de estado (en inglés)      </a></li>  "
 "<li><a href='http://en.wikipedia.org/wiki/"
@@ -653,9 +686,9 @@ msgstr ""
 msgid "Blind SQL Injection description"
 msgstr ""
 "La inyección SQL ciega es una técnica que explota una vulnerabilidad que "
-"ocurre en la base de datos de una aplicación. Este tipo de vulnerabilidad es más "
-"difícil de detectar que la inyección SQL normal porque no muestra mensajes "
-"de error en la página web."
+"ocurre en la base de datos de una aplicación. Este tipo de vulnerabilidad es "
+"más difícil de detectar que la inyección SQL normal porque no muestra "
+"mensajes de error en la página web."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:19
 msgid "Blind SQL Injection solution"
@@ -684,15 +717,15 @@ msgstr ""
 #: ../config/vulnerabilities/vulnerabilities.xml:33
 msgid "File Handling solution"
 msgstr ""
-"Es preferible no usar las entradas de un usuario cuando se manejan "
-"llamadas al sistema de ficheros<br>Usar índices mejor que porciones del "
-"nombre del fichero cuando se usen ficheros de lenguaje (por ejemplo el valor "
-"5 para la entrada de datos de usuario por el nombre Checoslovaco, en vez de "
-"esperar que el usuario introduzca 'Checoslovaco').<br>Asegurar que el "
-"usuario no pueda acceder a la ruta entera de un fichero.<br>Validar la entrada de datos "
-"del usuario, solo aceptando las rutas que son conocidas.<br>Usar jaulas (chrooted "
-"jails) y tener políticas de acceso para restringir por quien puede ser "
-"leído o escrito un fichero."
+"Es preferible no usar las entradas de un usuario cuando se manejan llamadas "
+"al sistema de ficheros<br>Usar índices mejor que porciones del nombre del "
+"fichero cuando se usen ficheros de lenguaje (por ejemplo el valor 5 para la "
+"entrada de datos de usuario por el nombre Checoslovaco, en vez de esperar "
+"que el usuario introduzca 'Checoslovaco').<br>Asegurar que el usuario no "
+"pueda acceder a la ruta entera de un fichero.<br>Validar la entrada de datos "
+"del usuario, solo aceptando las rutas que son conocidas.<br>Usar jaulas "
+"(chrooted jails) y tener políticas de acceso para restringir por quien puede "
+"ser leído o escrito un fichero."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:45
 msgid "Cross Site Scripting"
@@ -701,24 +734,23 @@ msgstr "Cross Site Scripting"
 #: ../config/vulnerabilities/vulnerabilities.xml:46
 msgid "Cross Site Scripting description"
 msgstr ""
-"Cross-site scripting (XSS) es un tipo de vulnerabilidad "
-"que se encuentra en aplicaciones web que permite la "
-"inyección de código por usuarios maliciosos dentro de las páginas vistas por "
-"otros usuarios. Normalmente el código inyectado suele ser HTML y lenguajes "
-"del lado cliente, como JavaScript."
+"Cross-site scripting (XSS) es un tipo de vulnerabilidad que se encuentra en "
+"aplicaciones web que permite la inyección de código por usuarios maliciosos "
+"dentro de las páginas vistas por otros usuarios. Normalmente el código "
+"inyectado suele ser HTML y lenguajes del lado cliente, como JavaScript."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:47
 msgid "Cross Site Scripting solution"
 msgstr ""
 "La mejor forma de proteger una aplicación web de los ataques XSS es "
-"asegurarse de que la aplicacion realiza validaciones sobre todas las cabeceras, "
-"cookies, query strings, campos de formularios y campos ocultos. La "
-"codificación de los datos proporcionados por el usuario en el servidor puede "
-"servir para defenderse de vulnerabilidades XSS mediante la prevencion de "
-"inserción de script transmitidos por los usuarios desde formularios. Las "
-"aplicaciones estarán mejor protegidas de los ataques basados "
-"en JavaScript mediante la conversión apropiada codificación en HTML de los "
-"siguientes caracteres: &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -"
+"asegurarse de que la aplicacion realiza validaciones sobre todas las "
+"cabeceras, cookies, query strings, campos de formularios y campos ocultos. "
+"La codificación de los datos proporcionados por el usuario en el servidor "
+"puede servir para defenderse de vulnerabilidades XSS mediante la prevencion "
+"de inserción de script transmitidos por los usuarios desde formularios. Las "
+"aplicaciones estarán mejor protegidas de los ataques basados en JavaScript "
+"mediante la conversión apropiada codificación en HTML de los siguientes "
+"caracteres: &lt;, &gt;, &amp;, &quot;, ', (, ), #, %, ; , +, -"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:59
 msgid "CRLF"
@@ -785,33 +817,36 @@ msgstr ""
 #: ../net/lswww.py:472 ../wapiti.py:436 ../wapiti.py:438 ../net/lswww.py:506
 #: ../net/lswww.py:515 ../net/lswww.py:512 ../net/lswww.py:521
 #: ../wapiti.py:435 ../wapiti.py:437 ../wapiti.py:440 ../net/lswww.py:471
-#: ../net/lswww.py:480
+#: ../net/lswww.py:480 ../wapiti.py:443 ../net/lswww.py:479
+#: ../net/lswww.py:488
 msgid "File"
 msgstr "Archivo"
 
 #: ../wapiti.py:481 ../wapiti.py:436 ../wapiti.py:435 ../wapiti.py:438
+#: ../wapiti.py:441
 msgid "loaded, Wapiti will use it to perform the attacks"
 msgstr "cargado, Wapiti lo usará para realizar los ataques"
 
 #: ../wapiti.py:483 ../net/lswww.py:465 ../net/lswww.py:472 ../wapiti.py:438
 #: ../net/lswww.py:515 ../net/lswww.py:521 ../wapiti.py:437 ../wapiti.py:441
-#: ../net/lswww.py:480
+#: ../net/lswww.py:480 ../wapiti.py:444 ../net/lswww.py:488
 msgid "not found, Wapiti will scan again the web site"
 msgstr "no encontrado, Wapiti escaneará de nuevo el sitio web"
 
 #: ../net/lswww.py:463 ../net/lswww.py:506 ../net/lswww.py:512
-#: ../net/lswww.py:471
+#: ../net/lswww.py:471 ../net/lswww.py:479
 msgid "loaded, the scan continues"
 msgstr "cargado, el escaneo continua"
 
 #: ../net/lswww.py:506 ../net/lswww.py:489 ../net/lswww.py:496
 #: ../net/lswww.py:535 ../net/lswww.py:542 ../net/lswww.py:544
 #: ../net/lswww.py:551 ../net/lswww.py:503 ../net/lswww.py:510
+#: ../net/lswww.py:511 ../net/lswww.py:518
 msgid "Notice"
 msgstr "Aviso"
 
 #: ../net/lswww.py:508 ../net/lswww.py:498 ../net/lswww.py:544
-#: ../net/lswww.py:553 ../net/lswww.py:512
+#: ../net/lswww.py:553 ../net/lswww.py:512 ../net/lswww.py:520
 msgid "Scan stopped, the data has been saved in the file"
 msgstr "Escaneo detenido, la información ha sido guardada en el fichero"
 
@@ -829,6 +864,7 @@ msgid "500 HTTP Error code"
 msgstr "Código de error HTTP 500"
 
 #: ../wapiti.py:491 ../wapiti.py:446 ../wapiti.py:445 ../wapiti.py:449
+#: ../wapiti.py:452
 msgid ""
 "Attack process interrupted. To perform again the attack, lauch Wapiti with "
 "\"-i\" or \"-k\" parameter."
@@ -837,17 +873,17 @@ msgstr ""
 "Wapiti con el parametro \"-i\" o \"-k\""
 
 #: ../net/lswww.py:465 ../net/lswww.py:508 ../net/lswww.py:514
-#: ../net/lswww.py:473
+#: ../net/lswww.py:473 ../net/lswww.py:481
 msgid "URLs to browse"
 msgstr "URL a escanear"
 
 #: ../net/lswww.py:468 ../net/lswww.py:511 ../net/lswww.py:517
-#: ../net/lswww.py:476
+#: ../net/lswww.py:476 ../net/lswww.py:484
 msgid "URLs browsed"
 msgstr "URL escaneadas"
 
 #: ../net/lswww.py:491 ../net/lswww.py:537 ../net/lswww.py:546
-#: ../net/lswww.py:505
+#: ../net/lswww.py:505 ../net/lswww.py:513
 msgid "This scan has been saved in the file"
 msgstr "El escaneo ha sido guardado en el fichero"
 
@@ -863,18 +899,22 @@ msgid "injected from "
 msgstr "inyectado desde"
 
 #: ../net/lswww.py:538 ../net/lswww.py:547 ../net/lswww.py:506
+#: ../net/lswww.py:514
 msgid ""
 "You can use it to perform attacks without scanning again the web site with "
 "the \"-k\" parameter"
-msgstr "Puede ser usado para realizar ataques sin necesidad de escanear nuevamente "
+msgstr ""
+"Puede ser usado para realizar ataques sin necesidad de escanear nuevamente "
 "el sitio web utilizando el parámetro \"-k\""
 
 #: ../net/lswww.py:545 ../net/lswww.py:554 ../net/lswww.py:513
+#: ../net/lswww.py:521
 msgid ""
 "To continue this scan, you should launch Wapiti with the \"-i\" parameter"
-msgstr "Para continuar el escaneo, Wapiti deberá ser lanzado con el parámetro \"-i\""
+msgstr ""
+"Para continuar el escaneo, Wapiti deberá ser lanzado con el parámetro \"-i\""
 
-#: ../wapiti.py:176 ../wapiti.py:175
+#: ../wapiti.py:176 ../wapiti.py:175 ../wapiti.py:178
 msgid "Loading modules"
 msgstr "Cargando módulos"
 
@@ -903,11 +943,11 @@ msgstr "Error al descargar la base de datos Nikto"
 msgid "References:"
 msgstr "Referencias:"
 
-#: ../wapiti.py:256
+#: ../wapiti.py:256 ../wapiti.py:259
 msgid "Missing dependecies for module"
 msgstr "Dependencias perdidas para el módulo"
 
-#: ../wapiti.py:262
+#: ../wapiti.py:262 ../wapiti.py:265
 msgid "Launching module"
 msgstr "Lanzando módulo"
 
@@ -987,26 +1027,27 @@ msgid "Oracle Injection"
 msgstr "Inyección Oracle"
 
 #: ../net/getcookie.py:53 ../net/getcookie.py:125 ../net/cookie.py:42
+#: ../net/getcookie.py:57 ../net/getcookie.py:130 ../net/cookie.py:46
 msgid "Error getting url"
 msgstr "Error obteniendo la URL"
 
-#: ../net/getcookie.py:61
+#: ../net/getcookie.py:61 ../net/getcookie.py:63
 msgid "Error fetching page"
 msgstr "Error al leer la página"
 
-#: ../net/getcookie.py:75
+#: ../net/getcookie.py:75 ../net/getcookie.py:80
 msgid "No forms found in this page !"
 msgstr "¡No se han encontrado formularios en esta página!"
 
-#: ../net/getcookie.py:82
+#: ../net/getcookie.py:82 ../net/getcookie.py:87
 msgid "Choose the form you want to use :"
 msgstr "Debe escoger el formulario que va a ser usado:"
 
-#: ../net/getcookie.py:91
+#: ../net/getcookie.py:91 ../net/getcookie.py:96
 msgid "Enter a number : "
 msgstr "Introduzca un número"
 
-#: ../net/getcookie.py:98
+#: ../net/getcookie.py:98 ../net/getcookie.py:103
 msgid "Please enter values for the folling form :"
 msgstr "Por favor, introduzca valores para el formulario:"
 
@@ -1021,16 +1062,18 @@ msgstr "Fichero de backup"
 #: ../config/vulnerabilities/vulnerabilities.xml:104
 msgid "Backup file description"
 msgstr ""
-"Es posible encontrar ficheros de backup o scripts en el servidor web que "
-"el administrador del sitio haya puesto ahí para guardar una versión antigua o ficheros de backup que han "
-"sido generados automáticamente por algún editor (por ejemplo Emacs). "
-"Estas copias pueden revelar información relevante para un atacante como código fuente o credenciales"
+"Es posible encontrar ficheros de backup o scripts en el servidor web que el "
+"administrador del sitio haya puesto ahí para guardar una versión antigua o "
+"ficheros de backup que han sido generados automáticamente por algún editor "
+"(por ejemplo Emacs). Estas copias pueden revelar información relevante para "
+"un atacante como código fuente o credenciales"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:105
 msgid "Backup file solution"
 msgstr ""
-"El administrador del sitio debe manualmente borrar los ficheros de backup. También deberá reconfigurar "
-"su editor para desactivar la creación de estos ficheros de forma automática."
+"El administrador del sitio debe manualmente borrar los ficheros de backup. "
+"También deberá reconfigurar su editor para desactivar la creación de estos "
+"ficheros de forma automática."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:113
 msgid "Potentially dangerous file"
@@ -1039,15 +1082,18 @@ msgstr "Fichero potencialmente peligroso"
 #: ../config/vulnerabilities/vulnerabilities.xml:114
 msgid "Potentially dangerous file description"
 msgstr ""
-"Ciertos scripts son conocidos por ser potencialmente vulnerables y peligrosos. "
-"Listas de este tipo de ficheros son frecuentemente utilizados  por atacantes "
-"para escanear sitios de Internet a la búsqueda de este tipo de vulnerabilidades."
+"Ciertos scripts son conocidos por ser potencialmente vulnerables y "
+"peligrosos. Listas de este tipo de ficheros son frecuentemente utilizados  "
+"por atacantes para escanear sitios de Internet a la búsqueda de este tipo de "
+"vulnerabilidades."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:115
 msgid "Potentially dangerous file solution"
-msgstr "El administrador deberá actualizar regularmente a la última versión sus scripts "
-"y programas utilizados en els ervidor. También es aconsejado estar informado sobre las nuevas "
-"vulnerabilidades descubiertas, para ello  sería conveniente estar sindicado a diferentes RSS sobre seguridad"
+msgstr ""
+"El administrador deberá actualizar regularmente a la última versión sus "
+"scripts y programas utilizados en els ervidor. También es aconsejado estar "
+"informado sobre las nuevas vulnerabilidades descubiertas, para ello  sería "
+"conveniente estar sindicado a diferentes RSS sobre seguridad"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:93
 msgid "Htaccess Bypass"
@@ -1055,12 +1101,16 @@ msgstr "Bypass Htaccess"
 
 #: ../config/vulnerabilities/vulnerabilities.xml:94
 msgid "Htaccess bypass description"
-msgstr "Los ficheros htaccess son usados para restringir el acceso sobre algunos ficheros mediante HTTP. "
-"En algunos casos es posible saltar esta restricción y acceder a estos ficheros."
+msgstr ""
+"Los ficheros htaccess son usados para restringir el acceso sobre algunos "
+"ficheros mediante HTTP. En algunos casos es posible saltar esta restricción "
+"y acceder a estos ficheros."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:95
 msgid "Htaccess bypass solution"
-msgstr "Asegurarse de que los métodos HTTP están prohibidos si las credenciales no son correctas."
+msgstr ""
+"Asegurarse de que los métodos HTTP están prohibidos si las credenciales no "
+"son correctas."
 
 #: ../attack/mod_xss.py:329 ../attack/mod_xss.py:334 ../attack/mod_xss.py:346
 #: ../attack/mod_xss.py:349
