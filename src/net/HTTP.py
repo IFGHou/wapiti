@@ -107,7 +107,7 @@ class HTTP:
 
   def encode(self, url, encoding = None):
     "Encode a sequence of two-element tuples or dictionary into a URL query string."
-    if encoding != None:
+    if encoding != None and encoding != "":
       tmp = {}
       for k, v in url.items():
         tmp[k.encode(encoding, "ignore")] = v.encode(encoding, "ignore")

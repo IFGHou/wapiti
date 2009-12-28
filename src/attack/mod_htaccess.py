@@ -80,9 +80,9 @@ class mod_htaccess(Attack):
           self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, \
               url, "", err + " HtAccess")
           if self.color == 1:
-            print self.RED + "\t" + _(".htaccess bypass vulnerability:"), url + self.STD
+            print self.RED + "  " + _(".htaccess bypass vulnerability:"), url + self.STD
           else:
-            print "\t" + _(".htaccess bypass vulnerability:"), url
+            print "  " + _(".htaccess bypass vulnerability:"), url
 
           #print output informations by verbosity option
           if self.verbose >= 1:
@@ -105,7 +105,7 @@ class mod_htaccess(Attack):
             self.reportGen.logVulnerability(Vulnerability.HTACCESS, Vulnerability.HIGH_LEVEL_VULNERABILITY, \
                 url, "", VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
             print _("500 HTTP Error code with")
-            print "\t" + _("Evil url") + ":",url
+            print "  " + _("Evil url") + ":",url
             
           #add the url with the url attacked
         self.attackedGET.append(url)

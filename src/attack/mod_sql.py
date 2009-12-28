@@ -102,7 +102,7 @@ class mod_sql(Attack):
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                             url, payload, err + " " + _("(QUERY_STRING)"))
           print err, _("(QUERY_STRING) in"), page
-          print "\t" + _("Evil url") + ":", url
+          print "  " + _("Evil url") + ":", url
 
           self.vulnerableGET.append(page + "?" + "__PAYLOAD__")
 
@@ -113,7 +113,7 @@ class mod_sql(Attack):
                                             url, payload,
                                             VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
             print _("500 HTTP Error code with")
-            print "\t" + _("Evil url") + ":", url
+            print "  " + _("Evil url") + ":", url
         self.attackedGET.append(url)
       else:
         return 1
@@ -143,12 +143,12 @@ class mod_sql(Attack):
                                             err + " (" + k + ")")
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
             else:
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
 
             tmp[k] = "__PAYLOAD__"
-            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload)))
+            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]))
 
           else:
             if code == "500":
@@ -157,7 +157,7 @@ class mod_sql(Attack):
                                               url, self.HTTP.encode(tmp, headers["link_encoding"]),
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
           self.attackedGET.append(url)
         else:
           return 1

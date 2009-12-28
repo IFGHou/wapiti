@@ -257,7 +257,7 @@ Supported options are:
         t = [y.name for y in self.attacks if y.name in x.require and (y.doGET or y.doPOST)]
         if x.require != t:
           print "[!]", _("Missing dependecies for module"), x.name , ":"
-          print "\t" , ",".join([y for y in x.require if y not in t])
+          print "  " , ",".join([y for y in x.require if y not in t])
           continue
         else:
           x.loadRequire([y for y in self.attacks if y.name in x.require])

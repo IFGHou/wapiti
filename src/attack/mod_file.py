@@ -101,7 +101,7 @@ class mod_file(Attack):
                               url, self.HTTP.quote(payload),
                               _("Timeout (QUERY_STRING) in") + " " + str(page))
             print _("Timeout (QUERY_STRING) in"), page
-            print "\t" + _("caused by") + ":", url
+            print "  " + _("caused by") + ":", url
           else:
             err,inc,warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
@@ -110,7 +110,7 @@ class mod_file(Attack):
                               url, self.HTTP.quote(payload),
                               str(err) + " " + _("(QUERY_STRING) in") + " " + str(page))
             print err, _("(QUERY_STRING) in"), page
-            print "\t" + _("Evil url") + ":", url
+            print "  " + _("Evil url") + ":", url
           else:
             if code == "500" and err500 == 0:
               err500 = 1
@@ -119,7 +119,7 @@ class mod_file(Attack):
                                 url, self.HTTP.quote(payload),
                                 VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
     for k in dict.keys():
       warn = 0
       inc = 0
@@ -144,7 +144,7 @@ class mod_file(Attack):
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               url,self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")")
             print _("Timeout") + " (" + k + ") " + _("in"), page
-            print "\t" + _("caused by") + ":", url
+            print "  " + _("caused by") + ":", url
           else:
             err, inc, warn = self.__findPatternInResponse(data,inc,warn)
           if err != "":
@@ -153,7 +153,7 @@ class mod_file(Attack):
                               url,self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")")
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
             else:
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
           else:
@@ -164,7 +164,7 @@ class mod_file(Attack):
                                 url, self.HTTP.encode(tmp, headers["link_encoding"]),
                                 VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
 
   def attackPOST(self, form):
     """This method performs the file handling attack with method POST"""

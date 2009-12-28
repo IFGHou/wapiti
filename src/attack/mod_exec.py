@@ -76,7 +76,7 @@ class mod_exec(Attack):
             code = "408"
             err = ""
             print _("Timeout in"), page
-            print "\t" + _("caused by") + ":", url
+            print "  " + _("caused by") + ":", url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                             url, self.HTTP.quote(payload), err + " " + _("(QUERY_STRING)"))
@@ -87,7 +87,7 @@ class mod_exec(Attack):
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             url, self.HTTP.quote(payload), err + " " + _("(QUERY_STRING)"))
             print err, _("(QUERY_STRING) in"), page
-            print "\t" + _("Evil url") + ":", url
+            print "  " + _("Evil url") + ":", url
           else:
             if code == "500" and err500 == 0:
               err500 = 1
@@ -96,7 +96,7 @@ class mod_exec(Attack):
                                               url, self.HTTP.quote(payload),
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
     for k in dict.keys():
       warn = 0
       cmd = 0
@@ -118,7 +118,7 @@ class mod_exec(Attack):
             code = "408"
             err = ""
             print _("Timeout") + " (" + k + ") " + _("in"), page
-            print "\t" + _("caused by") + ":", url
+            print "  " + _("caused by") + ":", url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                             url, self.HTTP.encode(tmp, headers["link_encoding"]), err+" ("+k+")")
@@ -130,7 +130,7 @@ class mod_exec(Attack):
                                             url, self.HTTP.encode(tmp, headers["link_encoding"]), err+" ("+k+")")
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
             else:
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
           else:
@@ -138,10 +138,10 @@ class mod_exec(Attack):
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp, headers["lienk_encoding"]),
+                                              url, self.HTTP.encode(tmp, headers["link_encoding"]),
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
 
   def attackPOST(self, form):
     """This method performs the command execution with method POST"""

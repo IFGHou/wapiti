@@ -211,6 +211,9 @@ Supported options are:
     code = info['status']
     page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
 
+    if not self.link_encoding.has_key(url):
+      self.link_encoding[url] = ""
+
     proto = url.split("://")[0]
     if proto == "http" or proto == "https":
       # Check the content-type first
@@ -226,6 +229,7 @@ Supported options are:
       redir = self.correctlink(info["location"], current, currentdir, proto)
       if redir != None:
         if(self.__inzone(redir) == 0):
+          self.link_encoding[redir] = self.link_encoding[url]
           # Is the document already visited of forbidden ?
           if (redir in self.browsed.keys()) or (redir in self.tobrowse) or \
               self.isExcluded(redir):
@@ -270,7 +274,7 @@ Supported options are:
           # Is the document already visited of forbidden ?
           if (lien in self.browsed.keys()) or (lien in self.tobrowse) or self.isExcluded(lien):
             pass
-          elif self.nice>0:
+          elif self.nice > 0:
             if self.__countMatches(lien) >= self.nice:
               # don't waste time next time we found it
               self.excluded.append(lien)
@@ -298,7 +302,7 @@ Supported options are:
     """Transform relatives urls in absolutes ones"""
     # No leading or trailing whitespaces
     lien = lien.strip()
-
+    
     if lien == "":
       return current
 
@@ -355,7 +359,7 @@ Supported options are:
       if lien.find("?") != -1:
         file = lien.split("?")[0]
         file = re.sub("[^:]//+", "/", file)
-        lien = file + "?"+lien.split("?")[1]
+        lien = file + "?" + lien.split("?")[1]
       # links going to a parrent directory (..)
       while re.search("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", lien) != None:
         lien = re.sub("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", "/", lien)

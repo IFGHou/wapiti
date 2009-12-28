@@ -1,3 +1,22 @@
+28/19/2009
+	Version 2.2.0
+	Added a manpage.
+	Internationalization : translations of Wapiti in spanish and french.
+	Options -k and -i allow the scan to be saved and restored later.
+	Added option -b to set the scope of the scan based on the root url given.
+	Wrote a library to save handle cookies and save them in XML format.
+	Modules are now loaded dynamically with a dependency system.
+	Rewrote the -m option used to activate / deactivate attack modules.
+	New module to search for backup files of scripts on the target webserver.
+	New module to search for weakly configured .htaccess.
+	New module to search dangerous files based on the Nikto database.
+	Differ "raw" XSS from "urlencoded" XSS.
+	Updated BeautifulSoup to version 3.0.8.
+	Better encoding support for webpages (convert to Unicode)
+	Added "resource consumption" as a vulnerability type.
+	Fixed bug ID 2779441 "Python Version 2.5 required?"
+	Fixed bug with special characters in HTML reports.
+
 05/04/2008
 	Added more patterns for file handling vulnerabilities in PHP.
 	Added GET_SQL and POST_SQL as modules (-m) for attacks.

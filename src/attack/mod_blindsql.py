@@ -57,6 +57,7 @@ class mod_blindsql(Attack):
       if page + "?__PAYLOAD__" in self.excludedGET:
         return
 
+      err500 = 0
       for payload in self.blind_sql_payloads:
         payload = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
         url = page + "?__TIME__"
@@ -72,16 +73,17 @@ class mod_blindsql(Attack):
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url,payload, _("Blind SQL Injection (QUERY_STRING)"))
             print _("Blind SQL Injection (QUERY_STRING) in"), page
-            print "\t" + _("Evil url") + ":",url
+            print "  " + _("Evil url") + ":",url
             break
           else:
-            if code == "500":
+            if code == "500" and err500 == 0:
+              err500 = 1
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, payload,
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
-              print "\t" + _("Evil url") + ":", url
+              print "  " + _("Evil url") + ":", url
     else:
       for k in dict.keys():
         tmp = dict.copy()
@@ -93,6 +95,7 @@ class mod_blindsql(Attack):
         tmp[k] = "__TIME__"
         url_to_log = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
 
+        err500 = 0
         for payload in self.blind_sql_payloads:
 
           if url_to_log not in self.attackedGET:
@@ -109,7 +112,7 @@ class mod_blindsql(Attack):
                                               _("Blind SQL Injection") + " (" + k + ")")
               if self.color == 0:
                 print _("Blind SQL Injection") + " (" + k + ") " + _("in"), page
-                print "\t" + _("Evil url") + ":", url
+                print "  " + _("Evil url") + ":", url
               else:
                 print _("Blind SQL Injection") + ":", url.replace(k + "=", self.RED + k + self.STD + "=")
               # ok, one of the payloads worked
@@ -117,13 +120,14 @@ class mod_blindsql(Attack):
               self.attackedGET.append(url_to_log)
               break
             else:
-              if code == "500":
+              if code == "500" and err500 == 0:
+                err500 = 1
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp, headers["link_encoding"]),
                                                 VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
                 print _("500 HTTP Error code with")
-                print "\t" + _("Evil url") + ":", url
+                print "  " + _("Evil url") + ":", url
 
         # none of the payloads worked
         self.attackedGET.append(url_to_log)
@@ -139,6 +143,7 @@ class mod_blindsql(Attack):
       if (page, tmp) in self.excludedPOST:
         return
 
+      err500 = 0
       for payload in self.blind_sql_payloads:
         tmp[k] = "__TIME__"
 
@@ -169,7 +174,8 @@ class mod_blindsql(Attack):
             self.attackedPOST.append((page, tmp))
             break
           else:
-            if code == "500":
+            if code == "500" and err500 == 0:
+              err500 = 1
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp, form[3]),
@@ -182,10 +188,10 @@ class mod_blindsql(Attack):
       tmp[k] = "__TIME__"
       self.attackedPOST.append((page, tmp))
 
-    def loadRequire(self, obj = []):
-      self.deps = obj
-      for x in self.deps:
-        if x.name == "sql":
-          self.excludedGET = x.vulnerableGET
-          self.excludedPOST = x.vulnerablePOST
+  def loadRequire(self, obj = []):
+    self.deps = obj
+    for x in self.deps:
+      if x.name == "sql":
+        self.excludedGET = x.vulnerableGET
+        self.excludedPOST = x.vulnerablePOST
 

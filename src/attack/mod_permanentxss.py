@@ -101,7 +101,7 @@ class mod_permanentxss(Attack):
                     self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
                                 _("Found permanent XSS attacked by") + " " + self.POST_XSS[code][0] + \
-                                " " + _("with fields") + " " + self.HTTP.encode(tmp)) #CHANGE from uqe to encode, must be rechecked
+                                " " + _("with fields") + " " + self.HTTP.encode(tmp))
                     print _("Found permanent XSS in"), url
                     if self.color ==1:
                       print "  " + _("attacked by"), self.POST_XSS[code][2], _("with fields"), \

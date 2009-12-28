@@ -229,7 +229,7 @@ class mod_xss(Attack):
     for payload in payloads:
 
       if params == {}:
-        url = page + "?" + self.HTTP.quote(payload) #ADD quote
+        url = page + "?" + self.HTTP.quote(payload)
         if self.verbose == 2:
           print "+", url
         try:
@@ -282,7 +282,7 @@ class mod_xss(Attack):
         else:
           if self.color == 0:
             print _("XSS") + " (" + var + ") " + _("in"), page
-            print "\t" + _("Evil url") + ":", url
+            print "  " + _("Evil url") + ":", url
           else:
             print _("XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
         return True
@@ -344,7 +344,7 @@ class mod_xss(Attack):
         else:
           if self.color == 0:
             print _("Raw XSS") + " (" + var + ") " + _("in"), page
-            print "\t" + _("Evil url") + ":", url
+            print "  " + _("Evil url") + ":", url
           else:
             print _("Raw XSS"), ":", url.replace(var + "=", self.RED + var + self.STD + "=")
         return True
