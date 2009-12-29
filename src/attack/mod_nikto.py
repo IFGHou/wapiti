@@ -67,6 +67,8 @@ class mod_nikto(Attack):
         resp = self.HTTP.send("http://" + self.HTTP.server + l[3], l[11], method = l[4])
 
       page, code = resp.getPageCode()
+      encoding = BeautifulSoup.BeautifulSoup(page).originalEncoding
+      page = unicode(page, encoding, "ignore")
       raw = " ".join([x + ": " + y for x,y in resp.getInfo().items()])
       raw += page
 
