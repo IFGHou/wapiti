@@ -133,6 +133,8 @@ Supported options are:
   def __init__(self, rooturl, crawlerFile=None):
     self.rooturl = rooturl
     root = rooturl
+    if root.find("http://") != 0 or root.find("https://") != 0:
+      root = "http://" + root
     if root[-1] != "/" and (root.split("://")[1]).find("/") == -1:
       root += "/"
     if(self.__checklink(root)):
@@ -209,7 +211,6 @@ Supported options are:
       return {}
 
     code = info['status']
-    page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
 
     if not self.link_encoding.has_key(url):
       self.link_encoding[url] = ""
@@ -224,6 +225,9 @@ Supported options are:
           return info
       elif info["content-type"].find("text") == -1:
         return info
+
+    page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
+
     # Manage redirections
     if info.has_key("location"):
       redir = self.correctlink(info["location"], current, currentdir, proto)
@@ -447,7 +451,7 @@ Supported options are:
       string = string[i + len(block):]
     return match
 
-  def go(self,crawlerFile):
+  def go(self, crawlerFile):
     proxy = None
 
     if self.proxy != "":
@@ -491,7 +495,7 @@ Supported options are:
     # if the user stop the scan with Ctrl+C, give him all found urls
     # and they are saved in an XML file
     try:
-      while len(self.tobrowse)>0:
+      while len(self.tobrowse) > 0:
         lien = self.tobrowse.pop(0)
         if (lien not in self.browsed.keys() and lien not in self.excluded):
           headers = self.browse(lien)
@@ -503,7 +507,7 @@ Supported options are:
             if self.verbose == 1:
               sys.stderr.write('.')
             elif self.verbose == 2:
-              sys.stderr.write(lien + "\n")
+              print lien
         if(self.scope == self.SCOPE_PAGE):
           self.tobrowse = []
       self.saveCrawlerData()

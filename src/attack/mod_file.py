@@ -79,6 +79,14 @@ class mod_file(Attack):
   def attackGET(self, page, dict, headers = {}):
     """This method performs the file handling attack with method GET"""
     if dict == {}:
+      # Do not attack application-type files
+      if not headers.has_key("content-type"):
+        # Sometimes there's no content-type... so we rely on the document extension
+        if (page.split(".")[-1] not in self.allowed) and page[-1] != "/":
+          return
+      elif headers["content-type"].find("text") == -1:
+        return
+
       warn = 0
       inc = 0
       err500 = 0
@@ -120,6 +128,7 @@ class mod_file(Attack):
                                 VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "  " + _("Evil url") + ":", url
+
     for k in dict.keys():
       warn = 0
       inc = 0

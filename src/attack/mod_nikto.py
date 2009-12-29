@@ -5,6 +5,7 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import urllib2, csv, re
+import socket
 
 class mod_nikto(Attack):
   """
@@ -40,7 +41,7 @@ class mod_nikto(Attack):
         writer = csv.writer(fd)
         writer.writerows(self.nikto_db)
         fd.close()
-      except IOError:
+      except socket.timeout:
         print _("Error downloading Nikto database")
 
   def attack(self, urls, forms):

@@ -57,7 +57,16 @@ class mod_exec(Attack):
 
   def attackGET(self, page, dict, headers = {}):
     """This method performs the command execution with method GET"""
+
     if dict == {}:
+      # Do not attack application-type files
+      if not headers.has_key("content-type"):
+        # Sometimes there's no content-type... so we rely on the document extension
+        if (page.split(".")[-1] not in self.allowed) and page[-1] != "/":
+          return
+      elif headers["content-type"].find("text") == -1:
+        return
+
       warn = 0
       cmd = 0
       err500 = 0

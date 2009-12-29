@@ -66,6 +66,11 @@ class Attack:
     CYAN = "\033[1;36m"
     GB = "\033[0;30m\033[47m"
 
+    allowed = ['php', 'html', 'htm', 'xml', 'xhtml', 'xht', 'xhtm',
+              'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
+              'shtml', 'phtm', 'phtml', 'jhtml', 'pl', 'jsp', 'cfm',
+              'cfml', 'py']
+
     # The priority of the module, from 0 (first) to 10 (last). Default is 5
     PRIORITY = 5
     
