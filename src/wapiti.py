@@ -356,7 +356,7 @@ if __name__ == "__main__":
     if '-h' in sys.argv or '--help' in sys.argv:
       print doc
       sys.exit(0)
-    url = sys.argv[1]
+    url = unicode(sys.argv[1])
     wap = Wapiti(url)
     try:
       opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",

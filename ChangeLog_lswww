@@ -1,3 +1,9 @@
+29/12/2009                                                           
+  Version 2.3.1
+  Fixed a bug in lswww if root url is not given complete.
+  Fixed a bug in lswww with a call to BeautifulSoup made on non text files.
+  Fixed a bug that occured when verbosity = 2. Unicode error on stderr.
+
 27/12/2009
 	Version 2.3.0
 	Internationalization and translation to english and spanish when called from

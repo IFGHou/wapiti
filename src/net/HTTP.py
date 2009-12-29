@@ -45,10 +45,10 @@ class HTTP:
   h = None
   cookiejar = None
 
-  def __init__(self,root):
-    self.root = root
-    self.server = urlparse.urlparse(root)[1]
+  def __init__(self, root):
     self.myls = lswww.lswww(root)
+    self.root = self.myls.root
+    self.server = urlparse.urlparse(self.root)[1]
     self.myls.verbosity(1)
     socket.setdefaulttimeout(self.timeout)
 

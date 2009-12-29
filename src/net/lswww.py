@@ -102,7 +102,6 @@ Supported options are:
   SCOPE_PAGE    = "page"
   SCOPE_DEFAULT = "default"
 
-  rooturl = None
   root = ""
   server = ""
   tobrowse = []
@@ -130,9 +129,7 @@ Supported options are:
   # 0 means no limits
   nice = 0
 
-  def __init__(self, rooturl, crawlerFile=None):
-    self.rooturl = rooturl
-    root = rooturl
+  def __init__(self, root, crawlerFile=None):
     if root.find("http://") != 0 or root.find("https://") != 0:
       root = "http://" + root
     if root[-1] != "/" and (root.split("://")[1]).find("/") == -1:
@@ -217,6 +214,7 @@ Supported options are:
 
     proto = url.split("://")[0]
     if proto == "http" or proto == "https":
+      if not isinstance(proto, unicode): proto = unicode(proto)
       # Check the content-type first
       #if not u.info().get("Content-Type"):
       if not info.has_key("content-type"):
@@ -598,7 +596,7 @@ Supported options are:
     return self.uploads
 
   def saveCrawlerData(self):
-    self.persister.setRootURL(self.rooturl);
+    self.persister.setRootURL(self.root);
     self.persister.setToBrose(self.tobrowse);
     self.persister.setBrowsed(self.browsed);
     self.persister.setForms  (self.forms);
