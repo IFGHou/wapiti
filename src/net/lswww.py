@@ -130,7 +130,7 @@ Supported options are:
   nice = 0
 
   def __init__(self, root, crawlerFile=None):
-    if root.find("http://") != 0 or root.find("https://") != 0:
+    if root.find("http://") != 0 and root.find("https://") != 0:
       root = "http://" + root
     if root[-1] != "/" and (root.split("://")[1]).find("/") == -1:
       root += "/"
