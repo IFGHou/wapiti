@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-
-# lswww v2.3.0 - A web spider library
+# -*- coding: utf-8 -*-
+# lswww v2.3.1 - A web spider library
 # Copyright (C) 2006 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify
@@ -270,6 +270,8 @@ Supported options are:
     for lien in p.uploads:
       self.uploads.append(self.correctlink(lien, current, currentdir, proto))
     for lien in p.liens:
+      if page_encoding != None and not isinstance(lien, unicode):
+        lien = unicode(lien, page_encoding, "ignore")
       lien = self.correctlink(lien, current, currentdir, proto)
       if lien != None:
         if(self.__inzone(lien) == 0):
@@ -325,7 +327,7 @@ Supported options are:
       else:
         # root-url related link
         if(lien[0] == '/'):
-          lien = proto + "://" + self.server + lien
+          lien = proto + u"://" + self.server + lien
         else:
           # same page + query string
           if(lien[0] == '?'):
@@ -353,7 +355,7 @@ Supported options are:
             "C=N;O=A", "C=N;O=D", "C=S;O=A", "C=S;O=D"]:
           lien = lien.split("?")[0]
         else:
-          lien = lien.split("?")[0] + "?" + args
+          lien = lien.split("?")[0] + u"?" + args
       # Remove the trailing '?' if its presence doesn't make sense
       if lien[-1:] == "?":
         lien = lien[:-1]
