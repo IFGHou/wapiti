@@ -249,6 +249,8 @@ Supported options are:
       p.feed(htmlSource)
     except HTMLParser.HTMLParseError, err:
       htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+      if not isinstance(htmlSource, unicode) and page_encoding != None:
+        htmlSource = unicode(htmlSource, page_encoding, "ignore")
       try:
         p.reset()
         p.feed(htmlSource)
@@ -259,7 +261,10 @@ Supported options are:
     # Sometimes the page is badcoded but the parser doesn't see the error
     # So if we got no links we can force a correction of the page
     if len(p.liens) == 0:
-      htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+      if page_encoding != None:
+        htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify(page_encoding)
+      else:
+        htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
       try:
         p.reset()
         p.feed(htmlSource)
