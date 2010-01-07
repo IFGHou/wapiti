@@ -368,7 +368,12 @@ Supported options are:
       if lien.find("?") != -1:
         file = lien.split("?")[0]
         file = re.sub("[^:]//+", "/", file)
+        if file[-2:] == "/.":
+          file = file[:-1]
         lien = file + "?" + lien.split("?")[1]
+      else:
+        if lien[-2:] == "/.":
+          lien = lien[:-1]
       # links going to a parrent directory (..)
       while re.search("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", lien) != None:
         lien = re.sub("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", "/", lien)
