@@ -162,7 +162,7 @@ class mod_sql(Attack):
             if code == "500":
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp, headers["link_encoding"]),
+                                              url, self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload)),
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "  " + _("Evil url") + ":", url
@@ -181,13 +181,14 @@ class mod_sql(Attack):
 
     for k in dict.keys():
       tmp = dict.copy()
-      tmp[k] = payload
+      tmp[k] = "__PAYLOAD__"
       if (page, tmp) not in self.attackedPOST:
         headers = {"Accept": "text/plain"}
         if self.verbose == 2:
           print "+ " + page
+          tmp[k] = payload
           print "  ", tmp
-        tmp[k] = "__PAYLOAD__"
+          tmp[k] = "__PAYLOAD__"
         post_data = self.HTTP.encode(tmp, form[3]).replace("__PAYLOAD__",self.HTTP.quote(payload))
         try:
           data, code = self.HTTP.send(page, post_data, headers).getPageCode()
@@ -212,7 +213,6 @@ class mod_sql(Attack):
           print "  " + _("coming from"), form[2]
 
           self.vulnerablePOST.append((page, tmp))
-          tmp[k] = payload
 
         else:
           if code == "500":

@@ -661,8 +661,8 @@ class linkParser(HTMLParser.HTMLParser):
           # use default value if present or set it to 'on'
             if "value" in tmpdict.keys():
               if tmpdict["value"] != "": val = tmpdict["value"]
-              else: val = "on"
-            else: val = "on"
+              else: val = u"on"
+            else: val = u"on"
             self.form_values.update(dict([(tmpdict['name'], val)]))
           if tmpdict['type'].lower() == "file":
             self.uploads.append(self.current_form_url)
@@ -670,7 +670,7 @@ class linkParser(HTMLParser.HTMLParser):
     if tag.lower() in ["textarea", "select"]:
       if self.inform == 1:
         if "name" in tmpdict.keys():
-          self.form_values.update(dict([(tmpdict['name'], 'on')]))
+          self.form_values.update(dict([(tmpdict['name'], u'on')]))
 
     if tag.lower() in ["frame", "iframe"]:
       if "src" in tmpdict.keys():
@@ -818,8 +818,8 @@ class linkParser2:
               # use default value if present or set it to 'on'
               if "value" in tmpdict.keys():
                 if tmpdict["value"] != "": val = tmpdict["value"]
-                else: val = "on"
-              else: val = "on"
+                else: val = u"on"
+              else: val = u"on"
               self.form_values.update(dict([(tmpdict['name'], val)]))
             if tmpdict['type'].lower() == "file":
               self.uploads.append(self.current_form_url)
@@ -829,14 +829,14 @@ class linkParser2:
         for k, v in dict(textAreasAttributes[i][j]).items():
           tmpdict[k.lower()] = v
         if "name" in tmpdict.keys():
-          self.form_values.update(dict([(tmpdict['name'], 'on')]))
+          self.form_values.update(dict([(tmpdict['name'], u'on')]))
 
       for j in range(len(selectsAttributes[i])):
         tmpdict = {}
         for k, v in dict(selectsAttributes[i][j]).items():
           tmpdict[k.lower()] = v
         if "name" in tmpdict.keys():
-          self.form_values.update(dict([(tmpdict['name'], 'on')]))
+          self.form_values.update(dict([(tmpdict['name'], u'on')]))
 
       if self.current_form_method == "post":
         self.forms.append((self.current_form_url, self.form_values))
