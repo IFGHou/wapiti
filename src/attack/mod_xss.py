@@ -26,6 +26,8 @@ class mod_xss(Attack):
   # only trick here must be on character encoding, filter bypassing, stuff like that
   # form the simplest to the most complex, Wapiti will stop on the first working
   independant_payloads = []
+  php_self_payload = "%3Cscript%3Ephpselfxss()%3C/script%3E"
+  php_self_check = "<script>phpselfxss()</script>"
   
   name = "xss"
 
@@ -34,6 +36,7 @@ class mod_xss(Attack):
   # two dict for permanent XSS scanning
   GET_XSS = {}
   POST_XSS = {}
+  PHP_SELF = []
 
   CONFIG_FILE = "xssPayloads.txt"
 
@@ -43,6 +46,27 @@ class mod_xss(Attack):
 
   def attackGET(self, page, dict, headers = {}):
     """This method performs the cross site scripting attack (XSS attack) with method GET"""
+
+    if page not in self.PHP_SELF:
+      url = ""
+      if page.endswith("/"):
+        url = page + self.php_self_payload
+      elif page.endswith(".php"):
+        url = page + "/" + self.php_self_payload
+      if url != "":
+        if self.verbose == 2:
+          print "+", url
+        data, http_code = self.HTTP.send(url + self.php_self_payload).getPageCode()
+        if data.find(self.php_self_check) >= 0:
+          print _("XSS") + " (PHP_SELF) " + _("in"), page
+          print "  " + _("Evil url") + ":", url
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            url, self.php_self_payload,
+                            _("XSS") + " (PHP_SELF)")
+      self.PHP_SELF.append(page)
+
+
     # page est l'url de script
     # dict est l'ensembre des variables et leurs valeurs
     if dict == {}:
@@ -58,7 +82,7 @@ class mod_xss(Attack):
       if url not in self.attackedGET:
         self.attackedGET.append(url)
         err = ""
-        code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
+        code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)])
         url = page + "?" + code
         self.GET_XSS[code] = url
         try:
@@ -99,6 +123,26 @@ class mod_xss(Attack):
     headers = {"Accept": "text/plain"}
     page = form[0]
     params = form[1]
+
+    if page not in self.PHP_SELF:
+      url = ""
+      if page.endswith("/"):
+        url = page + self.php_self_payload
+      elif page.endswith(".php"):
+        url = page + "/" + self.php_self_payload
+      if url != "":
+        if self.verbose == 2:
+          print "+", url
+        data, http_code = self.HTTP.send(url + self.php_self_payload).getPageCode()
+        if data.find(self.php_self_check) >= 0:
+          print _("XSS") + " (PHP_SELF) " + _("in"), page
+          print "  " + _("Evil url") + ":", url
+          self.reportGen.logVulnerability(Vulnerability.XSS,
+                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            url, self.php_self_payload,
+                            _("XSS") + " (PHP_SELF)")
+      self.PHP_SELF.append(page)
+
     for k in params.keys():
       tmp = params
       log = params.copy()

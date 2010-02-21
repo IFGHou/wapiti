@@ -4,7 +4,6 @@
                            http://wapiti.sourceforge.net/
 
 This version  requires Python 2.4 or  superior with the urllib2 module.
-The cookielib module is required if you want to use cookies.
 
 How it works
 ============
