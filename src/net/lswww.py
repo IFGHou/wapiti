@@ -130,13 +130,13 @@ Supported options are:
   nice = 0
 
   def __init__(self, root, crawlerFile=None):
-    if root.find("http://") != 0 and root.find("https://") != 0:
+    if root.startswith("-"):
+      print _("First argument must be the root url !")
+      sys.exit(0)
+    if(self.__checklink(root)):
       root = "http://" + root
     if root[-1] != "/" and (root.split("://")[1]).find("/") == -1:
       root += "/"
-    if(self.__checklink(root)):
-      print _("Invalid link argument")
-      sys.exit(0)
 
     server = (root.split("://")[1]).split("/")[0]
     self.root     = root   # Initial URL
