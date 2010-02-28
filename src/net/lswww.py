@@ -25,6 +25,20 @@ import os
 import HTMLParser
 import urllib
 import urllib2
+
+from distutils.sysconfig import get_python_lib
+BASE_DIR = None
+for lib_dir in [get_python_lib(prefix="/usr/local"), get_python_lib()]:
+  if os.path.isdir(os.path.join(lib_dir, "wapiti")):
+    BASE_DIR = os.path.join(lib_dir, "wapiti")
+    sys.path.append(BASE_DIR)
+    break
+if not BASE_DIR:
+  if "__file__" in dir():
+    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
+  else:
+    BASE_DIR = os.getcwd()
+
 import httplib2
 from htmlentitydefs import name2codepoint as n2cp
 from xml.dom import minidom

@@ -55,9 +55,11 @@ class Attack:
     vulnerableGET  = []
     vulnerablePOST = []
 
-    CONFIG_DIR_NAME = "config/attacks"
-    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
-    CONFIG_DIR = BASE_DIR+"/"+CONFIG_DIR_NAME
+    if os.path.isdir("/etc/wapiti/attacks"):
+      CONFIG_DIR = "/etc/wapiti/attacks"
+    else:
+      ASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
+      CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
 
     # Color codes
     STD = "\033[0;0m"

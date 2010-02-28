@@ -4,7 +4,7 @@ from net.httplib2 import ServerNotFoundError
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-import urllib2, csv, re
+import urllib2, csv, re, os
 import socket
 
 class mod_nikto(Attack):
@@ -22,8 +22,12 @@ class mod_nikto(Attack):
 
   def __init__(self, HTTP, xmlRepGenerator):
     Attack.__init__(self, HTTP, xmlRepGenerator)
+    user_config_dir = os.getenv('HOME') or os.getenv('USERPROFILE')
+    user_config_dir += "/config"
+    if not os.path.isdir(user_config_dir):
+      os.makedirs(user_config_dir)
     try:
-      fd = open(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
+      fd = open(user_config_dir + "/" + self.CONFIG_FILE)
       reader = csv.reader(fd)
       self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
       fd.close()
@@ -37,7 +41,7 @@ class mod_nikto(Attack):
         self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
         page.close()
 
-        fd = open(self.CONFIG_DIR + "/" + self.CONFIG_FILE, "w")
+        fd = open(user_config_dir + "/" + self.CONFIG_FILE, "w")
         writer = csv.writer(fd)
         writer.writerows(self.nikto_db)
         fd.close()
