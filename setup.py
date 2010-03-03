@@ -5,6 +5,8 @@ from distutils.command.install_scripts import install_scripts
 import os
 
 VERSION = "SVN"
+DOC_DIR = "share/doc/packages/wapiti"
+CONF_DIR = DOC_DIR + "/config"
 
 class wapiti_install_lib(install_lib):
     def run(self):
@@ -21,23 +23,22 @@ class wapiti_install_scripts(install_scripts):
 
 
 # Build file lists
-def build_file_list(results, root, path):
-    for file in os.listdir(os.path.join(root, path)):
-        path_file = os.path.join(path, file)
+def build_file_list(results, dest, root, src=""):
+  cwd = os.getcwd()
+  if src !="":
+    os.chdir(src)
+  for root, dirs, files in os.walk(root):
+    if ".svn" in dirs:
+      dirs.remove(".svn")
+    if files != []:
+      results.append((os.path.join(dest, root), [os.path.join(src, root, x) for x in files]))
+  os.chdir(cwd)
 
-        if os.path.isdir(os.path.join(root, path_file)):
-            build_file_list(results, root, path_file)
-        else:
-            results.append(path_file)
-
-list_package_data = []
-build_file_list(list_package_data, "src", "config/language")
-build_file_list(list_package_data, "src", "config/vulnerabilities")
-build_file_list(list_package_data, "src", "report_template")
-
-list_etc_wapiti_attacks = []
-build_file_list(list_etc_wapiti_attacks, "", "src/config/attacks")
-
+doc_and_conf_files = []
+build_file_list(doc_and_conf_files, DOC_DIR, "config", src="src")
+build_file_list(doc_and_conf_files, DOC_DIR, "report_template", src="src")
+doc_and_conf_files.append( (DOC_DIR, ["AUTHORS", "ChangeLog_Wapiti", "ChangeLog_lswww", "README", "TODO", "example.txt"]) )
+doc_and_conf_files.append( ("share/man/man1", ["doc/wapiti.1.gz"]) )
 
 # Main
 setup(
@@ -64,14 +65,7 @@ if a script is vulnerable.""",
                 "wapiti.net.httplib2", 
                 "wapiti.report" 
     ],
-    package_data = {
-        'wapiti': list_package_data
-    },
-    data_files = [
-        ("/etc/wapiti/attacks", list_etc_wapiti_attacks),
-        ("share/man/man1", ["doc/wapiti.1.gz"]),
-        ("share/doc/packages/wapiti-" + VERSION, ["AUTHORS", "ChangeLog_Wapiti", "ChangeLog_lswww", "README", "TODO", "example.txt"])
-    ],
+    data_files = doc_and_conf_files,
     scripts = ["src/wapiti.py"],
     cmdclass = {
         "install_lib"     : wapiti_install_lib,

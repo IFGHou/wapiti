@@ -31,16 +31,30 @@ import os
 from distutils.sysconfig import get_python_lib
 
 BASE_DIR = None
-for lib_dir in [get_python_lib(prefix="/usr/local"), get_python_lib()]:
-  if os.path.isdir(os.path.join(lib_dir, "wapiti")):
-    BASE_DIR = os.path.join(lib_dir, "wapiti")
-    sys.path.append(BASE_DIR)
+if '' in sys.path:
+  sys.path.remove('')
+for python_dir in sys.path:
+  if os.path.isdir(os.path.join(python_dir, "wapiti")):
+    BASE_DIR = os.path.join(python_dir, "wapiti")
     break
 if not BASE_DIR:
+  for lib_dir in [get_python_lib(prefix="/usr/local"), get_python_lib()]:
+    if os.path.isdir(os.path.join(lib_dir, "wapiti")):
+      BASE_DIR = os.path.join(lib_dir, "wapiti")
+      sys.path.append(BASE_DIR)
+      break
+if not BASE_DIR:
+  sys.path.append("")
   if "__file__" in dir():
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
   else:
     BASE_DIR = os.getcwd()
+
+CONF_DIR = ""
+for prefix in ["/usr", "/usr/local", ""]:
+  if os.path.isdir(os.path.join(prefix, "share/doc/packages/wapiti")):
+    CONF_DIR = os.path.join(prefix, "share/doc/packages/wapiti")
+
 
 from language.language import Language
 lan = Language()
@@ -176,7 +190,7 @@ Supported options are:
     else: #default
         self.reportGen = XMLReportGenerator()
     xmlParser = VulnerabilityXMLParser()
-    xmlParser.parse(BASE_DIR + "/config/vulnerabilities/vulnerabilities.xml")
+    xmlParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/vulnerabilities.xml"))
     for vul in xmlParser.getVulnerabilities():
       self.reportGen.addVulnerabilityType(_(vul.getName()), _(vul.getDescription()),
                                           _(vul.getSolution()), vul.getReferences())
