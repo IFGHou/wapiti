@@ -51,9 +51,8 @@ if not BASE_DIR:
     BASE_DIR = os.getcwd()
 
 CONF_DIR = ""
-for prefix in ["/usr", "/usr/local", ""]:
-  if os.path.isdir(os.path.join(prefix, "share/doc/packages/wapiti")):
-    CONF_DIR = os.path.join(prefix, "share/doc/packages/wapiti")
+if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
+  CONF_DIR = "/usr/local/share/doc/packages/wapiti"
 
 
 from language.language import Language

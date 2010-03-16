@@ -5,8 +5,7 @@ from distutils.command.install_scripts import install_scripts
 import os
 
 VERSION = "SVN"
-DOC_DIR = "share/doc/packages/wapiti"
-CONF_DIR = DOC_DIR + "/config"
+DOC_DIR = "/usr/local/share/doc/packages/wapiti"
 
 class wapiti_install_lib(install_lib):
     def run(self):
@@ -37,8 +36,9 @@ def build_file_list(results, dest, root, src=""):
 doc_and_conf_files = []
 build_file_list(doc_and_conf_files, DOC_DIR, "config", src="src")
 build_file_list(doc_and_conf_files, DOC_DIR, "report_template", src="src")
+build_file_list(doc_and_conf_files, "/usr/local/share/locale/", ".", src="src/config/language")
 doc_and_conf_files.append( (DOC_DIR, ["AUTHORS", "ChangeLog_Wapiti", "ChangeLog_lswww", "README", "TODO", "example.txt"]) )
-doc_and_conf_files.append( ("share/man/man1", ["doc/wapiti.1.gz"]) )
+doc_and_conf_files.append( ("/usr/local/share/man/man1", ["doc/wapiti.1.gz"]) )
 
 # Main
 setup(

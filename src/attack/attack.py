@@ -56,10 +56,9 @@ class Attack:
     vulnerablePOST = []
 
     CONFIG_DIR = ""
-    for prefix in ["/usr", "/usr/local", ""]:
-      if os.path.isdir(os.path.join(prefix, "share/doc/packages/wapiti")):
-        CONFIG_DIR = os.path.join(prefix, "share/doc/packages/wapiti", "config/attacks")
-    if CONFIG_DIR == "":
+    if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
+        CONFIG_DIR = "/usr/local/share/doc/packages/wapiti/config/attacks"
+    else:
       BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
       CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
 
