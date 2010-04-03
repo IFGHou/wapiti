@@ -46,6 +46,7 @@ class HTTP:
   cookiejar = None
 
   def __init__(self, root):
+    error_str = ""
     self.myls = lswww.lswww(root)
     self.root = self.myls.root
     self.server = urlparse.urlparse(self.root)[1]
@@ -68,6 +69,7 @@ class HTTP:
 
     if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
+
 
   def browse(self, crawlerFile):
     "Explore the entire website under the pre-defined root-url."
