@@ -385,6 +385,11 @@ if __name__ == "__main__":
       os.makedirs(crawlerPersister.CRAWLER_DATA_DIR)
 
     url = unicode(sys.argv[1])
+    if url.find("://") != -1:
+      proto = url.split("://")[0]
+      if proto not in ["http", "https"]:
+        print _("Invalid protocol:"), proto
+        sys.exit(2)
     wap = Wapiti(url)
     try:
       opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",

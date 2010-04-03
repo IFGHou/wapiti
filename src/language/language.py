@@ -40,7 +40,10 @@ class Language:
   AVAILABLE_LANGS = ["es", "en", "fr"];
 
   BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
-  LANG_PATH = BASE_DIR + "/" + LANG_DIR
+  if os.path.isfile("/usr/local/share/locale/en/LC_MESSAGES/wapiti.mo"):
+    LANG_PATH = "/usr/local/share/locale/"
+  else:
+    LANG_PATH = BASE_DIR + "/" + LANG_DIR
 
   def configure(self, lang=None):
     """

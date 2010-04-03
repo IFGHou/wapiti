@@ -70,5 +70,21 @@ if a script is vulnerable.""",
     cmdclass = {
         "install_lib"     : wapiti_install_lib,
         "install_scripts" : wapiti_install_scripts
-    }
+    },
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Programming Language :: Python',
+        'Topic :: Security',
+        'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
+        'Topic :: Software Development :: Testing'
+        ]
 )
