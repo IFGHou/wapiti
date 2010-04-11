@@ -22,6 +22,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import socket # for trapping socket.error
 from file.auxtext import AuxText
 
 class Attack:
@@ -121,7 +122,10 @@ class Attack:
             if params != []:
               print "  ", params
 
-          self.attackGET(page, dictio, headers)
+          try:
+            self.attackGET(page, dictio, headers)
+          except socket.error, se:
+            print 'error: %s while attacking %s' % (repr(str(se[1])), url)
 
       if self.doPOST == True:
         for form in forms:

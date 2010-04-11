@@ -2,6 +2,7 @@ import socket
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
+from net.httplib2 import HTTPTimeout
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -74,11 +75,14 @@ class mod_blindsql(Attack):
           if self.verbose == 2:
             print "+ " + url
           try:
-            data, code = self.HTTP.send(url).getPageCode()
-          except socket.timeout:
+            resp = self.HTTP.send(url)
+            data, code = resp.getPageCode()
+          #except socket.timeout:
+          except HTTPTimeout, timeout:
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              url,payload, _("Blind SQL Injection (QUERY_STRING)"))
+                              url,payload, _("Blind SQL Injection (QUERY_STRING)"),
+                              timeout)
             print _("Blind SQL Injection (QUERY_STRING) in"), page
             print "  " + _("Evil url") + ":",url
             break
@@ -88,7 +92,8 @@ class mod_blindsql(Attack):
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, payload,
-                                              VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
+                                              VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION,
+                                              resp)
               print _("500 HTTP Error code with")
               print "  " + _("Evil url") + ":", url
     else:
@@ -111,12 +116,14 @@ class mod_blindsql(Attack):
             if self.verbose == 2:
               print "+ " + url
             try:
-              data, code = self.HTTP.send(url).getPageCode()
-            except socket.timeout:
+              resp = self.HTTP.send(url)
+              data, code = resp.getPageCode()
+            #except socket.timeout:
+            except HTTPTimeout, timeout:
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp, headers["link_encoding"]),
-                                              _("Blind SQL Injection") + " (" + k + ")")
+                                              _("Blind SQL Injection") + " (" + k + ")", timeout)
               if self.color == 0:
                 print _("Blind SQL Injection") + " (" + k + ") " + _("in"), page
                 print "  " + _("Evil url") + ":", url
@@ -132,7 +139,8 @@ class mod_blindsql(Attack):
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 url, self.HTTP.encode(tmp, headers["link_encoding"]),
-                                                VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
+                                                VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION,
+                                                resp)
                 print _("500 HTTP Error code with")
                 print "  " + _("Evil url") + ":", url
 
@@ -162,12 +170,15 @@ class mod_blindsql(Attack):
             print "+ " + page
             print "  ", tmp
           try:
-            data, code = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers).getPageCode()
-          except socket.timeout:
+            resp = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers)
+            data,code = resp.getPageCode()
+          #except socket.timeout:
+          except HTTPTimeout, timeout:
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp, form[3]),
-                                            _("Blind SQL Injection coming from") + " " + form[2])
+                                            _("Blind SQL Injection coming from") + " " + form[2], 
+                                            timeout)
             print _("Blind SQL Injection in"), page
             if self.color == 1:
               print "  " + _("with params") + " =", \
@@ -187,7 +198,7 @@ class mod_blindsql(Attack):
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               page, self.HTTP.encode(tmp, form[3]),
                                               _("500 HTTP Error code coming from") + " " + form[2] + "\n"+
-                                              VulDescrip.ERROR_500_DESCRIPTION)
+                                              VulDescrip.ERROR_500_DESCRIPTION, resp)
               print _("500 HTTP Error code in"), page
               print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
               print "  " + _("coming from"), form[2]

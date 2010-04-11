@@ -58,7 +58,8 @@ class mod_backup(Attack):
       if url not in self.attackedGET:
         self.attackedGET.append(url)
         try:
-          data, code = self.HTTP.send(url).getPageCode()
+          resp = self.HTTP.send(url)
+          data, code = resp.getPageCode()
           err = self.__returnErrorByCode(code)
           if err == "ok":
             if self.color == 1:
@@ -69,7 +70,7 @@ class mod_backup(Attack):
               print "   -> " + url
             self.reportGen.logVulnerability(Vulnerability.BACKUP,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              url, "", _("Backup file found for") + " " + page)
+                              url, "", _("Backup file found for") + " " + page, resp)
             
         except socket.timeout:
           data = ""

@@ -165,11 +165,11 @@ class mod_nikto(Attack):
 
         if l[4] == "GET":
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], "", info)
+              "http://" + self.HTTP.server + l[3], "", info, resp)
         elif l[4] == "POST":
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], l[11], info)
+              "http://" + self.HTTP.server + l[3], l[11], info, resp)
         else:
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], l[4] + " " + l[11], info)
+              "http://" + self.HTTP.server + l[3], l[4] + " " + l[11], info, resp)
 

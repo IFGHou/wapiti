@@ -13,10 +13,12 @@ class HTTPResponse:
   code = "200"
   headers = {}
 
-  def __init__(self, data, code, headers):
+  def __init__(self, data, code, headers, peer, timestamp):
     self.data = data
     self.code = code
     self.headers = headers
+    self.peer = peer
+    self.timestamp = timestamp
 
   def getPage(self):
     "Return the content of the page."
@@ -33,6 +35,17 @@ class HTTPResponse:
   def getPageCode(self):
     "Return a tuple of the content and the HTTP Response code."
     return (self.data, self.code)
+
+  def getPeer(self):
+    """Return the network address of the server that delivered this Response. 
+    This will always be a socket_object.getpeername() return value, which is
+    normally a (ip_address, port) tuple."""
+    return self.peer
+
+  def getTimestamp(self):
+    """Return a datetime.datetime object describing when this response was
+    received."""
+    return self.timestamp
 
 class HTTP:
   root = ""
@@ -101,7 +114,7 @@ class HTTP:
       else:
         info, data = self.h.request(target, "POST", headers = _headers, body = post_data)
     code = info['status']
-    return HTTPResponse(data, code, info)
+    return HTTPResponse(data, code, info, info.peer, info.timestamp)
 
   def quote(self, url):
     "Encode a string with hex representation (%XX) for special characters."

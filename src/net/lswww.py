@@ -234,6 +234,7 @@ Supported options are:
     except socket.error, msg:
       if msg.errno == 111:
         print _("Connection refused!")
+      self.excluded.append(url)
       return {}
 
     code = info['status']

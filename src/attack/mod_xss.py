@@ -6,6 +6,7 @@ from net import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
+from net.httplib2 import HTTPTimeout
 
 class mod_xss(Attack):
   """
@@ -86,9 +87,11 @@ class mod_xss(Attack):
         url = page + "?" + code
         self.GET_XSS[code] = url
         try:
-          data = self.HTTP.send(url).getPage()
-        except socket.timeout:
+          resp = self.HTTP.send(url)
+          data = resp.getPage()
+        except HTTPTimeout:
           data = ""
+          resp = None
         if data.find(code) >= 0:
           payloads = self.generate_payloads(data, code)
           if payloads != []:
@@ -108,9 +111,11 @@ class mod_xss(Attack):
           url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
           self.GET_XSS[code] = url
           try:
-            data = self.HTTP.send(url).getPage()
-          except socket.timeout:
+            resp = self.HTTP.send(url)
+            data = resp.getPage()
+          except HTTPTimeout, timeout:
             data = ""
+            resp = timeout
           # on effectue une recherche rapide sur l'indetifiant
           if data.find(code) >= 0:
             # identifiant est dans la page, il faut determiner ou
@@ -155,9 +160,11 @@ class mod_xss(Attack):
         # will only memorize the last used payload (working or not) but the code will always be the good
         self.POST_XSS[code] = [page, tmp, form[2]]
         try:
-          data = self.HTTP.send(page, self.HTTP.uqe(tmp, form[3]), headers).getPage()
-        except socket.timeout:
+          resp = self.HTTP.send(page, self.HTTP.uqe(tmp, form[3]), headers)
+          data = resp.getPage()
+        except HTTPTimeout, timeout:
           data = ""
+          resp = timeout
         # rapid search on the code to check injection
         if data.find(code) >= 0:
           # found, now study where and what is possible
@@ -285,9 +292,11 @@ class mod_xss(Attack):
         if self.verbose == 2:
           print "+", url
         try:
-          dat = self.HTTP.send(url).getPage()
-        except socket.timeout:
+          resp = self.HTTP.send(url)
+          dat = resp.getPage()
+        except HTTPTimeout, timeout:
           dat = ""
+          resp = timeout
         var = "QUERY_STRING"
 
       else:
@@ -298,30 +307,34 @@ class mod_xss(Attack):
             print "+", page
             print "  ", params
           try:
-            dat = self.HTTP.send(page, self.HTTP.encode(params, encoding), headers).getPage()
-          except socket.timeout:
+            resp = self.HTTP.send(page, self.HTTP.encode(params, encoding), headers)
+            dat = resp.getPage()
+          except HTTPTimeout, timeout:
             dat = ""
+            resp = timeout
 
         else:#GET
           url = page + "?" + self.HTTP.encode(params, encoding)
           if self.verbose == 2:
             print "+", url
           try:
-            dat = self.HTTP.send(url).getPage()
-          except socket.timeout:
+            resp = self.HTTP.send(url)
+            dat = resp.getPage()
+          except HTTPTimeout, timeout:
             dat = ""
+            resp = timeout
 
       if self.validXSS(dat, code):
         if params != {}:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                             url, self.HTTP.encode(params, encoding),
-                            _("XSS") + " (" + var + ")")
+                            _("XSS") + " (" + var + ")", resp)
         else:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                             url, url.split("?")[1],
-                            _("XSS") + " (" + var + ")")
+                            _("XSS") + " (" + var + ")", resp)
 
         if referer != "":
           print _("Found XSS in"), page
@@ -347,9 +360,11 @@ class mod_xss(Attack):
         if self.verbose == 2:
           print "+", url
         try:
-          dat = self.HTTP.send(url).getPage()
-        except socket.timeout:
+          resp = self.HTTP.send(url)
+          dat = resp.getPage()
+        except HTTPTimeout, timeout:
           dat = ""
+          resp = timeout
         var = "QUERY_STRING"
 
       else:
@@ -360,30 +375,34 @@ class mod_xss(Attack):
             print "+ " + page
             print "  ", params
           try:
-            dat = self.HTTP.send(page, self.HTTP.uqe(params, encoding), headers).getPage()
-          except socket.timeout:
+            resp = self.HTTP.send(page, self.HTTP.uqe(params, encoding), headers)
+            dat = resp.getPage()
+          except HTTPTimeout, timeout:
             dat = ""
+            resp = timeout
 
         else:#GET
           url = page + "?" + self.HTTP.uqe(params, encoding)
           if self.verbose == 2:
             print "+", url
           try:
-            dat = self.HTTP.send(url).getPage()
-          except socket.timeout:
+            resp = self.HTTP.send(url)
+            dat = resp.getPage()
+          except HTTPTimeout, timeout:
             dat = ""
+            resp = timeout
 
       if self.validXSS(dat, code):
         if params != {}:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.LOW_LEVEL_VULNERABILITY,
                             url, self.HTTP.encode(params, encoding),
-                            _("Raw XSS") + " (" + var + ")")
+                            _("Raw XSS") + " (" + var + ")", resp)
         else:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.LOW_LEVEL_VULNERABILITY,
                             url, url.split("?")[1],
-                            _("Raw XSS") + " (" + var + ")")
+                            _("Raw XSS") + " (" + var + ")", resp)
 
         if referer != "":
           print _("Found raw XSS in"), page

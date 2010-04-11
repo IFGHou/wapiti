@@ -25,8 +25,18 @@
 
 from xml.dom.minidom import Document
 from reportgenerator import ReportGenerator
+import net.httplib2
+import net.HTTP
+import datetime
 
 WAPITI_VERSION = "Wapiti SVN";
+
+def isPeerAddrPort(p):
+  """Is p a (str,int) tuple? I.E. an (ip_address,port)"""
+  if type(p)==tuple and len(p)==2:
+    return type(p[0])==str and type(p[1])==int
+  else:
+    return False
 
 class XMLReportGenerator(ReportGenerator):
     """
@@ -121,23 +131,60 @@ class XMLReportGenerator(ReportGenerator):
             vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
         vulnerabilityType.childNodes[0].appendChild(vulnerability)
 
-    def logVulnerability(self,vulnerabilityTypeName, level, url, parameter, info):
+    def logVulnerability(self,vulnerabilityTypeName, level, url, parameter, info, resp=None):
         """
         Store the information about the vulnerability to be printed later.
         The method printToFile(fileName) can be used to save in a file the
         vulnerabilities notified through the current method.
         """
+
+        if resp==None:
+          peer=None
+          ts=datetime.datetime.now()
+        elif issubclass(resp.__class__, net.httplib2.HTTPTimeout):
+          peer = resp.peer
+          ts = resp.timestamp
+        elif issubclass(resp.__class__, net.HTTP.HTTPResponse):
+          peer = resp.peer
+          ts = resp.timestamp
+        else:
+          raise TypeError(resp)
+        
         vulnerability = self.__xmlDoc.createElement("bug")
         vulnerability.setAttribute("level", level)
+        
+        tsNode = self.__xmlDoc.createElement("timestamp")
+        tsNode.appendChild(self.__xmlDoc.createTextNode(ts.isoformat()))
+        vulnerability.appendChild(tsNode)
+        
         urlNode = self.__xmlDoc.createElement("url")
         urlNode.appendChild(self.__xmlDoc.createTextNode(url))
         vulnerability.appendChild(urlNode)
+        
+        if peer!=None:
+          peerNode = self.__xmlDoc.createElement("peer")
+          if isPeerAddrPort(peer):
+            addrNode = self.__xmlDoc.createElement("addr")
+            addrNode.appendChild( self.__xmlDoc.createTextNode(peer[0]) )
+            peerNode.appendChild(addrNode)
+          
+            portNode = self.__xmlDoc.createElement("port")
+            portNode.appendChild( self.__xmlDoc.createTextNode(str(peer[1])) )
+            peerNode.appendChild(portNode)
+          else:
+            addrNode = self.__xmlDoc.createElement("addr")
+            addrNode.appendChild( self.__xmlDoc.createTextNode(str(peer)) )
+            peerNode.appendChild(addrNode)
+          vulnerability.appendChild(peerNode)
+        
         parameterNode = self.__xmlDoc.createElement("parameter")
         parameterNode.appendChild(self.__xmlDoc.createTextNode(parameter))
         vulnerability.appendChild(parameterNode)
+
         infoNode = self.__xmlDoc.createElement("info")
         info = info.replace("\n", "<br />")
         infoNode.appendChild(self.__xmlDoc.createTextNode(info))
+
         vulnerability.appendChild(infoNode)
         self.__addToVulnerabilityList(vulnerabilityTypeName,vulnerability)
 

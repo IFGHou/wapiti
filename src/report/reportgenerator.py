@@ -26,7 +26,7 @@ class ReportGenerator:
     def addVulnerabilityType(self,name,description="",solution="",references={}):
         ""
 
-    def logVulnerability(self,vulnerabilityTypeName,level,url,parameter,info):
+    def logVulnerability(self,vulnerabilityTypeName,level,url,parameter,info,resp):
         ""
 
     def generateReport(self,fileName):

@@ -2,6 +2,7 @@ import socket
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
+from net.httplib2 import HTTPTimeout
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -80,7 +81,7 @@ class mod_exec(Attack):
           if cmd == 1: continue
           try:
             data, code = self.HTTP.send(url).getPageCode()
-          except socket.timeout:
+          except HTTPTimeout, timeout:
             data = ""
             code = "408"
             err = ""
@@ -88,7 +89,8 @@ class mod_exec(Attack):
             print "  " + _("caused by") + ":", url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.quote(payload), err + " " + _("(QUERY_STRING)"))
+                                            url, self.HTTP.quote(payload), err + " " + _("(QUERY_STRING)"),
+                                            timeout)
           else: 
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
@@ -122,7 +124,7 @@ class mod_exec(Attack):
           if cmd == 1: continue
           try:
             data, code = self.HTTP.send(url).getPageCode()
-          except socket.timeout:
+          except HTTPTimeout, timeout:
             data = ""
             code = "408"
             err = ""
@@ -130,7 +132,7 @@ class mod_exec(Attack):
             print "  " + _("caused by") + ":", url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp, headers["link_encoding"]), err+" ("+k+")")
+                                            url, self.HTTP.encode(tmp, headers["link_encoding"]), err+" ("+k+")", timeout)
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
@@ -173,7 +175,7 @@ class mod_exec(Attack):
             print "  ", tmp
           try:
             data, code = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers).getPageCode()
-          except socket.timeout:
+          except HTTPTimeout, timeout:
             data = ""
             code = "408"
             print _("Timeout in"), page
@@ -182,7 +184,7 @@ class mod_exec(Attack):
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp, form[3]),
-                                            _("Timeout coming from") + " " + form[2])
+                                            _("Timeout coming from") + " " + form[2], timeout)
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
 
