@@ -37,7 +37,7 @@ class HTTPResponse:
     return (self.data, self.code)
 
   def getPeer(self):
-    """Return the network address of the server that delivered this Response. 
+    """Return the network address of the server that delivered this Response.
     This will always be a socket_object.getpeername() return value, which is
     normally a (ip_address, port) tuple."""
     return self.peer
@@ -58,6 +58,8 @@ class HTTP:
   h = None
   cookiejar = None
 
+  configured = 0
+
   def __init__(self, root):
     error_str = ""
     self.myls = lswww.lswww(root)
@@ -66,6 +68,9 @@ class HTTP:
     self.myls.verbosity(1)
     socket.setdefaulttimeout(self.timeout)
 
+    self.cookiejar = libcookie.libcookie(self.server)
+
+  def init(self):
     # HttpLib2 vars
     proxy = None
 
@@ -75,15 +80,13 @@ class HTTP:
       proxy = httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port,
           proxy_user=proxy_usr, proxy_pass=proxy_pwd)
 
-    self.cookiejar = libcookie.libcookie(self.server)
-
     self.h = httplib2.Http(cache = None, timeout = self.timeout, proxy_info = proxy)
     self.h.follow_redirects=False
 
     if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
-
+    
   def browse(self, crawlerFile):
     "Explore the entire website under the pre-defined root-url."
     self.myls.go(crawlerFile)
@@ -97,6 +100,11 @@ class HTTP:
 
   def send(self, target, post_data = None, http_headers = {}, method=""):
     "Send a HTTP Request. GET or POST (if post_data is set)."
+
+    if self.configured == 0:
+      self.init()
+      self.configured = 1
+
     data = ""
     code = "0"
     info = {}
