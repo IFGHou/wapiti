@@ -3,7 +3,6 @@ from attack import Attack
 #import base
 from vulnerability import Vulnerability
 import httplib
-from net.httplib2 import HTTPTimeout
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -57,15 +56,14 @@ class mod_crlf(Attack):
         if self.verbose == 2:
           print "+ " + page + "?http://www.google.fr\\r\\nWapiti: SVN version"
         try:
-          resp = self.HTTP.send(url)
-          if resp.getInfo().has_key('wapiti'):
+          if self.HTTP.send(url).getInfo().has_key('wapiti'):
             self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              page, payload, err + " " + _("(QUERY_STRING)"), resp)
+                              page, payload, err + " " + _("(QUERY_STRING)"))
             print _("CRLF Injection (QUERY_STRING) in"), page
             print "  " + _("Evil url") + ":", url
-        except HTTPTimeout, timeout:
+        except socket.timeout:
           self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                            page, payload, err + " " + _("(QUERY_STRING)"), timeout)
+                            page, payload, err + " " + _("(QUERY_STRING)"))
           print _("Timeout (QUERY_STRING) in"), page
           print "  " + _("caused by") + ":", url
         except httplib.BadStatusLine:
@@ -82,19 +80,18 @@ class mod_crlf(Attack):
           if self.verbose == 2:
             print "+ " + url
           try:
-            resp = self.HTTP.send(url)
-            if resp.getInfo().has_key('wapiti'):
+            if self.HTTP.send(url).getInfo().has_key('wapiti'):
               err = _("CRLF Injection")
               self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")", resp)
+                                page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")")
               if self.color == 0:
                 print err, "(" + k + ") " + _("in"), page
                 print "  " + _("Evil url") + ":", url
               else:
                 print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
-          except HTTPTimeout, timeout:
+          except socket.timeout:
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                              page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")", timeout)
+                              page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")")
             print _("Timeout") + " (" + k + ") " + _("in"), page
             print "  " + _("caused by") + ":", url
           except httplib.BadStatusLine:

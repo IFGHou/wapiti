@@ -22,7 +22,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import socket # for trapping socket.error
 from file.auxtext import AuxText
 
 class Attack:
@@ -56,12 +55,9 @@ class Attack:
     vulnerableGET  = []
     vulnerablePOST = []
 
-    CONFIG_DIR = ""
-    if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
-        CONFIG_DIR = "/usr/local/share/doc/packages/wapiti/config/attacks"
-    else:
-      BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
-      CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
+    CONFIG_DIR_NAME = "config/attacks"
+    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
+    CONFIG_DIR = BASE_DIR+"/"+CONFIG_DIR_NAME
 
     # Color codes
     STD = "\033[0;0m"
@@ -122,10 +118,7 @@ class Attack:
             if params != []:
               print "  ", params
 
-          try:
-            self.attackGET(page, dictio, headers)
-          except socket.error, se:
-            print 'error: %s while attacking %s' % (repr(str(se[1])), url)
+          self.attackGET(page, dictio, headers)
 
       if self.doPOST == True:
         for form in forms:

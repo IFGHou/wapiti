@@ -2,7 +2,6 @@ import socket
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from net.httplib2 import HTTPTimeout
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -101,15 +100,14 @@ class mod_file(Attack):
           if inc == 1: continue
           try:
             data, code = self.HTTP.send(url).getPageCode()
-          except HTTPTimeout, timeout:
+          except socket.timeout:
             data = ""
             code = "408"
             err = ""
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               url, self.HTTP.quote(payload),
-                              _("Timeout (QUERY_STRING) in") + " " + str(page),
-                              timeout)
+                              _("Timeout (QUERY_STRING) in") + " " + str(page))
             print _("Timeout (QUERY_STRING) in"), page
             print "  " + _("caused by") + ":", url
           else:
@@ -147,14 +145,13 @@ class mod_file(Attack):
           if inc == 1: continue
           try:
             data, code = self.HTTP.send(url).getPageCode()
-          except HTTPTimeout, timeout:
+          except socket.timeout:
             data = ""
             code = "408"
             err = ""
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                              url,self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")",
-                              timeout)
+                              url,self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")")
             print _("Timeout") + " (" + k + ") " + _("in"), page
             print "  " + _("caused by") + ":", url
           else:
@@ -199,13 +196,13 @@ class mod_file(Attack):
             print "  ", tmp
           try:
             data, code = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers).getPageCode()
-          except HTTPTimeout, timeout:
+          except socket.timeout:
             data = ""
             code = "408"
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               page, self.HTTP.encode(tmp, form[3]),
-                              _("Timeout coming from") + " " + form[2], timeout)
+                              _("Timeout coming from") + " " + form[2])
             print _("Timeout in"), page
             print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
             print "  " + _("coming from"), form[2]

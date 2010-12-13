@@ -25,28 +25,6 @@ import os
 import HTMLParser
 import urllib
 import urllib2
-
-from distutils.sysconfig import get_python_lib
-BASE_DIR = None
-if '' in sys.path:
-  sys.path.remove('')
-for python_dir in sys.path:
-  if os.path.isdir(os.path.join(python_dir, "wapiti")):
-    BASE_DIR = os.path.join(python_dir, "wapiti")
-    break
-if not BASE_DIR:
-  for lib_dir in [get_python_lib(prefix="/usr/local"), get_python_lib()]:
-    if os.path.isdir(os.path.join(lib_dir, "wapiti")):
-      BASE_DIR = os.path.join(lib_dir, "wapiti")
-      sys.path.append(BASE_DIR)
-      break
-if not BASE_DIR:
-  sys.path.append("")
-  if "__file__" in dir():
-    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
-  else:
-    BASE_DIR = os.getcwd()
-
 import httplib2
 from htmlentitydefs import name2codepoint as n2cp
 from xml.dom import minidom
@@ -155,11 +133,8 @@ Supported options are:
     if root.startswith("-"):
       print _("First argument must be the root url !")
       sys.exit(0)
-    if root.find("://") == -1:
-      root = "http://" + root
     if(self.__checklink(root)):
-      print _("Invalid protocol:"), root.split("://")[0]
-      sys.exit(0)
+      root = "http://" + root
     if root[-1] != "/" and (root.split("://")[1]).find("/") == -1:
       root += "/"
 
@@ -229,11 +204,6 @@ Supported options are:
     try:
       info, data = self.h.request(url, headers = self.cookiejar.headers_url(url))
     except socket.timeout:
-      self.excluded.append(url)
-      return {}
-    except socket.error, msg:
-      if msg.errno == 111:
-        print _("Connection refused!")
       self.excluded.append(url)
       return {}
 

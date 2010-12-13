@@ -4,7 +4,7 @@ from net.httplib2 import ServerNotFoundError
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-import urllib2, csv, re, os
+import urllib2, csv, re
 import socket
 
 class mod_nikto(Attack):
@@ -22,12 +22,8 @@ class mod_nikto(Attack):
 
   def __init__(self, HTTP, xmlRepGenerator):
     Attack.__init__(self, HTTP, xmlRepGenerator)
-    user_config_dir = os.getenv('HOME') or os.getenv('USERPROFILE')
-    user_config_dir += "/config"
-    if not os.path.isdir(user_config_dir):
-      os.makedirs(user_config_dir)
     try:
-      fd = open(user_config_dir + "/" + self.CONFIG_FILE)
+      fd = open(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
       reader = csv.reader(fd)
       self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
       fd.close()
@@ -35,14 +31,13 @@ class mod_nikto(Attack):
       try:
         print _("Problem with local nikto database.")
         print _("Downloading from the web...")
-        resp = self.HTTP.send("http://cirt.net/nikto/UPDATES/2.1.1/db_tests")
-        page = resp.getPage()
-
+        page = urllib2.urlopen("http://cirt.net/nikto/UPDATES/2.1.0/db_tests")
         csv.register_dialect("nikto", quoting=csv.QUOTE_ALL, doublequote=False, escapechar="\\")
-        reader = csv.reader(page.split("\n"), "nikto")
+        reader = csv.reader(page, "nikto")
         self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
+        page.close()
 
-        fd = open(user_config_dir + "/" + self.CONFIG_FILE, "w")
+        fd = open(self.CONFIG_DIR + "/" + self.CONFIG_FILE, "w")
         writer = csv.writer(fd)
         writer.writerows(self.nikto_db)
         fd.close()
@@ -165,11 +160,11 @@ class mod_nikto(Attack):
 
         if l[4] == "GET":
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], "", info, resp)
+              "http://" + self.HTTP.server + l[3], "", info)
         elif l[4] == "POST":
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], l[11], info, resp)
+              "http://" + self.HTTP.server + l[3], l[11], info)
         else:
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], l[4] + " " + l[11], info, resp)
+              "http://" + self.HTTP.server + l[3], l[4] + " " + l[11], info)
 

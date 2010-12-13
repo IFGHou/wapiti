@@ -13,12 +13,10 @@ class HTTPResponse:
   code = "200"
   headers = {}
 
-  def __init__(self, data, code, headers, peer, timestamp):
+  def __init__(self, data, code, headers):
     self.data = data
     self.code = code
     self.headers = headers
-    self.peer = peer
-    self.timestamp = timestamp
 
   def getPage(self):
     "Return the content of the page."
@@ -36,17 +34,6 @@ class HTTPResponse:
     "Return a tuple of the content and the HTTP Response code."
     return (self.data, self.code)
 
-  def getPeer(self):
-    """Return the network address of the server that delivered this Response.
-    This will always be a socket_object.getpeername() return value, which is
-    normally a (ip_address, port) tuple."""
-    return self.peer
-
-  def getTimestamp(self):
-    """Return a datetime.datetime object describing when this response was
-    received."""
-    return self.timestamp
-
 class HTTP:
   root = ""
   myls = ""
@@ -58,19 +45,13 @@ class HTTP:
   h = None
   cookiejar = None
 
-  configured = 0
-
   def __init__(self, root):
-    error_str = ""
     self.myls = lswww.lswww(root)
     self.root = self.myls.root
     self.server = urlparse.urlparse(self.root)[1]
     self.myls.verbosity(1)
     socket.setdefaulttimeout(self.timeout)
 
-    self.cookiejar = libcookie.libcookie(self.server)
-
-  def init(self):
     # HttpLib2 vars
     proxy = None
 
@@ -80,13 +61,14 @@ class HTTP:
       proxy = httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port,
           proxy_user=proxy_usr, proxy_pass=proxy_pwd)
 
+    self.cookiejar = libcookie.libcookie(self.server)
+
     self.h = httplib2.Http(cache = None, timeout = self.timeout, proxy_info = proxy)
     self.h.follow_redirects=False
 
     if self.auth_basic != []:
       self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
 
-    
   def browse(self, crawlerFile):
     "Explore the entire website under the pre-defined root-url."
     self.myls.go(crawlerFile)
@@ -100,11 +82,6 @@ class HTTP:
 
   def send(self, target, post_data = None, http_headers = {}, method=""):
     "Send a HTTP Request. GET or POST (if post_data is set)."
-
-    if self.configured == 0:
-      self.init()
-      self.configured = 1
-
     data = ""
     code = "0"
     info = {}
@@ -122,7 +99,7 @@ class HTTP:
       else:
         info, data = self.h.request(target, "POST", headers = _headers, body = post_data)
     code = info['status']
-    return HTTPResponse(data, code, info, info.peer, info.timestamp)
+    return HTTPResponse(data, code, info)
 
   def quote(self, url):
     "Encode a string with hex representation (%XX) for special characters."

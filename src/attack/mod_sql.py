@@ -3,7 +3,6 @@ import re
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from net.httplib2 import HTTPTimeout
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -97,22 +96,19 @@ class mod_sql(Attack):
         if self.verbose == 2:
           print "+ " + url
         try:
-          resp = self.HTTP.send(url)
-          data, code = resp.getPageCode()
-        except HTTPTimeout, timeout:
+          data, code = self.HTTP.send(url).getPageCode()
+        except socket.timeout:
           # No timeout report here... launch blind sql detection later
           data = ""
           code = "408"
           err = ""
-          resp = timeout
         else:
           err = self.__findPatternInResponse(data)
         if err != "":
           vuln_found += 1
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                            url, payload, err + " " + _("(QUERY_STRING)"),
-                            resp)
+                            url, payload, err + " " + _("(QUERY_STRING)"))
           print err, _("(QUERY_STRING) in"), page
           print "  " + _("Evil url") + ":", url
 
@@ -123,8 +119,7 @@ class mod_sql(Attack):
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             url, payload,
-                                            VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION,
-                                            resp)
+                                            VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
             print _("500 HTTP Error code with")
             print "  " + _("Evil url") + ":", url
         self.attackedGET.append(url)
@@ -140,14 +135,12 @@ class mod_sql(Attack):
           if self.verbose == 2:
             print "+ "+url
           try:
-            resp = self.HTTP.send(url)
-            data, code = resp.getPageCode()
-          except HTTPTimeout, timeout:
+            data, code = self.HTTP.send(url).getPageCode()
+          except socket.timeout:
             # No timeout report here... launch blind sql detection later
             data = ""
             code = "408"
             err = ""
-            resp = timeout
           else:
             err = self.__findPatternInResponse(data)
           if err != "":
@@ -155,7 +148,7 @@ class mod_sql(Attack):
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             url, self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload)),
-                                            err + " (" + k + ")", resp)
+                                            err + " (" + k + ")")
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
               print "  " + _("Evil url") + ":", url
@@ -170,8 +163,7 @@ class mod_sql(Attack):
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload)),
-                                              VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION,
-                                              resp)
+                                              VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "  " + _("Evil url") + ":", url
           self.attackedGET.append(url)
@@ -199,13 +191,11 @@ class mod_sql(Attack):
           tmp[k] = "__PAYLOAD__"
         post_data = self.HTTP.encode(tmp, form[3]).replace("__PAYLOAD__",self.HTTP.quote(payload))
         try:
-          resp = self.HTTP.send(page, post_data, headers)
-          data, code = resp.getPageCode()
-        except HTTPTimeout, timeout:
+          data, code = self.HTTP.send(page, post_data, headers).getPageCode()
+        except socket.timeout:
           # No timeout report here... launch blind sql detection later
           data = ""
           code = "408"
-          resp = timeout
         else:
           err = self.__findPatternInResponse(data)
         if err != "":
@@ -213,8 +203,7 @@ class mod_sql(Attack):
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                           Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                           page, post_data,
-                                          err + " " + _("coming from") + " " + form[2],
-                                          resp)
+                                          err + " " + _("coming from") + " " + form[2])
           print err, _("in"), page
           if self.color == 1:
             print "  " + _("with params") + " =", \
@@ -231,8 +220,7 @@ class mod_sql(Attack):
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, post_data,
                                             _("500 HTTP Error code coming from") + " " + form[2] + "\n"+
-                                            VulDescrip.ERROR_500_DESCRIPTION,
-                                            resp)
+                                            VulDescrip.ERROR_500_DESCRIPTION)
             print _("500 HTTP Error code in"), page
             print "  " + _("with params") + " =", post_data
             print "  " + _("coming from"), form[2]

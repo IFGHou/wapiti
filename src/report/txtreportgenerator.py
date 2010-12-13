@@ -67,7 +67,7 @@ class TXTReportGenerator(ReportGenerator):
         if name not in self.__vulns.keys():
           self.__vulns[name] = []
 
-    def logVulnerability(self, vulnerabilityTypeName, level, url, parameter, info, resp):
+    def logVulnerability(self, vulnerabilityTypeName, level, url, parameter, info):
         """
         Store the information about the vulnerability to be printed later.
         The method printToFile(fileName) can be used to save in a file the

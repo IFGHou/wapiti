@@ -45,7 +45,6 @@ from hashlib import sha1 as sha
 import hmac
 from gettext import gettext as _
 import socket
-import datetime
 
 import socks
 
@@ -258,12 +257,7 @@ def _parse_www_authenticate(headers, headername='www-authenticate'):
             if headername == 'authentication-info':
                 (auth_scheme, the_rest) = ('digest', authenticate)                
             else:
-                if len(authenticate.split(" ", 1)) == 1:
-                  # IIS has been observed to return only 'NTML' for the authenticate header
-                  auth_scheme = authenticate
-                  the_rest = ''
-                else:
-                  (auth_scheme, the_rest) = authenticate.split(" ", 1)
+                (auth_scheme, the_rest) = authenticate.split(" ", 1)
             # Now loop over all the key value pairs that come after the scheme, 
             # being careful not to roll into the next scheme
             match = www_auth.search(the_rest)
@@ -717,7 +711,6 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
         httplib.HTTPConnection.__init__(self, host, port, strict)
         self.timeout = timeout
         self.proxy_info = proxy_info
-        self.peer = None
 
     def connect(self):
         """Connect to the host and port specified in __init__."""
@@ -739,8 +732,6 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
                 if self.debuglevel > 0:
                     print "connect: (%s, %s)" % (self.host, self.port)
                 self.sock.connect(sa)
-                # TODO: this might be wrong for a proxy
-                self.peer = self.sock.getpeername()
             except socket.error, msg:
                 if self.debuglevel > 0:
                     print 'connect fail:', (self.host, self.port)
@@ -761,7 +752,6 @@ class HTTPSConnectionWithTimeout(httplib.HTTPSConnection):
         self.proxy_info = proxy_info
         httplib.HTTPSConnection.__init__(self, host, port=port, key_file=key_file,
                 cert_file=cert_file, strict=strict)
-        self.peer = None
 
     def connect(self):
         "Connect to a host on a given (SSL) port."
@@ -774,7 +764,6 @@ class HTTPSConnectionWithTimeout(httplib.HTTPSConnection):
         if self.timeout is not None:
             sock.settimeout(float(self.timeout))
         sock.connect((self.host, self.port))
-        self.peer = sock.getpeername()
         ssl = socket.ssl(sock, self.key_file, self.cert_file)
         self.sock = httplib.FakeSocket(sock, ssl)
 
@@ -872,8 +861,6 @@ the same interface as FileCache."""
                     continue
                 else:
                     raise
-            except socket.timeout:
-              raise HTTPTimeout(conn.peer, datetime.datetime.now())
             else:
                 content = response.read()
                 response = Response(response)
@@ -1009,7 +996,6 @@ a string that contains the response entity body.
                     conn = self.connections[conn_key] = connection_type(authority, timeout=self.timeout, proxy_info=self.proxy_info)
                 conn.set_debuglevel(debuglevel)
 
-
             if method in ["GET", "HEAD"] and 'range' not in headers:
                 headers['Accept-Encoding'] = 'compress, gzip'
 
@@ -1061,10 +1047,6 @@ a string that contains the response entity body.
                         response = Response(info)
                         if cached_value:
                             response.fromcache = True
-
-                        response.peer = conn.peer
-                        response.timestamp = datetime.datetime.now()
-                        
                         return (response, content)
 
                     if entry_disposition == "STALE":
@@ -1126,9 +1108,7 @@ a string that contains the response entity body.
             else:
                 raise
 
-        response.peer = conn.peer
-        response.timestamp = datetime.datetime.now()
-        
+ 
         return (response, content)
 
  
@@ -1168,10 +1148,6 @@ class Response(dict):
             for key, value in info.iteritems(): 
                 self[key] = value 
             self.status = int(self.get('status', self.status))
-        
-        # these might get set later on
-        self.peer = None
-        self.timestamp = None
 
 
     def __getattr__(self, name):
@@ -1179,11 +1155,3 @@ class Response(dict):
             return self 
         else:  
             raise AttributeError, name 
-
-class HTTPTimeout(Exception):
-  def __init__(self, peer, timestamp):
-    self.peer = peer
-    self.timestamp = timestamp
-  def __str__(self):
-    return 'timeout at %s while issuing HTTP request to %s' % (self.timestamp, self.peer)
-    

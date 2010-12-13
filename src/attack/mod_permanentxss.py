@@ -6,7 +6,6 @@ from net import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from net.httplib2 import HTTPTimeout
 
 class mod_permanentxss(Attack):
   """
@@ -51,15 +50,9 @@ class mod_permanentxss(Attack):
       if self.verbose >= 1:
         print "+", url
       try:
-        resp = self.HTTP.send(url)
-        data = resp.getPage()
-      except HTTPTimeout, timeout:
+        data = self.HTTP.send(url).getPage()
+      except socket.timeout:
         data = ""
-        resp = timeout
-      except socket.error, se:
-        data = ""
-        resp = None
-        print 'error: %s while attacking %s' % (repr(str(se[1])), url)
       if self.doGET == 1:
         for code in self.GET_XSS.keys():
           if data.find(code) >= 0:
@@ -68,11 +61,9 @@ class mod_permanentxss(Attack):
               attack_url = self.GET_XSS[code].replace(code, xss.replace("__XSS__", code))
               try:
                 self.HTTP.send(attack_url)
-                resp = self.HTTP.send(url)
-                dat = resp.getPage()
-              except HTTPTimeout, timeout:
+                dat = self.HTTP.send(url).getPage()
+              except socket.timeout:
                 dat = ""
-                resp = timeout
               if self.validXSS(dat, code):
                 if self.color == 0:
                   print _("Found permanent XSS in"), url, _("with"), attack_url
@@ -89,7 +80,7 @@ class mod_permanentxss(Attack):
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
                                 _("Found permanent XSS in") + \
                                     " " + url + " " + \
-                                    _("with") + " " + self.HTTP.escape(attack_url), resp)
+                                    _("with") + " " + self.HTTP.escape(attack_url))
                 break
 
       headers = {"Accept": "text/plain"}
@@ -103,16 +94,14 @@ class mod_permanentxss(Attack):
                   tmp[k] = xss.replace("__XSS__", code)
                   try:
                     self.HTTP.send(self.POST_XSS[code][0], self.HTTP.uqe(tmp), headers)
-                    resp = self.HTTP.send(url)
-                    dat = resp.getPage()
-                  except HTTPTimeout, timeout:
+                    dat = self.HTTP.send(url).getPage()
+                  except socket.timeout:
                     dat = ""
-                    resp = timeout
                   if self.validXSS(dat, code):
                     self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
                                 _("Found permanent XSS attacked by") + " " + self.POST_XSS[code][0] + \
-                                " " + _("with fields") + " " + self.HTTP.encode(tmp), resp)
+                                " " + _("with fields") + " " + self.HTTP.encode(tmp))
                     print _("Found permanent XSS in"), url
                     if self.color ==1:
                       print "  " + _("attacked by"), self.POST_XSS[code][2], _("with fields"), \

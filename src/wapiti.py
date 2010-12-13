@@ -27,34 +27,6 @@
 import sys
 import getopt
 import os
-
-from distutils.sysconfig import get_python_lib
-
-BASE_DIR = None
-if '' in sys.path:
-  sys.path.remove('')
-for python_dir in sys.path:
-  if os.path.isdir(os.path.join(python_dir, "wapiti")):
-    BASE_DIR = os.path.join(python_dir, "wapiti")
-    break
-if not BASE_DIR:
-  for lib_dir in [get_python_lib(prefix="/usr/local"), get_python_lib()]:
-    if os.path.isdir(os.path.join(lib_dir, "wapiti")):
-      BASE_DIR = os.path.join(lib_dir, "wapiti")
-      sys.path.append(BASE_DIR)
-      break
-if not BASE_DIR:
-  sys.path.append("")
-  if "__file__" in dir():
-    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
-  else:
-    BASE_DIR = os.getcwd()
-
-CONF_DIR = ""
-if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
-  CONF_DIR = "/usr/local/share/doc/packages/wapiti"
-
-
 from language.language import Language
 lan = Language()
 lan.configure()
@@ -62,6 +34,7 @@ from net import HTTP
 from report.htmlreportgenerator import HTMLReportGenerator
 from report.xmlreportgenerator import XMLReportGenerator
 from report.txtreportgenerator import TXTReportGenerator
+
 
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
 from net.crawlerpersister import CrawlerPersister
@@ -164,8 +137,7 @@ Supported options are:
   reportGeneratorType = "html"
   REPORT_DIR  = "report"
   REPORT_FILE = "vulnerabilities.xml"
-  HOME_DIR = os.getenv('HOME') or os.getenv('USERPROFILE')
-  COPY_REPORT_DIR = os.path.join(HOME_DIR, ".wapiti", "generated_report")
+  COPY_REPORT_DIR = "generated_report"
   outputFile = ""
 
   options = ""
@@ -188,8 +160,12 @@ Supported options are:
         self.reportGen = TXTReportGenerator()
     else: #default
         self.reportGen = XMLReportGenerator()
+    if "__file__" in dir():
+      BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
+    else:
+      BASE_DIR = os.getcwd()
     xmlParser = VulnerabilityXMLParser()
-    xmlParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/vulnerabilities.xml"))
+    xmlParser.parse(BASE_DIR + "/config/vulnerabilities/vulnerabilities.xml")
     for vul in xmlParser.getVulnerabilities():
       self.reportGen.addVulnerabilityType(_(vul.getName()), _(vul.getDescription()),
                                           _(vul.getSolution()), vul.getReferences())
@@ -380,10 +356,6 @@ if __name__ == "__main__":
     if '-h' in sys.argv or '--help' in sys.argv:
       print doc
       sys.exit(0)
-
-    if not os.path.isdir(crawlerPersister.CRAWLER_DATA_DIR):
-      os.makedirs(crawlerPersister.CRAWLER_DATA_DIR)
-
     url = unicode(sys.argv[1])
     wap = Wapiti(url)
     try:

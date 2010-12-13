@@ -1,0 +1,143 @@
+.\" Man page for the Wapiti project.
+.TH wapiti 1 http://wapiti.sourceforge.net/ "SVN Version" http://wapiti.sourceforge.net/
+.SH NAME
+Wapiti \- A web application vulnerability scanner in Python.
+.SH SYNOPSIS
+.B wapiti
+ROOT_URL [OPTIONS]
+.SH DESCRIPTION
+Wapiti allows you to audit the security of your web applications.
+.br
+It performs "black-box" scans, i.e. it does not study the source code
+of the application but will scans the webpages of the deployed
+webapp, looking for scripts and forms where it can inject data.
+.br
+Once it gets this list, Wapiti acts like a fuzzer, injecting payloads
+to see if a script is vulnerable.
+.SH OPTIONS
+.TP
+\fB\-s\fR, \fB\-\-start\fR=\fIURL\fR
+To specify an url to start with.
+.TP
+\fB\-x\fR, \fB\-\-exclude\fR=\fIURL\fR
+To exclude an url from the scan (for example logout scripts).
+You can also use a wildcard (*)                             
+.br
+Example :
+.RS
+.RS
+\-x "http://server/base/?page=*&module=test"       
+.RE
+.br
+or
+.br
+.RS
+\-x http://server/base/admin/* to exclude a directory
+.RE
+.RE
+.TP
+\fB\-b\fR, \fB\-\-scope\fR=\fISCOPE\fR
+Set the scope of the scan:
+.br
+.RS
+.RS
+page :  to analyse only the page passed in the URL
+.br
+folder : to analyse all the links to the pages which are in the
+same folder as the URL passed to Wapiti.
+.br
+domain : to analyse all the links to the pages which are in the
+same domain as the URL passed to Wapiti.
+.RE
+If no scope is set, Wapiti scans all the tree under the given URL.
+.RE
+.TP
+\fB\-p\fR, \fB\-\-proxy\fR=\fIPROXY_URL\fR
+To specify a proxy.
+.br
+Example:
+.br
+.RS
+.RS
+\-p http://proxy:port/
+.br
+\-p socks://proxy:port/
+.RE
+.RE
+.TP
+\fB\-c\fR, \fB\-\-cookie\fR=\fICOOKIE\fR
+To import session cookies from the COOKIE file.
+.TP
+\fB\-t\fR, \fB\-\-timeout\fR=\fITIMEOUT\fR
+Set the timeout to TIMEOUT (in seconds).
+.TP
+\fB\-a\fR, \fB\-\-auth\fR=\fILOGIN%PASSWORD\fR
+Set credentials for HTTP authentication ('%' is used as a separator).
+.TP
+\fB\-r\fR, \fB\-\-remove\fR=\fIPARAM\fR
+Automatically remove the parameter PARAM from the urls.
+.TP
+\fB\-n\fR, \fB\-\-nice\fR=\fILIMIT\fR
+Define a limit of urls to read with the same pattern.
+.br
+Use this option to prevent endless loops. Must be greater than 0.
+.TP
+\fB\-m\fR, \fB\-\-module\fR=\fIMODULE_OPTIONS\fR
+Set the modules and HTTP methods to use for attacks.
+.br
+Example:
+.br
+.RS
+.RS
+-m "-all,xss:get,exec:post"
+.RE
+.RE
+.TP
+\fB\-i\fR, \fB\-\-continue\fR=\fIFILE\fR
+This parameter indicates Wapiti to continue with the scan from the 
+specified file, this file should contain data from a previous scan.
+The file is optional, if it is not specified, Wapiti takes the default 
+filefrom "scans" folder.
+.TP
+\fB\-k\fR, \fB\-\-attack\fR=\fIFILE\fR
+This parameter indicates Wapiti to perform attacks without scanning again
+the website and following the data of this file.
+The file is optional, if it is not specified, Wapiti takes the default
+file from "scans" folder.
+.TP
+\fB\-u\fR, \fB\-\-underline\fR
+Use color to highlight vulnerables parameters in output.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR=\fILEVEL\fR
+Set the verbosity level to LEVEL.
+.br
+0: quiet (default), 1: print each url, 2: print every attack.
+.TP
+\fB\-f\fR, \fB\-\-reportType\fR=\fITYPE\fR
+Set the type of the report to TYPE (values are xml, txt, html).
+.TP
+\fB\-o\fR, \fB\-\-output\fR=\fIFILE\fR
+Write the report to FILE.
+.br
+If the selected report type is "html", this parameter must be a directory.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+To print this usage message.
+.SH LICENCE
+.B wapiti
+is covered by the GNU General Public License (GPL), version 2.
+.br
+Please read the COPYING file for more information. 
+.SH COPYRIGHT
+Copyright (c) 2006 Nicolas Surribas.
+.SH AUTHORS
+Nicolas Surribas
+.br
+David del Pozo
+.br
+Alberto Pastor
+.SH BUG REPORTS
+If you find a bug in Wapiti please report it to http://sourceforge.net/tracker/?group_id=168625
+.SH SEE ALSO
+The README file that comes with Wapiti gives more detailed informations on the options.
+.\" Vim for teh win!
