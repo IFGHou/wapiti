@@ -31,11 +31,11 @@ class mod_nikto(Attack):
       try:
         print _("Problem with local nikto database.")
         print _("Downloading from the web...")
-        page = urllib2.urlopen("http://cirt.net/nikto/UPDATES/2.1.0/db_tests")
+        resp = self.HTTP.send("http://cirt.net/nikto/UPDATES/2.1.1/db_tests")
+        page = resp.getPage()
         csv.register_dialect("nikto", quoting=csv.QUOTE_ALL, doublequote=False, escapechar="\\")
-        reader = csv.reader(page, "nikto")
-        self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
-        page.close()
+        reader = csv.reader(page.split("\n"), "nikto")
+        self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]        
 
         fd = open(self.CONFIG_DIR + "/" + self.CONFIG_FILE, "w")
         writer = csv.writer(fd)

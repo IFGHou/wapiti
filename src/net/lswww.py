@@ -133,8 +133,11 @@ Supported options are:
     if root.startswith("-"):
       print _("First argument must be the root url !")
       sys.exit(0)
-    if(self.__checklink(root)):
+    if root.find("://") == -1:
       root = "http://" + root
+    if(self.__checklink(root)):
+      print _("Invalid protocol:"), root.split("://")[0]
+      sys.exit(0)
     if root[-1] != "/" and (root.split("://")[1]).find("/") == -1:
       root += "/"
 
@@ -205,6 +208,11 @@ Supported options are:
       info, data = self.h.request(url, headers = self.cookiejar.headers_url(url))
     except socket.timeout:
       self.excluded.append(url)
+      return {}
+
+    except socket.error, msg:
+      if msg.errno == 111:
+        print _("Connection refused!")
       return {}
 
     code = info['status']
