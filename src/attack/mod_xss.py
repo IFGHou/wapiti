@@ -155,6 +155,8 @@ class mod_xss(Attack):
         # will only memorize the last used payload (working or not) but the code will always be the good
         self.POST_XSS[code] = [page, tmp, form[2]]
         try:
+          if (isinstance(page, str) == False):
+            page=page.encode(form[3])
           data = self.HTTP.send(page, self.HTTP.uqe(tmp, form[3]), headers).getPage()
         except socket.timeout:
           data = ""
@@ -365,6 +367,8 @@ class mod_xss(Attack):
             dat = ""
 
         else:#GET
+          if (isinstance(page,str) == False):
+            page=page.encode(encoding)
           url = page + "?" + self.HTTP.uqe(params, encoding)
           if self.verbose == 2:
             print "+", url
