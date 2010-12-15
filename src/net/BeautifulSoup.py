@@ -42,7 +42,7 @@ http://www.crummy.com/software/BeautifulSoup/documentation.html
 
 Here, have some legalese:
 
-Copyright (c) 2004-2009, Leonard Richardson
+Copyright (c) 2004-2010, Leonard Richardson
 
 All rights reserved.
 
@@ -79,8 +79,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE, DAMMIT.
 from __future__ import generators
 
 __author__ = "Leonard Richardson (leonardr@segfault.org)"
-__version__ = "3.0.8"
-__copyright__ = "Copyright (c) 2004-2009 Leonard Richardson"
+__version__ = "3.2.0"
+__copyright__ = "Copyright (c) 2004-2010 Leonard Richardson"
 __license__ = "New-style BSD"
 
 from sgmllib import SGMLParser, SGMLParseError
@@ -335,18 +335,19 @@ class PageElement(object):
 
         if isinstance(name, SoupStrainer):
             strainer = name
-        # Special case some findAll* searches
-        # findAll*(True)
-        elif not limit and name is True and not attrs and not kwargs:
-            return [element for element in generator()
-                    if isinstance(element, Tag)]
-
-        # findAll*('tag-name')
-        elif not limit and isinstance(name, basestring) and not attrs \
-                and not kwargs:
-            return [element for element in generator()
-                    if isinstance(element, Tag) and element.name == name]
-
+        # (Possibly) special case some findAll*(...) searches
+        elif text is None and not limit and not attrs and not kwargs:
+            # findAll*(True)
+            if name is True:
+                return [element for element in generator()
+                        if isinstance(element, Tag)]
+            # findAll*('tag-name')
+            elif isinstance(name, basestring):
+                return [element for element in generator()
+                        if isinstance(element, Tag) and
+                        element.name == name]
+            else:
+                strainer = SoupStrainer(name, attrs, text, **kwargs)
         # Build a SoupStrainer
         else:
             strainer = SoupStrainer(name, attrs, text, **kwargs)
@@ -530,6 +531,8 @@ class Tag(PageElement):
         self.name = name
         if attrs is None:
             attrs = []
+        elif isinstance(attrs, dict):
+            attrs = attrs.items()
         self.attrs = attrs
         self.contents = []
         self.setup(parent, previous)
@@ -1647,7 +1650,7 @@ class ICantBelieveItsBeautifulSoup(BeautifulSoup):
       'cite', 'code', 'dfn', 'kbd', 'samp', 'strong', 'var', 'b',
       'big')
 
-    I_CANT_BELIEVE_THEYRE_NESTABLE_BLOCK_TAGS = ('noscript')
+    I_CANT_BELIEVE_THEYRE_NESTABLE_BLOCK_TAGS = ('noscript',)
 
     NESTABLE_TAGS = buildTagMap([], BeautifulSoup.NESTABLE_TAGS,
                                 I_CANT_BELIEVE_THEYRE_NESTABLE_BLOCK_TAGS,
