@@ -397,7 +397,7 @@ Supported options are:
       # remove useless slashes
       if lien.find("?") != -1:
         file = lien.split("?")[0]
-        file = re.sub("[^:]//+", "/", file)
+        file = re.sub("([^:])//+", r"\1/", file)
         if file[-2:] == "/.":
           file = file[:-1]
         lien = file + "?" + lien.split("?")[1]

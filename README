@@ -49,6 +49,7 @@ safe_mode = Off
 display_errors = On (recommended)
 magic_quotes_gpc = Off
 allow_url_fopen = On
+mysql.trace_mode = On
 
 Where to get help
 =================
