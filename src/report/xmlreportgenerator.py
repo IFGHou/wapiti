@@ -130,6 +130,9 @@ class XMLReportGenerator(ReportGenerator):
         vulnerability = self.__xmlDoc.createElement("bug")
         vulnerability.setAttribute("level", level)
         urlNode = self.__xmlDoc.createElement("url")
+        # check if the url is decoded as the xml writer attempts to decode it
+        if(isinstance(url,str) == True):
+          url = url.decode("utf-8");
         urlNode.appendChild(self.__xmlDoc.createTextNode(url))
         vulnerability.appendChild(urlNode)
         parameterNode = self.__xmlDoc.createElement("parameter")

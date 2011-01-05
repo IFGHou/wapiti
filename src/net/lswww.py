@@ -234,6 +234,18 @@ Supported options are:
 
     page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
 
+    # Check if the header encoding is different from the page encoding found above    
+    header_encoding = info["content-type"]
+    if(isinstance(header_encoding, basestring) and re.search(r"charset=([^;]*)", header_encoding) is not None):
+      header_encoding = re.sub(r".*charset=([^;]*).*", r"\1", header_encoding).lower()
+    else:
+      header_encoding = None
+
+    if(header_encoding is not None and page_encoding is not None and header_encoding != page_encoding):
+      self.broken_encoding = True
+    else:
+      self.broken_encoding = False
+
     # Manage redirections
     if info.has_key("location"):
       redir = self.correctlink(info["location"], current, currentdir, proto)
@@ -322,6 +334,19 @@ Supported options are:
     
     if lien == "":
       return current
+
+    # Test if the page encoding is broken
+    if(self.broken_encoding):
+      try:
+        if(isinstance(lien, str)):
+          llien = lien.decode('ascii')
+        else:
+          llien = lien.encode('ascii')
+      except (UnicodeEncodeError, UnicodeDecodeError):
+        # If the url isn't in plain ascii, we skip it, considering it untrustable
+        print "Broken encoding found for " + lien
+        return None
+
 
     if lien == "..":
       lien = "../"
