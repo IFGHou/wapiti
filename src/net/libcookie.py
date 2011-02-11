@@ -196,7 +196,7 @@ class libcookie:
 
             if k == "domain":
               domain = v
-            
+
             if k == "version" and version == "0":
               version = "1"
 
@@ -285,7 +285,202 @@ class libcookie:
 
                 if k == "domain":
                   domain = v
-                
+
+                if k == "version" and version == "0":
+                  version = "1"
+
+              if tupl.find("secure") >= 0:
+                pass
+
+            if path == "":
+              path = os.path.dirname(urllib2.urlparse.urlparse(self.url)[2])
+              if not path.endswith("/"):
+                path = path + "/"
+
+            if expired == False:
+              print name, "=", value
+              self.add_node(
+                  {"name":name,
+                   "value":value,
+                   "domain": domain,
+                   "path":path,
+                   "expires": expires,
+                   "version": version
+                   })
+
+  def addHttplib(self, info, page = ""):
+    ref_date = time.time()
+    tmp_date = ""
+    if len(info["date"]) == 1:
+      tmp_date = info["date"][0]
+      for regexp in ["%a, %d-%b-%Y %H:%M:%S %Z",
+          "%a %b %d %H:%M:%S %Y %Z",
+          "%a, %b %d %H:%M:%S %Y %Z",
+          "%a, %d %b %Y %H:%M:%S %Z"]:
+        try:
+          ref_date = time.mktime( time.strptime(tmp_date, regexp) )
+        except ValueError:
+          continue
+
+    version = "0"
+
+    cookies = []
+    stCookie = info["set-cookie"];
+    while True :
+      m = re.search(",[ ]*\w*=", stCookie)
+      if m == None : #Last cookie
+        stCookie = stCookie.strip()
+        if len(stCookie) > 0:
+          cookies.append(stCookie)
+        break
+      cookies.append(stCookie[0:m.start()])
+      stCookie = stCookie[m.start()+1:]
+
+    for cook in cookies:
+      name = ""
+      value = ""
+      expires = None
+      domain = ""
+      path = ""
+      max_age = None
+
+      brk = 0
+
+      if cook.find("=") >= 0:
+        tuples = [x.strip() for x in cook.split(";")]
+        name, value = tuples.pop(0).split("=", 1)
+        name = name.strip()
+        value = value.strip()
+        if value[0] == '"' and value[-1] == '"':
+          value = value[1:-1]
+
+        for tupl in tuples:
+          if tupl.find("=") > 0:
+            k, v = tupl.split("=", 1)
+            k = k.strip().lower()
+            v = v.strip()
+
+            if v[0] == '"' and v[-1] == '"':
+              v = v[1:-1]
+
+            if k == "path":
+              path = v
+
+            if k == "expires":
+              for regexp in ["%a, %d-%b-%Y %H:%M:%S %Z",
+                  "%a %b %d %H:%M:%S %Y %Z",
+                  "%a, %b %d %H:%M:%S %Y %Z",
+                  "%a, %d %b %Y %H:%M:%S %Z"]:
+                try:
+                  expires = time.mktime( time.strptime(v, regexp) )
+                except ValueError:
+                  continue
+
+              if ref_date > expires:
+                brk = 1
+
+            if k == "comment":
+              print "Comment:", v
+
+            if k == "max-age":
+              max_age = int(v)
+              if max_age == 0:
+                brk = 1
+              else:
+                expires = ref_date + max_age
+
+            if k == "domain":
+              domain = v
+
+            if k == "version" and version == "0":
+              version = "1"
+
+          if tupl.find("secure") >= 0:
+            pass
+
+        if brk == 1:
+          break
+
+        print name, "=", value
+
+        if path == "":
+          path = os.path.dirname(urllib2.urlparse.urlparse(self.url)[2])
+          if not path.endswith("/"):
+            path = path + "/"
+
+        print name, "=", value
+        self.add_node(
+            {"name":name,
+             "value":value,
+             "domain": domain,
+             "path":path,
+             "expires": expires,
+             "version": version
+             })
+
+      else:
+        print cook
+
+    if cookies == []:
+      if page != "":
+        soup = BeautifulSoup.BeautifulSoup(page)
+        meta = soup.find("meta", {'http-equiv': lambda v: v != None and v.lower()=='set-cookie'})
+        if meta != None:
+          cook = meta["content"]
+          name = ""
+          value = ""
+          expires = None
+          domain = ""
+          path = ""
+          max_age = None
+          expired = False
+
+          if cook.find("=") >= 0:
+            tuples = [x.strip() for x in cook.split(";")]
+            name, value = tuples.pop(0).split("=", 1)
+            name = name.strip()
+            value = value.strip()
+            if value[0] == '"' and value[-1] == '"':
+              value = value[1:-1]
+
+            for tupl in tuples:
+              if tupl.find("=") > 0:
+                k, v = tupl.split("=", 1)
+                k = k.strip().lower()
+                v = v.strip()
+
+                if v[0] == '"' and v[-1] == '"':
+                  v = v[1:-1]
+
+                if k == "path":
+                  path = v
+
+                if k == "expires":
+                  for regexp in ["%a, %d-%b-%Y %H:%M:%S %Z",
+                      "%a %b %d %H:%M:%S %Y %Z",
+                      "%a, %b %d %H:%M:%S %Y %Z",
+                      "%a, %d %b %Y %H:%M:%S %Z"]:
+                    try:
+                      expires = time.mktime( time.strptime(v, regexp) )
+                    except ValueError:
+                      continue
+
+                  if ref_date > expires:
+                    expired = True
+
+                if k == "comment":
+                  print "Comment:", v
+
+                if k == "max-age":
+                  max_age = int(v)
+                  if max_age == 0:
+                    expired = True
+                  else:
+                    expires = ref_date + max_age
+
+                if k == "domain":
+                  domain = v
+
                 if k == "version" and version == "0":
                   version = "1"
 
@@ -393,7 +588,7 @@ class libcookie:
     if version_min == 0:
       cookie_str = ";".join( [x for x in cookie_str.split(";") if not x.startswith(" $")] )
       cookie_str = cookie_str.replace('"','')
-      return {"Cookie": cookie_str, "Cookie2": '$Version="1"'} 
+      return {"Cookie": cookie_str, "Cookie2": '$Version="1"'}
 
     # RFC 2109 and RFC 2965 cookies
     else:

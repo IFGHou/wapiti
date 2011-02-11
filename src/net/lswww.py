@@ -226,9 +226,14 @@ Supported options are:
     # and not too short to give good results
     socket.setdefaulttimeout(self.timeout)
 
+    headers = self.cookiejar.headers_url(url)
+    headers["User-Agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     try:
-      info, data = self.h.request(url, headers = self.cookiejar.headers_url(url))
+      info, data = self.h.request(url, headers = headers)
     except socket.timeout:
+      self.excluded.append(url)
+      return {}
+    except httplib2.HTTPTimeout:
       self.excluded.append(url)
       return {}
     except socket.error, msg:
@@ -274,6 +279,7 @@ Supported options are:
       htmlSource = unicode(data, page_encoding, "ignore")
     else:
       htmlSource = data
+    print htmlSource
     p = linkParser(url)
     try:
       p.feed(htmlSource)
