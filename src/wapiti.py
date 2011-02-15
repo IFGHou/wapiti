@@ -50,7 +50,7 @@ if not BASE_DIR:
   else:
     BASE_DIR = os.getcwd()
 
-CONF_DIR = ""
+CONF_DIR = BASE_DIR
 if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
   CONF_DIR = "/usr/local/share/doc/packages/wapiti"
 

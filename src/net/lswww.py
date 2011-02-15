@@ -23,8 +23,6 @@ import socket
 import getopt
 import os
 import HTMLParser
-import urllib
-import urllib2
 
 from distutils.sysconfig import get_python_lib
 BASE_DIR = None
@@ -279,7 +277,7 @@ Supported options are:
       htmlSource = unicode(data, page_encoding, "ignore")
     else:
       htmlSource = data
-    print htmlSource
+
     p = linkParser(url)
     try:
       p.feed(htmlSource)
