@@ -27,7 +27,7 @@ class mod_permanentxss(Attack):
   # only trick here must be on character encoding, filter bypassing, stuff like that
   # form the simplest to the most complex, Wapiti will stop on the first working
   independant_payloads = []
-  
+
   name = "permanentxss"
   require = ["xss"]
   PRIORITY = 6
@@ -60,6 +60,9 @@ class mod_permanentxss(Attack):
         data = ""
         resp = None
         print 'error: %s while attacking %s' % (repr(str(se[1])), url)
+      except Exception, e:
+        print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+        continue
       if self.doGET == 1:
         for code in self.GET_XSS.keys():
           if data.find(code) >= 0:
@@ -73,6 +76,9 @@ class mod_permanentxss(Attack):
               except HTTPTimeout, timeout:
                 dat = ""
                 resp = timeout
+              except Exception, e:
+                print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+                continue
               if self.validXSS(dat, code):
                 if self.color == 0:
                   print _("Found permanent XSS in"), url, _("with"), attack_url
@@ -108,6 +114,9 @@ class mod_permanentxss(Attack):
                   except HTTPTimeout, timeout:
                     dat = ""
                     resp = timeout
+                  except Exception, e:
+                    print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+                    continue
                   if self.validXSS(dat, code):
                     self.reportGen.logVulnerability(Vulnerability.XSS,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",

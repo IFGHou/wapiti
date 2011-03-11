@@ -34,7 +34,7 @@ class Attack:
     color   = 0
 
     name = "attack"
-    
+
     reportGen = None
     HTTP      = None
     auxText   = None
@@ -48,7 +48,7 @@ class Attack:
     # List of modules (objects) that must be launched before the current module
     # Must be left empty in the code
     deps = []
-    
+
     # List of attack's url already launched in the current module
     attackedGET  = []
     attackedPOST = []
@@ -77,7 +77,7 @@ class Attack:
 
     # The priority of the module, from 0 (first) to 10 (last). Default is 5
     PRIORITY = 5
-    
+
     def __init__(self,HTTP,reportGen):
         self.HTTP = HTTP
         self.reportGen = reportGen
@@ -88,7 +88,7 @@ class Attack:
 
     def setColor(self):
         self.color = 1
-        
+
     def loadPayloads(self,fileName):
         """This method loads the payloads for an attack from the specified file"""
         return self.auxText.readLines(fileName)
@@ -126,8 +126,13 @@ class Attack:
             self.attackGET(page, dictio, headers)
           except socket.error, se:
             print 'error: %s while attacking %s' % (repr(str(se[1])), url)
+          except Exception, e:
+            print 'error: %s while attacking %s' % (repr(str(e[0])), url)
 
       if self.doPOST == True:
         for form in forms:
           if form[1] != {}:
-            self.attackPOST(form)
+            try:
+              self.attackPOST(form)
+            except Exception, e:
+              print 'error: %s while attacking %s' % (repr(str(e[0])), url)

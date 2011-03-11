@@ -239,6 +239,9 @@ Supported options are:
         print _("Connection refused!")
       self.excluded.append(url)
       return {}
+    except Exception:
+      self.excluded.append(url)
+      return {}
 
     code = info['status']
 
