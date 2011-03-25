@@ -59,10 +59,7 @@ from language.language import Language
 lan = Language()
 lan.configure()
 from net import HTTP
-from report.htmlreportgenerator import HTMLReportGenerator
-from report.xmlreportgenerator import XMLReportGenerator
-from report.txtreportgenerator import TXTReportGenerator
-
+from file.reportgeneratorsxmlparser import ReportGeneratorsXMLParser
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
 from net.crawlerpersister import CrawlerPersister
 
@@ -178,16 +175,15 @@ Supported options are:
 
   def __init__(self, rooturl):
     self.HTTP = HTTP.HTTP(rooturl)
+    self.xmlRepGenParser = ReportGeneratorsXMLParser()
+    self.xmlRepGenParser.parse(os.path.join(CONF_DIR, "config/reports/generators.xml"))
 
   def __initReport(self):
-    if self.reportGeneratorType.lower() == "xml":
-        self.reportGen = XMLReportGenerator()
-    elif self.reportGeneratorType.lower() == "html":
-        self.reportGen = HTMLReportGenerator()
-    elif self.reportGeneratorType.lower() == "txt":
-        self.reportGen = TXTReportGenerator()
-    else: #default
-        self.reportGen = XMLReportGenerator()
+    for repGenInfo in self.xmlRepGenParser.getReportGenerators():
+      if self.reportGeneratorType.lower() == repGenInfo.getKey():
+        self.reportGen = repGenInfo.createInstance()
+        break;
+
     xmlParser = VulnerabilityXMLParser()
     xmlParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/vulnerabilities.xml"))
     for vul in xmlParser.getVulnerabilities():
@@ -431,8 +427,8 @@ if __name__ == "__main__":
       if o in ("-o", "--outputfile"):
         wap.setOutputFile(a)
       if o in ("-f", "--reportType"):
-        if (a.find("html", 0) == 0) or (a.find("xml", 0) == 0) \
-          or (a.find("txt", 0) == 0):
+        for repGenInfo in wap.xmlRepGenParser.getReportGenerators():
+          if a == repGenInfo.getKey():
             wap.setReportGeneratorType(a)
       if o in ("-b", "--scope"):
         wap.setScope(a)
