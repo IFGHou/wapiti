@@ -125,7 +125,7 @@ class Attack:
           try:
             self.attackGET(page, dictio, headers)
           except socket.error, se:
-            print 'error: %s while attacking %s' % (repr(str(se[1])), url)
+            print 'error: %s while attacking %s' % (repr(str(se[0])), url)
           except Exception, e:
             print 'error: %s while attacking %s' % (repr(str(e[0])), url)
 
