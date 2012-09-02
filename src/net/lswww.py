@@ -312,7 +312,7 @@ Supported options are:
     for lien in p.uploads:
       self.uploads.append(self.correctlink(lien, current, currentdir, proto))
     for lien in p.liens:
-      if page_encoding != None and not isinstance(lien, unicode):
+      if lien != None and page_encoding != None and not isinstance(lien, unicode):
         lien = unicode(lien, page_encoding, "ignore")
       lien = self.correctlink(lien, current, currentdir, proto)
       if lien != None:
@@ -346,6 +346,10 @@ Supported options are:
 
   def correctlink(self, lien, current, currentdir, proto):
     """Transform relatives urls in absolutes ones"""
+
+    if lien is None:
+      return current
+
     # No leading or trailing whitespaces
     lien = lien.strip()
     
