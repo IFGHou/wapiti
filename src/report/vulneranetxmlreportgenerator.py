@@ -24,7 +24,6 @@
 
 from xml.dom.minidom import Document
 from reportgenerator import ReportGenerator
-import net.httplib2
 import net.HTTP
 import datetime
 
@@ -145,7 +144,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         if resp==None:
           peer=None
           ts=self.__ts
-        elif issubclass(resp.__class__, net.httplib2.HTTPTimeout):
+        elif issubclass(resp.__class__, requests.exceptions.Timeout):
           peer = resp.peer
           ts = resp.timestamp
         elif issubclass(resp.__class__, net.HTTP.HTTPResponse):

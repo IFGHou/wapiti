@@ -2,7 +2,7 @@ import socket
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from net.httplib2 import HTTPTimeout
+import requests
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -78,7 +78,7 @@ class mod_blindsql(Attack):
             resp = self.HTTP.send(url)
             data, code = resp.getPageCode()
           #except socket.timeout:
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url,payload, _("Blind SQL Injection (QUERY_STRING)"),
@@ -119,7 +119,7 @@ class mod_blindsql(Attack):
               resp = self.HTTP.send(url)
               data, code = resp.getPageCode()
             #except socket.timeout:
-            except HTTPTimeout, timeout:
+            except requests.exceptions.Timeout, timeout:
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(tmp, headers["link_encoding"]),
@@ -173,7 +173,7 @@ class mod_blindsql(Attack):
             resp = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers)
             data,code = resp.getPageCode()
           #except socket.timeout:
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, self.HTTP.encode(tmp, form[3]),

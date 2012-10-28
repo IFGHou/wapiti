@@ -80,6 +80,8 @@ class CrawlerPersister:
       urlEl = xml.createElement(self.URL_DATA)
       urlEl.setAttribute(self.URI, url.encode("UTF-8"))
       for k, v in headers.items():
+        if v == None:
+          v = ""
         headEl = xml.createElement(self.HEADER)
         headEl.setAttribute(self.HEADER_NAME, k.encode("UTF-8"))
         headEl.setAttribute(self.HEADER_VALUE, v.encode("UTF-8"))

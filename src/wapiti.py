@@ -454,6 +454,7 @@ if __name__ == "__main__":
         if a != '' and a[0] != '-':
           crawlerFile = a
     print _("Wapiti-SVN (wapiti.sourceforge.net)")
+    print _("WARNING: This is a development version. Some features may be broken.")
     if attackFile != None:
       if crawlerPersister.isDataForUrl(attackFile) == 1:
         crawlerPersister.loadXML(attackFile)

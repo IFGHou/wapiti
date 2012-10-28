@@ -3,7 +3,7 @@ import re
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from net.httplib2 import HTTPTimeout
+import requests
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -99,7 +99,7 @@ class mod_sql(Attack):
         try:
           resp = self.HTTP.send(url)
           data, code = resp.getPageCode()
-        except HTTPTimeout, timeout:
+        except requests.exceptions.Timeout, timeout:
           # No timeout report here... launch blind sql detection later
           data = ""
           code = "408"
@@ -142,7 +142,7 @@ class mod_sql(Attack):
           try:
             resp = self.HTTP.send(url)
             data, code = resp.getPageCode()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             # No timeout report here... launch blind sql detection later
             data = ""
             code = "408"
@@ -201,7 +201,7 @@ class mod_sql(Attack):
         try:
           resp = self.HTTP.send(page, post_data, headers)
           data, code = resp.getPageCode()
-        except HTTPTimeout, timeout:
+        except requests.exceptions.Timeout, timeout:
           # No timeout report here... launch blind sql detection later
           data = ""
           code = "408"

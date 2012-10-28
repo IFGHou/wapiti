@@ -2,11 +2,11 @@
 import random
 import re
 import socket
-from net import BeautifulSoup
+import BeautifulSoup
+import requests
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from net.httplib2 import HTTPTimeout
 
 class mod_xss(Attack):
   """
@@ -89,7 +89,7 @@ class mod_xss(Attack):
         try:
           resp = self.HTTP.send(url)
           data = resp.getPage()
-        except HTTPTimeout:
+        except requests.exceptions.Timeout:
           data = ""
           resp = None
         if data.find(code) >= 0:
@@ -113,7 +113,7 @@ class mod_xss(Attack):
           try:
             resp = self.HTTP.send(url)
             data = resp.getPage()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             data = ""
             resp = timeout
           # on effectue une recherche rapide sur l'indetifiant
@@ -162,7 +162,7 @@ class mod_xss(Attack):
         try:
           resp = self.HTTP.send(page, self.HTTP.uqe(tmp, form[3]), headers)
           data = resp.getPage()
-        except HTTPTimeout, timeout:
+        except requests.exceptions.Timeout, timeout:
           data = ""
           resp = timeout
         # rapid search on the code to check injection
@@ -294,7 +294,7 @@ class mod_xss(Attack):
         try:
           resp = self.HTTP.send(url)
           dat = resp.getPage()
-        except HTTPTimeout, timeout:
+        except requests.exceptions.Timeout, timeout:
           dat = ""
           resp = timeout
         var = "QUERY_STRING"
@@ -309,7 +309,7 @@ class mod_xss(Attack):
           try:
             resp = self.HTTP.send(page, self.HTTP.encode(params, encoding), headers)
             dat = resp.getPage()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             dat = ""
             resp = timeout
 
@@ -320,7 +320,7 @@ class mod_xss(Attack):
           try:
             resp = self.HTTP.send(url)
             dat = resp.getPage()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             dat = ""
             resp = timeout
 
@@ -362,7 +362,7 @@ class mod_xss(Attack):
         try:
           resp = self.HTTP.send(url)
           dat = resp.getPage()
-        except HTTPTimeout, timeout:
+        except requests.exceptions.Timeout, timeout:
           dat = ""
           resp = timeout
         var = "QUERY_STRING"
@@ -377,7 +377,7 @@ class mod_xss(Attack):
           try:
             resp = self.HTTP.send(page, self.HTTP.uqe(params, encoding), headers)
             dat = resp.getPage()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             dat = ""
             resp = timeout
 
@@ -388,7 +388,7 @@ class mod_xss(Attack):
           try:
             resp = self.HTTP.send(url)
             dat = resp.getPage()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             dat = ""
             resp = timeout
 

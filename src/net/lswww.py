@@ -45,11 +45,10 @@ if not BASE_DIR:
   else:
     BASE_DIR = os.getcwd()
 
-import httplib2
+import requests
 from htmlentitydefs import name2codepoint as n2cp
 from xml.dom import minidom
 from crawlerpersister import CrawlerPersister
-import libcookie
 import BeautifulSoup
 
 class lswww:
@@ -224,14 +223,14 @@ Supported options are:
     # and not too short to give good results
     socket.setdefaulttimeout(self.timeout)
 
-    headers = self.cookiejar.headers_url(url)
+    headers = {}
     headers["User-Agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     try:
-      info, data = self.h.request(url, headers = headers)
+      resp = self.h.get(url, headers = headers)
     except socket.timeout:
       self.excluded.append(url)
       return {}
-    except httplib2.HTTPTimeout:
+    except requests.exceptions.Timeout:
       self.excluded.append(url)
       return {}
     except socket.error, msg:
@@ -243,7 +242,9 @@ Supported options are:
       self.excluded.append(url)
       return {}
 
-    code = info['status']
+    info = resp.headers
+    data = resp.text
+    code = resp.status_code
 
     if not self.link_encoding.has_key(url):
       self.link_encoding[url] = ""
@@ -504,23 +505,8 @@ Supported options are:
 
   def go(self, crawlerFile):
     proxy = None
-
-    if self.proxy != "":
-      (proxy_type, proxy_usr, proxy_pwd, proxy_host, proxy_port,
-       path, query, fragment) = httplib2.parse_proxy(self.proxy)
-      proxy = httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port,
-          proxy_user = proxy_usr, proxy_pass = proxy_pwd)
-
-    self.h = httplib2.Http(cache = None, timeout = self.timeout,
-                            proxy_info = proxy)
-    self.h.follow_redirects = False
-
-    self.cookiejar = libcookie.libcookie(self.server)
-    if os.path.isfile(self.cookie):
-      self.cookiejar.loadfile(self.cookie)
-
-    if self.auth_basic != []:
-      self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
+    #TODO: but back proxies and co
+    self.h = requests.session(proxies = {})
 
     # load of the crawler status if a file is passed to it.
     if crawlerFile != None:

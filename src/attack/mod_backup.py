@@ -5,7 +5,7 @@
 # Guillaume TRANCHANT
 # Gregory FONTAINE
 
-from net import BeautifulSoup
+import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip

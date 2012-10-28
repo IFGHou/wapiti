@@ -2,7 +2,7 @@ import socket
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from net.httplib2 import HTTPTimeout
+import requests
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -81,7 +81,7 @@ class mod_exec(Attack):
           if cmd == 1: continue
           try:
             data, code = self.HTTP.send(url).getPageCode()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             data = ""
             code = "408"
             err = ""
@@ -124,7 +124,7 @@ class mod_exec(Attack):
           if cmd == 1: continue
           try:
             data, code = self.HTTP.send(url).getPageCode()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             data = ""
             code = "408"
             err = ""
@@ -175,7 +175,7 @@ class mod_exec(Attack):
             print "  ", tmp
           try:
             data, code = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers).getPageCode()
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             data = ""
             code = "408"
             print _("Timeout in"), page

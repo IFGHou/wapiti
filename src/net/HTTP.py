@@ -5,24 +5,29 @@ import urlparse
 import socket
 import os
 import cgi
-import httplib2
-import libcookie
+import requests
+import datetime
 
 class HTTPResponse:
   data = ""
   code = "200"
   headers = {}
 
-  def __init__(self, data, code, headers, peer, timestamp):
+  def __init__(self, data, code, headers, peer, timestamp, encoding = ""):
     self.data = data
     self.code = code
     self.headers = headers
     self.peer = peer
     self.timestamp = timestamp
+    self.encoding = encoding
 
   def getPage(self):
     "Return the content of the page."
     return self.data
+
+  def getRawPage(self):
+    "Return the content of the page."
+    return self.data.encode(self.encoding)
 
   def getCode(self):
     "Return the HTTP Response code ."
@@ -68,24 +73,12 @@ class HTTP:
     self.myls.verbosity(1)
     socket.setdefaulttimeout(self.timeout)
 
-    self.cookiejar = libcookie.libcookie(self.server)
-
   def init(self):
     # HttpLib2 vars
     proxy = None
 
-    if self.proxy != "":
-      (proxy_type, proxy_usr, proxy_pwd, proxy_host, proxy_port,
-          path, query, fragment) = httplib2.parse_proxy(self.proxy)
-      proxy = httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port,
-          proxy_user=proxy_usr, proxy_pass=proxy_pwd)
-
-    self.h = httplib2.Http(cache = None, timeout = self.timeout, proxy_info = proxy)
-    self.h.follow_redirects=False
-
-    if self.auth_basic != []:
-      self.h.add_credentials(self.auth_basic[0], self.auth_basic[1])
-
+    #TODO: bring back proxy sypport, auth and cookie serialization
+    self.h = requests.session(proxies = {})
     
   def browse(self, crawlerFile):
     "Explore the entire website under the pre-defined root-url."
@@ -108,21 +101,17 @@ class HTTP:
     data = ""
     code = "0"
     info = {}
-    _headers = self.cookiejar.headers_url(target)
+    _headers = {}
     _headers.update(http_headers)
     if post_data == None:
-      if method != "":
-        info, data = self.h.request(target, method, headers = _headers)
-      else:
-        info, data = self.h.request(target, headers = _headers)
+      resp = self.h.get(target, headers = _headers)
     else:
       _headers.update({'Content-type': 'application/x-www-form-urlencoded'})
-      if method != "":
-        info, data = self.h.request(target, method, headers = _headers, body = post_data)
-      else:
-        info, data = self.h.request(target, "POST", headers = _headers, body = post_data)
-    code = info['status']
-    return HTTPResponse(data, code, info, info.peer, info.timestamp)
+      resp = self.h.post(target, headers = _headers, data = post_data)
+    data = resp.text
+    info = resp.headers
+    code = resp.status_code
+    return HTTPResponse(data, code, info, "", datetime.datetime.now(), encoding = resp.encoding)
 
   def quote(self, url):
     "Encode a string with hex representation (%XX) for special characters."

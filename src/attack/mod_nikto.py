@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-from net import BeautifulSoup
-from net.httplib2 import ServerNotFoundError
+import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
@@ -36,7 +35,7 @@ class mod_nikto(Attack):
         print _("Problem with local nikto database.")
         print _("Downloading from the web...")
         resp = self.HTTP.send("http://cirt.net/nikto/UPDATES/2.1.1/db_tests")
-        page = resp.getPage()
+        page = resp.getRawPage()
 
         csv.register_dialect("nikto", quoting=csv.QUOTE_ALL, doublequote=False, escapechar="\\")
         reader = csv.reader(page.split("\n"), "nikto")

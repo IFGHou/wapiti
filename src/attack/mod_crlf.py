@@ -1,9 +1,7 @@
 import socket
 from attack import Attack
-#import base
 from vulnerability import Vulnerability
-import httplib
-from net.httplib2 import HTTPTimeout
+import requests
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -63,12 +61,12 @@ class mod_crlf(Attack):
                               page, payload, err + " " + _("(QUERY_STRING)"), resp)
             print _("CRLF Injection (QUERY_STRING) in"), page
             print "  " + _("Evil url") + ":", url
-        except HTTPTimeout, timeout:
+        except requests.exceptions.Timeout, timeout:
           self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                             page, payload, err + " " + _("(QUERY_STRING)"), timeout)
           print _("Timeout (QUERY_STRING) in"), page
           print "  " + _("caused by") + ":", url
-        except httplib.BadStatusLine:
+        except requests.exceptions.HTTPError:
           #print "Error: The server did not understand this request"
           pass
         self.attackedGET.append(url)
@@ -92,12 +90,12 @@ class mod_crlf(Attack):
                 print "  " + _("Evil url") + ":", url
               else:
                 print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
-          except HTTPTimeout, timeout:
+          except requests.exceptions.Timeout, timeout:
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                               page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")", timeout)
             print _("Timeout") + " (" + k + ") " + _("in"), page
             print "  " + _("caused by") + ":", url
-          except httplib.BadStatusLine:
+          except requests.exceptions.HTTPError:
             print _("Error: The server did not understand this request")
           self.attackedGET.append(url)
 

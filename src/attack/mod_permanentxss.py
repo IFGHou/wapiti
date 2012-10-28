@@ -2,11 +2,11 @@
 import random
 import re
 import socket
-from net import BeautifulSoup
+import BeautifulSoup
+import requests
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from net.httplib2 import HTTPTimeout
 
 class mod_permanentxss(Attack):
   """
@@ -53,7 +53,7 @@ class mod_permanentxss(Attack):
       try:
         resp = self.HTTP.send(url)
         data = resp.getPage()
-      except HTTPTimeout, timeout:
+      except requests.exceptions.Timeout, timeout:
         data = ""
         resp = timeout
       except socket.error, se:
@@ -73,7 +73,7 @@ class mod_permanentxss(Attack):
                 self.HTTP.send(attack_url)
                 resp = self.HTTP.send(url)
                 dat = resp.getPage()
-              except HTTPTimeout, timeout:
+              except requests.exceptions.Timeout, timeout:
                 dat = ""
                 resp = timeout
               except Exception, e:
@@ -111,7 +111,7 @@ class mod_permanentxss(Attack):
                     self.HTTP.send(self.POST_XSS[code][0], self.HTTP.uqe(tmp), headers)
                     resp = self.HTTP.send(url)
                     dat = resp.getPage()
-                  except HTTPTimeout, timeout:
+                  except requests.exceptions.Timeout, timeout:
                     dat = ""
                     resp = timeout
                   except Exception, e:
