@@ -24,6 +24,7 @@
 import os
 import socket # for trapping socket.error
 from file.auxtext import AuxText
+import requests
 
 class Attack:
     """

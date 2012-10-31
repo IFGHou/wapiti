@@ -59,7 +59,7 @@ class HTTP:
   cookie = ""
   proxy = ""
   auth_basic = []
-  timeout = 6
+  timeout = 6.0
   h = None
   cookiejar = None
 
@@ -104,10 +104,10 @@ class HTTP:
     _headers = {}
     _headers.update(http_headers)
     if post_data == None:
-      resp = self.h.get(target, headers = _headers)
+      resp = self.h.get(target, headers = _headers, timeout = self.timeout)
     else:
-      _headers.update({'Content-type': 'application/x-www-form-urlencoded'})
-      resp = self.h.post(target, headers = _headers, data = post_data)
+      _headers.update({'content-type': 'application/x-www-form-urlencoded'})
+      resp = self.h.post(target, headers = _headers, data = post_data, timeout = self.timeout)
     data = resp.text
     info = resp.headers
     code = resp.status_code
@@ -134,7 +134,7 @@ class HTTP:
     "Change special characters in their html entities representation."
     return cgi.escape(url, quote = True).replace("'", "%27")
 
-  def setTimeOut(self, timeout = 6):
+  def setTimeOut(self, timeout = 6.0):
     "Set the time to wait for a response from the server."
     self.timeout = timeout
     self.myls.setTimeOut(timeout)

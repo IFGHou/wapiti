@@ -39,7 +39,7 @@ class mod_crlf(Attack):
   # Won't work with PHP >= 4.4.2
   def attackGET(self, page, dict, headers = {}):
     """This method performs the CRLF attack with method GET"""
-    payload="http://www.google.fr\r\nWapiti: SVN version"
+    payload="http://www.google.fr\r\nwapiti: SVN version"
     if dict == {}:
       # Do not attack application-type files
       if not headers.has_key("content-type"):
@@ -53,7 +53,7 @@ class mod_crlf(Attack):
       url = page + "?" + payload
       if url not in self.attackedGET:
         if self.verbose == 2:
-          print "+ " + page + "?http://www.google.fr\\r\\nWapiti: SVN version"
+          print "+ " + page + "?http://www.google.fr\\r\\nwapiti: SVN version"
         try:
           resp = self.HTTP.send(url)
           if resp.getInfo().has_key('wapiti'):

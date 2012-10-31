@@ -136,7 +136,7 @@ Supported options are:
   cookie = ""
   auth_basic = []
   bad_params = []
-  timeout = 6
+  timeout = 6.0
   h = None
   global_headers = {}
   cookiejar = None
@@ -168,7 +168,7 @@ Supported options are:
     self.tobrowse.append(root)
     self.persister = CrawlerPersister()
 
-  def setTimeOut(self, timeout = 6):
+  def setTimeOut(self, timeout = 6.0):
     """Set the timeout in seconds to wait for a page"""
     self.timeout = timeout
 
@@ -224,9 +224,9 @@ Supported options are:
     socket.setdefaulttimeout(self.timeout)
 
     headers = {}
-    headers["User-Agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
+    headers["user-agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     try:
-      resp = self.h.get(url, headers = headers)
+      resp = self.h.get(url, headers = headers, timeout = self.timeout)
     except socket.timeout:
       self.excluded.append(url)
       return {}
@@ -253,7 +253,6 @@ Supported options are:
     if proto == "http" or proto == "https":
       if not isinstance(proto, unicode): proto = unicode(proto)
       # Check the content-type first
-      #if not u.info().get("Content-Type"):
       if not info.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
         if (current.split(".")[-1] not in self.allowed) and current[-1] != "/":

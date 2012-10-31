@@ -98,7 +98,7 @@ class mod_permanentxss(Attack):
                                     _("with") + " " + self.HTTP.escape(attack_url), resp)
                 break
 
-      headers = {"Accept": "text/plain"}
+      headers = {"accept": "text/plain"}
       if self.doPOST == 1:
         for code in self.POST_XSS.keys():
           if data.find(code) >= 0:

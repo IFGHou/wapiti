@@ -193,7 +193,7 @@ class mod_file(Attack):
         if (page, tmp) not in self.attackedPOST:
           self.attackedPOST.append((page, tmp))
           if inc == 1: continue
-          headers = {"Accept": "text/plain"}
+          headers = {"accept": "text/plain"}
           if self.verbose == 2:
             print "+ " + page
             print "  ", tmp

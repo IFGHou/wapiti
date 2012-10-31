@@ -191,7 +191,7 @@ class mod_sql(Attack):
       tmp = dict.copy()
       tmp[k] = "__PAYLOAD__"
       if (page, tmp) not in self.attackedPOST:
-        headers = {"Accept": "text/plain"}
+        headers = {"accept": "text/plain"}
         if self.verbose == 2:
           print "+ " + page
           tmp[k] = payload

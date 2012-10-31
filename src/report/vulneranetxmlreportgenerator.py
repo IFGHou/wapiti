@@ -26,6 +26,7 @@ from xml.dom.minidom import Document
 from reportgenerator import ReportGenerator
 import net.HTTP
 import datetime
+import requests
 
 WAPITI_VERSION = "Wapiti SVN";
 
@@ -141,12 +142,13 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         vulnerabilities notified through the current method.
         """
 
-        if resp==None:
-          peer=None
-          ts=self.__ts
+        if resp == None:
+          peer = None
+          ts = self.__ts
+#        TODO: subclass requests.exceptions.Timeout ?
         elif issubclass(resp.__class__, requests.exceptions.Timeout):
-          peer = resp.peer
-          ts = resp.timestamp
+          peer = None
+          ts = self.__ts
         elif issubclass(resp.__class__, net.HTTP.HTTPResponse):
           peer = resp.peer
           ts = resp.timestamp

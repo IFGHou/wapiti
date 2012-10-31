@@ -125,7 +125,7 @@ class mod_xss(Attack):
 
   def attackPOST(self, form):
     """This method performs the cross site scripting attack (XSS attack) with method POST"""
-    headers = {"Accept": "text/plain"}
+    headers = {"accept": "text/plain"}
     page = form[0]
     params = form[1]
 
@@ -211,7 +211,7 @@ class mod_xss(Attack):
 
   # generate a list of payloads based on where in the webpage the js-code will be injected
   def generate_payloads(self, data, code):
-    headers = {"Accept": "text/plain"}
+    headers = {"accept": "text/plain"}
     soup = BeautifulSoup.BeautifulSoup(data) # il faut garder la page non-retouchee en reserve...
     e = []
     self.study(soup, keyword = code, entries = e)
@@ -280,7 +280,7 @@ class mod_xss(Attack):
   # Inject the js-code
   # GET and POST methods here
   def findXSS(self, page, args, var, code, referer, payloads, encoding=None):
-    headers = {"Accept": "text/plain"}
+    headers = {"accept": "text/plain"}
     params = args.copy()
     url = page
 
