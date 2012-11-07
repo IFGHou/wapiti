@@ -243,7 +243,6 @@ Supported options are:
       return {}
 
     info = resp.headers
-    data = resp.text
     code = resp.status_code
 
     if not self.link_encoding.has_key(url):
@@ -260,6 +259,7 @@ Supported options are:
       elif info["content-type"].find("text") == -1:
         return info
 
+    data = resp.text
     page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
 
     # Manage redirections
