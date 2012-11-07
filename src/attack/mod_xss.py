@@ -22,7 +22,7 @@ class mod_xss(Attack):
       ]
 
   # simple payloads that doesn't rely on their position in the DOM structure
-  # payloads injected after closing a tag aatibute value (attrval) or in the
+  # payloads injected after closing a tag attibute value (attrval) or in the
   # content of a tag (text node like beetween <p> and </p>)
   # only trick here must be on character encoding, filter bypassing, stuff like that
   # form the simplest to the most complex, Wapiti will stop on the first working
@@ -197,16 +197,12 @@ class mod_xss(Attack):
           #print "Found in text, tag", parent.name
           entries.append({"type":"text", "parent":parent.name})
 
-  def validXSS(self, page, code):
+  # check weither our JS payload is injected in the webpage
+  def validXSS(self, page, code, payload):
     if page == None or page == "":
       return False
-    soup = BeautifulSoup.BeautifulSoup(page)
-    for x in soup.findAll("script"):
-      if x.string != None and x.string in [t.replace("__XSS__", code) for t in self.script_ok]:
-        return True
-      elif x.has_key("src"):
-        if x["src"] == "http://__XSS__/x.js".replace("__XSS__", code):
-          return True
+    if payload.lower() in page.lower():
+      return True
     return False
 
   # generate a list of payloads based on where in the webpage the js-code will be injected
@@ -220,22 +216,26 @@ class mod_xss(Attack):
 
     for elem in e:
       payload = ""
-      # traiter chaque entree au cas par cas
-      # on quitte a la premiere entree exploitable
+      # Try each case where our string can be found
+      # Leave at the first possible exploitation found
 
-      # common situation
+      # Our string is in the value of a tag attribute
+      # ex: <a href="our_string"></a>
       if elem['type'] == "attrval":
         #print "tag->"+elem['tag']
         #print elem['name']
         i0 = data.find(code)
         #i1=data[:i0].rfind("=")
         try:
+          # find the position of name of the attribute we are in
           i1 = data[:i0].rfind(elem['name'])
         # stupid unicode errors, must check later
         except UnicodeDecodeError:
           continue
 
         start = data[i1:i0].replace(" ", "")[len(elem['name']):]
+        # between the tag name and our injected attribute there is an equal sign
+        # and (probably) a quote or a double-quote we need to close before putting our payload
         if start.startswith("='"): payload="'"
         if start.startswith('="'): payload='"'
         if elem['tag'].lower() == "img":
@@ -247,13 +247,15 @@ class mod_xss(Attack):
         for xss in self.independant_payloads:
           payloads.append(payload + xss.replace("__XSS__", code))
 
-      # this should not happen but you never know...
+      # we control an attribute name
+      # ex: <a our_string="/index.html">
       elif elem['type'] == "attrname": # name,tag
-        #print "attrname"
         if code == elem['name']:
           for xss in self.independant_payloads:
             payloads.append('>' + xss.replace("__XSS__",code))
 
+      # we control the tag name
+      # ex: <our_string name="column" />
       elif elem['type'] == "tag":
         if elem['value'].startswith(code):
           # use independant payloads, just remove the first character (<)
@@ -263,7 +265,8 @@ class mod_xss(Attack):
           for xss in self.independant_payloads:
             payloads.append("/>" + xss.replace("__XSS__", code))
 
-      # another common one
+      # we control the text of the tag
+      # ex: <textarea>our_string</textarea>
       elif elem['type'] == "text":
         payload = ""
         if elem['parent'] == "title": # Oops we are in the head
@@ -277,7 +280,7 @@ class mod_xss(Attack):
     return payloads
 
 
-  # Inject the js-code
+  # Inject the JS payload codes
   # GET and POST methods here
   def findXSS(self, page, args, var, code, referer, payloads, encoding=None):
     headers = {"accept": "text/plain"}
@@ -324,7 +327,7 @@ class mod_xss(Attack):
             dat = ""
             resp = timeout
 
-      if self.validXSS(dat, code):
+      if self.validXSS(dat, code, payload):
         if params != {}:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -392,7 +395,7 @@ class mod_xss(Attack):
             dat = ""
             resp = timeout
 
-      if self.validXSS(dat, code):
+      if self.validXSS(dat, code, payload):
         if params != {}:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.LOW_LEVEL_VULNERABILITY,
