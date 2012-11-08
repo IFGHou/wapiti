@@ -52,7 +52,8 @@ class mod_file(Attack):
       ("<b>Warning:</b>  show_source(",         "show_source()"),
       ("Warning: highlight_file(",              "highlight_file()"),
       ("<b>Warning:</b>  highlight_file(",      "highlight_file()"),
-      ("System.IO.FileNotFoundException:",      ".NET File.Open*")
+      ("System.IO.FileNotFoundException:",      ".NET File.Open*"),
+      ("error '800a0046'",                      "VBScript OpenTextFile")
       ]
 
   def __init__(self, HTTP, xmlRepGenerator):

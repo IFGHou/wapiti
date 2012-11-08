@@ -259,6 +259,11 @@ Supported options are:
       elif info["content-type"].find("text") == -1:
         return info
 
+    # No files more than 2MB
+    if info.has_key("content-length"):
+      if int(info["content-length"]) > 2097152:
+        return info
+
     data = resp.text
     page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
 

@@ -66,6 +66,10 @@ class mod_sql(Attack):
       return _("Interbase Injection")
     if data.find("Sybase message:") >= 0:
       return _("Sybase Injection")
+    if data.find("Unclosed quotation mark after the character string") >= 0:
+      return _(".NET SQL Injection")
+
+    #TODO: MS can also give some error codes like this: Microsoft SQL Native Client error '80040e14'
     ora_test = re.search("ORA-[0-9]{4,}", data)
     if ora_test != None:
       return _("Oracle Injection") + " " + ora_test.group(0)
