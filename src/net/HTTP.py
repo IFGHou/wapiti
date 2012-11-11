@@ -9,37 +9,39 @@ import requests
 import datetime
 
 class HTTPResponse:
-  data = ""
-  code = "200"
-  headers = {}
+  resp = None
 
-  def __init__(self, data, code, headers, peer, timestamp, encoding = ""):
-    self.data = data
-    self.code = code
-    self.headers = headers
+  def __init__(self, requests_resp, peer, timestamp):
+    self.resp = requests_resp
     self.peer = peer
     self.timestamp = timestamp
-    self.encoding = encoding
 
   def getPage(self):
-    "Return the content of the page."
-    return self.data
+    "Return the content of the page in unicode."
+    if self.resp.encoding:
+      return self.resp.text
+    else:
+      return self.resp.content
 
   def getRawPage(self):
-    "Return the content of the page."
-    return self.data.encode(self.encoding)
+    "Return the content of the page in raw bytes."
+    return self.resp.content
 
   def getCode(self):
     "Return the HTTP Response code ."
-    return self.code
+    return str(self.resp.status_code)
 
-  def getInfo(self):
+  def getHeaders(self):
     "Return the HTTP headers of the Response."
-    return self.headers
+    return self.resp.headers
 
   def getPageCode(self):
     "Return a tuple of the content and the HTTP Response code."
-    return (self.data, self.code)
+    return (self.getPage(), self.resp.status_code)
+
+  def getEncoding(self):
+    "Return the detected encoding for the page."
+    return self.resp.encoding
 
   def getPeer(self):
     """Return the network address of the server that delivered this Response.
@@ -98,20 +100,17 @@ class HTTP:
       self.init()
       self.configured = 1
 
-    data = ""
-    code = "0"
-    info = {}
+    resp = None
     _headers = {}
     _headers.update(http_headers)
     if post_data == None:
-      resp = self.h.get(target, headers = _headers, timeout = self.timeout)
+      resp = self.h.get(target, headers = _headers, timeout = self.timeout, allow_redirects = False)
     else:
       _headers.update({'content-type': 'application/x-www-form-urlencoded'})
       resp = self.h.post(target, headers = _headers, data = post_data, timeout = self.timeout)
-    data = resp.text
-    info = resp.headers
-    code = resp.status_code
-    return HTTPResponse(data, code, info, "", datetime.datetime.now(), encoding = resp.encoding)
+    if resp == None:
+      return None
+    return HTTPResponse(resp, "", datetime.datetime.now())
 
   def quote(self, url):
     "Encode a string with hex representation (%XX) for special characters."

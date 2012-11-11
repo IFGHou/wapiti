@@ -149,12 +149,11 @@ class mod_xss(Attack):
       self.PHP_SELF.append(page)
 
     for k in params.keys():
-      tmp = params
-      log = params.copy()
+      tmp = params.copy()
 
-      log[k] = "__XSS__"
-      if (page, log) not in self.attackedPOST:
-        self.attackedPOST.append((page, log))
+      tmp[k] = "__XSS__"
+      if (page, tmp) not in self.attackedPOST:
+        self.attackedPOST.append((page, tmp))
         code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
         tmp[k] = code
         # will only memorize the last used payload (working or not) but the code will always be the good
@@ -167,7 +166,7 @@ class mod_xss(Attack):
           resp = timeout
         # rapid search on the code to check injection
         if data.find(code) >= 0:
-          # found, now study where and what is possible
+          # found, now study where the payload is injected and how to exploit it
           payloads = self.generate_payloads(data, code)
           if payloads != []:
             self.findXSS(page, tmp, k, code, form[2], payloads, form[3])

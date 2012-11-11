@@ -73,7 +73,7 @@ class mod_nikto(Attack):
       page, code = resp.getPageCode()
       encoding = BeautifulSoup.BeautifulSoup(page).originalEncoding
       page = unicode(page, encoding, "ignore")
-      raw = " ".join([x + ": " + y for x,y in resp.getInfo().items()])
+      raw = " ".join([x + ": " + y for x,y in resp.getHeaders().items()])
       raw += page
 
       # First condition (match)

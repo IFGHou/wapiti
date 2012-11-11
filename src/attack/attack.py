@@ -127,6 +127,8 @@ class Attack:
             self.attackGET(page, dictio, headers)
           except socket.error, se:
             print 'error: %s while attacking %s' % (repr(str(se[0])), url)
+          except requests.exceptions.Timeout, te:
+            print 'error: timeout while attacking %s' % (url)
           except Exception, e:
             print 'error: %s while attacking %s' % (repr(str(e[0])), url)
 
@@ -135,5 +137,9 @@ class Attack:
           if form[1] != {}:
             try:
               self.attackPOST(form)
+            except socket.error, se:
+              print 'error: %s while attacking %s' % (repr(str(se[0])), url)
+            except requests.exceptions.Timeout, te:
+              print 'error: timeout while attacking %s' % (url)
             except Exception, e:
               print 'error: %s while attacking %s' % (repr(str(e[0])), url)

@@ -252,20 +252,26 @@ Supported options are:
     if proto == "http" or proto == "https":
       if not isinstance(proto, unicode): proto = unicode(proto)
       # Check the content-type first
-      if not info.has_key("content-type"):
+      #if not info.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
-        if (current.split(".")[-1] not in self.allowed) and current[-1] != "/":
-          return info
-      elif info["content-type"].find("text") == -1:
-        return info
+      #  if (current.split(".")[-1] not in self.allowed) and current[-1] != "/":
+      #    return info
+      #elif info["content-type"].find("text") == -1:
+      #  return info
 
     # No files more than 2MB
     if info.has_key("content-length"):
       if int(info["content-length"]) > 2097152:
         return info
 
-    data = resp.text
-    page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
+    page_encoding = resp.encoding
+    if page_encoding:
+      data = resp.text
+    else:
+      data = resp.content
+
+    #data = resp.text
+    #page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
 
     # Manage redirections
     if info.has_key("location"):
@@ -281,10 +287,11 @@ Supported options are:
             # No -> Will browse it soon
             self.tobrowse.append(redir)
 
-    if page_encoding != None:
-      htmlSource = unicode(data, page_encoding, "ignore")
-    else:
-      htmlSource = data
+    htmlSource = data
+    #if page_encoding != None:
+    #  htmlSource = unicode(data, page_encoding, "ignore")
+    #else:
+    #  htmlSource = data
 
     p = linkParser(url)
     try:
@@ -305,8 +312,8 @@ Supported options are:
     if len(p.liens) == 0:
       if page_encoding != None:
         htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify(page_encoding)
-      else:
-        htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+      #else:
+      #  htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
       try:
         p.reset()
         p.feed(htmlSource)
@@ -706,6 +713,11 @@ class linkParser(HTMLParser.HTMLParser):
     if tag.lower() in ["frame", "iframe"]:
       if "src" in tmpdict.keys():
         self.liens.append(tmpdict['src'])
+
+    if tag.lower() in ["img", "script", "embed", "track", "source"]:
+      if "src" in tmpdict.keys():
+        if "?" in tmpdict['src']:
+          self.liens.append(tmpdict['src'])
 
   def handle_endtag(self, tag):
     if tag.lower() == 'form':

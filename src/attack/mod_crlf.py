@@ -56,7 +56,7 @@ class mod_crlf(Attack):
           print "+ " + page + "?http://www.google.fr\\r\\nwapiti: SVN version"
         try:
           resp = self.HTTP.send(url)
-          if resp.getInfo().has_key('wapiti'):
+          if resp.getHeaders().has_key('wapiti'):
             self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               page, payload, err + " " + _("(QUERY_STRING)"), resp)
             print _("CRLF Injection (QUERY_STRING) in"), page
@@ -81,7 +81,7 @@ class mod_crlf(Attack):
             print "+ " + url
           try:
             resp = self.HTTP.send(url)
-            if resp.getInfo().has_key('wapiti'):
+            if resp.getHeaders().has_key('wapiti'):
               err = _("CRLF Injection")
               self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")", resp)
