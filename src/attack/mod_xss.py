@@ -34,10 +34,17 @@ class mod_xss(Attack):
 
   HTTP = None
 
-  # two dict for permanent XSS scanning
+  # two dict exported for permanent XSS scanning
+  # GET_XSS structure :
+  # {uniq_code : http://url/?param1=value1&param2=uniq_code&param3..., next_uniq_code : ...}
   GET_XSS = {}
+  # POST XSS structure :
+  # {uniq_code : [target_url, {param1: value1, param2: uniq_code, param3:...}, referer_ul], next_uniq_code : [...]...}
   POST_XSS = {}
   PHP_SELF = []
+
+  # key = xss code, value = payload
+  SUCCESSFUL_XSS = {}
 
   CONFIG_FILE = "xssPayloads.txt"
 
@@ -327,6 +334,7 @@ class mod_xss(Attack):
             resp = timeout
 
       if self.validXSS(dat, code, payload):
+        self.SUCCESSFUL_XSS[code] = payload
         if params != {}:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
@@ -395,6 +403,7 @@ class mod_xss(Attack):
             resp = timeout
 
       if self.validXSS(dat, code, payload):
+        self.SUCCESSFUL_XSS[code] = payload
         if params != {}:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.LOW_LEVEL_VULNERABILITY,
