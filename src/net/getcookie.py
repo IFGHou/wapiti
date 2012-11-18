@@ -23,10 +23,10 @@ import urlparse
 import sys
 import lswww
 import HTMLParser
-import libcookie
 import BeautifulSoup
-import httplib2
 import getopt
+import requests
+import jsoncookie
 
 if "_" not in dir():
   def _(s):
@@ -58,9 +58,9 @@ for o, a in opts:
 
 # Some websites/webapps like Webmin send a first cookie to see if the browser support them
 # so we must collect these test-cookies during authentification.
-lc = libcookie.libcookie(url)
-lc.loadfile(COOKIEFILE)
-lc.delete(urlparse.urlparse(url)[1])
+jc = jsoncookie.jsoncookie()
+jc.open(COOKIEFILE)
+jc.delete(urlparse.urlparse(url)[1])
 
 current = url.split("#")[0]
 current = current.split("?")[0]
@@ -69,19 +69,10 @@ proto = url.split("://")[0]
 
 txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
-if proxy != None and proxy != "":
-  (proxy_type, proxy_usr, proxy_pwd, proxy_host, proxy_port,
-   path, query, fragment) = httplib2.parse_proxy(proxy)
-  proxy = httplib2.ProxyInfo(proxy_type, proxy_host, proxy_port,
-      proxy_user = proxy_usr, proxy_pass = proxy_pwd)
+session = requests.session(proxies=proxy)
+r = session.get(url, headers=txheaders)
 
-h = httplib2.Http(timeout = TIMEOUT, proxy_info = proxy)
-try:
-    resp, htmlSource = h.request(url, headers=txheaders)
-except httplib2.HTTPTimeout:
-    print _("Error getting url"), url
-    sys.exit(1)
-
+htmlSource = r.text
 p = lswww.linkParser(url)
 try:
   p.feed(htmlSource)
@@ -94,7 +85,7 @@ except HTMLParser.HTMLParseError, err:
     p = lswww.linkParser2(url)
     p.feed(htmlSource)
 
-lc.addHttplib(resp, htmlSource)
+jc.addcookies(r.cookies)
 
 if len(p.forms) == 0:
   print _("No forms found in this page !")
@@ -135,13 +126,9 @@ params = urllib.urlencode(form[1])
 
 txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
               'Content-type': 'application/x-www-form-urlencoded'}
-txheaders.update( lc.headers_url(url) )
 
-try:
-    resp, content = h.request(url, "POST", headers=txheaders, body=params)
-except httplib2.HTTPTimeout:
-    print _("Error getting url"), url
-    sys.exit(1)
+r = session.post(url, data=params, headers=txheaders)
 
-lc.addHttplib(resp, content)
-lc.save(COOKIEFILE)
+jc.addcookies(r.cookies)
+jc.dump()
+jc.close()

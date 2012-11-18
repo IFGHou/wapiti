@@ -1,0 +1,115 @@
+import json
+import Cookie
+import cookielib
+import requests
+
+class jsoncookie:
+
+  cookiedict = None
+  fd = None
+
+  # return a dictionary on success, None on failure
+  def open(self, filename):
+    if not filename:
+      return None
+    try:
+      self.fd = open(filename, "r+")
+      self.cookiedict = json.load(self.fd)
+    except IOError:
+      self.fd = open(filename, "w+")
+      self.cookiedict = {}
+    return self.cookiedict
+
+  def addcookies(self, cookies):
+    if not isinstance(cookies, requests.cookies.RequestsCookieJar):
+      return False
+    for domain, pathdict in cookies._cookies.items():
+      if domain not in self.cookiedict.keys():
+        self.cookiedict[domain] = {}
+      for path, keydict in pathdict.items():
+        if path not in self.cookiedict[domain].keys():
+          self.cookiedict[domain][path] = {}
+        for key, cookieobj in keydict.items():
+          if isinstance(cookieobj, cookielib.Cookie):
+            print cookieobj
+            cookie_attrs = {}
+            cookie_attrs["value"]   = cookieobj.value
+            cookie_attrs["expires"] = cookieobj.expires
+            cookie_attrs["secure"]  = cookieobj.secure
+            cookie_attrs["port"]    = cookieobj.port
+            cookie_attrs["version"] = cookieobj.version
+            self.cookiedict[domain][path][key] = cookie_attrs
+
+  def cookiejar(self, domain, path):
+    if not (domain and path):
+      return None
+    if not domain in self.cookiedict.keys():
+      return None
+    if not path in self.cookiedict[domain].keys():
+      return None
+
+    cj = cookielib.CookieJar()
+    for cookie_name, cookie_attrs in self.cookiedict[domain][path].items():
+      ck = cookielib.Cookie(
+          version=cookie_attrs["version"],
+          name  = cookie_name,
+          value = cookie_attrs["value"],
+          port  = None,
+          port_specified = False,
+          domain = domain,
+          domain_specified = True,
+          domain_initial_dot = False,
+          path = path,
+          path_specified = True,
+          secure = cookie_attrs["secure"],
+          expires = cookie_attrs["expires"],
+          discard = True,
+          comment = None,
+          comment_url = None,
+          rest = {'HttpOnly': None},
+          rfc2109 = False)
+      #ck = Cookie.SimpleCookie()
+
+      if cookie_attrs["port"]:
+        ck.port = cookie_attrs["port"]
+        ck.port_specified = True
+
+      cj.set_cookie(ck)
+    return cj
+
+  def delete(self, domain, path=None, key=None):
+    if not domain:
+      return False
+    if domain not in self.cookiedict.keys():
+      return False
+
+    if not path:
+      # delete whole domain data
+      self.cookiedict.pop(domain)
+      return True
+
+    # path asked for deletion... but does not exist
+    if path not in self.cookiedict[domain].keys():
+      return False
+
+    if not key:
+      # remove every data on the specified domain for the matching path
+      self.cookiedict[domain].pop(path)
+      return True
+    
+    if key in self.cookiedict[domain][path].keys():
+      self.cookiedict[domain][path].pop(key)
+      return True
+    return False
+
+
+  def dump(self):
+    if not self.fd:
+      return False
+    self.fd.seek(0)
+    self.fd.truncate()
+    json.dump(self.cookiedict, self.fd, indent = 2)
+    return True
+
+  def close(self):
+    self.fd.close()
