@@ -24,11 +24,12 @@ class jsoncookie:
     if not isinstance(cookies, requests.cookies.RequestsCookieJar):
       return False
     for domain, pathdict in cookies._cookies.items():
-      if domain not in self.cookiedict.keys():
-        self.cookiedict[domain] = {}
+      dotdomain = domain if domain[0] == '.' else '.' + domain
+      if dotdomain not in self.cookiedict.keys():
+        self.cookiedict[dotdomain] = {}
       for path, keydict in pathdict.items():
-        if path not in self.cookiedict[domain].keys():
-          self.cookiedict[domain][path] = {}
+        if path not in self.cookiedict[dotdomain].keys():
+          self.cookiedict[dotdomain][path] = {}
         for key, cookieobj in keydict.items():
           if isinstance(cookieobj, cookielib.Cookie):
             print cookieobj
@@ -38,43 +39,47 @@ class jsoncookie:
             cookie_attrs["secure"]  = cookieobj.secure
             cookie_attrs["port"]    = cookieobj.port
             cookie_attrs["version"] = cookieobj.version
-            self.cookiedict[domain][path][key] = cookie_attrs
+            self.cookiedict[dotdomain][path][key] = cookie_attrs
 
-  def cookiejar(self, domain, path):
-    if not (domain and path):
+  def cookiejar(self, domain):
+    if not domain:
       return None
-    if not domain in self.cookiedict.keys():
-      return None
-    if not path in self.cookiedict[domain].keys():
+
+    dotdomain = domain if domain[0] == '.' else '.' + domain
+    exploded = dotdomain.split(".")
+    parent_domains = [".%s" % (".".join(exploded[x:])) for x in range(1, len(exploded) - 1)]
+    matching_domains = [d for d in parent_domains if d in self.cookiedict]
+    if not matching_domains:
       return None
 
     cj = cookielib.CookieJar()
-    for cookie_name, cookie_attrs in self.cookiedict[domain][path].items():
-      ck = cookielib.Cookie(
-          version=cookie_attrs["version"],
-          name  = cookie_name,
-          value = cookie_attrs["value"],
-          port  = None,
-          port_specified = False,
-          domain = domain,
-          domain_specified = True,
-          domain_initial_dot = False,
-          path = path,
-          path_specified = True,
-          secure = cookie_attrs["secure"],
-          expires = cookie_attrs["expires"],
-          discard = True,
-          comment = None,
-          comment_url = None,
-          rest = {'HttpOnly': None},
-          rfc2109 = False)
-      #ck = Cookie.SimpleCookie()
+    for d in matching_domains:
+      for path in self.cookiedict[d]:
+        for cookie_name, cookie_attrs in self.cookiedict[d][path].items():
+          ck = cookielib.Cookie(
+              version=cookie_attrs["version"],
+              name  = cookie_name,
+              value = cookie_attrs["value"],
+              port  = None,
+              port_specified = False,
+              domain = d,
+              domain_specified = True,
+              domain_initial_dot = False,
+              path = path,
+              path_specified = True,
+              secure = cookie_attrs["secure"],
+              expires = cookie_attrs["expires"],
+              discard = True,
+              comment = None,
+              comment_url = None,
+              rest = {'HttpOnly': None},
+              rfc2109 = False)
 
-      if cookie_attrs["port"]:
-        ck.port = cookie_attrs["port"]
-        ck.port_specified = True
+          if cookie_attrs["port"]:
+            ck.port = cookie_attrs["port"]
+            ck.port_specified = True
 
-      cj.set_cookie(ck)
+          cj.set_cookie(ck)
     return cj
 
   def delete(self, domain, path=None, key=None):
