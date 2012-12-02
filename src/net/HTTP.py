@@ -7,6 +7,7 @@ import os
 import cgi
 import requests
 import datetime
+import jsoncookie
 
 class HTTPResponse:
   resp = None
@@ -58,7 +59,6 @@ class HTTP:
   root = ""
   myls = ""
   server = ""
-  cookie = ""
   proxy = ""
   auth_basic = []
   timeout = 6.0
@@ -80,7 +80,7 @@ class HTTP:
     proxy = None
 
     #TODO: bring back proxy sypport, auth and cookie serialization
-    self.h = requests.session(proxies = {})
+    self.h = requests.session(proxies = {}, cookies = self.cookiejar)
     
   def browse(self, crawlerFile):
     "Explore the entire website under the pre-defined root-url."
@@ -157,10 +157,12 @@ class HTTP:
 
   def setCookieFile(self, cookie):
     "Load session data from a cookie file"
-    self.cookie = cookie
-    if os.path.isfile(self.cookie):
-      self.cookiejar.loadfile(self.cookie)
+    if os.path.isfile(cookie):
+      jc = jsoncookie.jsoncookie()
+      jc.open(cookie)
+      self.cookiejar = jc.cookiejar(self.server)
       self.myls.setCookieFile(cookie)
+      jc.close()
 
   def setAuthCredentials(self, auth_basic):
     "Set credentials to use if the website require an authentification."

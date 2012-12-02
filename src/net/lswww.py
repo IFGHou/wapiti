@@ -23,6 +23,7 @@ import socket
 import getopt
 import os
 import HTMLParser
+import jsoncookie
 
 from distutils.sysconfig import get_python_lib
 BASE_DIR = None
@@ -133,7 +134,6 @@ Supported options are:
             'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
             'shtml', 'phtm', 'phtml', 'jhtml', 'pl', 'jsp', 'cfm', 'cfml']
   verbose = 0
-  cookie = ""
   auth_basic = []
   bad_params = []
   timeout = 6.0
@@ -200,7 +200,11 @@ Supported options are:
 
   def setCookieFile(self, cookie):
     """Set the file to read the cookie from"""
-    self.cookie = cookie
+    if os.path.isfile(cookie):
+      jc = jsoncookie.jsoncookie()
+      jc.open(cookie)
+      self.cookiejar = jc.cookiejar(self.server)
+      jc.close()
 
   def setAuthCredentials(self, auth_basic):
     self.auth_basic = auth_basic
@@ -517,7 +521,7 @@ Supported options are:
   def go(self, crawlerFile):
     proxy = None
     #TODO: but back proxies and co
-    self.h = requests.session(proxies = {})
+    self.h = requests.session(proxies = {}, cookies = self.cookiejar)
 
     # load of the crawler status if a file is passed to it.
     if crawlerFile != None:
