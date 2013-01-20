@@ -402,6 +402,7 @@ if __name__ == "__main__":
         if (a.find("http://", 0) == 0) or (a.find("https://", 0) == 0):
           wap.addExcludedURL(a)
       if o in ("-p", "--proxy"):
+        if a.startswith("http://") or a.startswith("https://"):
           wap.setProxy(a)
       if o in ("-c", "--cookie"):
         wap.setCookieFile(a)

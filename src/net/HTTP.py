@@ -59,7 +59,7 @@ class HTTP:
   root = ""
   myls = ""
   server = ""
-  proxy = ""
+  proxies = {}
   auth_basic = []
   timeout = 6.0
   h = None
@@ -76,11 +76,8 @@ class HTTP:
     socket.setdefaulttimeout(self.timeout)
 
   def init(self):
-    # HttpLib2 vars
-    proxy = None
-
-    #TODO: bring back proxy sypport, auth and cookie serialization
-    self.h = requests.session(proxies = {}, cookies = self.cookiejar)
+    #TODO: bring back auth (htaccess)
+    self.h = requests.session(proxies = self.proxies, cookies = self.cookiejar)
     
   def browse(self, crawlerFile):
     "Explore the entire website under the pre-defined root-url."
@@ -144,7 +141,12 @@ class HTTP:
 
   def setProxy(self, proxy = ""):
     "Set a proxy to use for HTTP requests."
-    self.proxy = proxy
+    url_parts = urlparse.urlparse(proxy)
+    protocol = url_parts.scheme
+    host = url_parts.netloc
+    if protocol in ["http", "https"]:
+      if host:
+        self.proxies[protocol] = "%s://%s/" % (protocol, host)
     self.myls.setProxy(proxy)
 
   def addStartURL(self, url):

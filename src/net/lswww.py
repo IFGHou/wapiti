@@ -24,6 +24,7 @@ import getopt
 import os
 import HTMLParser
 import jsoncookie
+import urlparse
 
 from distutils.sysconfig import get_python_lib
 BASE_DIR = None
@@ -126,7 +127,7 @@ Supported options are:
   server = ""
   tobrowse = []
   browsed = {}
-  proxy = ""
+  proxies = {}
   excluded = []
   forms = []
   uploads = []
@@ -174,7 +175,12 @@ Supported options are:
 
   def setProxy(self, proxy = ""):
     """Set proxy preferences"""
-    self.proxy = proxy
+    url_parts = urlparse.urlparse(proxy)
+    protocol = url_parts.scheme
+    host = url_parts.netloc
+    if protocol in ["http", "https"]:
+      if host:
+        self.proxies[protocol] = "%s://%s/" % (protocol, host)
 
   def setNice(self, nice=0):
     """Set the maximum of urls to visit with the same pattern"""
@@ -519,9 +525,8 @@ Supported options are:
     return match
 
   def go(self, crawlerFile):
-    proxy = None
     #TODO: but back proxies and co
-    self.h = requests.session(proxies = {}, cookies = self.cookiejar)
+    self.h = requests.session(proxies = self.proxies, cookies = self.cookiejar)
 
     # load of the crawler status if a file is passed to it.
     if crawlerFile != None:
@@ -921,7 +926,6 @@ if __name__ == "__main__":
   def _(text):
     return text
   try:
-    prox = ""
     auth = []
     xmloutput = ""
     crawlerFile = None
