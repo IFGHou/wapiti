@@ -298,6 +298,20 @@ Supported options are:
             self.tobrowse.append(redir)
 
     htmlSource = data
+    bs = BeautifulSoup.BeautifulSoup(htmlSource)
+    # Look for a base tag with an href attribute
+    if bs.head:
+      baseTags = bs.head.findAll("base")
+      for base in baseTags:
+        if base.has_key("href"):
+          # Found a base url, now set it as the current url
+          current = base["href"].split("#")[0]
+          # We don't need destination anchors
+          current = current.split("?")[0]
+          # Get the dirname of the file
+          currentdir = "/".join(current.split("/")[:-1]) + "/"
+          break
+
     #if page_encoding != None:
     #  htmlSource = unicode(data, page_encoding, "ignore")
     #else:
