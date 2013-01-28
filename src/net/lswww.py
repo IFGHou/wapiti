@@ -684,6 +684,7 @@ class linkParser(HTMLParser.HTMLParser):
     self.forms = []
     self.form_values = {}
     self.inform = 0
+    self.inscript = 0
     self.current_form_url = url
     self.uploads = []
     self.current_form_method = "get"
@@ -737,7 +738,13 @@ class linkParser(HTMLParser.HTMLParser):
       if "src" in tmpdict.keys():
         self.liens.append(tmpdict['src'])
 
-    if tag.lower() in ["img", "script", "embed", "track", "source"]:
+    if tag.lower() in ["img", "embed", "track", "source"]:
+      if "src" in tmpdict.keys():
+        if "?" in tmpdict['src']:
+          self.liens.append(tmpdict['src'])
+
+    if tag.lower() == "script":
+      self.inscript = 1
       if "src" in tmpdict.keys():
         if "?" in tmpdict['src']:
           self.liens.append(tmpdict['src'])
@@ -751,6 +758,16 @@ class linkParser(HTMLParser.HTMLParser):
         l = ["=".join([k, v]) for k, v in self.form_values.items()]
         l.sort()
         self.liens.append(self.current_form_url.split("?")[0] + "?" + "&".join(l))
+    if tag.lower() == 'script':
+      self.inscript = 0
+
+  def handle_data(self, data):
+    if self.inscript:
+      candidates = re.findall(r'"([A-Za-z0-9_=#&%\.\+\?/-]*)"', data)
+      candidates += re.findall(r"'([A-Za-z0-9_=#&%\.\+\?/-]*)'", data)
+      for jstr in candidates:
+        if '/' in jstr or '.' in jstr or '?' in jstr:
+          self.liens.append(jstr)
 
 class linkParser2:
   verbose = 0
