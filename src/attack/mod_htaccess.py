@@ -25,18 +25,19 @@ class mod_htaccess(Attack):
   #this function return code signification when htaccess protection enabled
   def __returnErrorByCode(self, code):
     err = ""
-    if code == "401":
+    code = int(code)
+    if code == 401:
       err = "Authorization Required"
-    elif code == "402":
+    elif code == 402:
       err = "Payment Required"
-    elif code == "403":
+    elif code == 403:
       err = "Forbidden"
     else:
       err = "ok"
     return err
 
 
-  def attackGET(self, page, dict, headers = {}):
+  def attackGET(self, page, params_list, headers = {}):
     err = ""
     url = page
     err500 = 0
@@ -45,18 +46,16 @@ class mod_htaccess(Attack):
       if self.verbose == 2:
         print "+ " + url
       
-      err1 = self.__returnErrorByCode(headers["status"])
+      err1 = self.__returnErrorByCode(headers["status_code"])
       
       if err1 != "ok":
         data1 = self.HTTP.send(url).getPage()
         #htaccess protection detected
         if self.verbose >= 1:
           print _("HtAccess protection found:"), url
-
         
         data2, code2 = self.HTTP.send(url, method = "ABC").getPageCode()
         err2 = self.__returnErrorByCode(code2)
-        
         
         if err2 == "ok":
           #htaccess bypass success
@@ -64,9 +63,9 @@ class mod_htaccess(Attack):
           #print output informations by verbosity option
           if self.verbose >= 1:
             if self.color == 1:
-              print self.CYAN + "|HTTP Code : ", headers["status"], ":", err1 + self.STD
+              print self.CYAN + "|HTTP Code : ", headers["status_code"], ":", err1 + self.STD
             else:
-              print "|HTTP Code : ", headers["status"], ":", err1
+              print "|HTTP Code : ", headers["status_code"], ":", err1
 
           if self.verbose == 2:
             if self.color == 1:

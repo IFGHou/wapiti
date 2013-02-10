@@ -2,6 +2,7 @@ import socket
 from attack import Attack
 from vulnerability import Vulnerability
 import requests
+from copy import deepcopy
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -37,10 +38,10 @@ class mod_crlf(Attack):
     Attack.__init__(self, HTTP, xmlRepGenerator)
 
   # Won't work with PHP >= 4.4.2
-  def attackGET(self, page, dict, headers = {}):
+  def attackGET(self, page, params_list, headers = {}):
     """This method performs the CRLF attack with method GET"""
-    payload="http://www.google.fr\r\nwapiti: SVN version"
-    if dict == {}:
+    payload = "http://www.google.fr\r\nwapiti: SVN version"
+    if not params_list:
       # Do not attack application-type files
       if not headers.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
@@ -71,10 +72,12 @@ class mod_crlf(Attack):
           pass
         self.attackedGET.append(url)
     else:
-      for k in dict.keys():
+      for i in range(len(params_list)):
         err = ""
-        tmp = dict.copy()
-        tmp[k] = payload
+        tmp = deepcopy(params_list)
+        tmp[i][1] = payload
+        k = tmp[i][0]
+
         url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
         if url not in self.attackedGET:
           if self.verbose == 2:

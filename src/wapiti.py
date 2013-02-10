@@ -27,6 +27,7 @@
 import sys
 import getopt
 import os
+import urlparse
 
 from distutils.sysconfig import get_python_lib
 
@@ -58,7 +59,7 @@ if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
 from language.language import Language
 lan = Language()
 lan.configure()
-from net import HTTP
+from net import HTTP, lswww
 from file.reportgeneratorsxmlparser import ReportGeneratorsXMLParser
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
 from net.crawlerpersister import CrawlerPersister
@@ -167,14 +168,17 @@ Supported options are:
 
   options = ""
 
-  HTTP = None
+  http_engine = None
+  myls = None
   reportGen = None
 
   attacks = []
 
 
-  def __init__(self, rooturl):
-    self.HTTP = HTTP.HTTP(rooturl)
+  def __init__(self, root_url):
+    server = urlparse.urlparse(root_url).netloc
+    self.http_engine = HTTP.HTTP(server)
+    self.myls = HTTP.lswww.lswww(root_url, http_engine = self.http_engine)
     self.xmlRepGenParser = ReportGeneratorsXMLParser()
     self.xmlRepGenParser.parse(os.path.join(CONF_DIR, "config/reports/generators.xml"))
 
@@ -199,9 +203,9 @@ Supported options are:
     print "\t"+ ", ".join(attack.modules)
     for mod_name in attack.modules:
       mod = __import__("attack." + mod_name, fromlist=attack.modules)
-      mod_instance = getattr(mod, mod_name)(self.HTTP, self.reportGen)
+      mod_instance = getattr(mod, mod_name)(self.http_engine, self.reportGen)
       if hasattr(mod_instance, "setTimeout"):
-        mod_instance.setTimeout(self.HTTP.getTimeOut())
+        mod_instance.setTimeout(self.http_engine.getTimeOut())
       self.attacks.append(mod_instance)
 
       self.attacks.sort(lambda a, b: a.PRIORITY - b.PRIORITY)
@@ -258,7 +262,10 @@ Supported options are:
 
   def browse(self,crawlerFile):
     "Extract hyperlinks and forms from the webpages found on the website"
-    self.urls, self.forms = self.HTTP.browse(crawlerFile)
+    #self.urls, self.forms = self.myls.go(crawlerFile)
+    self.myls.go(crawlerFile)
+    self.urls = self.myls.getLinks()
+    self.forms = self.myls.getForms()
 
   def attack(self):
     "Launch the attacks based on the preferences set by the command line"
@@ -285,10 +292,10 @@ Supported options are:
       print "[+]", _("Launching module"), x.name
       x.attack(self.urls, self.forms)
 
-    if self.HTTP.getUploads() != []:
+    if self.myls.getUploads() != []:
       print "\n" + _("Upload scripts found") + ":"
       print "----------------------"
-      for url in self.HTTP.getUploads():
+      for url in self.myls.getUploads():
         print url
     if not self.outputFile:
       if self.reportGeneratorType == "html":
@@ -305,41 +312,41 @@ Supported options are:
 
   def setTimeOut(self, timeout = 6.0):
     "Set the timeout for the time waiting for a HTTP response"
-    self.HTTP.setTimeOut(timeout)
+    self.http_engine.setTimeOut(timeout)
 
   def setProxy(self, proxy = ""):
     "Set a proxy to use for HTTP requests."
-    self.HTTP.setProxy(proxy)
+    self.http_engine.setProxy(proxy)
 
   def addStartURL(self, url):
     "Specify an URL to start the scan with. Can be called several times."
-    self.HTTP.addStartURL(url)
+    self.myls.addStartURL(url)
 
   def addExcludedURL(self, url):
     "Specify an URL to exclude from the scan. Can be called several times."
-    self.HTTP.addExcludedURL(url)
+    self.myls.addExcludedURL(url)
 
   def setCookieFile(self, cookie):
     "Load session data from a cookie file"
-    self.HTTP.setCookieFile(cookie)
+    self.http_engine.setCookieFile(cookie)
 
   def setAuthCredentials(self, auth_basic):
     "Set credentials to use if the website require an authentification."
-    self.HTTP.setAuthCredentials(auth_basic)
+    self.http_engine.setAuthCredentials(auth_basic)
 
   def addBadParam(self, bad_param):
     """Exclude a parameter from an url (urls with this parameter will be
     modified. This function can be call several times"""
-    self.HTTP.addBadParam(bad_param)
+    self.myls.addBadParam(bad_param)
 
   def setNice(self, nice):
     """Define how many tuples of parameters / values must be sent for a
     given URL. Use it to prevent infinite loops."""
-    self.HTTP.setNice(nice)
+    self.myls.setNice(nice)
 
   def setScope(self, scope):
     """Set the scope of the crawler for the analysis of the web pages"""
-    self.HTTP.setScope(scope)
+    self.myls.setScope(scope)
 
   def setColor(self):
     "Put colors in the console output (terminal must support colors)"
@@ -348,7 +355,7 @@ Supported options are:
   def verbosity(self, vb):
     "Define the level of verbosity of the output."
     self.verbose = vb
-    self.HTTP.verbosity(vb)
+    self.myls.verbosity(vb)
 
   def setModules(self, options = ""):
     """Activate or desactivate (default) all attacks"""

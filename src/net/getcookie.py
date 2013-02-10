@@ -45,6 +45,7 @@ TIMEOUT = 6
 COOKIEFILE = sys.argv[1]
 url = sys.argv[2]
 proxy = None
+server = urlparse.urlparse(url).netloc
 
 try:
   opts, args = getopt.getopt(sys.argv[3:], "p:",
@@ -60,7 +61,7 @@ for o, a in opts:
 # so we must collect these test-cookies during authentification.
 jc = jsoncookie.jsoncookie()
 jc.open(COOKIEFILE)
-jc.delete(urlparse.urlparse(url)[1])
+jc.delete(server)
 
 current = url.split("#")[0]
 current = current.split("?")[0]
@@ -73,11 +74,13 @@ session = requests.session(proxies=proxy)
 r = session.get(url, headers=txheaders)
 
 htmlSource = r.text
+bs = BeautifulSoup.BeautifulSoup(htmlSource)
+
 p = lswww.linkParser(url)
 try:
   p.feed(htmlSource)
 except HTMLParser.HTMLParseError, err:
-  htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+  htmlSource = bs.prettify()
   try:
     p.reset()
     p.feed(htmlSource)
@@ -114,20 +117,19 @@ form = p.forms[nchoice]
 print _("Please enter values for the following form: ")
 print "url = " + myls.correctlink(form[0], current, currentdir, proto)
 
-d = {}
-for field, value in form[1].items():
+for i in range(len(form[1])):
+  field, value = form[1][i]
   str = raw_input(field + " (" + value + ") : ")
-  d[field] = str
+  form[1][i] = [field, str]
 
-form[1].update(d)
 url = myls.correctlink(form[0], current, currentdir, proto)
 
-params = urllib.urlencode(form[1])
+#params = urllib.urlencode(form[1])
 
 txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
               'Content-type': 'application/x-www-form-urlencoded'}
 
-r = session.post(url, data=params, headers=txheaders)
+r = session.post(url, data=form[1], headers=txheaders)
 
 jc.addcookies(r.cookies)
 jc.dump()

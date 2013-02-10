@@ -3,6 +3,7 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
+from copy import deepcopy
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -56,10 +57,10 @@ class mod_exec(Attack):
       warn = 1
     return err, cmd, warn
 
-  def attackGET(self, page, dict, headers = {}):
+  def attackGET(self, page, params_list, headers = {}):
     """This method performs the command execution with method GET"""
 
-    if dict == {}:
+    if not params_list:
       # Do not attack application-type files
       if not headers.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
@@ -71,9 +72,11 @@ class mod_exec(Attack):
       warn = 0
       cmd = 0
       err500 = 0
+
       for payload in self.payloads:
         err = ""
         url = page + "?" + self.HTTP.quote(payload)
+
         if url not in self.attackedGET:
           if self.verbose == 2:
             print "+ " + url
@@ -108,15 +111,19 @@ class mod_exec(Attack):
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "  " + _("Evil url") + ":", url
-    for k in dict.keys():
+
+    for i in range(len(params_list)):
       warn = 0
       cmd = 0
       err500 = 0
+
       for payload in self.payloads:
         err = ""
-        tmp = dict.copy()
-        tmp[k] = payload
+        tmp = deepcopy(params_list)
+        tmp[i][1] = payload
+        k = tmp[i][0]
         url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
+
         if url not in self.attackedGET:
           if self.verbose == 2:
             print "+ " + url
@@ -157,15 +164,17 @@ class mod_exec(Attack):
   def attackPOST(self, form):
     """This method performs the command execution with method POST"""
     page = form[0]
-    dict = form[1]
+    params_list = form[1]
     err = ""
     for payload in self.payloads:
       warn = 0
       cmd = 0
       err500 = 0
-      for k in dict.keys():
-        tmp = dict.copy()
-        tmp[k] = payload
+      for i in range(len(params_list)):
+        tmp = deepcopy(params_list)
+        tmp[i][1] = payload
+        k = tmp[i][0]
+
         if (page, tmp) not in self.attackedPOST:
           self.attackedPOST.append((page, tmp))
           if cmd == 1: continue
@@ -174,7 +183,7 @@ class mod_exec(Attack):
             print "+ " + page
             print "  ", tmp
           try:
-            data, code = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers).getPageCode()
+            data, code = self.HTTP.send(page, post_data = self.HTTP.encode(tmp, form[3]), http_headers = headers).getPageCode()
           except requests.exceptions.Timeout, timeout:
             data = ""
             code = "408"

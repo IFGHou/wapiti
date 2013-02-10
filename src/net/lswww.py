@@ -25,6 +25,7 @@ import os
 import HTMLParser
 import jsoncookie
 import urlparse
+import HTTP
 
 from distutils.sysconfig import get_python_lib
 BASE_DIR = None
@@ -149,7 +150,8 @@ Supported options are:
   # 0 means no limits
   nice = 0
 
-  def __init__(self, root, crawlerFile=None):
+  def __init__(self, root, http_engine = None, crawlerFile = None):
+    self.h = http_engine
     if root.startswith("-"):
       print _("First argument must be the root url !")
       sys.exit(0)
@@ -218,9 +220,14 @@ Supported options are:
   def addBadParam(self, bad_param):
     self.bad_params.append(bad_param)
 
-  def browse(self, url):
+  def browse(self, web_resource):
     """Extract urls from a webpage and add them to the list of urls to browse if they aren't in the exclusion list"""
     # return an empty dictionnary => won't be logged
+
+    if isinstance(web_resource, HTTP.HTTPResource):
+      url = web_resource.url()
+    else:
+      url = web_resource
 
     # We don't need destination anchors
     current = url.split("#")[0]
@@ -236,7 +243,12 @@ Supported options are:
     headers = {}
     headers["user-agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     try:
-      resp = self.h.get(url, headers = headers, timeout = self.timeout)
+      if isinstance(web_resource, HTTP.HTTPResource):
+        headers['content-type'] = 'application/x-www-form-urlencoded'
+        headers['referer'] = web_resource[2]
+        resp = self.h.post(url, data = web_resource[1], headers = headers, timeout = self.timeout)
+      else:
+        resp = self.h.get(url, headers = headers, timeout = self.timeout)
     except socket.timeout:
       self.excluded.append(url)
       return {}
@@ -254,6 +266,7 @@ Supported options are:
 
     info = resp.headers
     code = resp.status_code
+    info["status_code"] = str(code)
 
     if not self.link_encoding.has_key(url):
       self.link_encoding[url] = ""
@@ -278,6 +291,7 @@ Supported options are:
     if page_encoding:
       data = resp.text
     else:
+      # Can't find an encoding... beware of non-html content
       data = resp.content
 
     #data = resp.text
@@ -290,7 +304,7 @@ Supported options are:
         if(self.__inzone(redir) == 0):
           self.link_encoding[redir] = self.link_encoding[url]
           # Is the document already visited of forbidden ?
-          if (redir in self.browsed.keys()) or (redir in self.tobrowse) or \
+          if (redir in self.browsed) or (redir in self.tobrowse) or \
               self.isExcluded(redir):
             pass
           else:
@@ -298,19 +312,20 @@ Supported options are:
             self.tobrowse.append(redir)
 
     htmlSource = data
-    bs = BeautifulSoup.BeautifulSoup(htmlSource)
-    # Look for a base tag with an href attribute
-    if bs.head:
-      baseTags = bs.head.findAll("base")
-      for base in baseTags:
-        if base.has_key("href"):
-          # Found a base url, now set it as the current url
-          current = base["href"].split("#")[0]
-          # We don't need destination anchors
-          current = current.split("?")[0]
-          # Get the dirname of the file
-          currentdir = "/".join(current.split("/")[:-1]) + "/"
-          break
+    if page_encoding:
+      bs = BeautifulSoup.BeautifulSoup(htmlSource)
+      # Look for a base tag with an href attribute
+      if bs.head:
+        baseTags = bs.head.findAll("base")
+        for base in baseTags:
+          if base.has_key("href"):
+            # Found a base url, now set it as the current url
+            current = base["href"].split("#")[0]
+            # We don't need destination anchors
+            current = current.split("?")[0]
+            # Get the dirname of the file
+            currentdir = "/".join(current.split("/")[:-1]) + "/"
+            break
 
     #if page_encoding != None:
     #  htmlSource = unicode(data, page_encoding, "ignore")
@@ -354,7 +369,7 @@ Supported options are:
       if lien != None:
         if(self.__inzone(lien) == 0):
           # Is the document already visited of forbidden ?
-          if (lien in self.browsed.keys()) or (lien in self.tobrowse) or self.isExcluded(lien):
+          if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
             pass
           elif self.nice > 0:
             if self.__countMatches(lien) >= self.nice:
@@ -372,6 +387,9 @@ Supported options are:
       if action == None: action = current
       form = (action, form[1], url, page_encoding)
       if form[0:3] not in [x[0:3] for x in self.forms]: self.forms.append(form)
+      form_rsrc = HTTP.HTTPResource(action, method = "POST", post_data = form[1], encoding = page_encoding, referer = url)
+      if not (form_rsrc in self.browsed and form_rsrc in self.tobrowse):
+        self.tobrowse.append(form_rsrc)
     # We automaticaly exclude 404 urls
     if code == "404":
       self.excluded.append(url)
@@ -490,15 +508,15 @@ Supported options are:
           start = url.find("=", i)
           i = url.find("&", start)
           if i != -1:
-            for u in self.browsed.keys():
+            for u in self.browsed:
               if u.startswith(url[:start] + "=") and u.endswith(url[i:]):
                 matches += 1
           else:
-            for u in self.browsed.keys():
+            for u in self.browsed:
               if u.startswith(url[:start] + "="):
                 matches += 1
       else:#QUERY_STRING
-        for a in [u for u in self.browsed.keys() if u.find("=") < 0]:
+        for a in [u for u in self.browsed if u.find("=") < 0]:
           if a.startswith(url.split("?")[0]):
             matches += 1
     return matches
@@ -557,7 +575,7 @@ Supported options are:
           for x in self.tobrowse:
             print "    + " + x
           print " * " + _("URLs browsed")
-          for x in self.browsed.keys():
+          for x in self.browsed:
             print "    + " + x
       else:
         print _("File") + " " + crawlerFile + " " + _("not found, Wapiti will scan again the web site")
@@ -568,7 +586,7 @@ Supported options are:
     try:
       while len(self.tobrowse) > 0:
         lien = self.tobrowse.pop(0)
-        if (lien not in self.browsed.keys() and lien not in self.excluded):
+        if (lien not in self.browsed and lien not in self.excluded):
           headers = self.browse(lien)
           if headers != {}:
             if not headers.has_key("link_encoding"):
@@ -632,7 +650,7 @@ Supported options are:
     items = xml.createElement("items")
     xml.appendChild(items)
 
-    for lien in self.browsed.keys():
+    for lien in self.browsed:
       get = xml.createElement("get")
       get.setAttribute("url", lien)
       items.appendChild(get)
@@ -682,7 +700,7 @@ class linkParser(HTMLParser.HTMLParser):
     HTMLParser.HTMLParser.__init__(self)
     self.liens = []
     self.forms = []
-    self.form_values = {}
+    self.form_values = []
     self.inform = 0
     self.inscript = 0
     self.current_form_url = url
@@ -696,56 +714,59 @@ class linkParser(HTMLParser.HTMLParser):
     for k, v in dict(attrs).items():
       tmpdict[k.lower()] = v
     if tag.lower() == 'a':
-      if "href" in tmpdict.keys():
+      if "href" in tmpdict:
         self.liens.append(tmpdict['href'])
 
     if tag.lower() == 'form':
       self.inform = 1
-      self.form_values = {}
+      self.form_values = []
       self.current_form_url = self.url
-      if "action" in tmpdict.keys():
+      if "action" in tmpdict:
         self.liens.append(tmpdict['action'])
         self.current_form_url = tmpdict['action']
 
       # Forms use GET method by default
       self.current_form_method = "get"
-      if "method" in tmpdict.keys():
+      if "method" in tmpdict:
         if tmpdict["method"].lower() == "post":
           self.current_form_method = "post"
 
     if tag.lower() == 'input':
       if self.inform == 1:
-        if "type" not in tmpdict.keys():
+        if "type" not in tmpdict:
           tmpdict["type"] = "text"
-        if "name" in tmpdict.keys():
+        if "name" in tmpdict:
           if tmpdict['type'].lower() in ['text', 'password', 'radio',
               'checkbox', 'hidden', 'submit', 'search']:
           # use default value if present or set it to 'on'
-            if "value" in tmpdict.keys():
-              if tmpdict["value"] != "": val = tmpdict["value"]
-              else: val = u"on"
-            else: val = u"on"
-            self.form_values.update(dict([(tmpdict['name'], val)]))
+            if "value" in tmpdict:
+              if tmpdict["value"] != "":
+                val = tmpdict["value"]
+              else:
+                val = u"on"
+            else:
+              val = u"on"
+            self.form_values.append([tmpdict['name'], val])
           if tmpdict['type'].lower() == "file":
             self.uploads.append(self.current_form_url)
 
     if tag.lower() in ["textarea", "select"]:
       if self.inform == 1:
-        if "name" in tmpdict.keys():
-          self.form_values.update(dict([(tmpdict['name'], u'on')]))
+        if "name" in tmpdict:
+          self.form_values.append([tmpdict['name'], u'on'])
 
     if tag.lower() in ["frame", "iframe"]:
-      if "src" in tmpdict.keys():
+      if "src" in tmpdict:
         self.liens.append(tmpdict['src'])
 
     if tag.lower() in ["img", "embed", "track", "source"]:
-      if "src" in tmpdict.keys():
+      if "src" in tmpdict:
         if "?" in tmpdict['src']:
           self.liens.append(tmpdict['src'])
 
     if tag.lower() == "script":
       self.inscript = 1
-      if "src" in tmpdict.keys():
+      if "src" in tmpdict:
         if "?" in tmpdict['src']:
           self.liens.append(tmpdict['src'])
 
@@ -755,7 +776,7 @@ class linkParser(HTMLParser.HTMLParser):
       if self.current_form_method == "post":
         self.forms.append((self.current_form_url, self.form_values))
       else:
-        l = ["=".join([k, v]) for k, v in self.form_values.items()]
+        l = ["=".join([k, v]) for k, v in self.form_values]
         l.sort()
         self.liens.append(self.current_form_url.split("?")[0] + "?" + "&".join(l))
     if tag.lower() == 'script':
@@ -776,7 +797,7 @@ class linkParser2:
   def __init__(self, url = "", verb = 0):
     self.liens = []
     self.forms = []
-    self.form_values = {}
+    self.form_values = []
     self.inform = 0
     self.current_form_url = ""
     self.uploads = []
@@ -868,7 +889,7 @@ class linkParser2:
       tmpdict = {}
       for k, v in dict(linkAttributes[i]).items():
         tmpdict[k.lower()] = v
-      if "href" in tmpdict.keys():
+      if "href" in tmpdict:
         self.liens.append(self.__decode_htmlentities(tmpdict['href']))
         if(self.verbose == 3):
           print self.__decode_htmlentities(tmpdict['href'])
@@ -877,14 +898,14 @@ class linkParser2:
       tmpdict = {}
       for k, v in dict(formsAttributes[i]).items():
         tmpdict[k.lower()] = v
-      self.form_values = {}
-      if "action" in tmpdict.keys():
+      self.form_values = []
+      if "action" in tmpdict:
         self.liens.append(self.__decode_htmlentities(tmpdict['action']))
         self.current_form_url = self.__decode_htmlentities(tmpdict['action'])
 
       # Forms use GET method by default
       self.current_form_method = "get"
-      if "method" in tmpdict.keys():
+      if "method" in tmpdict:
         if tmpdict["method"].lower() == "post":
           self.current_form_method = "post"
 
@@ -892,18 +913,18 @@ class linkParser2:
         tmpdict = {}
         for k, v in dict(inputsAttributes[i][j]).items():
           tmpdict[k.lower()] = v
-          if "type" not in tmpdict.keys():
+          if "type" not in tmpdict:
             tmpdict["type"] = "text"
-          if "name" in tmpdict.keys():
+          if "name" in tmpdict:
             if tmpdict['type'].lower() in \
               ['text', 'password', 'radio', 'checkbox', 'hidden',
                   'submit', 'search']:
               # use default value if present or set it to 'on'
-              if "value" in tmpdict.keys():
+              if "value" in tmpdict:
                 if tmpdict["value"] != "": val = tmpdict["value"]
                 else: val = u"on"
               else: val = u"on"
-              self.form_values.update(dict([(tmpdict['name'], val)]))
+              self.form_values.append([tmpdict['name'], val])
             if tmpdict['type'].lower() == "file":
               self.uploads.append(self.current_form_url)
 
@@ -911,20 +932,20 @@ class linkParser2:
         tmpdict = {}
         for k, v in dict(textAreasAttributes[i][j]).items():
           tmpdict[k.lower()] = v
-        if "name" in tmpdict.keys():
-          self.form_values.update(dict([(tmpdict['name'], u'on')]))
+        if "name" in tmpdict:
+          self.form_values.append([tmpdict['name'], u'on'])
 
       for j in range(len(selectsAttributes[i])):
         tmpdict = {}
         for k, v in dict(selectsAttributes[i][j]).items():
           tmpdict[k.lower()] = v
-        if "name" in tmpdict.keys():
-          self.form_values.update(dict([(tmpdict['name'], u'on')]))
+        if "name" in tmpdict:
+          self.form_values.append([tmpdict['name'], u'on'])
 
       if self.current_form_method == "post":
         self.forms.append((self.current_form_url, self.form_values))
       else:
-        l = ["=".join([k, v]) for k, v in self.form_values.items()]
+        l = ["=".join([k, v]) for k, v in self.form_values]
         l.sort()
         self.liens.append(self.current_form_url.split("?")[0] + "?" + "&".join(l))
 
@@ -947,7 +968,7 @@ class linkParser2:
   def reset(self):
     self.liens = []
     self.forms = []
-    self.form_values = {}
+    self.form_values = []
     self.inform = 0
     self.current_form_url = ""
     self.uploads = []

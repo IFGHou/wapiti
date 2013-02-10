@@ -4,6 +4,7 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
+from copy import deepcopy
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -79,13 +80,13 @@ class mod_sql(Attack):
   def setTimeout(self, timeout):
     self.TIME_TO_SLEEP = str(1 + int(timeout))
 
-  def attackGET(self, page, dict, headers = {}):
+  def attackGET(self, page, params_list, headers = {}):
     """This method performs the SQL Injection attack with method GET"""
     # about this payload : http://shiflett.org/blog/2006/jan/addslashes-versus-mysql-real-escape-string
     payload = "\xBF'\"("
     vuln_found = 0
 
-    if dict == {}:
+    if not params_list:
       # Do not attack application-type files
       if not headers.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
@@ -135,10 +136,11 @@ class mod_sql(Attack):
       else:
         return 1
     else:
-      for k in dict.keys():
+      for i in range(len(params_list)):
         err = ""
-        tmp = dict.copy()
-        tmp[k] = "__PAYLOAD__"
+        tmp = deepcopy(params_list)
+        k = tmp[i][0]
+        tmp[i][1] = "__PAYLOAD__"
         url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload))
         if url not in self.attackedGET:
           if self.verbose == 2:
@@ -166,7 +168,7 @@ class mod_sql(Attack):
             else:
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
 
-            tmp[k] = "__PAYLOAD__"
+            tmp[i][1] = "__PAYLOAD__"
             self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]))
 
           else:
@@ -187,23 +189,25 @@ class mod_sql(Attack):
     """This method performs the SQL Injection attack with method POST"""
     payload = "\xbf'\"("
     page = form[0]
-    dict = form[1]
+    params_list = form[1]
     err = ""
     vuln_found = 0
 
-    for k in dict.keys():
-      tmp = dict.copy()
-      tmp[k] = "__PAYLOAD__"
+    for i in range(len(params_list)):
+      tmp = deepcopy(params_list)
+      tmp[i][1] = "__PAYLOAD__"
+      k = tmp[i][0]
+
       if (page, tmp) not in self.attackedPOST:
         headers = {"accept": "text/plain"}
         if self.verbose == 2:
           print "+ " + page
-          tmp[k] = payload
+          tmp[i][1] = payload
           print "  ", tmp
-          tmp[k] = "__PAYLOAD__"
+          tmp[i][1] = "__PAYLOAD__"
         post_data = self.HTTP.encode(tmp, form[3]).replace("__PAYLOAD__",self.HTTP.quote(payload))
         try:
-          resp = self.HTTP.send(page, post_data, headers)
+          resp = self.HTTP.send(page, post_data = post_data, http_headers = headers)
           data, code = resp.getPageCode()
         except requests.exceptions.Timeout, timeout:
           # No timeout report here... launch blind sql detection later

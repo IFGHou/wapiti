@@ -7,6 +7,7 @@ import requests
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
+from copy import deepcopy
 
 class mod_permanentxss(Attack):
   """
@@ -140,10 +141,11 @@ class mod_permanentxss(Attack):
             if code in self.SUCCESSFUL_XSS.keys():
               # this code has been used in a successful attack
               if self.validXSS(data, code, self.SUCCESSFUL_XSS[code]):
-                tmp = self.POST_XSS[code][1].copy()
-                for k, v in tmp.items():
+                tmp = deepcopy(self.POST_XSS[code][1])
+                for i in range(len(tmp)):
+                  k, v = tmp[i]
                   if v == code:
-                    tmp[k] = self.SUCCESSFUL_XSS[code]
+                    tmp[i][1] = self.SUCCESSFUL_XSS[code]
                     break
                 # we found the xss payload again -> stored xss vuln
                 self.reportGen.logVulnerability(Vulnerability.XSS,
@@ -163,14 +165,16 @@ class mod_permanentxss(Attack):
 
             # we found the code but no attack was made
             # let's try to break in
-            for k, v in self.POST_XSS[code][1].items():
+            params_list = self.POST_XSS[code][1]
+            for i in range(len(params_list)):
+              k, v = params_list[i]
               if v == code:
-                tmp = self.POST_XSS[code][1].copy()
+                tmp = deepcopy(params_list)
                 for xss in self.independant_payloads:
                   payload = xss.replace("__XSS__", code)
-                  tmp[k] = payload
+                  tmp[i][1] = payload
                   try:
-                    self.HTTP.send(self.POST_XSS[code][0], self.HTTP.uqe(tmp), headers)
+                    self.HTTP.send(self.POST_XSS[code][0], post_data = self.HTTP.uqe(tmp), http_headers = headers)
                     resp = self.HTTP.send(url)
                     dat = resp.getPage()
                   except requests.exceptions.Timeout, timeout:

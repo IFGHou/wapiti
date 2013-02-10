@@ -98,7 +98,7 @@ class CrawlerPersister:
         formEl.setAttribute(self.ENCODING, form[3].encode("UTF-8"))
 
       inputsEl = xml.createElement(self.INPUTS)
-      for k, v in form[1].items():
+      for k, v in form[1]:
         inputEl = xml.createElement(self.INPUT)
         inputEl.setAttribute(self.INPUT_NAME, k.encode("UTF-8"))
         inputEl.setAttribute(self.INPUT_VALUE, v.encode("UTF-8"))

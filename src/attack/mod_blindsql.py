@@ -3,6 +3,7 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
+from copy import deepcopy
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -51,9 +52,9 @@ class mod_blindsql(Attack):
 
   # first implementations for blind sql injection...
   # must had this to Vulnerability type
-  def attackGET(self, page, dict, headers = {}):
+  def attackGET(self, page, params_list, headers = {}):
     """This method performs the Blind SQL attack with method GET"""
-    if dict == {}:
+    if not params_list:
       # Do not attack application-type files
       if not headers.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
@@ -97,21 +98,22 @@ class mod_blindsql(Attack):
               print _("500 HTTP Error code with")
               print "  " + _("Evil url") + ":", url
     else:
-      for k in dict.keys():
-        tmp = dict.copy()
+      for i in range(len(params_list)):
+        tmp = deepcopy(params_list)
 
-        tmp[k] = "__PAYLOAD__"
+        k = tmp[i][0]
+        tmp[i][1] = "__PAYLOAD__"
         if page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]) in self.excludedGET:
           return
 
-        tmp[k] = "__TIME__"
+        tmp[i][1] = "__TIME__"
         url_to_log = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
 
         err500 = 0
         for payload in self.blind_sql_payloads:
 
           if url_to_log not in self.attackedGET:
-            tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
+            tmp[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
             url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
             if self.verbose == 2:
               print "+ " + url
@@ -150,27 +152,28 @@ class mod_blindsql(Attack):
   def attackPOST(self, form):
     """This method performs the Blind SQL attack with method POST"""
     page = form[0]
-    dict = form[1]
-    for k in dict.keys():
-      tmp = dict.copy()
+    params_list = form[1]
+    for i in range(len(params_list)):
+      tmp = deepcopy(params_list)
+      k = tmp[i][0]
 
-      tmp[k] = "__PAYLOAD__"
+      tmp[i][1] = "__PAYLOAD__"
       if (page, tmp) in self.excludedPOST:
         return
 
       err500 = 0
       for payload in self.blind_sql_payloads:
-        tmp[k] = "__TIME__"
+        tmp[i][1] = "__TIME__"
 
         if (page, tmp) not in self.attackedPOST:
-          tmp[k] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
+          tmp[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
 
           headers = {"Accept": "text/plain"}
           if self.verbose == 2:
             print "+ " + page
             print "  ", tmp
           try:
-            resp = self.HTTP.send(page, self.HTTP.encode(tmp, form[3]), headers)
+            resp = self.HTTP.send(page, post_data = self.HTTP.encode(tmp, form[3]), http_headers = headers)
             data,code = resp.getPageCode()
           #except socket.timeout:
           except requests.exceptions.Timeout, timeout:
@@ -188,7 +191,7 @@ class mod_blindsql(Attack):
             print "  " + _("coming from"), form[2]
 
             # one of the payloads worked. log the form and exit
-            tmp[k] = "__TIME__"
+            tmp[i][1] = "__TIME__"
             self.attackedPOST.append((page, tmp))
             break
           else:
@@ -203,7 +206,7 @@ class mod_blindsql(Attack):
               print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
               print "  " + _("coming from"), form[2]
       # none of the payloads worked. log the url and exit
-      tmp[k] = "__TIME__"
+      tmp[i][1] = "__TIME__"
       self.attackedPOST.append((page, tmp))
 
   def loadRequire(self, obj = []):

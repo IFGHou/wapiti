@@ -6,6 +6,25 @@ from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescri
 import urllib2, csv, re, os
 import socket
 
+# Nikto databases are csv files with the following fields (in order) :
+#
+# 1 - A unique indenfier (number)
+# 2 - The OSVDB reference number of the vulnerability
+# 3 - Unknown (not used by Wapiti)
+# 4 - The URL to check for. May contain a pattern to replace (eg: @CGIDIRS)
+# 5 - The HTTP method to use when requesting the URL
+# 6 - The HTTP status code returned when the vulnerability may exist
+#     or a string the HTTP response may contain.
+# 7 - Another condition for a possible vulnerability (6 OR 7)
+# 8 - Another condition (must match for a possible vulnerability)
+# 9 - A condition corresponding to an unexploitable webpage
+#10 - Another condition just like 9
+#11 - A description of the vulnerability with possible BID, CVE or MS references
+#12 - A url-form-encoded string (usually for POST requests)
+#
+# A possible vulnerability is reported in the following condition :
+# ((6 or 7) and 8) and not (9 or 10)
+
 class mod_nikto(Attack):
   """
   This class implements a Nikto attack
@@ -63,22 +82,29 @@ class mod_nikto(Attack):
       if l[3][0] != "/":
         l[3] = "/" + l[3]
 
+      url = ""
+      try:
+        url = "http://" + self.HTTP.server + l[3]
+      except UnicodeDecodeError:
+        continue
+
       if l[4] == "GET":
-        resp = self.HTTP.send("http://" + self.HTTP.server + l[3])
+        resp = self.HTTP.send(url)
       elif l[4] == "POST":
-        resp = self.HTTP.send("http://" + self.HTTP.server + l[3], l[11])
+        resp = self.HTTP.send(url, post_data = l[11])
       else:
-        resp = self.HTTP.send("http://" + self.HTTP.server + l[3], l[11], method = l[4])
+        resp = self.HTTP.send(url, post_data = l[11], method = l[4])
 
       page, code = resp.getPageCode()
       encoding = BeautifulSoup.BeautifulSoup(page).originalEncoding
-      page = unicode(page, encoding, "ignore")
+      if encoding:
+        page = unicode(page, encoding, "ignore")
       raw = " ".join([x + ": " + y for x,y in resp.getHeaders().items()])
       raw += page
 
       # First condition (match)
       if len(l[5]) == 3 and l[5].isdigit():
-        if code == l[5]:
+        if code == int(l[5]):
           match = True
       else:
         if raw.find(l[5]) > -1:
@@ -87,7 +113,7 @@ class mod_nikto(Attack):
       # Second condition (or)
       if l[6] != "":
         if len(l[6]) == 3 and l[6].isdigit():
-          if code == l[6]:
+          if code == int(l[6]):
             match_or = True
         else:
           if raw.find(l[6]) > -1:
@@ -96,7 +122,7 @@ class mod_nikto(Attack):
       # Third condition (and)
       if l[7] != "":
         if len(l[7]) == 3 and l[7].isdigit():
-          if code == l[7]:
+          if code == int(l[7]):
             match_and = True
         else:
           if raw.find(l[7]) > -1:
@@ -107,7 +133,7 @@ class mod_nikto(Attack):
       # Fourth condition (fail)
       if l[8] != "":
         if len(l[8]) == 3 and l[8].isdigit():
-          if code == l[8]:
+          if code == int(l[8]):
             fail = True
         else:
           if raw.find(l[8]) > -1:
@@ -116,14 +142,14 @@ class mod_nikto(Attack):
       # Fifth condition (or)
       if l[9] != "":
         if len(l[9]) == 3 and l[9].isdigit():
-          if code == l[9]:
+          if code == int(l[9]):
             fail_or = True
         else:
           if raw.find(l[9]) > -1:
             fail_or = True
 
       if ((match or match_or) and match_and) and not (fail or fail_or):
-        print "http://" + self.HTTP.server + l[3]
+        print url
         print l[10]
         refs = []
         if l[1] != "0":
@@ -164,11 +190,11 @@ class mod_nikto(Attack):
 
         if l[4] == "GET":
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], "", info, resp)
+              url, "", info, resp)
         elif l[4] == "POST":
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], l[11], info, resp)
+              url, l[11], info, resp)
         else:
           self.reportGen.logVulnerability(Vulnerability.NIKTO, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-              "http://" + self.HTTP.server + l[3], l[4] + " " + l[11], info, resp)
+              url, l[4] + " " + l[11], info, resp)
 

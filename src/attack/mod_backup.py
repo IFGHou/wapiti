@@ -9,6 +9,7 @@ import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
+import socket
 
 class mod_backup(Attack):
   """
@@ -28,18 +29,18 @@ class mod_backup(Attack):
     self.payloads = self.loadPayloads(self.CONFIG_DIR+"/"+self.CONFIG_FILE)
 
 
-  def __returnErrorByCode(self,code):
+  def __returnErrorByCode(self, code):
     err = ""
-    if code == "404":
+    if code == 404:
       err = "Not found"
 
-    if code[0] == "1" or code[0] == "2":
+    if 100 <= code < 300:
       err = "ok"
 
     return err
 
 
-  def attackGET(self, page, dict, headers = {}):
+  def attackGET(self, page, params_list, headers = {}):
 
     # Do not attack application-type files
     if not headers.has_key("content-type"):

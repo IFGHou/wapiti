@@ -7,6 +7,7 @@ import requests
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
+from copy import deepcopy
 
 class mod_xss(Attack):
   """
@@ -52,9 +53,10 @@ class mod_xss(Attack):
     Attack.__init__(self, HTTP, xmlRepGenerator)
     self.independant_payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
 
-  def attackGET(self, page, dict, headers = {}):
+  def attackGET(self, page, params_list, headers = {}):
     """This method performs the cross site scripting attack (XSS attack) with method GET"""
 
+    # Some PHP scripts doesn't sanitize data coming from $_SERVER['PHP_SELF']
     if page not in self.PHP_SELF:
       url = ""
       if page.endswith("/"):
@@ -64,7 +66,7 @@ class mod_xss(Attack):
       if url != "":
         if self.verbose == 2:
           print "+", url
-        data, http_code = self.HTTP.send(url + self.php_self_payload).getPageCode()
+        data, http_code = self.HTTP.send(url).getPageCode()
         if data.find(self.php_self_check) >= 0:
           print _("XSS") + " (PHP_SELF) " + _("in"), page
           print "  " + _("Evil url") + ":", url
@@ -75,9 +77,9 @@ class mod_xss(Attack):
       self.PHP_SELF.append(page)
 
 
-    # page est l'url de script
-    # dict est l'ensembre des variables et leurs valeurs
-    if dict == {}:
+    # page is the url of the script
+    # params_list is a list of [key, value] lists
+    if not params_list:
       # Do not attack application-type files
       if not headers.has_key("content-type"):
         # Sometimes there's no content-type... so we rely on the document extension
@@ -90,7 +92,7 @@ class mod_xss(Attack):
       if url not in self.attackedGET:
         self.attackedGET.append(url)
         err = ""
-        code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)])
+        code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)])
         url = page + "?" + code
         self.GET_XSS[code] = url
         try:
@@ -105,16 +107,16 @@ class mod_xss(Attack):
             self.findXSS(page, {}, "", code, "", payloads, headers["link_encoding"])
 
     else:
-      for k in dict.keys():
+      for i in range(len(params_list)):
         err = ""
-        tmp = dict.copy()
-        tmp[k] = "__XSS__"
+        tmp = deepcopy(params_list)
+        tmp[i][1] = "__XSS__"
         url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
         if url not in self.attackedGET:
           self.attackedGET.append(url)
           # genere un identifiant unique a rechercher ensuite dans la page
-          code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
-          tmp[k] = code
+          code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)]) # don't use upercase as BS make some data lowercase
+          tmp[i][1] = code
           url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
           self.GET_XSS[code] = url
           try:
@@ -128,7 +130,7 @@ class mod_xss(Attack):
             # identifiant est dans la page, il faut determiner ou
             payloads = self.generate_payloads(data, code)
             if payloads != []:
-              self.findXSS(page, tmp, k, code, "", payloads, headers["link_encoding"])
+              self.findXSS(page, tmp, i, code, "", payloads, headers["link_encoding"])
 
   def attackPOST(self, form):
     """This method performs the cross site scripting attack (XSS attack) with method POST"""
@@ -145,7 +147,7 @@ class mod_xss(Attack):
       if url != "":
         if self.verbose == 2:
           print "+", url
-        data, http_code = self.HTTP.send(url + self.php_self_payload).getPageCode()
+        data, http_code = self.HTTP.send(url).getPageCode()
         if data.find(self.php_self_check) >= 0:
           print _("XSS") + " (PHP_SELF) " + _("in"), page
           print "  " + _("Evil url") + ":", url
@@ -155,18 +157,18 @@ class mod_xss(Attack):
                             _("XSS") + " (PHP_SELF)")
       self.PHP_SELF.append(page)
 
-    for k in params.keys():
-      tmp = params.copy()
+    for i in range(len(params)):
+      tmp = deepcopy(params)
 
-      tmp[k] = "__XSS__"
+      tmp[i][1] = "__XSS__"
       if (page, tmp) not in self.attackedPOST:
         self.attackedPOST.append((page, tmp))
-        code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for i in range(0,10)]) # don't use upercase as BS make some data lowercase
-        tmp[k] = code
+        code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)]) # don't use upercase as BS make some data lowercase
+        tmp[i][1] = code
         # will only memorize the last used payload (working or not) but the code will always be the good
         self.POST_XSS[code] = [page, tmp, form[2]]
         try:
-          resp = self.HTTP.send(page, self.HTTP.uqe(tmp, form[3]), headers)
+          resp = self.HTTP.send(page, post_data = self.HTTP.uqe(tmp, form[3]), http_headers = headers)
           data = resp.getPage()
         except requests.exceptions.Timeout, timeout:
           data = ""
@@ -176,7 +178,7 @@ class mod_xss(Attack):
           # found, now study where the payload is injected and how to exploit it
           payloads = self.generate_payloads(data, code)
           if payloads != []:
-            self.findXSS(page, tmp, k, code, form[2], payloads, form[3])
+            self.findXSS(page, tmp, i, code, form[2], payloads, form[3])
 
   # type/name/tag ex: attrval/img/src
   def study(self, obj, parent=None, keyword="", entries=[]):
@@ -288,15 +290,23 @@ class mod_xss(Attack):
 
   # Inject the JS payload codes
   # GET and POST methods here
-  def findXSS(self, page, args, var, code, referer, payloads, encoding=None):
+  # * page : the url of the current webpage
+  # * args : a list of the parameters, each member is a list like [key, value]
+  # * index : the index of the fuzzed parameter in the args list
+  # * code : a random string used to check for simple text injection
+  # * referer : the url we are submitting the request from
+  # * payloads : a list of payload (each one is a string)
+  # * encoding : the encoding of the page
+  def findXSS(self, page, args, index, code, referer, payloads, encoding=None):
     headers = {"accept": "text/plain"}
-    params = args.copy()
+    params = deepcopy(args)
     url = page
+    var = ""
 
     # ok let's send the requests
     for payload in payloads:
 
-      if params == {}:
+      if not params:
         url = page + "?" + self.HTTP.quote(payload)
         if self.verbose == 2:
           print "+", url
@@ -309,14 +319,16 @@ class mod_xss(Attack):
         var = "QUERY_STRING"
 
       else:
-        params[var] = payload
+
+        var = params[index][0]
+        params[index][1] = payload
 
         if referer != "": #POST
           if self.verbose == 2:
             print "+", page
             print "  ", params
           try:
-            resp = self.HTTP.send(page, self.HTTP.encode(params, encoding), headers)
+            resp = self.HTTP.send(page, post_data = self.HTTP.encode(params, encoding), http_headers = headers)
             dat = resp.getPage()
           except requests.exceptions.Timeout, timeout:
             dat = ""
@@ -335,7 +347,7 @@ class mod_xss(Attack):
 
       if self.validXSS(dat, code, payload):
         self.SUCCESSFUL_XSS[code] = payload
-        if params != {}:
+        if params:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                             url, self.HTTP.encode(params, encoding),
@@ -365,7 +377,8 @@ class mod_xss(Attack):
 ##########################################################
 ###### try the same things but with raw characters #######
 
-      if params == {}:
+# we still are in the "for payload" loop
+      if not params:
         url = page + "?" + payload
         if self.verbose == 2:
           print "+", url
@@ -378,14 +391,15 @@ class mod_xss(Attack):
         var = "QUERY_STRING"
 
       else:
-        params[var] = payload
+        var = params[index][0]
+        params[index][1] = payload
 
         if referer != "": #POST
           if self.verbose == 2:
             print "+ " + page
             print "  ", params
           try:
-            resp = self.HTTP.send(page, self.HTTP.uqe(params, encoding), headers)
+            resp = self.HTTP.send(page, post_data = self.HTTP.uqe(params, encoding), http_headers = headers)
             dat = resp.getPage()
           except requests.exceptions.Timeout, timeout:
             dat = ""
@@ -404,7 +418,7 @@ class mod_xss(Attack):
 
       if self.validXSS(dat, code, payload):
         self.SUCCESSFUL_XSS[code] = payload
-        if params != {}:
+        if params:
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.LOW_LEVEL_VULNERABILITY,
                             url, self.HTTP.encode(params, encoding),
