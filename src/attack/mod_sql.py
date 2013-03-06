@@ -205,9 +205,9 @@ class mod_sql(Attack):
           tmp[i][1] = payload
           print "  ", tmp
           tmp[i][1] = "__PAYLOAD__"
-        post_data = self.HTTP.encode(tmp, form[3]).replace("__PAYLOAD__",self.HTTP.quote(payload))
+        post_params = self.HTTP.encode(tmp, form[3]).replace("__PAYLOAD__",self.HTTP.quote(payload))
         try:
-          resp = self.HTTP.send(page, post_data = post_data, http_headers = headers)
+          resp = self.HTTP.send(page, post_params = post_params, http_headers = headers)
           data, code = resp.getPageCode()
         except requests.exceptions.Timeout, timeout:
           # No timeout report here... launch blind sql detection later
@@ -220,15 +220,15 @@ class mod_sql(Attack):
           vuln_found += 1
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                           Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                          page, post_data,
+                                          page, post_params,
                                           err + " " + _("coming from") + " " + form[2],
                                           resp)
           print err, _("in"), page
           if self.color == 1:
             print "  " + _("with params") + " =", \
-                post_data.replace(k + "=", self.RED + k + self.STD + "=")
+                post_params.replace(k + "=", self.RED + k + self.STD + "=")
           else:
-            print "  " + _("with params") + " =", post_data
+            print "  " + _("with params") + " =", post_params
           print "  " + _("coming from"), form[2]
 
           self.vulnerablePOST.append((page, tmp))
@@ -237,12 +237,12 @@ class mod_sql(Attack):
           if code == "500":
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            page, post_data,
+                                            page, post_params,
                                             _("500 HTTP Error code coming from") + " " + form[2] + "\n"+
                                             VulDescrip.ERROR_500_DESCRIPTION,
                                             resp)
             print _("500 HTTP Error code in"), page
-            print "  " + _("with params") + " =", post_data
+            print "  " + _("with params") + " =", post_params
             print "  " + _("coming from"), form[2]
         self.attackedPOST.append((page, tmp))
       else:

@@ -91,9 +91,9 @@ class mod_nikto(Attack):
       if l[4] == "GET":
         resp = self.HTTP.send(url)
       elif l[4] == "POST":
-        resp = self.HTTP.send(url, post_data = l[11])
+        resp = self.HTTP.send(url, post_params = l[11])
       else:
-        resp = self.HTTP.send(url, post_data = l[11], method = l[4])
+        resp = self.HTTP.send(url, post_params = l[11], method = l[4])
 
       page, code = resp.getPageCode()
       encoding = BeautifulSoup.BeautifulSoup(page).originalEncoding

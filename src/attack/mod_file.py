@@ -204,7 +204,7 @@ class mod_file(Attack):
             print "+ " + page
             print "  ", tmp
           try:
-            data, code = self.HTTP.send(page, post_data = self.HTTP.encode(tmp, form[3]), http_headers = headers).getPageCode()
+            data, code = self.HTTP.send(page, post_params = self.HTTP.encode(tmp, form[3]), http_headers = headers).getPageCode()
           except requests.exceptions.Timeout, timeout:
             data = ""
             code = "408"

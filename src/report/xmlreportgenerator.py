@@ -131,7 +131,7 @@ class XMLReportGenerator(ReportGenerator):
             vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
         vulnerabilityType.childNodes[0].appendChild(vulnerability)
 
-    def logVulnerability(self,vulnerabilityTypeName, level, url, parameter, info, resp=None):
+    def logVulnerability(self, vulnerabilityTypeName, level, url, parameter, info, resp=None):
         """
         Store the information about the vulnerability to be printed later.
         The method printToFile(fileName) can be used to save in a file the
@@ -158,7 +158,7 @@ class XMLReportGenerator(ReportGenerator):
         vulnerability.appendChild(tsNode)
         
         urlNode = self.__xmlDoc.createElement("url")
-        urlNode.appendChild(self.__xmlDoc.createTextNode(url))
+        urlNode.appendChild(self.__xmlDoc.createTextNode(url.encode("UTF-8")))
         vulnerability.appendChild(urlNode)
         
         if peer!=None:

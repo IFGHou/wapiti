@@ -103,9 +103,10 @@ class Attack:
     def loadRequire(self, obj = []):
       self.deps = obj
 
-    def attack(self, urls, forms):
+    def attack(self, http_resources, forms):
       if self.doGET == True:
-        for url, headers in urls.items():
+        for http_res, headers in http_resources.items():
+          url = http_res.url
           params_list = []
           params = []
           page = url
@@ -118,7 +119,7 @@ class Attack:
                 params_list.append(param.split('=', 1))
 
           if self.verbose == 1:
-            print "+ " + _("attackGET") + " "  +url
+            print "+ " + _("attackGET") + " "  + url
             if params != []:
               print "  ", params
 

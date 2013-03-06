@@ -65,20 +65,20 @@ class CrawlerPersister:
     xml.appendChild(root)
 
     rootUrlEl = xml.createElement(self.ROOT_URL)
-    rootUrlEl.appendChild(xml.createTextNode(self.rootURL.encode("UTF-8")))
+    rootUrlEl.appendChild(xml.createTextNode(self.rootURL.url.encode("UTF-8")))
     root.appendChild(rootUrlEl)
 
     toBrowseEl = xml.createElement(self.TO_BROWSE)
-    for url in self.toBrowse:
+    for http_resource in self.toBrowse:
       urlEl = xml.createElement(self.URL)
-      urlEl.appendChild(xml.createTextNode(url.encode("UTF-8")))
+      urlEl.appendChild(xml.createTextNode(http_resource.url.encode("UTF-8")))
       toBrowseEl.appendChild(urlEl)
     root.appendChild(toBrowseEl)
 
     browsedEl = xml.createElement(self.BROWSED)
-    for url, headers in self.browsed.items():
+    for http_resource, headers in self.browsed.items():
       urlEl = xml.createElement(self.URL_DATA)
-      urlEl.setAttribute(self.URI, url.encode("UTF-8"))
+      urlEl.setAttribute(self.URI, http_resource.url.encode("UTF-8"))
       for k, v in headers.items():
         if v == None:
           v = ""

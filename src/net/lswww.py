@@ -26,6 +26,7 @@ import HTMLParser
 import jsoncookie
 import urlparse
 import HTTP
+import urllib
 
 from distutils.sysconfig import get_python_lib
 BASE_DIR = None
@@ -150,7 +151,7 @@ Supported options are:
   # 0 means no limits
   nice = 0
 
-  def __init__(self, root, http_engine = None, crawlerFile = None):
+  def __init__(self, root, http_engine=None, crawlerFile=None):
     self.h = http_engine
     if root.startswith("-"):
       print _("First argument must be the root url !")
@@ -164,18 +165,18 @@ Supported options are:
       root += "/"
 
     server = (root.split("://")[1]).split("/")[0]
-    self.root     = root   # Initial URL
+    self.root     = HTTP.HTTPResource(root)   # Initial URL
     self.server   = server # Domain
     self.scopeURL = root   # Scope of the analysis
     
-    self.tobrowse.append(root)
+    self.tobrowse.append(self.root)
     self.persister = CrawlerPersister()
 
-  def setTimeOut(self, timeout = 6.0):
+  def setTimeOut(self, timeout=6.0):
     """Set the timeout in seconds to wait for a page"""
     self.timeout = timeout
 
-  def setProxy(self, proxy = ""):
+  def setProxy(self, proxy=""):
     """Set proxy preferences"""
     url_parts = urlparse.urlparse(proxy)
     protocol = url_parts.scheme
@@ -191,7 +192,7 @@ Supported options are:
   def setScope(self, scope):
     self.scope = scope
     if scope == self.SCOPE_FOLDER:
-      self.scopeURL = "/".join(self.root.split("/")[:-1]) + "/"
+      self.scopeURL = "/".join(self.root.url.split("/")[:-1]) + "/"
     elif scope == self.SCOPE_DOMAIN:
       self.scopeURL = "http://" + self.server
 
@@ -200,7 +201,7 @@ Supported options are:
       print _("Invalid link argument") + ":", url
       sys.exit(0)
     if(self.__inzone(url) == 0):
-      self.tobrowse.append(url)
+      self.tobrowse.append(HTTP.HTTPResource(url))
 
   def addExcludedURL(self, url):
     """Add an url to the list of forbidden urls"""
@@ -224,10 +225,7 @@ Supported options are:
     """Extract urls from a webpage and add them to the list of urls to browse if they aren't in the exclusion list"""
     # return an empty dictionnary => won't be logged
 
-    if isinstance(web_resource, HTTP.HTTPResource):
-      url = web_resource.url()
-    else:
-      url = web_resource
+    url = web_resource.url
 
     # We don't need destination anchors
     current = url.split("#")[0]
@@ -244,11 +242,15 @@ Supported options are:
     headers["user-agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     try:
       if isinstance(web_resource, HTTP.HTTPResource):
-        headers['content-type'] = 'application/x-www-form-urlencoded'
-        headers['referer'] = web_resource[2]
-        resp = self.h.post(url, data = web_resource[1], headers = headers, timeout = self.timeout)
+        if web_resource.method == "POST":
+          headers['content-type'] = 'application/x-www-form-urlencoded'
+          headers['referer'] = web_resource[2]
+          resp = self.h.post(url, data = web_resource[1], headers = headers, timeout = self.timeout)
+        else:
+          resp = self.h.get(url, headers = headers, timeout = self.timeout)
       else:
-        resp = self.h.get(url, headers = headers, timeout = self.timeout)
+        print "non HTTPResource:", url
+        sys.exit()
     except socket.timeout:
       self.excluded.append(url)
       return {}
@@ -268,7 +270,7 @@ Supported options are:
     code = resp.status_code
     info["status_code"] = str(code)
 
-    if not self.link_encoding.has_key(url):
+    if not url in self.link_encoding:
       self.link_encoding[url] = ""
 
     proto = url.split("://")[0]
@@ -299,10 +301,11 @@ Supported options are:
 
     # Manage redirections
     if info.has_key("location"):
-      redir = self.correctlink(info["location"], current, currentdir, proto)
+      redir = self.correctlink(info["location"], current, currentdir, proto, None)
       if redir != None:
         if(self.__inzone(redir) == 0):
           self.link_encoding[redir] = self.link_encoding[url]
+          redir = HTTP.HTTPResource(redir)
           # Is the document already visited of forbidden ?
           if (redir in self.browsed) or (redir in self.tobrowse) or \
               self.isExcluded(redir):
@@ -351,8 +354,6 @@ Supported options are:
     if len(p.liens) == 0:
       if page_encoding != None:
         htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify(page_encoding)
-      #else:
-      #  htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
       try:
         p.reset()
         p.feed(htmlSource)
@@ -361,18 +362,19 @@ Supported options are:
         p.feed(htmlSource)
 
     for lien in p.uploads:
-      self.uploads.append(self.correctlink(lien, current, currentdir, proto))
+      self.uploads.append(self.correctlink(lien, current, currentdir, proto, page_encoding))
     for lien in p.liens:
       if lien != None and page_encoding != None and not isinstance(lien, unicode):
         lien = unicode(lien, page_encoding, "ignore")
-      lien = self.correctlink(lien, current, currentdir, proto)
+      lien = self.correctlink(lien, current, currentdir, proto, page_encoding)
       if lien != None:
         if(self.__inzone(lien) == 0):
           # Is the document already visited of forbidden ?
+          lien = HTTP.HTTPResource(lien)
           if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
             pass
           elif self.nice > 0:
-            if self.__countMatches(lien) >= self.nice:
+            if self.__countMatches(lien.url) >= self.nice:
               # don't waste time next time we found it
               self.excluded.append(lien)
               return {}
@@ -381,13 +383,22 @@ Supported options are:
           else:
             # No -> Will browse it soon
             self.tobrowse.append(lien)
+          # Keep the encoding of the current webpage for the future requests to the link
+          # so we can encode the query string parameters just as a browser would do.
+          # Of course websites encoding may be broken :(
           self.link_encoding[lien] = page_encoding
     for form in p.forms:
-      action = self.correctlink(form[0], current, currentdir, proto)
+      action = self.correctlink(form[0], current, currentdir, proto, page_encoding)
       if action == None: action = current
+      for kv in form[1]:
+        if isinstance(kv[0], unicode):
+          kv[0] = urllib.quote(kv[0].encode(page_encoding, "ignore"), safe='/#%[]=:;$&()+,!?*')
+        if isinstance(kv[1], unicode):
+          kv[1] = urllib.quote(kv[1].encode(page_encoding, "ignore"), safe='/#%[]=:;$&()+,!?*')
       form = (action, form[1], url, page_encoding)
       if form[0:3] not in [x[0:3] for x in self.forms]: self.forms.append(form)
-      form_rsrc = HTTP.HTTPResource(action, method = "POST", post_data = form[1], encoding = page_encoding, referer = url)
+      form_rsrc = HTTP.HTTPResource(action, method = "POST", post_params = form[1], encoding = page_encoding, referer = url)
+      print form_rsrc
       if not (form_rsrc in self.browsed and form_rsrc in self.tobrowse):
         self.tobrowse.append(form_rsrc)
     # We automaticaly exclude 404 urls
@@ -398,17 +409,17 @@ Supported options are:
     return info
 
 
-  def correctlink(self, lien, current, currentdir, proto):
+  def correctlink(self, lien, current_url, current_directory, protocol, encoding):
     """Transform relatives urls in absolutes ones"""
 
     if lien is None:
-      return current
+      return current_url
 
     # No leading or trailing whitespaces
     lien = lien.strip()
     
     if lien == "":
-      return current
+      return current_url
 
     if lien == "..":
       lien = "../"
@@ -427,45 +438,57 @@ Supported options are:
       else:
         # root-url related link
         if(lien[0] == '/'):
-          lien = proto + u"://" + self.server + lien
+          lien = protocol + u"://" + self.server + lien
         else:
           # same page + query string
           if(lien[0] == '?'):
-            lien = current + lien
-          # current directory related link
+            lien = current_url + lien
+          # current_url directory related link
           else:
-            lien = currentdir + lien
+            lien = current_directory + lien
       # No destination anchor
       if lien.find("#") != -1:
         lien = lien.split("#")[0]
-      # reorganize parameters in alphabetical order
-      if lien.find("?") != -1:
+
+      if "?" in lien:
         args = lien.split("?")[1]
+        # if args is a unicode string, encode it according to the charset of the webpage (if known)
+        if encoding and isinstance(args, unicode):
+          args = args.encode(encoding, "ignore")
+        # urlencode the query string so we don't have to care about encoding later
+        args = urllib.quote(args, safe='/#%[]=:;$&()+,!?*')
         if args.find("&") != -1 :
           args = args.split("&")
-          args.sort()
           args = [i for i in args if i != "" and i.find("=") >= 0]
           for i in self.bad_params:
             for j in args:
               if j.startswith(i + "="): args.remove(j)
           args = "&".join(args)
 
+        lien = lien.split("?")[0]
+        # First part of the url (path) must be encoded with UTF-8
+        if isinstance(lien, unicode):
+          lien = lien.encode("UTF-8", "ignore")
+        lien = urllib.quote(lien, safe='/#%[]=:;$&()+,!?*')
         # a hack for auto-generated Apache directory index
-        if args in ["C=D;O=A", "C=D;O=D", "C=M;O=A", "C=M;O=D",
+        if args and not args in ["C=D;O=A", "C=D;O=D", "C=M;O=A", "C=M;O=D",
             "C=N;O=A", "C=N;O=D", "C=S;O=A", "C=S;O=D"]:
-          lien = lien.split("?")[0]
-        else:
-          lien = lien.split("?")[0] + u"?" + args
+          lien = lien.split("?")[0] + "?" + args
+      else:
+        if isinstance(lien, unicode):
+          lien = lien.encode("UTF-8", "ignore")
+        lien = urllib.quote(lien, safe='/#%[]=:;$&()+,!?*')
+
       # Remove the trailing '?' if its presence doesn't make sense
       if lien[-1:] == "?":
         lien = lien[:-1]
       # remove useless slashes
       if lien.find("?") != -1:
-        file = lien.split("?")[0]
-        file = re.sub("([^:])//+", r"\1/", file)
-        if file[-2:] == "/.":
-          file = file[:-1]
-        lien = file + "?" + lien.split("?")[1]
+        filename = lien.split("?")[0]
+        filename = re.sub("([^:])//+", r"\1/", filename)
+        if filename[-2:] == "/.":
+          filename = filename[:-1]
+        lien = filename + "?" + lien.split("?")[1]
       else:
         if lien[-2:] == "/.":
           lien = lien[:-1]
@@ -490,11 +513,11 @@ Supported options are:
     else:
       return 1
 
-  def isExcluded(self, url):
+  def isExcluded(self, http_resource):
     """Return True if the url is not allowed to be scan"""
     match = False
     for regexp in self.excluded:
-      if self.__reWildcard(regexp, url):
+      if self.__reWildcard(regexp, http_resource.url):
         match = True
     return match
 
@@ -504,7 +527,7 @@ Supported options are:
     if url.find("?") != -1:
       if url.find("=") != -1:
         i = 0
-        for x in range(0, url.count("=")):
+        for __ in xrange(0, url.count("=")):
           start = url.find("=", i)
           i = url.find("&", start)
           if i != -1:
@@ -589,8 +612,8 @@ Supported options are:
         if (lien not in self.browsed and lien not in self.excluded):
           headers = self.browse(lien)
           if headers != {}:
-            if not headers.has_key("link_encoding"):
-              if self.link_encoding.has_key(lien):
+            if not "link_encoding" in headers:
+              if lien in self.link_encoding:
                 headers["link_encoding"] = self.link_encoding[lien]
             self.browsed[lien] = headers
             if self.verbose == 1:
@@ -644,7 +667,7 @@ Supported options are:
       for up in self.uploads:
         print up
 
-  def exportXML(self,filename,encoding="UTF-8"):
+  def exportXML(self, filename, encoding="UTF-8"):
     "Export the urls and the forms found in an XML file."
     xml = minidom.Document()
     items = xml.createElement("items")
@@ -794,7 +817,7 @@ class linkParser2:
   verbose = 0
 
   """Extract urls in 'a' href HTML tags"""
-  def __init__(self, url = "", verb = 0):
+  def __init__(self, url="", verb=0):
     self.liens = []
     self.forms = []
     self.form_values = []
@@ -841,19 +864,19 @@ class linkParser2:
 
     #Extracting the attributes of the <input> tag as XML parser
     inputsAttributes = []
-    for i in range(len(inputsInForms)):
+    for i in xrange(len(inputsInForms)):
       inputsAttributes.append([])
       for inputt in inputsInForms[i]:
         inputsAttributes[i].append(self.__findTagAttributes(inputt))
 
     selectsAttributes = []
-    for i in range(len(selectsInForms)):
+    for i in xrange(len(selectsInForms)):
       selectsAttributes.append([])
       for select in selectsInForms[i]:
         selectsAttributes[i].append(self.__findTagAttributes(select))
 
     textAreasAttributes = []
-    for i in range(len(textAreasInForms)):
+    for i in xrange(len(textAreasInForms)):
       textAreasAttributes.append([])
       for textArea in textAreasInForms[i]:
         textAreasAttributes[i].append(self.__findTagAttributes(textArea))
@@ -861,31 +884,31 @@ class linkParser2:
     if(self.verbose == 3):
       print "\n\n" + _("Forms")
       print "====="
-      for i in range(len(forms)):
+      for i in xrange(len(forms)):
         print _("Form") + " " + str(i)
         tmpdict = {}
         for k, v in dict(formsAttributes[i]).items():
           tmpdict[k.lower()] = v
         print " * " + _("Method") + ":  " + self.__decode_htmlentities(tmpdict['action'])
         print " * " + _("Intputs") + ": "
-        for j in range(len(inputsInForms[i])):
+        for j in xrange(len(inputsInForms[i])):
           print "    + " + inputsInForms[i][j]
           for att in inputsAttributes[i][j]:
             print "       - " + str(att)
         print " * " + _("Selects") + ": "
-        for j in range(len(selectsInForms[i])):
+        for j in xrange(len(selectsInForms[i])):
           print "    + " + selectsInForms[i][j]
           for att in selectsAttributes[i][j]:
             print "       - " + str(att)
         print " * " + _("TextAreas")+": "
-        for j in range(len(textAreasInForms[i])):
+        for j in xrange(len(textAreasInForms[i])):
           print "    + " + textAreasInForms[i][j]
           for att in textAreasAttributes[i][j]:
             print "       - " + str(att)
       print "\n"+_("URLS")
       print "===="
 
-    for i in range(len(links)):
+    for i in xrange(len(links)):
       tmpdict = {}
       for k, v in dict(linkAttributes[i]).items():
         tmpdict[k.lower()] = v
@@ -894,7 +917,7 @@ class linkParser2:
         if(self.verbose == 3):
           print self.__decode_htmlentities(tmpdict['href'])
 
-    for i in range(len(forms)):
+    for i in xrange(len(forms)):
       tmpdict = {}
       for k, v in dict(formsAttributes[i]).items():
         tmpdict[k.lower()] = v
@@ -909,7 +932,7 @@ class linkParser2:
         if tmpdict["method"].lower() == "post":
           self.current_form_method = "post"
 
-      for j in range(len(inputsAttributes[i])):
+      for j in xrange(len(inputsAttributes[i])):
         tmpdict = {}
         for k, v in dict(inputsAttributes[i][j]).items():
           tmpdict[k.lower()] = v
@@ -928,14 +951,14 @@ class linkParser2:
             if tmpdict['type'].lower() == "file":
               self.uploads.append(self.current_form_url)
 
-      for j in range(len(textAreasAttributes[i])):
+      for j in xrange(len(textAreasAttributes[i])):
         tmpdict = {}
         for k, v in dict(textAreasAttributes[i][j]).items():
           tmpdict[k.lower()] = v
         if "name" in tmpdict:
           self.form_values.append([tmpdict['name'], u'on'])
 
-      for j in range(len(selectsAttributes[i])):
+      for j in xrange(len(selectsAttributes[i])):
         tmpdict = {}
         for k, v in dict(selectsAttributes[i][j]).items():
           tmpdict[k.lower()] = v

@@ -51,7 +51,8 @@ class mod_permanentxss(Attack):
   # permanent XSS
   def attack(self, urls, forms):
     """This method searches XSS which could be permanently stored in the web application"""
-    for url, headers in urls.items():
+    for http_resource, headers in urls.items():
+      url = http_resource.url
       if self.verbose >= 1:
         print "+", url
       try:
@@ -174,7 +175,7 @@ class mod_permanentxss(Attack):
                   payload = xss.replace("__XSS__", code)
                   tmp[i][1] = payload
                   try:
-                    self.HTTP.send(self.POST_XSS[code][0], post_data = self.HTTP.uqe(tmp), http_headers = headers)
+                    self.HTTP.send(self.POST_XSS[code][0], post_params = self.HTTP.uqe(tmp), http_headers = headers)
                     resp = self.HTTP.send(url)
                     dat = resp.getPage()
                   except requests.exceptions.Timeout, timeout:

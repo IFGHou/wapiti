@@ -173,7 +173,7 @@ class mod_blindsql(Attack):
             print "+ " + page
             print "  ", tmp
           try:
-            resp = self.HTTP.send(page, post_data = self.HTTP.encode(tmp, form[3]), http_headers = headers)
+            resp = self.HTTP.send(page, post_params = self.HTTP.encode(tmp, form[3]), http_headers = headers)
             data,code = resp.getPageCode()
           #except socket.timeout:
           except requests.exceptions.Timeout, timeout:

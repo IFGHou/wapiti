@@ -168,7 +168,7 @@ class mod_xss(Attack):
         # will only memorize the last used payload (working or not) but the code will always be the good
         self.POST_XSS[code] = [page, tmp, form[2]]
         try:
-          resp = self.HTTP.send(page, post_data = self.HTTP.uqe(tmp, form[3]), http_headers = headers)
+          resp = self.HTTP.send(page, post_params = self.HTTP.uqe(tmp, form[3]), http_headers = headers)
           data = resp.getPage()
         except requests.exceptions.Timeout, timeout:
           data = ""
@@ -181,6 +181,7 @@ class mod_xss(Attack):
             self.findXSS(page, tmp, i, code, form[2], payloads, form[3])
 
   # type/name/tag ex: attrval/img/src
+  # TODO: entries is a mutable argument, check this
   def study(self, obj, parent=None, keyword="", entries=[]):
     #if parent==None:
     #  print "Keyword is:",keyword
@@ -199,7 +200,7 @@ class mod_xss(Attack):
           entries.append({"type":"tag", "value":obj.name})
         else:
           for x in obj.contents:
-            self.study(x, obj, keyword,entries)
+            self.study(x, obj, keyword, entries)
       elif isinstance(obj, BeautifulSoup.NavigableString):
         if str(obj).find(keyword) >= 0:
           #print "Found in text, tag", parent.name
@@ -328,7 +329,7 @@ class mod_xss(Attack):
             print "+", page
             print "  ", params
           try:
-            resp = self.HTTP.send(page, post_data = self.HTTP.encode(params, encoding), http_headers = headers)
+            resp = self.HTTP.send(page, post_params = self.HTTP.encode(params, encoding), http_headers = headers)
             dat = resp.getPage()
           except requests.exceptions.Timeout, timeout:
             dat = ""
@@ -399,7 +400,7 @@ class mod_xss(Attack):
             print "+ " + page
             print "  ", params
           try:
-            resp = self.HTTP.send(page, post_data = self.HTTP.uqe(params, encoding), http_headers = headers)
+            resp = self.HTTP.send(page, post_params = self.HTTP.uqe(params, encoding), http_headers = headers)
             dat = resp.getPage()
           except requests.exceptions.Timeout, timeout:
             dat = ""
