@@ -63,12 +63,11 @@ class HTTPResource(object):
 
 
   def __hash__(self):
-    get_keys = tuple([param[0] for param in self._get_params])
-    post_keys = tuple([param[0] for param in self._post_params])
-    file_keys = tuple([param[0] for param in self._file_params])
+    get_kv  = tuple([tuple(param) for param in self._get_params])
+    post_kv = tuple([tuple(param) for param in self._post_params])
+    file_kv = tuple([tuple(param) for param in self._file_params])
 
-    return hash((self._method, self._resource_path, get_keys, post_keys, file_keys))
-
+    return hash((self._method, self._resource_path, get_kv, post_kv, file_kv))
 
   def __eq__(self, other):
     if not isinstance(other, HTTPResource):
