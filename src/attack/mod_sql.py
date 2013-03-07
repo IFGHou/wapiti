@@ -80,8 +80,12 @@ class mod_sql(Attack):
   def setTimeout(self, timeout):
     self.TIME_TO_SLEEP = str(1 + int(timeout))
 
-  def attackGET(self, page, params_list, headers = {}):
+  def attackGET(self, http_res):
     """This method performs the SQL Injection attack with method GET"""
+    page = http_res.path
+    params_list = http_res.get_params
+    headers = http_res.headers
+
     # about this payload : http://shiflett.org/blog/2006/jan/addslashes-versus-mysql-real-escape-string
     payload = "\xBF'\"("
     vuln_found = 0
@@ -141,7 +145,7 @@ class mod_sql(Attack):
         tmp = deepcopy(params_list)
         k = tmp[i][0]
         tmp[i][1] = "__PAYLOAD__"
-        url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload))
+        url = page + "?" + self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload))
         if url not in self.attackedGET:
           if self.verbose == 2:
             print "+ "+url
@@ -160,7 +164,7 @@ class mod_sql(Attack):
             vuln_found += 1
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload)),
+                                            url, self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload)),
                                             err + " (" + k + ")", resp)
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
@@ -169,13 +173,13 @@ class mod_sql(Attack):
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
 
             tmp[i][1] = "__PAYLOAD__"
-            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp, headers["link_encoding"]))
+            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp))
 
           else:
             if code == "500":
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp, headers["link_encoding"]).replace("__PAYLOAD__", self.HTTP.quote(payload)),
+                                              url, self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload)),
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION,
                                               resp)
               print _("500 HTTP Error code with")
@@ -188,8 +192,8 @@ class mod_sql(Attack):
   def attackPOST(self, form):
     """This method performs the SQL Injection attack with method POST"""
     payload = "\xbf'\"("
-    page = form[0]
-    params_list = form[1]
+    page = form.url
+    params_list = form.post_params
     err = ""
     vuln_found = 0
 
@@ -202,10 +206,10 @@ class mod_sql(Attack):
         headers = {"accept": "text/plain"}
         if self.verbose == 2:
           print "+ " + page
-          tmp[i][1] = payload
+          tmp[i][1] = self.HTTP.quote(payload)
           print "  ", tmp
           tmp[i][1] = "__PAYLOAD__"
-        post_params = self.HTTP.encode(tmp, form[3]).replace("__PAYLOAD__",self.HTTP.quote(payload))
+        post_params = self.HTTP.encode(tmp).replace("__PAYLOAD__",self.HTTP.quote(payload))
         try:
           resp = self.HTTP.send(page, post_params = post_params, http_headers = headers)
           data, code = resp.getPageCode()
@@ -221,7 +225,7 @@ class mod_sql(Attack):
           self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                           Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                           page, post_params,
-                                          err + " " + _("coming from") + " " + form[2],
+                                          err + " " + _("coming from") + " " + form.referer,
                                           resp)
           print err, _("in"), page
           if self.color == 1:
@@ -229,7 +233,7 @@ class mod_sql(Attack):
                 post_params.replace(k + "=", self.RED + k + self.STD + "=")
           else:
             print "  " + _("with params") + " =", post_params
-          print "  " + _("coming from"), form[2]
+          print "  " + _("coming from"), form.referer
 
           self.vulnerablePOST.append((page, tmp))
 
@@ -238,12 +242,12 @@ class mod_sql(Attack):
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             page, post_params,
-                                            _("500 HTTP Error code coming from") + " " + form[2] + "\n"+
+                                            _("500 HTTP Error code coming from") + " " + form.referer + "\n"+
                                             VulDescrip.ERROR_500_DESCRIPTION,
                                             resp)
             print _("500 HTTP Error code in"), page
             print "  " + _("with params") + " =", post_params
-            print "  " + _("coming from"), form[2]
+            print "  " + _("coming from"), form.referer
         self.attackedPOST.append((page, tmp))
       else:
         return 1

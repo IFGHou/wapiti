@@ -38,9 +38,13 @@ class mod_crlf(Attack):
     Attack.__init__(self, HTTP, xmlRepGenerator)
 
   # Won't work with PHP >= 4.4.2
-  def attackGET(self, page, params_list, headers = {}):
+  def attackGET(self, http_res):
     """This method performs the CRLF attack with method GET"""
-    payload = "http://www.google.fr\r\nwapiti: SVN version"
+    page = http_res.path
+    params_list = http_res.get_params
+    headers = http_res.headers
+
+    payload = self.HTTP.quote("http://www.google.fr\r\nwapiti: SVN version")
     if not params_list:
       # Do not attack application-type files
       if not headers.has_key("content-type"):
@@ -78,7 +82,7 @@ class mod_crlf(Attack):
         tmp[i][1] = payload
         k = tmp[i][0]
 
-        url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
+        url = page + "?" + self.HTTP.encode(tmp)
         if url not in self.attackedGET:
           if self.verbose == 2:
             print "+ " + url
@@ -87,7 +91,7 @@ class mod_crlf(Attack):
             if resp.getHeaders().has_key('wapiti'):
               err = _("CRLF Injection")
               self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")", resp)
+                                page, self.HTTP.encode(tmp), err + " (" + k + ")", resp)
               if self.color == 0:
                 print err, "(" + k + ") " + _("in"), page
                 print "  " + _("Evil url") + ":", url
@@ -95,7 +99,7 @@ class mod_crlf(Attack):
                 print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
           except requests.exceptions.Timeout, timeout:
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                              page, self.HTTP.encode(tmp, headers["link_encoding"]), err + " (" + k + ")", timeout)
+                              page, self.HTTP.encode(tmp), err + " (" + k + ")", timeout)
             print _("Timeout") + " (" + k + ") " + _("in"), page
             print "  " + _("caused by") + ":", url
           except requests.exceptions.HTTPError:

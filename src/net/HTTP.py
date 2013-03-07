@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import lswww
 import urllib
 import urlparse
 import socket
@@ -8,6 +7,7 @@ import cgi
 import requests
 import datetime
 import jsoncookie
+from copy import deepcopy
 
 class HTTPResource(object):
   _method = "GET"
@@ -27,6 +27,18 @@ class HTTPResource(object):
   _file_params = []
   
   def __init__(self, path, method="", get_params=None, post_params=None, encoding="UTF-8", referer="", file_params=None):
+    """Create a new HTTPResource object.
+
+    Takes the following arguments:
+      path : The path of the HTTP resource on the server. It can contain a query string.
+      get_params : A list of key/value parameters (each one is a list of two string).
+                   Each string should already be urlencoded in the good encoding format.
+      post_params : Same structure as above but specify the parameters sent in the HTTP body.
+      file_params : Same as above expect the values are a tuple (filename, file_content).
+      encoding : A string specifying the encoding used to send data to this URL.
+                 Don't mistake it with the encoding of the webpage pointed out by the HTTPResource.
+      referer : The URL from which the current HTTPResource was found.
+    """
     self._resource_path = path
 
     if post_params is None:
@@ -67,6 +79,7 @@ class HTTPResource(object):
     post_kv = tuple([tuple(param) for param in self._post_params])
     file_kv = tuple([tuple(param) for param in self._file_params])
 
+    # TODO: should the referer be in the hash ?
     return hash((self._method, self._resource_path, get_kv, post_kv, file_kv))
 
   def __eq__(self, other):
@@ -177,8 +190,21 @@ class HTTPResource(object):
     return self._headers
 
   @property
+  def referer(self):
+    return self._referer
+
+  # To prevent errors, always return a deepcopy of the internal lists
+  @property
+  def get_params(self):
+    return deepcopy(self._get_params)
+
+  @property
+  def post_params(self):
+    return deepcopy(self._post_params)
+
+  @property
   def files(self):
-    return self._files
+    return deepcopy(self._file_params)
 
   def _encode_params(self, params):
     if not params:
@@ -267,7 +293,7 @@ class HTTP(object):
     self.h = requests.session(proxies = self.proxies, cookies = self.cookiejar)
     self.server = server
     
-  def send(self, target, method = "", post_params = [], http_headers = {}):
+  def send(self, target, method = "", post_params = "", http_headers = {}):
     "Send a HTTP Request. GET or POST (if post_params is set)."
     resp = None
     _headers = {}
@@ -306,21 +332,20 @@ class HTTP(object):
     "Encode a string with hex representation (%XX) for special characters."
     return urllib.quote(url)
 
-  def encode(self, params_list, encoding = None):
+  def encode(self, params_list): #, encoding = None):
     "Encode a sequence of two-element lists or dictionary into a URL query string."
-    if not encoding:
-      encoding = "ISO-8859-1"
+#    if not encoding:
+#      encoding = "ISO-8859-1"
     encoded_params = []
-    for param in params_list:
-      k, v = param
-      k = self.quote(k.encode(encoding, "ignore"))
-      v = self.quote(v.encode(encoding, "ignore"))
+    for k, v in params_list:
+#      k = self.quote(k.encode(encoding, "ignore"))
+#      v = self.quote(v.encode(encoding, "ignore"))
       encoded_params.append("%s=%s" % (k, v))
     return "&".join(encoded_params)
 
-  def uqe(self, params_list, encoding = None):
+  def uqe(self, params_list): #, encoding = None):
     "urlencode a string then interpret the hex characters (%41 will give 'A')."
-    return urllib.unquote(self.encode(params_list, encoding))
+    return urllib.unquote(self.encode(params_list)) #, encoding))
 
   def escape(self,url):
     "Change special characters in their html entities representation."

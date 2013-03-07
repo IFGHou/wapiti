@@ -57,8 +57,12 @@ class mod_exec(Attack):
       warn = 1
     return err, cmd, warn
 
-  def attackGET(self, page, params_list, headers = {}):
+  def attackGET(self, http_res):
     """This method performs the command execution with method GET"""
+
+    page = http_res.path
+    params_list = http_res.get_params
+    headers = http_res.headers
 
     if not params_list:
       # Do not attack application-type files
@@ -122,7 +126,7 @@ class mod_exec(Attack):
         tmp = deepcopy(params_list)
         tmp[i][1] = payload
         k = tmp[i][0]
-        url = page + "?" + self.HTTP.encode(tmp, headers["link_encoding"])
+        url = page + "?" + self.HTTP.encode(tmp)
 
         if url not in self.attackedGET:
           if self.verbose == 2:
@@ -139,13 +143,13 @@ class mod_exec(Attack):
             print "  " + _("caused by") + ":", url
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp, headers["link_encoding"]), err+" ("+k+")", timeout)
+                                            url, self.HTTP.encode(tmp), err+" ("+k+")", timeout)
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.EXEC,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp, headers["link_encoding"]), err+" ("+k+")")
+                                            url, self.HTTP.encode(tmp), err+" ("+k+")")
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
               print "  " + _("Evil url") + ":", url
@@ -156,15 +160,16 @@ class mod_exec(Attack):
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp, headers["link_encoding"]),
+                                              url, self.HTTP.encode(tmp),
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code with")
               print "  " + _("Evil url") + ":", url
 
   def attackPOST(self, form):
     """This method performs the command execution with method POST"""
-    page = form[0]
-    params_list = form[1]
+    page = form.url
+    params_list = form.post_params
+
     err = ""
     for payload in self.payloads:
       warn = 0
@@ -172,7 +177,7 @@ class mod_exec(Attack):
       err500 = 0
       for i in range(len(params_list)):
         tmp = deepcopy(params_list)
-        tmp[i][1] = payload
+        tmp[i][1] = self.HTTP.quote(payload)
         k = tmp[i][0]
 
         if (page, tmp) not in self.attackedPOST:
@@ -183,42 +188,42 @@ class mod_exec(Attack):
             print "+ " + page
             print "  ", tmp
           try:
-            data, code = self.HTTP.send(page, post_params = self.HTTP.encode(tmp, form[3]), http_headers = headers).getPageCode()
+            data, code = self.HTTP.send(page, post_params = self.HTTP.encode(tmp), http_headers = headers).getPageCode()
           except requests.exceptions.Timeout, timeout:
             data = ""
             code = "408"
             print _("Timeout in"), page
-            print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
-            print "  " + _("coming from"), form[2]
+            print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+            print "  " + _("coming from"), form.referer
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                             Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                            page, self.HTTP.encode(tmp, form[3]),
-                                            _("Timeout coming from") + " " + form[2], timeout)
+                                            page, self.HTTP.encode(tmp),
+                                            _("Timeout coming from") + " " + form.referer, timeout)
           else:
             err, cmd, warn = self.__findPatternInResponse(data, cmd, warn)
 
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.EXEC,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            page, self.HTTP.encode(tmp, form[3]),
-                                            err + " " + _("coming from") + " " + form[2])
+                                            page, self.HTTP.encode(tmp),
+                                            err + " " + _("coming from") + " " + form.referer)
             print err, _("in"), page
             if self.color == 1:
               print "  " + _("with params") + " =", \
-                  self.HTTP.encode(tmp, form[3]).replace(k + "=", self.RED + k + self.STD + "=")
+                  self.HTTP.encode(tmp).replace(k + "=", self.RED + k + self.STD + "=")
             else:
-              print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
-            print "  " + _("coming from"), form[2]
+              print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+            print "  " + _("coming from"), form.referer
 
           else:
             if code == "500" and err500 == 0:
               err500 = 1
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              page, self.HTTP.encode(tmp, form[3]),
-                                              _("500 HTTP Error code coming from") + " " + form[2] + "\n" +
+                                              page, self.HTTP.encode(tmp),
+                                              _("500 HTTP Error code coming from") + " " + form.referer + "\n" +
                                               VulDescrip.ERROR_500_DESCRIPTION)
               print _("500 HTTP Error code in"), page
-              print "  " + _("with params") + " =", self.HTTP.encode(tmp, form[3])
-              print "  " + _("coming from"), form[2]
+              print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+              print "  " + _("coming from"), form.referer
 

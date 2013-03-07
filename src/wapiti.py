@@ -178,7 +178,7 @@ Supported options are:
   def __init__(self, root_url):
     server = urlparse.urlparse(root_url).netloc
     self.http_engine = HTTP.HTTP(server)
-    self.myls = HTTP.lswww.lswww(root_url, http_engine = self.http_engine)
+    self.myls = lswww.lswww(root_url, http_engine = self.http_engine)
     self.xmlRepGenParser = ReportGeneratorsXMLParser()
     self.xmlRepGenParser.parse(os.path.join(CONF_DIR, "config/reports/generators.xml"))
 

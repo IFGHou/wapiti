@@ -128,7 +128,7 @@ Supported options are:
   root = ""
   server = ""
   tobrowse = []
-  browsed = {}
+  browsed = []
   proxies = {}
   excluded = []
   forms = []
@@ -223,8 +223,6 @@ Supported options are:
 
   def browse(self, web_resource):
     """Extract urls from a webpage and add them to the list of urls to browse if they aren't in the exclusion list"""
-    # return an empty dictionnary => won't be logged
-
     url = web_resource.url
 
     # We don't need destination anchors
@@ -253,22 +251,24 @@ Supported options are:
         sys.exit()
     except socket.timeout:
       self.excluded.append(url)
-      return {}
+      return False
     except requests.exceptions.Timeout:
       self.excluded.append(url)
-      return {}
+      return False
     except socket.error, msg:
       if msg.errno == 111:
         print _("Connection refused!")
       self.excluded.append(url)
-      return {}
+      return False
     except Exception:
       self.excluded.append(url)
-      return {}
+      return False
 
     info = resp.headers
     code = resp.status_code
     info["status_code"] = str(code)
+
+    web_resource.setHeaders(info)
 
     if not url in self.link_encoding:
       self.link_encoding[url] = ""
@@ -287,17 +287,19 @@ Supported options are:
     # No files more than 2MB
     if info.has_key("content-length"):
       if int(info["content-length"]) > 2097152:
-        return info
+        return False
 
-    page_encoding = resp.encoding
-    if page_encoding:
+    # Requests says it found an encoding... so the content must be some HTML
+    if resp.encoding:
+      # But Requests doesn't take a deep look at the webpage, so check it with BeautifulSoup
+      page_encoding = BeautifulSoup.BeautifulSoup(resp.content).originalEncoding
+      if page_encoding and page_encoding.upper() != resp.encoding:
+        # Mismatch ! Convert the response text to the encoding detected by BeautifulSoup
+        resp.encoding = page_encoding
       data = resp.text
     else:
       # Can't find an encoding... beware of non-html content
       data = resp.content
-
-    #data = resp.text
-    #page_encoding = BeautifulSoup.BeautifulSoup(data).originalEncoding
 
     # Manage redirections
     if info.has_key("location"):
@@ -370,14 +372,14 @@ Supported options are:
       if lien != None:
         if(self.__inzone(lien) == 0):
           # Is the document already visited of forbidden ?
-          lien = HTTP.HTTPResource(lien)
+          lien = HTTP.HTTPResource(lien, encoding=page_encoding)
           if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
             pass
           elif self.nice > 0:
             if self.__countMatches(lien.url) >= self.nice:
               # don't waste time next time we found it
               self.excluded.append(lien)
-              return {}
+              return False
             else:
               self.tobrowse.append(lien)
           else:
@@ -387,18 +389,26 @@ Supported options are:
           # so we can encode the query string parameters just as a browser would do.
           # Of course websites encoding may be broken :(
           self.link_encoding[lien] = page_encoding
+
     for form in p.forms:
       action = self.correctlink(form[0], current, currentdir, proto, page_encoding)
-      if action == None: action = current
-      for kv in form[1]:
+      if action == None:
+        action = current
+
+      # urlencode the POST parameters here
+      params = form[1]
+      for kv in params:
         if isinstance(kv[0], unicode):
-          kv[0] = urllib.quote(kv[0].encode(page_encoding, "ignore"), safe='/#%[]=:;$&()+,!?*')
+          kv[0] = urllib.quote(kv[0].encode(page_encoding, "ignore"), safe='/%[]:;$()+,!?*') # safe='/#%[]=:;$&()+,!?*'
         if isinstance(kv[1], unicode):
-          kv[1] = urllib.quote(kv[1].encode(page_encoding, "ignore"), safe='/#%[]=:;$&()+,!?*')
-      form = (action, form[1], url, page_encoding)
-      if form[0:3] not in [x[0:3] for x in self.forms]: self.forms.append(form)
-      form_rsrc = HTTP.HTTPResource(action, method = "POST", post_params = form[1], encoding = page_encoding, referer = url)
+          kv[1] = urllib.quote(kv[1].encode(page_encoding, "ignore"), safe='/%[]:;$()+,!?*')
+
+#      form = (action, form[1], url, page_encoding)
+#      if form[0:3] not in [x[0:3] for x in self.forms]: self.forms.append(form)
+      form_rsrc = HTTP.HTTPResource(action, method = "POST", post_params = params, encoding = page_encoding, referer = url)
       print form_rsrc
+      if form_rsrc not in self.forms:
+        self.forms.append(form_rsrc)
       if not (form_rsrc in self.browsed and form_rsrc in self.tobrowse):
         self.tobrowse.append(form_rsrc)
     # We automaticaly exclude 404 urls
@@ -406,7 +416,7 @@ Supported options are:
       self.excluded.append(url)
       #return {} # exclude from scan but can be useful for some modules maybe
 
-    return info
+    return True
 
 
   def correctlink(self, lien, current_url, current_directory, protocol, encoding):
@@ -610,16 +620,18 @@ Supported options are:
       while len(self.tobrowse) > 0:
         lien = self.tobrowse.pop(0)
         if (lien not in self.browsed and lien not in self.excluded):
-          headers = self.browse(lien)
-          if headers != {}:
-            if not "link_encoding" in headers:
-              if lien in self.link_encoding:
-                headers["link_encoding"] = self.link_encoding[lien]
-            self.browsed[lien] = headers
+          if self.browse(lien):
             if self.verbose == 1:
               sys.stderr.write('.')
             elif self.verbose == 2:
               print lien
+            self.browsed.append(lien)
+
+#            if not "link_encoding" in lien.headers:
+#              if lien in self.link_encoding:
+#                lien.headers["link_encoding"] = self.link_encoding[lien]
+#            self.browsed[lien] = lien.headers
+
         if(self.scope == self.SCOPE_PAGE):
           self.tobrowse = []
       self.saveCrawlerData()
@@ -643,10 +655,9 @@ Supported options are:
 
   def printLinks(self):
     """Print found URLs on standard output"""
-    l = self.browsed.keys()
-    l.sort()
+    browsed.sort()
     sys.stderr.write("\n+ " + _("URLs") + ":\n")
-    for lien in l:
+    for lien in browsed:
       print lien
 
   def printForms(self):
@@ -675,7 +686,7 @@ Supported options are:
 
     for lien in self.browsed:
       get = xml.createElement("get")
-      get.setAttribute("url", lien)
+      get.setAttribute("url", lien.url)
       items.appendChild(get)
 
     for form in self.forms:

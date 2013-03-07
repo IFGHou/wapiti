@@ -49,9 +49,9 @@ class mod_permanentxss(Attack):
     self.independant_payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
 
   # permanent XSS
-  def attack(self, urls, forms):
+  def attack(self, get_resources, forms):
     """This method searches XSS which could be permanently stored in the web application"""
-    for http_resource, headers in urls.items():
+    for http_resource in get_resources:
       url = http_resource.url
       if self.verbose >= 1:
         print "+", url

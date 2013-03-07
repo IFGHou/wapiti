@@ -76,10 +76,10 @@ class CrawlerPersister:
     root.appendChild(toBrowseEl)
 
     browsedEl = xml.createElement(self.BROWSED)
-    for http_resource, headers in self.browsed.items():
+    for http_resource in self.browsed:
       urlEl = xml.createElement(self.URL_DATA)
       urlEl.setAttribute(self.URI, http_resource.url.encode("UTF-8"))
-      for k, v in headers.items():
+      for k, v in http_resource.headers.items():
         if v == None:
           v = ""
         headEl = xml.createElement(self.HEADER)
@@ -92,15 +92,17 @@ class CrawlerPersister:
     formsEl = xml.createElement(self.FORMS)
     for form in self.forms:
       formEl = xml.createElement(self.FORM)
-      formEl.setAttribute(self.FORM_URL, form[0].encode("UTF-8"))
-      formEl.setAttribute(self.FORM_TO, form[2].encode("UTF-8"))
-      if form[3] != None:
-        formEl.setAttribute(self.ENCODING, form[3].encode("UTF-8"))
+      #TODO: possible incoherence on target vs referer
+      formEl.setAttribute(self.FORM_URL, form.url.encode("UTF-8"))
+      formEl.setAttribute(self.FORM_TO, form.referer.encode("UTF-8"))
+      if form.encoding:
+        formEl.setAttribute(self.ENCODING, form.encoding.encode("UTF-8"))
 
       inputsEl = xml.createElement(self.INPUTS)
-      for k, v in form[1]:
+      for k, v in form.post_params:
         inputEl = xml.createElement(self.INPUT)
         inputEl.setAttribute(self.INPUT_NAME, k.encode("UTF-8"))
+        # TODO: may be an input type=file in the future
         inputEl.setAttribute(self.INPUT_VALUE, v.encode("UTF-8"))
         inputsEl.appendChild(inputEl)
       formEl.appendChild(inputsEl)

@@ -105,26 +105,24 @@ class Attack:
 
     def attack(self, http_resources, forms):
       if self.doGET == True:
-        for http_res, headers in http_resources.items():
+        for http_res in http_resources:
           url = http_res.url
-          params_list = []
-          params = []
-          page = url
-
-          if url.find("?") >= 0:
-            page = url.split('?')[0]
-            query = url.split('?')[1]
-            for param in query.split('&'):
-              if param.find("=") > 0:
-                params_list.append(param.split('=', 1))
+#          params_list = []
+#          params = []
+#          page = url
+#
+#          if url.find("?") >= 0:
+#            page = url.split('?')[0]
+#            query = url.split('?')[1]
+#            for param in query.split('&'):
+#              if param.find("=") > 0:
+#                params_list.append(param.split('=', 1))
 
           if self.verbose == 1:
             print "+ " + _("attackGET") + " "  + url
-            if params != []:
-              print "  ", params
 
           try:
-            self.attackGET(page, params_list, headers)
+            self.attackGET(http_res)
           except socket.error, se:
             print 'error: %s while attacking %s' % (repr(str(se[0])), url)
           except requests.exceptions.Timeout, te:
@@ -134,12 +132,11 @@ class Attack:
 
       if self.doPOST == True:
         for form in forms:
-          if form[1]:
-            try:
-              self.attackPOST(form)
-            except socket.error, se:
-              print 'error: %s while attacking %s' % (repr(str(se[0])), url)
-            except requests.exceptions.Timeout, te:
-              print 'error: timeout while attacking %s' % (url)
-         #   except Exception, e:
-         #     print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+          try:
+            self.attackPOST(form)
+          except socket.error, se:
+            print 'error: %s while attacking %s' % (repr(str(se[0])), url)
+          except requests.exceptions.Timeout, te:
+            print 'error: timeout while attacking %s' % (url)
+       #   except Exception, e:
+       #     print 'error: %s while attacking %s' % (repr(str(e[0])), url)

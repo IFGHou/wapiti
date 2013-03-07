@@ -40,7 +40,11 @@ class mod_backup(Attack):
     return err
 
 
-  def attackGET(self, page, params_list, headers = {}):
+  def attackGET(self, http_res):
+
+    page = http_res.path
+    params_list = http_res.get_params
+    headers = http_res.headers
 
     # Do not attack application-type files
     if not headers.has_key("content-type"):
