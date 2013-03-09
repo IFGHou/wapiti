@@ -146,8 +146,7 @@ class HTTPResource(object):
   def _encoded_keys(self):
     quoted_keys = []
     for k, __ in self._post_params:
-      k = urllib.quote(k.encode(self._encoding, "ignore"))
-      quoted_keys.append(k)
+      quoted_keys.append(urllib.quote(k))
     return "&".join(quoted_keys)
 
   def __repr__(self):
@@ -203,7 +202,7 @@ class HTTPResource(object):
     return deepcopy(self._post_params)
 
   @property
-  def files(self):
+  def file_params(self):
     return deepcopy(self._file_params)
 
   def _encode_params(self, params):
@@ -212,9 +211,11 @@ class HTTPResource(object):
 
     key_values = []
     for k, v in params:
+      k = urllib.quote(k)
       # for upload fields
       if isinstance(v, tuple):
         v = v[0]
+      v= urllib.quote(v)
       key_values.append("%s=%s" % (k, v))
     return "&".join(key_values)
 
@@ -293,34 +294,52 @@ class HTTP(object):
     self.h = requests.session(proxies = self.proxies, cookies = self.cookiejar)
     self.server = server
     
-  def send(self, target, method = "", post_params = "", http_headers = {}):
+  def send(self, target, method = "", get_params=None, post_params=None, file_params=None, http_headers = {}):
     "Send a HTTP Request. GET or POST (if post_params is set)."
     resp = None
     _headers = {}
     _headers.update(http_headers)
 
-    if not method:
-      if post_params:
-        method = "POST"
-      else:
-        method = "GET"
+    get_data = None
+    if isinstance(get_params, basestring):
+      get_data = get_params
+    elif isinstance(get_params, list):
+      get_data = self.encode(get_params)
+
+    post_data = None
+    if isinstance(post_params, basestring):
+      post_data = post_params
+    elif isinstance(post_params, list):
+      post_data = self.encode(post_params)
 
     if isinstance(target, HTTPResource):
+      if get_data is None:
+        get_data = target.get_params
+
       if target.method == "GET":
-        resp = self.h.get(target.url, headers = _headers, timeout = self.timeout, allow_redirects = False)
+        resp = self.h.get(target.path, params=get_data, headers = _headers, timeout = self.timeout, allow_redirects = False)
       else:
         _headers.update({'content-type': 'application/x-www-form-urlencoded'})
         if target.referer:
           _headers.update({'referer': target.referer})
+        if post_data is None:
+          post_data = target.post_params
         # TODO: For POST use the TooManyRedirects exception instead ?
-        resp = self.h.post(target.url, headers = _headers, data = target.encoded_data, timeout = self.timeout, allow_redirects = False)
+        resp = self.h.post(target.path, params=get_data, data=post_data, headers = _headers, timeout = self.timeout, allow_redirects = False)
 
+    # Keep it for Nikto module
     else:
+      if not method:
+        if post_params:
+          method = "POST"
+        else:
+          method = "GET"
+
       if method == "GET":
         resp = self.h.get(target, headers = _headers, timeout = self.timeout, allow_redirects = False)
       elif method == "POST":
         _headers.update({'content-type': 'application/x-www-form-urlencoded'})
-        resp = self.h.post(target, headers = _headers, data = post_params, timeout = self.timeout, allow_redirects = False)
+        resp = self.h.post(target, headers=_headers, data=post_data, timeout=self.timeout, allow_redirects=False)
       else:
         resp = self.h.request(method, target, timeout = self.timeout, allow_redirects = False)
 
@@ -332,14 +351,13 @@ class HTTP(object):
     "Encode a string with hex representation (%XX) for special characters."
     return urllib.quote(url)
 
-  def encode(self, params_list): #, encoding = None):
+  def encode(self, params_list):
     "Encode a sequence of two-element lists or dictionary into a URL query string."
-#    if not encoding:
-#      encoding = "ISO-8859-1"
     encoded_params = []
     for k, v in params_list:
-#      k = self.quote(k.encode(encoding, "ignore"))
-#      v = self.quote(v.encode(encoding, "ignore"))
+      # not safe: '&=#' with of course quotes...
+      k = urllib.quote(k, safe='/%[]:;$()+,!?*')
+      v = urllib.quote(v, safe='/%[]:;$()+,!?*')
       encoded_params.append("%s=%s" % (k, v))
     return "&".join(encoded_params)
 

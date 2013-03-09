@@ -1,6 +1,7 @@
 import os
 from xml.parsers import expat
 from xml.dom.minidom import Document
+from urllib import quote
 
 class CrawlerPersister:
   """
@@ -101,9 +102,9 @@ class CrawlerPersister:
       inputsEl = xml.createElement(self.INPUTS)
       for k, v in form.post_params:
         inputEl = xml.createElement(self.INPUT)
-        inputEl.setAttribute(self.INPUT_NAME, k.encode("UTF-8"))
+        inputEl.setAttribute(self.INPUT_NAME, quote(k))
         # TODO: may be an input type=file in the future
-        inputEl.setAttribute(self.INPUT_VALUE, v.encode("UTF-8"))
+        inputEl.setAttribute(self.INPUT_VALUE, quote(v))
         inputsEl.appendChild(inputEl)
       formEl.appendChild(inputsEl)
       formsEl.appendChild(formEl)

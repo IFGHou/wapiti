@@ -79,7 +79,7 @@ class Attack:
     # The priority of the module, from 0 (first) to 10 (last). Default is 5
     PRIORITY = 5
 
-    def __init__(self,HTTP,reportGen):
+    def __init__(self, HTTP, reportGen):
         self.HTTP = HTTP
         self.reportGen = reportGen
         self.auxText = AuxText()

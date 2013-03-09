@@ -366,8 +366,8 @@ Supported options are:
     for lien in p.uploads:
       self.uploads.append(self.correctlink(lien, current, currentdir, proto, page_encoding))
     for lien in p.liens:
-      if lien != None and page_encoding != None and not isinstance(lien, unicode):
-        lien = unicode(lien, page_encoding, "ignore")
+      if lien != None and page_encoding != None and isinstance(lien, unicode):
+        lien = lien.encode(page_encoding, "ignore")
       lien = self.correctlink(lien, current, currentdir, proto, page_encoding)
       if lien != None:
         if(self.__inzone(lien) == 0):
@@ -399,9 +399,9 @@ Supported options are:
       params = form[1]
       for kv in params:
         if isinstance(kv[0], unicode):
-          kv[0] = urllib.quote(kv[0].encode(page_encoding, "ignore"), safe='/%[]:;$()+,!?*') # safe='/#%[]=:;$&()+,!?*'
+          kv[0] = kv[0].encode(page_encoding, "ignore")
         if isinstance(kv[1], unicode):
-          kv[1] = urllib.quote(kv[1].encode(page_encoding, "ignore"), safe='/%[]:;$()+,!?*')
+          kv[1] = kv[1].encode(page_encoding, "ignore")
 
 #      form = (action, form[1], url, page_encoding)
 #      if form[0:3] not in [x[0:3] for x in self.forms]: self.forms.append(form)
@@ -465,8 +465,6 @@ Supported options are:
         # if args is a unicode string, encode it according to the charset of the webpage (if known)
         if encoding and isinstance(args, unicode):
           args = args.encode(encoding, "ignore")
-        # urlencode the query string so we don't have to care about encoding later
-        args = urllib.quote(args, safe='/#%[]=:;$&()+,!?*')
         if args.find("&") != -1 :
           args = args.split("&")
           args = [i for i in args if i != "" and i.find("=") >= 0]

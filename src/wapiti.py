@@ -387,7 +387,7 @@ if __name__ == "__main__":
     if not os.path.isdir(crawlerPersister.CRAWLER_DATA_DIR):
       os.makedirs(crawlerPersister.CRAWLER_DATA_DIR)
 
-    url = unicode(sys.argv[1])
+    url = sys.argv[1]
     wap = Wapiti(url)
     try:
       opts, args = getopt.getopt(sys.argv[2:], "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",
