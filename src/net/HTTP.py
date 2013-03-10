@@ -268,6 +268,10 @@ class HTTPResponse(object):
     "Return the detected encoding for the page."
     return self.resp.encoding
 
+  def setEncoding(self, new_encoding):
+    "Change the encoding (for getPage())"
+    self.resp.encoding = new_encoding
+
   def getPeer(self):
     """Return the network address of the server that delivered this Response.
     This will always be a socket_object.getpeername() return value, which is
@@ -291,14 +295,14 @@ class HTTP(object):
 
   def __init__(self, server):
     #TODO: bring back auth (htaccess)
-    self.h = requests.session(proxies = self.proxies, cookies = self.cookiejar)
+    self.h = requests.session(proxies=self.proxies, cookies=self.cookiejar)
     self.server = server
     
-  def send(self, target, method = "", get_params=None, post_params=None, file_params=None, http_headers = {}):
+  def send(self, target, method = "", get_params=None, post_params=None, file_params=None, headers={}):
     "Send a HTTP Request. GET or POST (if post_params is set)."
     resp = None
     _headers = {}
-    _headers.update(http_headers)
+    _headers.update(headers)
 
     get_data = None
     if isinstance(get_params, basestring):
@@ -317,7 +321,7 @@ class HTTP(object):
         get_data = target.get_params
 
       if target.method == "GET":
-        resp = self.h.get(target.path, params=get_data, headers = _headers, timeout = self.timeout, allow_redirects = False)
+        resp = self.h.get(target.path, params=get_data, headers=_headers, timeout=self.timeout, allow_redirects=False)
       else:
         _headers.update({'content-type': 'application/x-www-form-urlencoded'})
         if target.referer:
@@ -325,7 +329,7 @@ class HTTP(object):
         if post_data is None:
           post_data = target.post_params
         # TODO: For POST use the TooManyRedirects exception instead ?
-        resp = self.h.post(target.path, params=get_data, data=post_data, headers = _headers, timeout = self.timeout, allow_redirects = False)
+        resp = self.h.post(target.path, params=get_data, data=post_data, headers=_headers, timeout=self.timeout, allow_redirects=False)
 
     # Keep it for Nikto module
     else:

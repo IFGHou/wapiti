@@ -74,8 +74,11 @@ class mod_xss(Attack):
           print "+", url
         data, http_code = self.HTTP.send(url).getPageCode()
         if data.find(self.php_self_check) >= 0:
-          print _("XSS") + " (PHP_SELF) " + _("in"), page
-          print "  " + _("Evil url") + ":", url
+          if self.color == 0:
+            print _("XSS"), "(PHP_SELF)", _("in"), page
+            print "  " + _("Evil url") + ":", url
+          else:
+            print _("XSS"), "(PHP_SELF)", _("in"), url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                             url, self.php_self_payload,
@@ -121,7 +124,7 @@ class mod_xss(Attack):
               resp = timeout
             param_name = "QUERY_STRING"
 
-            if dat == None or dat == "":
+            if dat is not None and len(dat) > 1:
               if payload.lower() in dat.lower():
                 self.SUCCESSFUL_XSS[code] = payload
                 self.reportGen.logVulnerability(Vulnerability.XSS,
@@ -130,10 +133,10 @@ class mod_xss(Attack):
                                   _("XSS") + " (" + param_name + ")", resp)
 
                 if self.color == 0:
-                  print _("XSS") + " (" + param_name + ") " + _("in"), page
+                  print _("XSS"), "(QUERY_STRING)", _("in"), page
                   print "  " + _("Evil url") + ":", url
                 else:
-                  print _("XSS"), ":", url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                  print _("XSS"), "(QUERY_STRING):", page + "?" + self.RED + self.HTTP.quote(payload) + self.STD
                 # No more payload injection
                 break
 
@@ -177,7 +180,7 @@ class mod_xss(Attack):
                 dat = ""
                 resp = timeout
 
-              if dat is not None or len(dat) > 1:
+              if dat is not None and len(dat) > 1:
                 if payload.lower() in dat.lower():
                   self.SUCCESSFUL_XSS[code] = payload
                   self.reportGen.logVulnerability(Vulnerability.XSS,
@@ -211,8 +214,11 @@ class mod_xss(Attack):
           print "+", url
         data, http_code = self.HTTP.send(url).getPageCode()
         if data.find(self.php_self_check) >= 0:
-          print _("XSS") + " (PHP_SELF) " + _("in"), page
-          print "  " + _("Evil url") + ":", url
+          if self.color == 0:
+            print _("XSS"), "(PHP_SELF)", _("in"), page
+            print "  " + _("Evil url") + ":", url
+          else:
+            print _("XSS"), "(PHP_SELF)", _("in"), url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)
           self.reportGen.logVulnerability(Vulnerability.XSS,
                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                             url, self.php_self_payload,
@@ -262,7 +268,7 @@ class mod_xss(Attack):
                 dat = ""
                 resp = timeout
 
-              if dat is not None or len(dat) > 1:
+              if dat is not None and len(dat) > 1:
                 if payload.lower() in dat.lower():
                   self.SUCCESSFUL_XSS[code] = payload
                   if params:
@@ -276,12 +282,17 @@ class mod_xss(Attack):
                                       url, url.split("?")[1],
                                       _("XSS") + " (" + param_name + ")", resp)
 
-                  #TODO: vuln param may be in the get parameters, fix it
-                  print _("Found XSS in"), evil_req.url
+                  #TODO: vuln param name may appear twice (or more)
                   if self.color == 0:
+                    print _("Found XSS in"), evil_req.url
                     print "  " + _("with params") + " =", self.HTTP.encode(post_params)
                   else:
-                    print "  " + _("with params") + " =", self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                    if param_list is get_params:
+                      print _("Found XSS in"), evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                      print "  " + _("with params") + " =", self.HTTP.encode(post_params)
+                    else:
+                      print _("Found XSS in"), evil_req.url
+                      print "  " + _("with params") + " =", self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
                   print "  " + _("coming from"), form.referer
                   # Stop injecting payloads and move to the next parameter
                   break

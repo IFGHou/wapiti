@@ -242,10 +242,7 @@ Supported options are:
       if isinstance(web_resource, HTTP.HTTPResource):
         if web_resource.method == "POST":
           headers['content-type'] = 'application/x-www-form-urlencoded'
-          headers['referer'] = web_resource[2]
-          resp = self.h.post(url, data = web_resource[1], headers = headers, timeout = self.timeout)
-        else:
-          resp = self.h.get(url, headers = headers, timeout = self.timeout)
+        resp = self.h.send(web_resource, headers=headers)
       else:
         print "non HTTPResource:", url
         sys.exit()
@@ -264,9 +261,9 @@ Supported options are:
       self.excluded.append(url)
       return False
 
-    info = resp.headers
-    code = resp.status_code
-    info["status_code"] = str(code)
+    info = resp.getHeaders()
+    code = resp.getCode()
+    info["status_code"] = code
 
     web_resource.setHeaders(info)
 
@@ -289,17 +286,18 @@ Supported options are:
       if int(info["content-length"]) > 2097152:
         return False
 
+    resp_encoding = resp.getEncoding()
     # Requests says it found an encoding... so the content must be some HTML
-    if resp.encoding:
+    if resp_encoding:
       # But Requests doesn't take a deep look at the webpage, so check it with BeautifulSoup
-      page_encoding = BeautifulSoup.BeautifulSoup(resp.content).originalEncoding
-      if page_encoding and page_encoding.upper() != resp.encoding:
+      page_encoding = BeautifulSoup.BeautifulSoup(resp.getRawPage()).originalEncoding
+      if page_encoding and page_encoding.upper() != resp_encoding:
         # Mismatch ! Convert the response text to the encoding detected by BeautifulSoup
-        resp.encoding = page_encoding
-      data = resp.text
+        resp.setEncoding(page_encoding)
+      data = resp.getPage()
     else:
       # Can't find an encoding... beware of non-html content
-      data = resp.content
+      data = resp.getRawPage()
 
     # Manage redirections
     if info.has_key("location"):
@@ -403,13 +401,10 @@ Supported options are:
         if isinstance(kv[1], unicode):
           kv[1] = kv[1].encode(page_encoding, "ignore")
 
-#      form = (action, form[1], url, page_encoding)
-#      if form[0:3] not in [x[0:3] for x in self.forms]: self.forms.append(form)
       form_rsrc = HTTP.HTTPResource(action, method = "POST", post_params = params, encoding = page_encoding, referer = url)
-      print form_rsrc
       if form_rsrc not in self.forms:
         self.forms.append(form_rsrc)
-      if not (form_rsrc in self.browsed and form_rsrc in self.tobrowse):
+      if not (form_rsrc in self.browsed or form_rsrc in self.tobrowse):
         self.tobrowse.append(form_rsrc)
     # We automaticaly exclude 404 urls
     if code == "404":
@@ -588,9 +583,6 @@ Supported options are:
     return match
 
   def go(self, crawlerFile):
-    #TODO: but back proxies and co
-    self.h = requests.session(proxies = self.proxies, cookies = self.cookiejar)
-
     # load of the crawler status if a file is passed to it.
     if crawlerFile != None:
       if self.persister.isDataForUrl(crawlerFile) == 1:
