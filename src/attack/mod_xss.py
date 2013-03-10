@@ -271,16 +271,10 @@ class mod_xss(Attack):
               if dat is not None and len(dat) > 1:
                 if payload.lower() in dat.lower():
                   self.SUCCESSFUL_XSS[code] = payload
-                  if params:
-                    self.reportGen.logVulnerability(Vulnerability.XSS,
-                                      Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                      url, self.HTTP.encode(params),
-                                      _("XSS") + " (" + param_name + ")", resp)
-                  else:
-                    self.reportGen.logVulnerability(Vulnerability.XSS,
-                                      Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                      url, url.split("?")[1],
-                                      _("XSS") + " (" + param_name + ")", resp)
+                  self.reportGen.logVulnerability(Vulnerability.XSS,
+                                    Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                    evil_req.url, self.HTTP.encode(post_params),
+                                    _("XSS") + " (" + param_name + ")", resp)
 
                   #TODO: vuln param name may appear twice (or more)
                   if self.color == 0:
