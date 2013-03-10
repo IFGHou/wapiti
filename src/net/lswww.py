@@ -438,15 +438,18 @@ Supported options are:
     # Good protocols or relatives links
     else:
       # full url, nothing to do :)
-      if (lien.find("http://", 0) == 0) or (lien.find("https://", 0) == 0):
+      if lien.find("http://", 0) == 0 or lien.find("https://", 0) == 0:
         pass
       else:
+        # Protocol relative URLs
+        if lien.startswith("//"):
+          lien = protocol + ":" + lien
         # root-url related link
-        if(lien[0] == '/'):
+        elif lien[0] == '/':
           lien = protocol + u"://" + self.server + lien
         else:
           # same page + query string
-          if(lien[0] == '?'):
+          if lien[0] == '?':
             lien = current_url + lien
           # current_url directory related link
           else:
