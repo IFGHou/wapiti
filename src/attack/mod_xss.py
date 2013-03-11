@@ -236,12 +236,18 @@ class mod_xss(Attack):
         param_list[i][1] = "__XSS__"
         # We keep an attack pattern to make sure a given form won't be attacked on the same field several times
         attack_pattern = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
-        if attack_pattern not in self.attackedPOST:
+        if not attack_pattern in self.attackedPOST:
           self.attackedPOST.append(attack_pattern)
           code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)]) # don't use upercase as BS make some data lowercase
           param_list[i][1] = code
           # will only memorize the last used payload (working or not) but the code will always be the good
-          test_payload = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
+          test_payload = HTTP.HTTPResource(form.path,
+              method=form.method,
+              get_params=get_params,
+              post_params=post_params,
+              file_params=file_params,
+              referer=form.referer)
+
           self.POST_XSS[code] = test_payload
           try:
             resp = self.HTTP.send(test_payload)

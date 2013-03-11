@@ -43,11 +43,15 @@ class HTTPResource(object):
 
     if post_params is None:
       self._post_params = []
+    elif isinstance(post_params, list):
+      self._post_params = deepcopy(post_params)
     else:
       self._post_params = post_params
 
     if file_params is None:
       self._file_params = []
+    elif isinstance(file_params, list):
+      self._file_params = deepcopy(file_params)
     else:
       self._file_params = file_params
 
@@ -59,6 +63,8 @@ class HTTPResource(object):
           if kv.find("=") > 0:
             self._get_params.append(kv.split("=", 1))
         self._resource_path = self._resource_path.split("?")[0]
+    elif isinstance(get_params, list):
+      self._get_params = deepcopy(get_params)
     else:
       self._get_params = get_params
 
