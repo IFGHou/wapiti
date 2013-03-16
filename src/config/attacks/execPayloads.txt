@@ -1,3 +1,6 @@
 a;env
 a);env
 /e\0
+a;exit(base64_decode('dzRwMXQxX2V2YWw='));
+a`)`
+a`sleep 600`

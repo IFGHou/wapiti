@@ -34,8 +34,6 @@ class mod_xss(Attack):
   
   name = "xss"
 
-  HTTP = None
-
   # two dict exported for permanent XSS scanning
   # GET_XSS structure :
   # {uniq_code : http://url/?param1=value1&param2=uniq_code&param3..., next_uniq_code : ...}
