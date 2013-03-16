@@ -3,6 +3,7 @@ from attack import Attack
 from vulnerability import Vulnerability
 import requests
 from copy import deepcopy
+from net import HTTP
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -85,7 +86,7 @@ class mod_crlf(Attack):
         url = page + "?" + self.HTTP.encode(tmp)
         if url not in self.attackedGET:
           if self.verbose == 2:
-            print "+ " + url
+            print "+", url
           try:
             resp = self.HTTP.send(url)
             if resp.getHeaders().has_key('wapiti'):

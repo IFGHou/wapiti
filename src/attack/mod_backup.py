@@ -10,6 +10,7 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import socket
+from net import HTTP
 
 class mod_backup(Attack):
   """
@@ -58,7 +59,7 @@ class mod_backup(Attack):
       url = page + k
       
       if self.verbose == 2:
-        print "+ " + url
+        print "+", url
 
       if url not in self.attackedGET:
         self.attackedGET.append(url)
@@ -72,7 +73,7 @@ class mod_backup(Attack):
               print self.RED + "    -> " + url + self.STD
             else:
               print " +", _("Found backup file !")
-              print "   -> " + url
+              print "   ->", url
             self.reportGen.logVulnerability(Vulnerability.BACKUP,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url, "", _("Backup file found for") + " " + page, resp)

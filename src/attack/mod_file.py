@@ -105,7 +105,7 @@ class mod_file(Attack):
         url = page + "?" + self.HTTP.quote(payload)
         if url not in self.attackedGET:
           if self.verbose == 2:
-            print "+ " + url
+            print "+", url
           self.attackedGET.append(url)
           if inc:
             continue
@@ -153,7 +153,7 @@ class mod_file(Attack):
         url = page + "?" + self.HTTP.encode(params_list)
         if url not in self.attackedGET:
           if self.verbose == 2:
-            print "+ " + url
+            print "+", url
           self.attackedGET.append(url)
           if inc == 1: continue
           try:
@@ -215,7 +215,7 @@ class mod_file(Attack):
             param_list[i][1] = payload
             evil_req = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
             if self.verbose == 2:
-              print "+ ", evil_req
+              print "+", evil_req
             try:
               data, code = self.HTTP.send(evil_req).getPageCode()
             except requests.exceptions.Timeout, timeout:

@@ -5,6 +5,7 @@ from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
 from copy import deepcopy
+from net import HTTP
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -96,7 +97,7 @@ class mod_sql(Attack):
         # Sometimes there's no content-type... so we rely on the document extension
         if (page.split(".")[-1] not in self.allowed) and page[-1] != "/":
           return
-      elif headers["content-type"].find("text") == -1:
+      elif not "text" in headers["content-type"]:
         return
 
       err = ""
@@ -104,7 +105,7 @@ class mod_sql(Attack):
       url = page + "?" + payload
       if url not in self.attackedGET:
         if self.verbose == 2:
-          print "+ " + url
+          print "+", url
         try:
           resp = self.HTTP.send(url)
           data, code = resp.getPageCode()
@@ -142,13 +143,18 @@ class mod_sql(Attack):
     else:
       for i in range(len(params_list)):
         err = ""
-        tmp = deepcopy(params_list)
-        k = tmp[i][0]
-        tmp[i][1] = "__PAYLOAD__"
-        url = page + "?" + self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload))
+        k = params_list[i][0]
+        saved_value = params_list[i][1]
+        params_list[i][1] = "__SQL__"
+        url = page + "?" + self.HTTP.encode(params_list)
         if url not in self.attackedGET:
+          self.attackedGET.append(url)
+
+          params_list[i][1] = self.HTTP.quote(payload)
+          url = page + "?" + self.HTTP.encode(params_list)
+
           if self.verbose == 2:
-            print "+ "+url
+            print "+", url
           try:
             resp = self.HTTP.send(url)
             data, code = resp.getPageCode()
@@ -161,95 +167,89 @@ class mod_sql(Attack):
           else:
             err = self.__findPatternInResponse(data)
           if err != "":
-            vuln_found += 1
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            url, self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload)),
+                                            url, self.HTTP.encode(params_list).replace("__PAYLOAD__", self.HTTP.quote(payload)),
                                             err + " (" + k + ")", resp)
             if self.color == 0:
               print err, "(" + k + ") " + _("in"), page
               print "  " + _("Evil url") + ":", url
             else:
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
+            break
 
-            tmp[i][1] = "__PAYLOAD__"
-            self.vulnerableGET.append(page + "?" + self.HTTP.encode(tmp))
-
-          else:
-            if code == "500":
+          elif code == "500":
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp).replace("__PAYLOAD__", self.HTTP.quote(payload)),
+                                              url, self.HTTP.encode(params_list).replace("__PAYLOAD__", self.HTTP.quote(payload)),
                                               VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION,
                                               resp)
               print _("500 HTTP Error code with")
               print "  " + _("Evil url") + ":", url
-          self.attackedGET.append(url)
-        else:
-          return 1
-    return vuln_found
+        params_list[i][1] = saved_value
 
   def attackPOST(self, form):
     """This method performs the SQL Injection attack with method POST"""
     payload = "\xbf'\"("
     page = form.url
-    params_list = form.post_params
     err = ""
-    vuln_found = 0
 
-    for i in range(len(params_list)):
-      tmp = deepcopy(params_list)
-      tmp[i][1] = "__PAYLOAD__"
-      k = tmp[i][0]
+    # copies
+    get_params  = form.get_params
+    post_params = form.post_params
+    file_params = form.file_params
 
-      if (page, tmp) not in self.attackedPOST:
-        headers = {"accept": "text/plain"}
-        if self.verbose == 2:
-          print "+ " + page
-          tmp[i][1] = self.HTTP.quote(payload)
-          print "  ", tmp
-          tmp[i][1] = "__PAYLOAD__"
-        post_params = self.HTTP.encode(tmp).replace("__PAYLOAD__",self.HTTP.quote(payload))
-        try:
-          resp = self.HTTP.send(page, post_params = post_params, http_headers = headers)
-          data, code = resp.getPageCode()
-        except requests.exceptions.Timeout, timeout:
-          # No timeout report here... launch blind sql detection later
-          data = ""
-          code = "408"
-          resp = timeout
-        else:
-          err = self.__findPatternInResponse(data)
-        if err != "":
-          vuln_found += 1
-          self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
-                                          Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                          page, post_params,
-                                          err + " " + _("coming from") + " " + form.referer,
-                                          resp)
-          print err, _("in"), page
-          if self.color == 1:
-            print "  " + _("with params") + " =", \
-                post_params.replace(k + "=", self.RED + k + self.STD + "=")
+    for param_list in [get_params, post_params, file_params]:
+      for i in xrange(len(param_list)):
+        saved_value = param_list[i][1]
+
+        param_list[i][1] = "__SQL__"
+        k = param_list[i][0]
+        attack_pattern = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
+        if attack_pattern not in self.attackedPOST:
+          self.attackedPOST.append(attack_pattern)
+
+          param_list[i][1] = payload
+          evil_req = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
+          if self.verbose == 2:
+            print "+", evil_req
+
+          try:
+            resp = self.HTTP.send(evil_req)
+            data, code = resp.getPageCode()
+          except requests.exceptions.Timeout, timeout:
+            # No timeout report here... launch blind sql detection later
+            data = ""
+            code = "408"
+            resp = timeout
           else:
-            print "  " + _("with params") + " =", post_params
-          print "  " + _("coming from"), form.referer
-
-          self.vulnerablePOST.append((page, tmp))
-
-        else:
-          if code == "500":
+            err = self.__findPatternInResponse(data)
+          if err != "":
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            page, post_params,
-                                            _("500 HTTP Error code coming from") + " " + form.referer + "\n"+
-                                            VulDescrip.ERROR_500_DESCRIPTION,
+                                            evil_req.url, self.HTTP.encode(post_params),
+                                            err + " " + _("coming from") + " " + form.referer,
                                             resp)
-            print _("500 HTTP Error code in"), page
-            print "  " + _("with params") + " =", post_params
+            print err, _("in"), evil_req.url
+            if self.color == 1:
+              print "  " + _("with params") + " =", \
+                  self.HTTP.encode(post_params).replace(k + "=", self.RED + k + self.STD + "=")
+            else:
+              print "  " + _("with params") + " =", self.HTTP.encode(post_params)
             print "  " + _("coming from"), form.referer
-        self.attackedPOST.append((page, tmp))
-      else:
-        return 1
-    return vuln_found
+            break
+
+          else:
+            if code == "500":
+              self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
+                                              Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                              evil_req.url, self.HTTP.encode(post_params),
+                                              _("500 HTTP Error code coming from") + " " + form.referer + "\n"+
+                                              VulDescrip.ERROR_500_DESCRIPTION,
+                                              resp)
+              print _("500 HTTP Error code in"), evil_req.url
+              print "  " + _("with params") + " =", self.HTTP.encode(post_params)
+              print "  " + _("coming from"), form.referer
+
+        param_list[i][1] = saved_value
 

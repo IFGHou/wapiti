@@ -119,7 +119,7 @@ class Attack:
 #                params_list.append(param.split('=', 1))
 
           if self.verbose == 1:
-            print "+ " + _("attackGET") + " "  + url
+            print "+", _("attackGET"), url
 
           try:
             self.attackGET(http_res)

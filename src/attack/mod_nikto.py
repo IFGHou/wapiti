@@ -5,6 +5,7 @@ from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import urllib2, csv, re, os
 import socket
+from net import HTTP
 
 # Nikto databases are csv files with the following fields (in order) :
 #

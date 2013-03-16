@@ -286,6 +286,7 @@ Supported options are:
       if int(info["content-length"]) > 2097152:
         return False
 
+    page_encoding = None
     resp_encoding = resp.getEncoding()
     # Requests says it found an encoding... so the content must be some HTML
     if resp_encoding:

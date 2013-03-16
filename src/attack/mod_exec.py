@@ -90,7 +90,7 @@ class mod_exec(Attack):
 
         if url not in self.attackedGET:
           if self.verbose == 2:
-            print "+ " + url
+            print "+", url
           self.attackedGET.append(url)
           try:
             data, code = self.HTTP.send(url).getPageCode()
@@ -143,7 +143,7 @@ class mod_exec(Attack):
           url = page + "?" + self.HTTP.encode(params_list)
 
           if self.verbose == 2:
-            print "+ " + url
+            print "+", url
 
           try:
             data, code = self.HTTP.send(url).getPageCode()

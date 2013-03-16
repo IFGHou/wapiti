@@ -4,6 +4,7 @@ from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
 from copy import deepcopy
+from net import HTTP
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -78,7 +79,7 @@ class mod_blindsql(Attack):
           self.attackedGET.append(url)
           url = page + "?" + payload
           if self.verbose == 2:
-            print "+ " + url
+            print "+", url
           try:
             resp = self.HTTP.send(url)
             data, code = resp.getPageCode()
@@ -120,7 +121,7 @@ class mod_blindsql(Attack):
             tmp[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
             url = page + "?" + self.HTTP.encode(tmp)
             if self.verbose == 2:
-              print "+ " + url
+              print "+", url
             try:
               resp = self.HTTP.send(url)
               data, code = resp.getPageCode()
@@ -157,62 +158,65 @@ class mod_blindsql(Attack):
     """This method performs the Blind SQL attack with method POST"""
     page = form.url
     params_list = form.post_params
+    # copies
+    get_params  = form.get_params
+    post_params = form.post_params
+    file_params = form.file_params
 
-    for i in range(len(params_list)):
-      tmp = deepcopy(params_list)
-      k = tmp[i][0]
+    for param_list in [get_params, post_params, file_params]:
+      for i in xrange(len(param_list)):
+        saved_value = param_list[i][1]
+        k = param_list[i][0]
+        param_list[i][1] = "__SQL__"
+        attack_pattern = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
 
-      tmp[i][1] = "__PAYLOAD__"
-      if (page, tmp) in self.excludedPOST:
-        return
+#        if attack_pattern in self.excludedPOST:
+#          return
 
-      err500 = 0
-      for payload in self.blind_sql_payloads:
-        tmp[i][1] = "__TIME__"
+        err500 = 0
+        if attack_pattern not in self.attackedPOST:
+          self.attackedPOST.append(attack_pattern)
+          for payload in self.blind_sql_payloads:
+            param_list[i][1] = self.TIME_TO_SLEEP
+            evil_req = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
 
-        if (page, tmp) not in self.attackedPOST:
-          tmp[i][1] = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
-
-          headers = {"Accept": "text/plain"}
-          if self.verbose == 2:
-            print "+ " + page
-            print "  ", tmp
-          try:
-            resp = self.HTTP.send(page, post_params = self.HTTP.encode(tmp), http_headers = headers)
-            data,code = resp.getPageCode()
-          #except socket.timeout:
-          except requests.exceptions.Timeout, timeout:
-            self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
-                                            Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                            page, self.HTTP.encode(tmp),
-                                            _("Blind SQL Injection coming from") + " " + form.referer, 
-                                            timeout)
-            print _("Blind SQL Injection in"), page
-            if self.color == 1:
-              print "  " + _("with params") + " =", \
-                    self.HTTP.encode(tmp).replace(k + "=", self.RED + k + self.STD + "=")
-            else:
-              print "  " + _("with params") + " =", self.HTTP.encode(tmp)
-            print "  " + _("coming from"), form.referer
-
-            # one of the payloads worked. log the form and exit
-            tmp[i][1] = "__TIME__"
-            self.attackedPOST.append((page, tmp))
-            break
-          else:
-            if code == "500" and err500 == 0:
-              err500 = 1
+            if self.verbose == 2:
+              print "+", evil_req
+            try:
+              resp = self.HTTP.send(evil_req)
+              data, code = resp.getPageCode()
+            #except socket.timeout:
+            except requests.exceptions.Timeout, timeout:
+              # Timeout means time-based SQL injection
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              page, self.HTTP.encode(tmp),
-                                              _("500 HTTP Error code coming from") + " " + form.referer + "\n"+
-                                              VulDescrip.ERROR_500_DESCRIPTION, resp)
-              print _("500 HTTP Error code in"), page
-              print "  " + _("with params") + " =", self.HTTP.encode(tmp)
+                                              evil_req.url, self.HTTP.encode(post_params),
+                                              _("Blind SQL Injection coming from") + " " + form.referer, 
+                                              timeout)
+              print _("Blind SQL Injection in"), evil_req.url
+              if self.color == 1:
+                print "  " + _("with params") + " =", \
+                      self.HTTP.encode(post_params).replace(k + "=", self.RED + k + self.STD + "=")
+              else:
+                print "  " + _("with params") + " =", self.HTTP.encode(post_params)
               print "  " + _("coming from"), form.referer
-      # none of the payloads worked. log the url and exit
-      tmp[i][1] = "__TIME__"
-      self.attackedPOST.append((page, tmp))
+
+              # one of the payloads worked. log the form and exit
+              #tmp[i][1] = "__TIME__"
+              #self.attackedPOST.append((page, tmp))
+              break
+            else:
+              if code == "500" and err500 == 0:
+                err500 = 1
+                self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
+                                                Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                evil_req.url, self.HTTP.encode(post_params),
+                                                _("500 HTTP Error code coming from") + " " + form.referer + "\n"+
+                                                VulDescrip.ERROR_500_DESCRIPTION, resp)
+                print _("500 HTTP Error code in"), evil_req.url
+                print "  " + _("with params") + " =", self.HTTP.encode(post_params)
+                print "  " + _("coming from"), form.referer
+        param_list[i][1] = saved_value
 
   def loadRequire(self, obj = []):
     self.deps = obj

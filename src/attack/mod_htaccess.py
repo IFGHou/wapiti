@@ -8,6 +8,7 @@
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
+from net import HTTP
 
 class mod_htaccess(Attack):
   """
@@ -48,7 +49,7 @@ class mod_htaccess(Attack):
     if url not in self.attackedGET:
       #print the url if verbose equal 2
       if self.verbose == 2:
-        print "+ " + url
+        print "+", url
       
       err1 = self.__returnErrorByCode(headers["status_code"])
       
