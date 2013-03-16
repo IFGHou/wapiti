@@ -185,7 +185,6 @@ class mod_exec(Attack):
   def attackPOST(self, form):
     """This method performs the command execution with method POST"""
     page = form.url
-    params_list = form.post_params
 
     # copies
     get_params  = form.get_params
@@ -215,12 +214,12 @@ class mod_exec(Attack):
             except requests.exceptions.Timeout, timeout:
               data = ""
               code = "408"
-              print _("Timeout in"), page
+              print _("Timeout in"), evil_req.url
               print "  " + _("with params") + " =", self.HTTP.encode(post_params)
               print "  " + _("coming from"), form.referer
               self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                              page, self.HTTP.encode(post_params),
+                                              evil_req.url, self.HTTP.encode(post_params),
                                               _("Timeout coming from") + " " + form.referer, timeout)
             else:
               err, cmd, warned = self.__findPatternInResponse(data, warned)
@@ -228,9 +227,9 @@ class mod_exec(Attack):
             if err != "":
               self.reportGen.logVulnerability(Vulnerability.EXEC,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              page, self.HTTP.encode(post_params),
+                                              evil_req.url, self.HTTP.encode(post_params),
                                               err + " " + _("coming from") + " " + form.referer)
-              print err, _("in"), page
+              print err, _("in"), evil_req.url
               if self.color == 1:
                 print "  " + _("with params") + " =", \
                     self.HTTP.encode(post_params).replace(k + "=", self.RED + k + self.STD + "=")
@@ -246,10 +245,10 @@ class mod_exec(Attack):
                 err500 = 1
                 self.reportGen.logVulnerability(Vulnerability.EXEC,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                page, self.HTTP.encode(post_params),
+                                                evil_req.url, self.HTTP.encode(post_params),
                                                 _("500 HTTP Error code coming from") + " " + form.referer + "\n" +
                                                 VulDescrip.ERROR_500_DESCRIPTION)
-                print _("500 HTTP Error code in"), page
+                print _("500 HTTP Error code in"), evil_req.url
                 print "  " + _("with params") + " =", self.HTTP.encode(post_params)
                 print "  " + _("coming from"), form.referer
         param_list[i][1] = saved_value
