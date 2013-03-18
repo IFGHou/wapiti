@@ -4,7 +4,6 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
-from copy import deepcopy
 from net import HTTP
 
 # Wapiti SVN - A web application vulnerability scanner
@@ -104,6 +103,7 @@ class mod_sql(Attack):
       payload = self.HTTP.quote(payload)
       url = page + "?" + payload
       if url not in self.attackedGET:
+        self.attackedGET.append(url)
         if self.verbose == 2:
           print "+", url
         try:
@@ -126,7 +126,7 @@ class mod_sql(Attack):
           print err, _("(QUERY_STRING) in"), page
           print "  " + _("Evil url") + ":", url
 
-          self.vulnerableGET.append(page + "?" + "__PAYLOAD__")
+          self.vulnerableGET.append(page + "?" + "__SQL__")
 
         else:
           if code == "500":
@@ -137,18 +137,15 @@ class mod_sql(Attack):
                                             resp)
             print _("500 HTTP Error code with")
             print "  " + _("Evil url") + ":", url
-        self.attackedGET.append(url)
-      else:
-        return 1
     else:
       for i in range(len(params_list)):
         err = ""
         k = params_list[i][0]
         saved_value = params_list[i][1]
         params_list[i][1] = "__SQL__"
-        url = page + "?" + self.HTTP.encode(params_list)
-        if url not in self.attackedGET:
-          self.attackedGET.append(url)
+        pattern_url = page + "?" + self.HTTP.encode(params_list)
+        if pattern_url not in self.attackedGET:
+          self.attackedGET.append(pattern_url)
 
           params_list[i][1] = self.HTTP.quote(payload)
           url = page + "?" + self.HTTP.encode(params_list)
@@ -176,7 +173,7 @@ class mod_sql(Attack):
               print "  " + _("Evil url") + ":", url
             else:
               print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
-            break
+            self.vulnerableGET.append(pattern_url)
 
           elif code == "500":
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
@@ -237,7 +234,7 @@ class mod_sql(Attack):
             else:
               print "  " + _("with params") + " =", self.HTTP.encode(post_params)
             print "  " + _("coming from"), form.referer
-            break
+            self.vulnerablePOST.append(attack_pattern)
 
           else:
             if code == "500":

@@ -2,7 +2,6 @@ import socket
 from attack import Attack
 from vulnerability import Vulnerability
 import requests
-from copy import deepcopy
 from net import HTTP
 
 # Wapiti SVN - A web application vulnerability scanner
@@ -79,12 +78,14 @@ class mod_crlf(Attack):
     else:
       for i in range(len(params_list)):
         err = ""
-        tmp = deepcopy(params_list)
-        tmp[i][1] = payload
-        k = tmp[i][0]
+        saved_value = params_list[i][1]
+        # payload is already escaped, see at top
+        params_list[i][1] = payload
+        k = params_list[i][0]
 
-        url = page + "?" + self.HTTP.encode(tmp)
+        url = page + "?" + self.HTTP.encode(params_list)
         if url not in self.attackedGET:
+          self.attackedGET.append(url)
           if self.verbose == 2:
             print "+", url
           try:
@@ -92,7 +93,7 @@ class mod_crlf(Attack):
             if resp.getHeaders().has_key('wapiti'):
               err = _("CRLF Injection")
               self.reportGen.logVulnerability(Vulnerability.CRLF, Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                page, self.HTTP.encode(tmp), err + " (" + k + ")", resp)
+                                page, self.HTTP.encode(params_list), err + " (" + k + ")", resp)
               if self.color == 0:
                 print err, "(" + k + ") " + _("in"), page
                 print "  " + _("Evil url") + ":", url
@@ -100,10 +101,10 @@ class mod_crlf(Attack):
                 print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
           except requests.exceptions.Timeout, timeout:
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION, Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                              page, self.HTTP.encode(tmp), err + " (" + k + ")", timeout)
+                              page, self.HTTP.encode(params_list), err + " (" + k + ")", timeout)
             print _("Timeout") + " (" + k + ") " + _("in"), page
             print "  " + _("caused by") + ":", url
           except requests.exceptions.HTTPError:
             print _("Error: The server did not understand this request")
-          self.attackedGET.append(url)
+        params_list[i][1] = saved_value
 

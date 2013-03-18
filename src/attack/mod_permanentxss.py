@@ -7,7 +7,6 @@ import requests
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-from copy import deepcopy
 from net import HTTP
 
 class mod_permanentxss(Attack):

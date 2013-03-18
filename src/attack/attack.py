@@ -83,6 +83,8 @@ class Attack:
         self.HTTP = HTTP
         self.reportGen = reportGen
         self.auxText = AuxText()
+        self.attackedGET = []
+        self.attackedPOST = []
 
     def setVerbose(self,verbose):
         self.verbose = verbose

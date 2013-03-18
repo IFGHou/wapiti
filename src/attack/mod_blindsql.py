@@ -3,7 +3,6 @@ from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
-from copy import deepcopy
 from net import HTTP
 
 # Wapiti SVN - A web application vulnerability scanner
@@ -68,27 +67,26 @@ class mod_blindsql(Attack):
       elif headers["content-type"].find("text") == -1:
         return
 
-      if page + "?__PAYLOAD__" in self.excludedGET:
+      pattern_url = page + "?__SQL__"
+      if pattern_url in self.excludedGET:
         return
 
-      err500 = 0
-      for payload in self.blind_sql_payloads:
-        payload = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
-        url = page + "?__TIME__"
-        if url not in self.attackedGET:
-          self.attackedGET.append(url)
+      if pattern_url not in self.attackedGET:
+        self.attackedGET.append(pattern_url)
+        err500 = 0
+        for payload in self.blind_sql_payloads:
+          payload = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
           url = page + "?" + payload
           if self.verbose == 2:
             print "+", url
           try:
             resp = self.HTTP.send(url)
             data, code = resp.getPageCode()
-          #except socket.timeout:
-          except requests.exceptions.Timeout, timeout:
+          except requests.exceptions.Timeout, e:
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                               url,payload, _("Blind SQL Injection (QUERY_STRING)"),
-                              timeout)
+                              e)
             print _("Blind SQL Injection (QUERY_STRING) in"), page
             print "  " + _("Evil url") + ":",url
             break
@@ -104,60 +102,58 @@ class mod_blindsql(Attack):
               print "  " + _("Evil url") + ":", url
     else:
       for i in range(len(params_list)):
-        tmp = deepcopy(params_list)
+        saved_value = params_list[i][1]
 
-        k = tmp[i][0]
-        tmp[i][1] = "__PAYLOAD__"
-        if page + "?" + self.HTTP.encode(tmp) in self.excludedGET:
-          return
+        k = params_list[i][0]
+        params_list[i][1] = "__SQL__"
+        pattern_url = page + "?" + self.HTTP.encode(params_list)
 
-        tmp[i][1] = "__TIME__"
-        url_to_log = page + "?" + self.HTTP.encode(tmp)
+        # This field was successfully attacked with a non-blind SQL injection
+        if pattern_url in self.excludedGET:
+          params_list[i][1] = saved_value
+          continue
 
-        err500 = 0
-        for payload in self.blind_sql_payloads:
+        if pattern_url not in self.attackedGET:
+          self.attackedGET.append(pattern_url)
 
-          if url_to_log not in self.attackedGET:
-            tmp[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
-            url = page + "?" + self.HTTP.encode(tmp)
+          err500 = 0
+          for payload in self.blind_sql_payloads:
+
+            params_list[i][1] = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
+            url = page + "?" + self.HTTP.encode(params_list)
             if self.verbose == 2:
               print "+", url
             try:
               resp = self.HTTP.send(url)
               data, code = resp.getPageCode()
-            #except socket.timeout:
-            except requests.exceptions.Timeout, timeout:
+            except requests.exceptions.Timeout, e:
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                              url, self.HTTP.encode(tmp),
-                                              _("Blind SQL Injection") + " (" + k + ")", timeout)
+                                              url, self.HTTP.encode(params_list),
+                                              _("Blind SQL Injection") + " (" + k + ")", e)
               if self.color == 0:
                 print _("Blind SQL Injection") + " (" + k + ") " + _("in"), page
                 print "  " + _("Evil url") + ":", url
               else:
                 print _("Blind SQL Injection") + ":", url.replace(k + "=", self.RED + k + self.STD + "=")
-              # ok, one of the payloads worked
-              # log the url and exit
-              self.attackedGET.append(url_to_log)
+              # One payload worked. Now jum to next field
               break
             else:
               if code == "500" and err500 == 0:
                 err500 = 1
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                url, self.HTTP.encode(tmp),
+                                                url, self.HTTP.encode(params_list),
                                                 VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION,
                                                 resp)
                 print _("500 HTTP Error code with")
                 print "  " + _("Evil url") + ":", url
-
-        # none of the payloads worked
-        self.attackedGET.append(url_to_log)
+        params_list[i][1] = saved_value
 
   def attackPOST(self, form):
     """This method performs the Blind SQL attack with method POST"""
     page = form.url
-    params_list = form.post_params
+
     # copies
     get_params  = form.get_params
     post_params = form.post_params
@@ -170,14 +166,15 @@ class mod_blindsql(Attack):
         param_list[i][1] = "__SQL__"
         attack_pattern = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
 
-#        if attack_pattern in self.excludedPOST:
-#          return
+        if attack_pattern in self.excludedPOST:
+          param_list[i][1] = saved_value
+          continue
 
         err500 = 0
         if attack_pattern not in self.attackedPOST:
           self.attackedPOST.append(attack_pattern)
           for payload in self.blind_sql_payloads:
-            param_list[i][1] = self.TIME_TO_SLEEP
+            param_list[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
             evil_req = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
 
             if self.verbose == 2:
@@ -185,14 +182,13 @@ class mod_blindsql(Attack):
             try:
               resp = self.HTTP.send(evil_req)
               data, code = resp.getPageCode()
-            #except socket.timeout:
-            except requests.exceptions.Timeout, timeout:
+            except requests.exceptions.Timeout, e:
               # Timeout means time-based SQL injection
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               evil_req.url, self.HTTP.encode(post_params),
                                               _("Blind SQL Injection coming from") + " " + form.referer, 
-                                              timeout)
+                                              e)
               print _("Blind SQL Injection in"), evil_req.url
               if self.color == 1:
                 print "  " + _("with params") + " =", \
@@ -200,11 +196,8 @@ class mod_blindsql(Attack):
               else:
                 print "  " + _("with params") + " =", self.HTTP.encode(post_params)
               print "  " + _("coming from"), form.referer
-
-              # one of the payloads worked. log the form and exit
-              #tmp[i][1] = "__TIME__"
-              #self.attackedPOST.append((page, tmp))
               break
+
             else:
               if code == "500" and err500 == 0:
                 err500 = 1
