@@ -65,17 +65,20 @@ class mod_file(Attack):
     """This method searches patterns in the response from the server"""
     err = ""
     inc = 0
-    if data.find("root:x:0:0")>=0:
+    if "root:x:0:0" in data:
       err = "Unix include/fread"
       inc = 1
-    if data.find("[boot loader]")>=0:
+    if "root:*:0:0" in data:
+      err = "BSD include/fread"
+      inc = 1
+    if "[boot loader]" in data:
       err = "Windows include/fread"
       inc = 1
-    if data.find("<title>Google</title>")>0:
+    if "<title>Google</title>" in data:
       err = _("Remote include")
       inc = 1
     for pattern, funcname in self.warning_messages:
-      if data.find(pattern) >= 0 and warn == 0:
+      if pattern in data and warn == 0:
         err = "Warning " + funcname
         warn = 1
         break
