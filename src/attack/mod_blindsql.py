@@ -56,15 +56,19 @@ class mod_blindsql(Attack):
     """This method performs the Blind SQL attack with method GET"""
     page = http_res.path
     params_list = http_res.get_params
-    headers = http_res.headers
+    resp_headers = http_res.headers
+    referer = http_res.referer
+    headers = {}
+    if referer:
+      headers["referer"] = referer
 
     if not params_list:
       # Do not attack application-type files
-      if not headers.has_key("content-type"):
+      if not "content-type" in resp_headers:
         # Sometimes there's no content-type... so we rely on the document extension
         if (page.split(".")[-1] not in self.allowed) and page[-1] != "/":
           return
-      elif headers["content-type"].find("text") == -1:
+      elif not "text" in resp_headers["content-type"]:
         return
 
       pattern_url = page + "?__SQL__"
@@ -80,7 +84,7 @@ class mod_blindsql(Attack):
           if self.verbose == 2:
             print "+", url
           try:
-            resp = self.HTTP.send(url)
+            resp = self.HTTP.send(url, headers=headers)
             data, code = resp.getPageCode()
           except requests.exceptions.Timeout, e:
             self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
@@ -104,7 +108,7 @@ class mod_blindsql(Attack):
       for i in range(len(params_list)):
         saved_value = params_list[i][1]
 
-        k = params_list[i][0]
+        param_name = self.HTTP.quote(params_list[i][0])
         params_list[i][1] = "__SQL__"
         pattern_url = page + "?" + self.HTTP.encode(params_list)
 
@@ -124,18 +128,18 @@ class mod_blindsql(Attack):
             if self.verbose == 2:
               print "+", url
             try:
-              resp = self.HTTP.send(url)
+              resp = self.HTTP.send(url, headers=headers)
               data, code = resp.getPageCode()
             except requests.exceptions.Timeout, e:
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               url, self.HTTP.encode(params_list),
-                                              _("Blind SQL Injection") + " (" + k + ")", e)
+                                              _("Blind SQL Injection") + " (" + param_name + ")", e)
               if self.color == 0:
-                print _("Blind SQL Injection") + " (" + k + ") " + _("in"), page
+                print _("Blind SQL Injection") + " (" + param_name + ") " + _("in"), page
                 print "  " + _("Evil url") + ":", url
               else:
-                print _("Blind SQL Injection") + ":", url.replace(k + "=", self.RED + k + self.STD + "=")
+                print _("Blind SQL Injection") + ":", url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
               # One payload worked. Now jum to next field
               break
             else:
@@ -158,6 +162,7 @@ class mod_blindsql(Attack):
     get_params  = form.get_params
     post_params = form.post_params
     file_params = form.file_params
+    referer     = form.referer
 
     for param_list in [get_params, post_params, file_params]:
       for i in xrange(len(param_list)):
@@ -175,7 +180,12 @@ class mod_blindsql(Attack):
           self.attackedPOST.append(attack_pattern)
           for payload in self.blind_sql_payloads:
             param_list[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
-            evil_req = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
+            evil_req = HTTP.HTTPResource(form.path,
+                method=form.method,
+                get_params=get_params,
+                post_params=post_params,
+                file_params=file_params,
+                referer=referer)
 
             if self.verbose == 2:
               print "+", evil_req
@@ -187,7 +197,7 @@ class mod_blindsql(Attack):
               self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               evil_req.url, self.HTTP.encode(post_params),
-                                              _("Blind SQL Injection coming from") + " " + form.referer, 
+                                              _("Blind SQL Injection coming from") + " " + referer, 
                                               e)
               print _("Blind SQL Injection in"), evil_req.url
               if self.color == 1:
@@ -195,7 +205,7 @@ class mod_blindsql(Attack):
                       self.HTTP.encode(post_params).replace(k + "=", self.RED + k + self.STD + "=")
               else:
                 print "  " + _("with params") + " =", self.HTTP.encode(post_params)
-              print "  " + _("coming from"), form.referer
+              print "  " + _("coming from"), referer
               break
 
             else:
@@ -204,11 +214,11 @@ class mod_blindsql(Attack):
                 self.reportGen.logVulnerability(Vulnerability.BLIND_SQL_INJECTION,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 evil_req.url, self.HTTP.encode(post_params),
-                                                _("500 HTTP Error code coming from") + " " + form.referer + "\n"+
+                                                _("500 HTTP Error code coming from") + " " + referer + "\n"+
                                                 VulDescrip.ERROR_500_DESCRIPTION, resp)
                 print _("500 HTTP Error code in"), evil_req.url
                 print "  " + _("with params") + " =", self.HTTP.encode(post_params)
-                print "  " + _("coming from"), form.referer
+                print "  " + _("coming from"), referer
         param_list[i][1] = saved_value
 
   def loadRequire(self, obj = []):

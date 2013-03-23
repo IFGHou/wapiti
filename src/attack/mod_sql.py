@@ -41,33 +41,33 @@ class mod_sql(Attack):
     Attack.__init__(self, HTTP, xmlRepGenerator)
 
   def __findPatternInResponse(self, data):
-    if data.find("You have an error in your SQL syntax") >= 0:
+    if "You have an error in your SQL syntax" in data:
       return _("MySQL Injection")
-    if data.find("supplied argument is not a valid MySQL") > 0:
+    if "supplied argument is not a valid MySQL" in data:
       return _("MySQL Injection")
-    if data.find("[Microsoft][ODBC Microsoft Access Driver]") >= 0:
+    if "[Microsoft][ODBC Microsoft Access Driver]" in data:
       return _("Access-Based SQL Injection")
-    if data.find("[Microsoft][ODBC SQL Server Driver]") >= 0:
+    if "[Microsoft][ODBC SQL Server Driver]" in data:
       return _("MSSQL-Based Injection")
-    if data.find('Microsoft OLE DB Provider for ODBC Drivers</font> <font size="2" face="Arial">error') >= 0:
+    if 'Microsoft OLE DB Provider for ODBC Drivers</font> <font size="2" face="Arial">error' in data:
       return _("MSSQL-Based Injection")
-    if data.find("Microsoft OLE DB Provider for ODBC Drivers") >= 0:
+    if "Microsoft OLE DB Provider for ODBC Drivers" in data:
       return _("MSSQL-Based Injection")
-    if data.find("java.sql.SQLException: Syntax error or access violation") >= 0:
+    if "java.sql.SQLException: Syntax error or access violation" in data:
       return _("Java.SQL Injection")
-    if data.find("PostgreSQL query failed: ERROR: parser:") >= 0:
+    if "PostgreSQL query failed: ERROR: parser:" in data:
       return _("PostgreSQL Injection")
-    if data.find("XPathException") >= 0:
+    if "XPathException" in data:
       return _("XPath Injection")
-    if data.find("supplied argument is not a valid ldap") >= 0 or data.find("javax.naming.NameNotFoundException") >= 0:
+    if "supplied argument is not a valid ldap" in data or "javax.naming.NameNotFoundException" in data:
       return _("LDAP Injection")
-    if data.find("DB2 SQL error:") >= 0:
+    if "DB2 SQL error:" in data:
       return _("DB2 Injection")
-    if data.find("Dynamic SQL Error") >= 0:
+    if "Dynamic SQL Error" in data:
       return _("Interbase Injection")
-    if data.find("Sybase message:") >= 0:
+    if "Sybase message:" in data:
       return _("Sybase Injection")
-    if data.find("Unclosed quotation mark after the character string") >= 0:
+    if "Unclosed quotation mark after the character string" in data:
       return _(".NET SQL Injection")
 
     #TODO: MS can also give some error codes like this: Microsoft SQL Native Client error '80040e14'
@@ -84,7 +84,11 @@ class mod_sql(Attack):
     """This method performs the SQL Injection attack with method GET"""
     page = http_res.path
     params_list = http_res.get_params
-    headers = http_res.headers
+    resp_headers = http_res.headers
+    referer = http_res.referer
+    headers = {}
+    if referer:
+      headers["referer"] = referer
 
     # about this payload : http://shiflett.org/blog/2006/jan/addslashes-versus-mysql-real-escape-string
     payload = "\xBF'\"("
@@ -92,11 +96,11 @@ class mod_sql(Attack):
 
     if not params_list:
       # Do not attack application-type files
-      if not headers.has_key("content-type"):
+      if not "content-type" in resp_headers:
         # Sometimes there's no content-type... so we rely on the document extension
         if (page.split(".")[-1] not in self.allowed) and page[-1] != "/":
           return
-      elif not "text" in headers["content-type"]:
+      elif not "text" in resp_headers["content-type"]:
         return
 
       err = ""
@@ -107,7 +111,7 @@ class mod_sql(Attack):
         if self.verbose == 2:
           print "+", url
         try:
-          resp = self.HTTP.send(url)
+          resp = self.HTTP.send(url, headers=headers)
           data, code = resp.getPageCode()
         except requests.exceptions.Timeout, timeout:
           # No timeout report here... launch blind sql detection later
@@ -140,7 +144,7 @@ class mod_sql(Attack):
     else:
       for i in range(len(params_list)):
         err = ""
-        k = params_list[i][0]
+        param_name = self.HTTP.quote(params_list[i][0])
         saved_value = params_list[i][1]
         params_list[i][1] = "__SQL__"
         pattern_url = page + "?" + self.HTTP.encode(params_list)
@@ -153,7 +157,7 @@ class mod_sql(Attack):
           if self.verbose == 2:
             print "+", url
           try:
-            resp = self.HTTP.send(url)
+            resp = self.HTTP.send(url, headers=headers)
             data, code = resp.getPageCode()
           except requests.exceptions.Timeout, timeout:
             # No timeout report here... launch blind sql detection later
@@ -167,12 +171,12 @@ class mod_sql(Attack):
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             url, self.HTTP.encode(params_list).replace("__PAYLOAD__", self.HTTP.quote(payload)),
-                                            err + " (" + k + ")", resp)
+                                            err + " (" + param_name + ")", resp)
             if self.color == 0:
-              print err, "(" + k + ") " + _("in"), page
+              print err, "(" + param_name + ") " + _("in"), page
               print "  " + _("Evil url") + ":", url
             else:
-              print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
+              print err, ":", url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
             self.vulnerableGET.append(pattern_url)
 
           elif code == "500":
@@ -195,6 +199,7 @@ class mod_sql(Attack):
     get_params  = form.get_params
     post_params = form.post_params
     file_params = form.file_params
+    referer = form.referer
 
     for param_list in [get_params, post_params, file_params]:
       for i in xrange(len(param_list)):
@@ -207,7 +212,12 @@ class mod_sql(Attack):
           self.attackedPOST.append(attack_pattern)
 
           param_list[i][1] = payload
-          evil_req = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
+          evil_req = HTTP.HTTPResource(form.path,
+              method=form.method,
+              get_params=get_params,
+              post_params=post_params,
+              file_params=file_params,
+              referer=referer)
           if self.verbose == 2:
             print "+", evil_req
 
@@ -225,7 +235,7 @@ class mod_sql(Attack):
             self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                             Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                             evil_req.url, self.HTTP.encode(post_params),
-                                            err + " " + _("coming from") + " " + form.referer,
+                                            err + " " + _("coming from") + " " + referer,
                                             resp)
             print err, _("in"), evil_req.url
             if self.color == 1:
@@ -233,7 +243,7 @@ class mod_sql(Attack):
                   self.HTTP.encode(post_params).replace(k + "=", self.RED + k + self.STD + "=")
             else:
               print "  " + _("with params") + " =", self.HTTP.encode(post_params)
-            print "  " + _("coming from"), form.referer
+            print "  " + _("coming from"), referer
             self.vulnerablePOST.append(attack_pattern)
 
           else:
@@ -241,12 +251,12 @@ class mod_sql(Attack):
               self.reportGen.logVulnerability(Vulnerability.SQL_INJECTION,
                                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                               evil_req.url, self.HTTP.encode(post_params),
-                                              _("500 HTTP Error code coming from") + " " + form.referer + "\n"+
+                                              _("500 HTTP Error code coming from") + " " + referer + "\n"+
                                               VulDescrip.ERROR_500_DESCRIPTION,
                                               resp)
               print _("500 HTTP Error code in"), evil_req.url
               print "  " + _("with params") + " =", self.HTTP.encode(post_params)
-              print "  " + _("coming from"), form.referer
+              print "  " + _("coming from"), referer
 
         param_list[i][1] = saved_value
 

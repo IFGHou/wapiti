@@ -48,11 +48,11 @@ class mod_backup(Attack):
     headers = http_res.headers
 
     # Do not attack application-type files
-    if not headers.has_key("content-type"):
+    if not "content-type" in headers:
       # Sometimes there's no content-type... so we rely on the document extension
       if (page.split(".")[-1] not in self.allowed) and page[-1] != "/":
         return
-    elif headers["content-type"].find("text") == -1:
+    elif not "text" in headers["content-type"]:
       return
 
     for k in self.payloads:

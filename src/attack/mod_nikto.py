@@ -108,7 +108,7 @@ class mod_nikto(Attack):
         if code == int(l[5]):
           match = True
       else:
-        if raw.find(l[5]) > -1:
+        if l[5] in raw:
           match = True
 
       # Second condition (or)
@@ -117,7 +117,7 @@ class mod_nikto(Attack):
           if code == int(l[6]):
             match_or = True
         else:
-          if raw.find(l[6]) > -1:
+          if l[6] in raw:
             match_or = True
 
       # Third condition (and)
@@ -126,7 +126,7 @@ class mod_nikto(Attack):
           if code == int(l[7]):
             match_and = True
         else:
-          if raw.find(l[7]) > -1:
+          if l[7] in raw:
             match_and = True
       else:
         match_and = True
@@ -137,7 +137,7 @@ class mod_nikto(Attack):
           if code == int(l[8]):
             fail = True
         else:
-          if raw.find(l[8]) > -1:
+          if l[8] in raw:
             fail = True
 
       # Fifth condition (or)
@@ -146,7 +146,7 @@ class mod_nikto(Attack):
           if code == int(l[9]):
             fail_or = True
         else:
-          if raw.find(l[9]) > -1:
+          if l[9] in raw:
             fail_or = True
 
       if ((match or match_or) and match_and) and not (fail or fail_or):

@@ -55,10 +55,14 @@ class mod_permanentxss(Attack):
       if http_resource.method != "GET":
         continue
       url = http_resource.url
+      referer = http_resource.referer
+      headers = {}
+      if referer:
+        headers["referer"] = referer
       if self.verbose >= 1:
         print "+", url
       try:
-        resp = self.HTTP.send(url)
+        resp = self.HTTP.send(url, headers=headers)
         data = resp.getPage()
       except requests.exceptions.Timeout, timeout:
         data = ""
@@ -145,20 +149,24 @@ class mod_permanentxss(Attack):
               # this code has been used in a successful attack
               if self.validXSS(data, code, self.SUCCESSFUL_XSS[code]):
                 
-                get_params  = self.POST_XSS[code].get_params
-                post_params = self.POST_XSS[code].post_params
-                file_params = self.POST_XSS[code].file_params
+                code_req = self.POST_XSS[code]
+                get_params  = code_req.get_params
+                post_params = code_req.post_params
+                file_params = code_req.file_params
+                referer = code_req.referer
+
                 for params_list in [get_params, post_params, file_params]:
                   for i in xrange(len(params_list)):
                     k, v = params_list[i]
                     if v == code:
                       params_list[i][1] = self.SUCCESSFUL_XSS[code]
                       # we found the xss payload again -> stored xss vuln
-                      evil_req = HTTP.HTTPResource(self.POST_XSS[code].path,
+                      evil_req = HTTP.HTTPResource(code_req.path,
                           method="POST",
                           get_params=get_params,
                           post_params=post_params,
-                          file_params=file_params)
+                          file_params=file_params,
+                          referer=referer)
 
                       self.reportGen.logVulnerability(Vulnerability.XSS,
                                   Vulnerability.HIGH_LEVEL_VULNERABILITY, url, "",
@@ -171,7 +179,7 @@ class mod_permanentxss(Attack):
                       else:
                         print "  " + _("attacked by"), evil_req.url, _("with fields"), self.HTTP.encode(post_params)
                       if url != evil_req.url:
-                        print "  " + _("injected from ") + self.POST_XSS[code].referer
+                        print "  " + _("injected from ") + referer
                       # search for the next code in the webpage
                   continue
 
@@ -182,6 +190,7 @@ class mod_permanentxss(Attack):
               get_params  = code_req.get_params
               post_params = code_req.post_params
               file_params = code_req.file_params
+              referer = code_req.referer
 
               for params_list in [get_params, post_params, file_params]:
                 for i in xrange(len(params_list)):
@@ -191,8 +200,12 @@ class mod_permanentxss(Attack):
                       payload = xss.replace("__XSS__", code)
                       params_list[i][1] = payload
                       try:
-                        evil_req = HTTP.HTTPResource(code_req.path, method=code_req.method, get_params=get_params, post_params=post_params, file_params=file_params)
-                        #self.HTTP.send(self.POST_XSS[code][0], post_params = self.HTTP.uqe(params_list), http_headers = headers)
+                        evil_req = HTTP.HTTPResource(code_req.path,
+                            method=code_req.method,
+                            get_params=get_params,
+                            post_params=post_params,
+                            file_params=file_params,
+                            referer=referer)
                         self.HTTP.send(evil_req)
                         resp = self.HTTP.send(url)
                         dat = resp.getPage()
@@ -215,7 +228,7 @@ class mod_permanentxss(Attack):
                         else:
                           print "  " + _("attacked by"), evil_req.url, _("with fields"), self.HTTP.encode(post_params)
                         if url != evil_req.url:
-                          print "  " + _("injected from ") + self.POST_XSS[code].referer
+                          print "  " + _("injected from ") + referer
                         break
 
   # check weither our JS payload is injected in the webpage

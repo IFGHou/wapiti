@@ -41,7 +41,11 @@ class mod_htaccess(Attack):
   def attackGET(self, http_res):
     page = http_res.path
     params_list = http_res.get_params
-    headers = http_res.headers
+    resp_headers = http_res.headers
+    referer = http_res.referer
+    headers = {}
+    if referer:
+      headers["referer"] = referer
 
     err = ""
     url = page
@@ -51,15 +55,15 @@ class mod_htaccess(Attack):
       if self.verbose == 2:
         print "+", url
       
-      err1 = self.__returnErrorByCode(headers["status_code"])
+      err1 = self.__returnErrorByCode(resp_headers["status_code"])
       
       if err1 != "ok":
-        data1 = self.HTTP.send(url).getPage()
+        data1 = self.HTTP.send(url, headers=headers).getPage()
         #htaccess protection detected
         if self.verbose >= 1:
           print _("HtAccess protection found:"), url
         
-        data2, code2 = self.HTTP.send(url, method = "ABC").getPageCode()
+        data2, code2 = self.HTTP.send(url, method = "ABC", headers=headers).getPageCode()
         err2 = self.__returnErrorByCode(code2)
         
         if err2 == "ok":
@@ -68,9 +72,9 @@ class mod_htaccess(Attack):
           #print output informations by verbosity option
           if self.verbose >= 1:
             if self.color == 1:
-              print self.CYAN + "|HTTP Code : ", headers["status_code"], ":", err1 + self.STD
+              print self.CYAN + "|HTTP Code : ", resp_headers["status_code"], ":", err1 + self.STD
             else:
-              print "|HTTP Code : ", headers["status_code"], ":", err1
+              print "|HTTP Code : ", resp_headers["status_code"], ":", err1
 
           if self.verbose == 2:
             if self.color == 1:

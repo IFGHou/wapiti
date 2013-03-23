@@ -268,7 +268,7 @@ class HTTPResponse(object):
 
   def getPageCode(self):
     "Return a tuple of the content and the HTTP Response code."
-    return (self.getPage(), self.resp.status_code)
+    return (self.getPage(), self.getCode())
 
   def getEncoding(self):
     "Return the detected encoding for the page."

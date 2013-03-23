@@ -88,15 +88,19 @@ class mod_file(Attack):
     """This method performs the file handling attack with method GET"""
     page = http_res.path
     params_list = http_res.get_params
-    headers = http_res.headers
+    resp_headers = http_res.headers
+    referer = http_res.referer
+    headers = {}
+    if referer:
+      headers["referer"] = referer
 
     if not params_list:
       # Do not attack application-type files
-      if not headers.has_key("content-type"):
+      if not "content-type" in resp_headers:
         # Sometimes there's no content-type... so we rely on the document extension
         if (page.split(".")[-1] not in self.allowed) and page[-1] != "/":
           return
-      elif headers["content-type"].find("text") == -1:
+      elif not "text" in resp_headers["content-type"]:
         return
 
       warn = 0
@@ -113,7 +117,7 @@ class mod_file(Attack):
           if inc:
             continue
           try:
-            data, code = self.HTTP.send(url).getPageCode()
+            data, code = self.HTTP.send(url, headers=headers).getPageCode()
           except requests.exceptions.Timeout, timeout:
             data = ""
             code = "408"
@@ -148,7 +152,7 @@ class mod_file(Attack):
       warn = 0
       inc = 0
       err500 = 0
-      k = params_list[i][0]
+      param_name = self.HTTP.quote(params_list[i][0])
       saved_value = params_list[i][1]
       for payload in self.payloads:
         err = ""
@@ -160,28 +164,28 @@ class mod_file(Attack):
           self.attackedGET.append(url)
           if inc == 1: continue
           try:
-            data, code = self.HTTP.send(url).getPageCode()
+            data, code = self.HTTP.send(url, headers=headers).getPageCode()
           except requests.exceptions.Timeout, timeout:
             data = ""
             code = "408"
             err = ""
             self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                               Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                              url,self.HTTP.encode(params_list), err + " (" + k + ")",
+                              url,self.HTTP.encode(params_list), err + " (" + param_name + ")",
                               timeout)
-            print _("Timeout") + " (" + k + ") " + _("in"), page
+            print _("Timeout") + " (" + param_name + ") " + _("in"), page
             print "  " + _("caused by") + ":", url
           else:
             err, inc, warn = self.__findPatternInResponse(data, warn)
           if err != "":
             self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                               Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                              url,self.HTTP.encode(params_list), err + " (" + k + ")")
+                              url,self.HTTP.encode(params_list), err + " (" + param_name + ")")
             if self.color == 0:
-              print err, "(" + k + ") " + _("in"), page
+              print err, "(" + param_name + ") " + _("in"), page
               print "  " + _("Evil url") + ":", url
             else:
-              print err, ":", url.replace(k + "=", self.RED + k + self.STD + "=")
+              print err, ":", url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
           else:
             if code == "500" and err500 == 0:
               err500 = 1
@@ -200,6 +204,7 @@ class mod_file(Attack):
     get_params  = form.get_params
     post_params = form.post_params
     file_params = form.file_params
+    referer = form.referer
 
     err = ""
     for param_list in [get_params, post_params, file_params]:
@@ -216,7 +221,12 @@ class mod_file(Attack):
           self.attackedPOST.append(attack_pattern)
           for payload in self.payloads:
             param_list[i][1] = payload
-            evil_req = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
+            evil_req = HTTP.HTTPResource(form.path,
+                method=form.method,
+                get_params=get_params,
+                post_params=post_params,
+                file_params=file_params,
+                referer=referer)
             if self.verbose == 2:
               print "+", evil_req
             try:
@@ -227,24 +237,24 @@ class mod_file(Attack):
               self.reportGen.logVulnerability(Vulnerability.RES_CONSUMPTION,
                                 Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                 evil_req.url, self.HTTP.encode(evil_req.post_params),
-                                _("Timeout coming from") + " " + form.referer, timeout)
+                                _("Timeout coming from") + " " + referer, timeout)
               print _("Timeout in"), evil_req.url
               print "  " + _("with params") + " =", self.HTTP.encode(evil_req.post_params)
-              print "  " + _("coming from"), form.referer
+              print "  " + _("coming from"), referer
             else:
               err, inc, warn = self.__findPatternInResponse(data, warn)
             if err != "":
               self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                 evil_req.url, self.HTTP.encode(post_params),
-                                err + " " + _("coming from") + " " + form.referer)
+                                err + " " + _("coming from") + " " + referer)
               print err, _("in"), evil_req.url
               if self.color == 1:
                 print "  " + _("with params") + " =", \
                     self.HTTP.encode(evil_req.post_params).replace(k + "=", self.RED + k + self.STD + "=")
               else:
                 print "  " + _("with params") + " =", self.HTTP.encode(evil_req.post_params)
-              print "  " + _("coming from"), form.referer
+              print "  " + _("coming from"), referer
               if inc:
                 break
 
@@ -254,9 +264,9 @@ class mod_file(Attack):
                 self.reportGen.logVulnerability(Vulnerability.FILE_HANDLING,
                                                 Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                 evil_req.url, self.HTTP.encode(evil_req.post_params),
-                                                _("500 HTTP Error code coming from") + " " + form.referer + "\n"+
+                                                _("500 HTTP Error code coming from") + " " + referer + "\n"+
                                                 VulDescrip.ERROR_500_DESCRIPTION)
                 print _("500 HTTP Error code in"), evil_req.post_params
                 print "  " + _("with params") + " =", self.HTTP.encode(evil_req.post_params)
-                print "  " + _("coming from"), form.referer
+                print "  " + _("coming from"), referer
         param_list[i][1] = saved_value

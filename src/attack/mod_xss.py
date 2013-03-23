@@ -57,7 +57,11 @@ class mod_xss(Attack):
     # copies
     page = http_res.path
     params_list = http_res.get_params
-    headers = http_res.headers
+    resp_headers = http_res.headers
+    referer = http_res.referer
+    headers = {}
+    if referer:
+      headers["referer"] = referer
 
     # Some PHP scripts doesn't sanitize data coming from $_SERVER['PHP_SELF']
     if page not in self.PHP_SELF:
@@ -69,8 +73,8 @@ class mod_xss(Attack):
       if url != "":
         if self.verbose == 2:
           print "+", url
-        data, http_code = self.HTTP.send(url).getPageCode()
-        if data.find(self.php_self_check) >= 0:
+        data, http_code = self.HTTP.send(url, headers=headers).getPageCode()
+        if self.php_self_check in data:
           if self.color == 0:
             print _("XSS"), "(PHP_SELF)", _("in"), page
             print "  " + _("Evil url") + ":", url
@@ -87,11 +91,11 @@ class mod_xss(Attack):
     # params_list is a list of [key, value] lists
     if not params_list:
       # Do not attack application-type files
-      if not headers.has_key("content-type"):
+      if not "content-type" in resp_headers:
         # Sometimes there's no content-type... so we rely on the document extension
         if (page.split(".")[-1] not in self.allowed) and page[-1] != "/":
           return
-      elif headers["content-type"].find("text") == -1:
+      elif not "text" in resp_headers["content-type"]:
         return
 
       url = page + "?__XSS__"
@@ -102,19 +106,19 @@ class mod_xss(Attack):
         url = page + "?" + code
         self.GET_XSS[code] = url
         try:
-          resp = self.HTTP.send(url)
+          resp = self.HTTP.send(url, headers=headers)
           data = resp.getPage()
         except requests.exceptions.Timeout:
           data = ""
           resp = None
-        if data.find(code) >= 0:
+        if code in data:
           payloads = self.generate_payloads(data, code)
           for payload in payloads:
             url = page + "?" + self.HTTP.quote(payload)
             if self.verbose == 2:
               print "+", url
             try:
-              resp = self.HTTP.send(url)
+              resp = self.HTTP.send(url, headers=headers)
               dat = resp.getPage()
             except requests.exceptions.Timeout, timeout:
               dat = ""
@@ -150,16 +154,16 @@ class mod_xss(Attack):
           # Create a random unique ID that will be used to test injection
           code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)]) # don't use upercase as BS make some data lowercase
           params_list[i][1] = code
-          url = page + "?" + self.HTTP.encode(params_list) #, headers["link_encoding"])
+          url = page + "?" + self.HTTP.encode(params_list)
           self.GET_XSS[code] = url
           try:
-            resp = self.HTTP.send(url)
+            resp = self.HTTP.send(url, headers=headers)
             data = resp.getPage()
           except requests.exceptions.Timeout, timeout:
             data = ""
             resp = timeout
           # is the random code on the webpage ?
-          if data.find(code) >= 0:
+          if code in data:
             # YES! But where exactly ?
             payloads = self.generate_payloads(data, code)
             for payload in payloads:
@@ -171,7 +175,7 @@ class mod_xss(Attack):
               if self.verbose == 2:
                 print "+", url
               try:
-                resp = self.HTTP.send(url)
+                resp = self.HTTP.send(url, headers=headers)
                 dat = resp.getPage()
               except requests.exceptions.Timeout, timeout:
                 dat = ""
@@ -197,8 +201,11 @@ class mod_xss(Attack):
 
   def attackPOST(self, form):
     """This method performs the cross site scripting attack (XSS attack) with method POST"""
-    page = form.url # form[0]
-    params = form.post_params # form[1]
+    page = form.url
+    referer = form.referer
+    headers = {}
+    if referer:
+      headers["referer"] = referer
 
     if page not in self.PHP_SELF:
       url = ""
@@ -209,8 +216,8 @@ class mod_xss(Attack):
       if url != "":
         if self.verbose == 2:
           print "+", url
-        data, http_code = self.HTTP.send(url).getPageCode()
-        if data.find(self.php_self_check) >= 0:
+        data, http_code = self.HTTP.send(url, headers=headers).getPageCode()
+        if self.php_self_check in data:
           if self.color == 0:
             print _("XSS"), "(PHP_SELF)", _("in"), page
             print "  " + _("Evil url") + ":", url
@@ -229,6 +236,7 @@ class mod_xss(Attack):
 
     for param_list in [get_params, post_params, file_params]:
       for i in xrange(len(param_list)):
+        param_name = self.HTTP.quote(param_list[i][0])
         saved_value = param_list[i][1]
         param_list[i][1] = "__XSS__"
         # We keep an attack pattern to make sure a given form won't be attacked on the same field several times
@@ -243,7 +251,7 @@ class mod_xss(Attack):
               get_params=get_params,
               post_params=post_params,
               file_params=file_params,
-              referer=form.referer)
+              referer=referer)
 
           self.POST_XSS[code] = test_payload
           try:
@@ -253,14 +261,18 @@ class mod_xss(Attack):
             data = ""
             resp = timeout
           # rapid search on the code to check injection
-          if data.find(code) >= 0:
+          if code in data:
             # found, now study where the payload is injected and how to exploit it
             payloads = self.generate_payloads(data, code)
             for payload in payloads:
-              param_name = param_list[i][0]
               param_list[i][1] = payload
 
-              evil_req = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
+              evil_req = HTTP.HTTPResource(form.path,
+                  method=form.method,
+                  get_params=get_params,
+                  post_params=post_params,
+                  file_params=file_params,
+                  referer=referer)
 
               if self.verbose == 2:
                 print "+", evil_req
@@ -290,7 +302,7 @@ class mod_xss(Attack):
                     else:
                       print _("Found XSS in"), evil_req.url
                       print "  " + _("with params") + " =", self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
-                  print "  " + _("coming from"), form.referer
+                  print "  " + _("coming from"), referer
                   # Stop injecting payloads and move to the next parameter
                   break
 
@@ -303,24 +315,24 @@ class mod_xss(Attack):
   def study(self, obj, parent=None, keyword="", entries=[]):
     #if parent==None:
     #  print "Keyword is:",keyword
-    if str(obj).find(keyword) >= 0:
+    if keyword in str(obj):
       if isinstance(obj, BeautifulSoup.Tag):
-        if str(obj.attrs).find(keyword) >= 0:
+        if keyword in str(obj.attrs):
           for k, v in obj.attrs:
-            if v.find(keyword) >= 0:
+            if keyword in v:
               #print "Found in attribute value ",k,"of tag",obj.name
               entries.append({"type":"attrval", "name":k, "tag":obj.name})
-            if k.find(keyword) >= 0:
+            if keyword in k:
               #print "Found in attribute name ",k,"of tag",obj.name
               entries.append({"type":"attrname", "name":k, "tag":obj.name})
-        elif obj.name.find(keyword) >= 0:
+        elif keyword in obj.name:
           #print "Found in tag name"
           entries.append({"type":"tag", "value":obj.name})
         else:
           for x in obj.contents:
             self.study(x, obj, keyword, entries)
       elif isinstance(obj, BeautifulSoup.NavigableString):
-        if str(obj).find(keyword) >= 0:
+        if keyword in str(obj):
           #print "Found in text, tag", parent.name
           entries.append({"type":"text", "parent":parent.name})
 

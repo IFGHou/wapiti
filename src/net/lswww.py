@@ -156,12 +156,12 @@ Supported options are:
     if root.startswith("-"):
       print _("First argument must be the root url !")
       sys.exit(0)
-    if root.find("://") == -1:
+    if not "://" in root:
       root = "http://" + root
     if(self.__checklink(root)):
       print _("Invalid protocol:"), root.split("://")[0]
       sys.exit(0)
-    if root[-1] != "/" and (root.split("://")[1]).find("/") == -1:
+    if root[-1] != "/" and not "/" in root.split("://")[1]:
       root += "/"
 
     server = (root.split("://")[1]).split("/")[0]
@@ -371,7 +371,7 @@ Supported options are:
       if lien != None:
         if(self.__inzone(lien) == 0):
           # Is the document already visited of forbidden ?
-          lien = HTTP.HTTPResource(lien, encoding=page_encoding)
+          lien = HTTP.HTTPResource(lien, encoding=page_encoding, referer=url)
           if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
             pass
           elif self.nice > 0:
@@ -456,54 +456,56 @@ Supported options are:
           else:
             lien = current_directory + lien
       # No destination anchor
-      if lien.find("#") != -1:
+      if "#" in lien:
         lien = lien.split("#")[0]
 
+      args = ""
       if "?" in lien:
-        args = lien.split("?")[1]
+        lien, args = lien.split("?", 1)
         # if args is a unicode string, encode it according to the charset of the webpage (if known)
         if encoding and isinstance(args, unicode):
           args = args.encode(encoding, "ignore")
-        if args.find("&") != -1 :
+
+        # a hack for auto-generated Apache directory index
+        if args in ["C=D;O=A", "C=D;O=D", "C=M;O=A", "C=M;O=D",
+            "C=N;O=A", "C=N;O=D", "C=S;O=A", "C=S;O=D"]:
+          args = ""
+
+        if "&" in args:
           args = args.split("&")
-          args = [i for i in args if i != "" and i.find("=") >= 0]
+          args = [i for i in args if i != "" and "=" in i]
           for i in self.bad_params:
             for j in args:
               if j.startswith(i + "="): args.remove(j)
           args = "&".join(args)
 
-        lien = lien.split("?")[0]
-        # First part of the url (path) must be encoded with UTF-8
-        if isinstance(lien, unicode):
-          lien = lien.encode("UTF-8", "ignore")
-        lien = urllib.quote(lien, safe='/#%[]=:;$&()+,!?*')
-        # a hack for auto-generated Apache directory index
-        if args and not args in ["C=D;O=A", "C=D;O=D", "C=M;O=A", "C=M;O=D",
-            "C=N;O=A", "C=N;O=D", "C=S;O=A", "C=S;O=D"]:
-          lien = lien.split("?")[0] + "?" + args
-      else:
-        if isinstance(lien, unicode):
-          lien = lien.encode("UTF-8", "ignore")
-        lien = urllib.quote(lien, safe='/#%[]=:;$&()+,!?*')
+      # First part of the url (path) must be encoded with UTF-8
+      if isinstance(lien, unicode):
+        lien = lien.encode("UTF-8", "ignore")
+      lien = urllib.quote(lien, safe='/#%[]=:;$&()+,!?*')
 
-      # Remove the trailing '?' if its presence doesn't make sense
-      if lien[-1:] == "?":
+
+      # remove useless slashes repetitions (expect those from the protocol)
+      lien = re.sub("([^:])//+", r"\1/", lien)
+      if lien[-2:] == "/.":
         lien = lien[:-1]
-      # remove useless slashes
-      if lien.find("?") != -1:
-        filename = lien.split("?")[0]
-        filename = re.sub("([^:])//+", r"\1/", filename)
-        if filename[-2:] == "/.":
-          filename = filename[:-1]
-        lien = filename + "?" + lien.split("?")[1]
-      else:
-        if lien[-2:] == "/.":
-          lien = lien[:-1]
+
+      # It should be safe to parse now
+      parsed = urlparse.urlparse(lien)
+      path = parsed.path
+
       # links going to a parrent directory (..)
-      while re.search("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", lien) != None:
-        lien = re.sub("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", "/", lien)
-      lien = re.sub("/\./", "/", lien)
-      # Everything is good here
+      while re.search("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", path) != None:
+        path = re.sub("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", "/", path)
+      while re.search("/\./", path) != None:
+        path = re.sub("/\./", "/", path)
+      if path == "":
+        path = '/'
+
+      lien = "%s://%s%s" % (parsed.scheme, parsed.netloc, path)
+      if args != "":
+        # Put back the query part
+        lien = "%s?%s" % (lien, args)
       return lien
 
   def __checklink(self, url):
@@ -531,8 +533,8 @@ Supported options are:
   def __countMatches(self, url):
     """Return the number of known urls matching the pattern of the given url"""
     matches = 0
-    if url.find("?") != -1:
-      if url.find("=") != -1:
+    if "?" in url:
+      if "=" in url:
         i = 0
         for __ in xrange(0, url.count("=")):
           start = url.find("=", i)
@@ -1043,7 +1045,7 @@ if __name__ == "__main__":
       if o in ("-r", "--remove"):
         myls.addBadParam(a)
       if o in ("-a", "--auth"):
-        if a.find("%") >= 0:
+        if "%" in a:
           auth = [a.split("%")[0], a.split("%")[1]]
           myls.setAuthCredentials(auth)
       if o in ("-v", "--verbose"):
