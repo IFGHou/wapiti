@@ -167,7 +167,7 @@ class mod_blindsql(Attack):
     for param_list in [get_params, post_params, file_params]:
       for i in xrange(len(param_list)):
         saved_value = param_list[i][1]
-        k = param_list[i][0]
+        param_name = self.HTTP.quote(param_list[i][0])
         param_list[i][1] = "__SQL__"
         attack_pattern = HTTP.HTTPResource(form.path, method=form.method, get_params=get_params, post_params=post_params, file_params=file_params)
 
@@ -202,7 +202,7 @@ class mod_blindsql(Attack):
               print _("Blind SQL Injection in"), evil_req.url
               if self.color == 1:
                 print "  " + _("with params") + " =", \
-                      self.HTTP.encode(post_params).replace(k + "=", self.RED + k + self.STD + "=")
+                      self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
               else:
                 print "  " + _("with params") + " =", self.HTTP.encode(post_params)
               print "  " + _("coming from"), referer

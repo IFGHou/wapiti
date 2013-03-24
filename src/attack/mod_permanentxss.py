@@ -157,7 +157,8 @@ class mod_permanentxss(Attack):
 
                 for params_list in [get_params, post_params, file_params]:
                   for i in xrange(len(params_list)):
-                    k, v = params_list[i]
+                    param_name, v = params_list[i]
+                    param_name = self.HTTP.quote(param_name)
                     if v == code:
                       params_list[i][1] = self.SUCCESSFUL_XSS[code]
                       # we found the xss payload again -> stored xss vuln
@@ -175,7 +176,7 @@ class mod_permanentxss(Attack):
                       print _("Found permanent XSS in"), url
                       if self.color ==1:
                         print "  " + _("attacked by"), evil_req.url, _("with fields"), \
-                            self.HTTP.encode(post_params).replace(k + "=", self.RED + k + self.STD + "=")
+                            self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
                       else:
                         print "  " + _("attacked by"), evil_req.url, _("with fields"), self.HTTP.encode(post_params)
                       if url != evil_req.url:
@@ -194,7 +195,8 @@ class mod_permanentxss(Attack):
 
               for params_list in [get_params, post_params, file_params]:
                 for i in xrange(len(params_list)):
-                  k, v = params_list[i]
+                  param_name, v = params_list[i]
+                  param_name = self.HTTP.quote(param_name)
                   if v == code:
                     for xss in self.independant_payloads:
                       payload = xss.replace("__XSS__", code)
@@ -224,7 +226,7 @@ class mod_permanentxss(Attack):
                         print _("Found permanent XSS in"), url
                         if self.color ==1:
                           print "  " + _("attacked by"), evil_req.url, _("with fields"), \
-                              self.HTTP.encode(post_params).replace(k + "=", self.RED + k + self.STD + "=")
+                              self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
                         else:
                           print "  " + _("attacked by"), evil_req.url, _("with fields"), self.HTTP.encode(post_params)
                         if url != evil_req.url:
