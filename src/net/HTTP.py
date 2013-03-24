@@ -221,7 +221,7 @@ class HTTPResource(object):
       # for upload fields
       if isinstance(v, tuple):
         v = v[0]
-      v= urllib.quote(v, safe='%')
+      v = urllib.quote(v, safe='%')
       key_values.append("%s=%s" % (k, v))
     return "&".join(key_values)
 

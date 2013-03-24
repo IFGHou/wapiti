@@ -1,7 +1,8 @@
 import os
 from xml.parsers import expat
 from xml.dom.minidom import Document
-from urllib import quote
+from urllib import quote, unquote
+from net import HTTP
 
 class CrawlerPersister:
   """
@@ -17,29 +18,29 @@ class CrawlerPersister:
   ROOT_URL = "rootURL"
   TO_BROWSE = "toBrowse"
   BROWSED   = "browsed"
-  URL = "url"
-  URL_DATA = "url_data"
-  FORMS    = "forms"
-  FORM     = "form"
-  FORM_URL = "url"
-  FORM_TO  = "to"
-  INPUTS = "inputs"
+  RESOURCE = "resouce"
+  METHOD = "method"
+  PATH = "path"
   INPUT  = "input"
   INPUT_NAME  = "name"
   INPUT_VALUE = "value"
-  UPLOADS = "uploads"
-  URI = "uri"
+  HEADERS = "headers"
   HEADER = "header"
   HEADER_NAME = "name"
   HEADER_VALUE = "value"
   ENCODING = "encoding"
+  REFERER = "referer"
+  GET_PARAMS = "get_params"
+  POST_PARAMS = "post_params"
+  FILE_PARAMS = "file_params"
 
+  # toBrowse can contain GET and POST resources
   toBrowse = []
-  browsed  = {}
-  urls     = []
-  inputs   = {}
-  form     = []
+  # browsed contains only GET resources
+  browsed  = []
+  # forms contains only POST resources
   forms    = []
+  #TODO? Keep it for the moment
   uploads  = []
   headers  = {}
   rootURL = ""
@@ -47,11 +48,18 @@ class CrawlerPersister:
   tag = ""
   array = None
 
-  url   = ""
+  method = ""
+  path  = ""
+  encoding = ""
+  referer = ""
+  get_params = []
+  post_params = []
+  file_params = []
+
 
 
   def __init__(self):
-    self.form = [0, 1, 2, 3]
+    pass
 
   def isDataForUrl(self,fileName):
     return os.path.exists(fileName)
@@ -66,56 +74,104 @@ class CrawlerPersister:
     xml.appendChild(root)
 
     rootUrlEl = xml.createElement(self.ROOT_URL)
-    rootUrlEl.appendChild(xml.createTextNode(self.rootURL.url.encode("UTF-8")))
+    rootUrlEl.appendChild(xml.createTextNode(self.rootURL.url))
     root.appendChild(rootUrlEl)
 
+    # 1 - URLs and FORMs not yet browsed
+    # we don't know several informations yet like the response headers
     toBrowseEl = xml.createElement(self.TO_BROWSE)
     for http_resource in self.toBrowse:
-      urlEl = xml.createElement(self.URL)
-      urlEl.appendChild(xml.createTextNode(http_resource.url.encode("UTF-8")))
-      toBrowseEl.appendChild(urlEl)
+      # <resource method="" path="" encoding ="">
+      resEl = xml.createElement(self.RESOURCE)
+      resEl.setAttribute(self.METHOD, http_resource.method)
+      resEl.setAttribute(self.PATH, http_resource.path)
+      resEl.setAttribute(self.ENCODING, http_resource.encoding)
+      #   <referer>
+      refererEl = xml.createElement(self.REFERER)
+      refererEl.appendChild(xml.createTextNode(http_resource.referer))
+      resEl.appendChild(refererEl)
+      #   <get_params>
+      getParamsEl = xml.createElement(self.GET_PARAMS)
+      for k, v in http_resource.get_params:
+        inputEl = xml.createElement(self.INPUT)
+        inputEl.setAttribute(self.INPUT_NAME, quote(k))
+        inputEl.setAttribute(self.INPUT_VALUE, quote(v))
+        getParamsEl.appendChild(inputEl)
+      resEl.appendChild(getParamsEl)
+
+      #   <post_params>
+      postParamsEl = xml.createElement(self.POST_PARAMS)
+      for k, v in http_resource.post_params:
+        inputEl = xml.createElement(self.INPUT)
+        inputEl.setAttribute(self.INPUT_NAME, quote(k))
+        inputEl.setAttribute(self.INPUT_VALUE, quote(v))
+        postParamsEl.appendChild(inputEl)
+      resEl.appendChild(postParamsEl)
+
+      #   <file_params>
+      fileParamsEl = xml.createElement(self.FILE_PARAMS)
+      for k, v in http_resource.file_params:
+        inputEl = xml.createElement(self.INPUT)
+        inputEl.setAttribute(self.INPUT_NAME, quote(k))
+        inputEl.setAttribute(self.INPUT_VALUE, quote(v))
+        fileParamsEl.appendChild(inputEl)
+      resEl.appendChild(fileParamsEl)
+
+      toBrowseEl.appendChild(resEl)
     root.appendChild(toBrowseEl)
 
+    # 2 - URLs and FORMs already browsed
     browsedEl = xml.createElement(self.BROWSED)
     for http_resource in self.browsed:
-      urlEl = xml.createElement(self.URL_DATA)
-      urlEl.setAttribute(self.URI, http_resource.url.encode("UTF-8"))
+      # <resource method="" path="" encoding ="">
+      resEl = xml.createElement(self.RESOURCE)
+      resEl.setAttribute(self.METHOD, http_resource.method)
+      resEl.setAttribute(self.PATH, http_resource.path)
+      resEl.setAttribute(self.ENCODING, http_resource.encoding)
+      #   <referer>
+      refererEl = xml.createElement(self.REFERER)
+      refererEl.appendChild(xml.createTextNode(http_resource.referer))
+      resEl.appendChild(refererEl)
+      #   <get_params>
+      getParamsEl = xml.createElement(self.GET_PARAMS)
+      for k, v in http_resource.get_params:
+        inputEl = xml.createElement(self.INPUT)
+        inputEl.setAttribute(self.INPUT_NAME, quote(k))
+        inputEl.setAttribute(self.INPUT_VALUE, quote(v))
+        getParamsEl.appendChild(inputEl)
+      resEl.appendChild(getParamsEl)
+
+      #   <post_params>
+      postParamsEl = xml.createElement(self.POST_PARAMS)
+      for k, v in http_resource.post_params:
+        inputEl = xml.createElement(self.INPUT)
+        inputEl.setAttribute(self.INPUT_NAME, quote(k))
+        inputEl.setAttribute(self.INPUT_VALUE, quote(v))
+        postParamsEl.appendChild(inputEl)
+      resEl.appendChild(postParamsEl)
+
+      #   <file_params>
+      fileParamsEl = xml.createElement(self.FILE_PARAMS)
+      for k, v in http_resource.file_params:
+        inputEl = xml.createElement(self.INPUT)
+        inputEl.setAttribute(self.INPUT_NAME, quote(k))
+        inputEl.setAttribute(self.INPUT_VALUE, quote(v))
+        fileParamsEl.appendChild(inputEl)
+      resEl.appendChild(fileParamsEl)
+
+      #   <headers>
+      headersEl = xml.createElement(self.HEADERS)
       for k, v in http_resource.headers.items():
         if v == None:
           v = ""
         headEl = xml.createElement(self.HEADER)
-        headEl.setAttribute(self.HEADER_NAME, k.encode("UTF-8"))
-        headEl.setAttribute(self.HEADER_VALUE, v.encode("UTF-8"))
-        urlEl.appendChild(headEl)
-      browsedEl.appendChild(urlEl)
+        headEl.setAttribute(self.HEADER_NAME, k)
+        headEl.setAttribute(self.HEADER_VALUE, v)
+        headersEl.appendChild(headEl)
+      resEl.appendChild(headersEl)
+
+      browsedEl.appendChild(resEl)
     root.appendChild(browsedEl)
-
-    formsEl = xml.createElement(self.FORMS)
-    for form in self.forms:
-      formEl = xml.createElement(self.FORM)
-      #TODO: possible incoherence on target vs referer
-      formEl.setAttribute(self.FORM_URL, form.url.encode("UTF-8"))
-      formEl.setAttribute(self.FORM_TO, form.referer.encode("UTF-8"))
-      if form.encoding:
-        formEl.setAttribute(self.ENCODING, form.encoding.encode("UTF-8"))
-
-      inputsEl = xml.createElement(self.INPUTS)
-      for k, v in form.post_params:
-        inputEl = xml.createElement(self.INPUT)
-        inputEl.setAttribute(self.INPUT_NAME, quote(k))
-        # TODO: may be an input type=file in the future
-        inputEl.setAttribute(self.INPUT_VALUE, quote(v))
-        inputsEl.appendChild(inputEl)
-      formEl.appendChild(inputsEl)
-      formsEl.appendChild(formEl)
-    root.appendChild(formsEl)
-
-    uploadsEl = xml.createElement(self.UPLOADS)
-    for url in self.uploads:
-      urlEl = xml.createElement(self.URL)
-      urlEl.appendChild(xml.createTextNode(url.encode("UTF-8")))
-      uploadsEl.appendChild(urlEl)
-    root.appendChild(uploadsEl)
 
     f = open(fileName,"w")
     try:
@@ -129,7 +185,7 @@ class CrawlerPersister:
     Loads the crawler parameters from an XML file.
     @param fileName The file from where is loaded the crawler data
     """
-    self._parser = expat.ParserCreate()
+    self._parser = expat.ParserCreate("UTF-8")
     self._parser.StartElementHandler  = self.__start_element
     self._parser.EndElementHandler    = self.__end_element
     self._parser.CharacterDataHandler = self.__char_data
@@ -156,52 +212,62 @@ class CrawlerPersister:
   def __start_element(self, name, attrs):
     if name == self.TO_BROWSE:
       self.array = self.toBrowse
+
     elif name == self.BROWSED:
       self.array = self.browsed
-    elif name == self.UPLOADS:
-      self.array = self.uploads
-    elif name == self.URL_DATA:
-      self.url = attrs[self.URI]
+
+    elif name == self.RESOURCE:
+      self.method = attrs[self.METHOD]
+      self.path = attrs[self.PATH]
+      self.encoding = attrs[self.ENCODING]
+      self.referer = ""
       self.headers = {}
-    elif name == self.URL:
-      self.tag = self.URL
-      self.url = ""
+      self.get_params = []
+      self.post_params = []
+      self.file_params = []
+
+    elif name in [self.GET_PARAMS, self.POST_PARAMS, self.FILE_PARAMS, self.REFERER, self.ROOT_URL]:
+      self.tag = name
+
     elif name == self.HEADER:
       self.headers[attrs[self.HEADER_NAME]] = attrs[self.HEADER_VALUE]
-    elif name == self.ROOT_URL:
-      self.tag = self.ROOT_URL
-    elif name == self.INPUTS:
-      self.inputs = {}
-      self.array = self.inputs
-    elif name == self.INPUT:
-      self.inputs[attrs[self.INPUT_NAME]] = attrs[self.INPUT_VALUE]
-    elif name == self.FORM:
-      self.form[0] = attrs[self.FORM_URL]
-      self.form[2] = attrs[self.FORM_TO]
-      if attrs.has_key(self.ENCODING):
-        self.form[3] = attrs[self.ENCODING]
-      else:
-        self.form[3] = None
 
+    elif name == self.INPUT:
+      param_name  = unquote(attrs[self.INPUT_NAME].encode("UTF-8"))
+      param_value = unquote(attrs[self.INPUT_VALUE].encode("UTF-8"))
+
+      if self.tag == self.GET_PARAMS:
+        self.get_params.append([param_name, param_value])
+      if self.tag == self.POST_PARAMS:
+        self.post_params.append([param_name, param_value])
+      if self.tag == self.FILE_PARAMS:
+        self.file_params.append([param_name, param_value])
 
   def __end_element(self, name):
-    if name == self.URL_DATA:
-      self.array[self.url] = self.headers
-      headers = {}
-    elif name == self.URL:
-      self.array.append(self.url)
-    elif name == self.FORM:
-      self.form[1] = self.inputs
-      self.forms.append(self.form)
-      self.form = [0, 1, 2, 3]
+    if name == self.RESOURCE:
+      http_res = HTTP.HTTPResource(
+          self.path,
+          method=self.method,
+          encoding=self.encoding,
+          referer=self.referer,
+          get_params=self.get_params,
+          post_params=self.post_params,
+          file_params=self.file_params)
+      http_res.setHeaders(self.headers)
 
+      if self.array is self.toBrowse:
+        self.toBrowse.append(http_res)
+      else:
+        if self.method == "GET":
+          self.browsed.append(http_res)
+        elif self.method == "POST":
+          self.forms.append(http_res)
 
   def __char_data(self, data):
     if self.tag == self.ROOT_URL:
       self.rootURL = data.strip(" ");
-    elif self.tag == self.URL:
-      self.url = data.strip(" ")
-    self.tag = ""
+    elif self.tag == self.REFERER:
+      self.referer = data.strip(" ")
 
   
   def setRootURL(self, rootURL):
