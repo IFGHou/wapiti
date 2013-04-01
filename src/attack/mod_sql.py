@@ -53,7 +53,8 @@ class mod_sql(Attack):
             return _("MSSQL-Based Injection")
         if "Microsoft OLE DB Provider for ODBC Drivers" in data:
             return _("MSSQL-Based Injection")
-        if "java.sql.SQLException: Syntax error or access violation" in data:
+        if "java.sql.SQLException: Syntax error or access violation" in data or \
+           "java.sql.SQLException: Unexpected end of command" in data:
             return _("Java.SQL Injection")
         if "PostgreSQL query failed: ERROR: parser:" in data:
             return _("PostgreSQL Injection")
