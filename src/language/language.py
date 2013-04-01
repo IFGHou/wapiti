@@ -29,38 +29,38 @@ import locale
 import gettext
 
 class Language:
-  """
-  This class configures the internationalization of Wapiti, retrieving the
-  texts from the files where is the translation.
-  It establishes the funcion "_" for translating. To do it, the method "configure"
-  should be invoked.
-  """
-
-  LANG_DIR = 'config/language/'
-  AVAILABLE_LANGS = ["es", "en", "fr"];
-
-  BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
-  if os.path.isfile("/usr/local/share/locale/en/LC_MESSAGES/wapiti.mo"):
-    LANG_PATH = "/usr/local/share/locale/"
-  else:
-    LANG_PATH = BASE_DIR + "/" + LANG_DIR
-
-  def configure(self, lang=None):
     """
-    Configures the funcion "_" for translating the texts of Wapiti, this method
-    loads the language indicated as parameter or if the parameter is not specified,
-    it will take the default language of the operating system.
+    This class configures the internationalization of Wapiti, retrieving the
+    texts from the files where is the translation.
+    It establishes the funcion "_" for translating. To do it, the method "configure"
+    should be invoked.
     """
-    if lang == None: #if lang is not specified, default language is got
-      defLocale  = locale.getdefaultlocale()
-      langCounty = defLocale[0]   #en_UK
-      lang       = langCounty[:2] #en
-    if lang not in self.AVAILABLE_LANGS: #if lang is not between the lang translated, english by default
-      lang = 'en'
-    lan = gettext.translation('wapiti', self.LANG_PATH, languages=[lang], codeset="UTF-8")
-    lan.install(unicode=True);
 
-    #funcion which translates
-    def _(key):
-      return lan.lgettext(key);
+    LANG_DIR = 'config/language/'
+    AVAILABLE_LANGS = ["es", "en", "fr"];
+
+    BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
+    if os.path.isfile("/usr/local/share/locale/en/LC_MESSAGES/wapiti.mo"):
+        LANG_PATH = "/usr/local/share/locale/"
+    else:
+        LANG_PATH = BASE_DIR + "/" + LANG_DIR
+
+    def configure(self, lang=None):
+        """
+        Configures the funcion "_" for translating the texts of Wapiti, this method
+        loads the language indicated as parameter or if the parameter is not specified,
+        it will take the default language of the operating system.
+        """
+        if lang == None: #if lang is not specified, default language is got
+            defLocale  = locale.getdefaultlocale()
+            langCounty = defLocale[0]   #en_UK
+            lang       = langCounty[:2] #en
+        if lang not in self.AVAILABLE_LANGS: #if lang is not between the lang translated, english by default
+            lang = 'en'
+        lan = gettext.translation('wapiti', self.LANG_PATH, languages=[lang], codeset="UTF-8")
+        lan.install(unicode=True);
+
+        #funcion which translates
+        def _(key):
+            return lan.lgettext(key);
 

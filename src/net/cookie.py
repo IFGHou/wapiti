@@ -23,35 +23,35 @@ import jsoncookie
 import requests
 
 if "_" not in dir():
-  def _(s):
-    return s
+    def _(s):
+        return s
 
 if len(sys.argv) < 3:
-  sys.stderr.write("Usage python cookie.py <cookie_file> <url> <arg1=val1> ...\n")
-  sys.exit(1)
+    sys.stderr.write("Usage python cookie.py <cookie_file> <url> <arg1=val1> ...\n")
+    sys.exit(1)
 
 cookiefile = sys.argv[1]
 url = sys.argv[2]
 liste = []
 
 if len(sys.argv) > 3:
-  data = sys.argv[3:]
-  for l in data:
-    liste.append( tuple( l.split("=") ) )
+    data = sys.argv[3:]
+    for l in data:
+        liste.append( tuple( l.split("=") ) )
 params = urllib.urlencode(liste)
 
 txheaders =  {'user-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
 try:
-  if params:
-    txheaders['content-type'] = 'application/x-www-form-urlencoded'
-    r = requests.post(url, data=params, headers=txheaders)
-  else:
-    r = requests.get(url, headers=txheaders)
+    if params:
+        txheaders['content-type'] = 'application/x-www-form-urlencoded'
+        r = requests.post(url, data=params, headers=txheaders)
+    else:
+        r = requests.get(url, headers=txheaders)
 except IOError, e:
-    print _("Error getting url"), url
-    print e
-    sys.exit(1)
+        print _("Error getting url"), url
+        print e
+        sys.exit(1)
 
 jc = jsoncookie.jsoncookie()
 jc.open(cookiefile)

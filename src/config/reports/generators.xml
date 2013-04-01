@@ -24,4 +24,10 @@
         <classModule>vulneranetxmlreportgenerator</classModule>
         <className>VulneraNetXMLReportGenerator</className>
     </reportGenerator>
+    <reportGenerator>
+        <description>JSON format</description>
+        <reportTypeKey>json</reportTypeKey>
+        <classModule>jsonreportgenerator</classModule>
+        <className>JSONReportGenerator</className>
+    </reportGenerator>
 </reportGenerators>

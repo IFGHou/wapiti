@@ -23,11 +23,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 class ReportGenerator:
-    def addVulnerabilityType(self,name,description="",solution="",references={}):
+    def addVulnerabilityType(self, name, description="", solution="", references={}):
         ""
 
-    def logVulnerability(self,vulnerabilityTypeName,level,url,parameter,info,resp):
+    def logVulnerability(self, vulnerabilityTypeName, level, url, parameter, info, resp):
         ""
 
-    def generateReport(self,fileName):
+    def generateReport(self, fileName):
         ""

@@ -50,14 +50,14 @@ class HTMLReportGenerator(XMLReportGenerator):
     
     def generateReport(self,fileName):
         """
-	Copy the report structure in the specified 'fileName' directory
-	If these path exists, it will be overwritten
-	"""
+        Copy the report structure in the specified 'fileName' directory
+        If these path exists, it will be overwritten
+        """
         if os.path.exists(fileName):
             rmtree(fileName)
         copytree(self.BASE_DIR + "/" + self.REPORT_DIR, fileName)
 	
-	"""
+        """
         Create a xml file with a report of the vulnerabilities calling the Base class
         """
         XMLReportGenerator.generateReport(self, fileName + "/" + self.REPORT_XML_FILE)

@@ -61,8 +61,8 @@ class Attack:
     if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
         CONFIG_DIR = "/usr/local/share/doc/packages/wapiti/config/attacks"
     else:
-      BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
-      CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
+        BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
+        CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
 
     # Color codes
     STD = "\033[0;0m"
@@ -97,48 +97,38 @@ class Attack:
         return self.auxText.readLines(fileName)
 
     def attackGET(self, page, params_list, headers = {}):
-      return
+        return
 
     def attackPOST(self, form):
-      return
+        return
 
     def loadRequire(self, obj = []):
-      self.deps = obj
+        self.deps = obj
 
     def attack(self, http_resources, forms):
-      if self.doGET == True:
-        for http_res in http_resources:
-          url = http_res.url
-#          params_list = []
-#          params = []
-#          page = url
-#
-#          if url.find("?") >= 0:
-#            page = url.split('?')[0]
-#            query = url.split('?')[1]
-#            for param in query.split('&'):
-#              if param.find("=") > 0:
-#                params_list.append(param.split('=', 1))
-
-          if self.verbose == 1:
-            print "+", _("attackGET"), url
-
-          try:
-            self.attackGET(http_res)
-          except socket.error, se:
-            print 'error: %s while attacking %s' % (repr(str(se[0])), url)
-          except requests.exceptions.Timeout, te:
-            print 'error: timeout while attacking %s' % (url)
-          #except Exception, e:
-          #  print 'error: %s while attacking %s' % (repr(str(e[0])), url)
-
-      if self.doPOST == True:
-        for form in forms:
-          try:
-            self.attackPOST(form)
-          except socket.error, se:
-            print 'error: %s while attacking %s' % (repr(str(se[0])), url)
-          except requests.exceptions.Timeout, te:
-            print 'error: timeout while attacking %s' % (url)
-       #   except Exception, e:
-       #     print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+        if self.doGET == True:
+            for http_res in http_resources:
+                url = http_res.url
+    
+                if self.verbose == 1:
+                    print "+", _("attackGET"), url
+    
+                try:
+                    self.attackGET(http_res)
+                except socket.error, se:
+                    print 'error: %s while attacking %s' % (repr(str(se[0])), url)
+                except requests.exceptions.Timeout, te:
+                    print 'error: timeout while attacking %s' % (url)
+                #except Exception, e:
+                #    print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+  
+        if self.doPOST == True:
+            for form in forms:
+                try:
+                    self.attackPOST(form)
+                except socket.error, se:
+                    print 'error: %s while attacking %s' % (repr(str(se[0])), url)
+                except requests.exceptions.Timeout, te:
+                    print 'error: timeout while attacking %s' % (url)
+         #       except Exception, e:
+         #           print 'error: %s while attacking %s' % (repr(str(e[0])), url)

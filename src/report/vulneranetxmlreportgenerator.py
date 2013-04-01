@@ -31,11 +31,11 @@ import requests
 WAPITI_VERSION = "Wapiti SVN";
 
 def isPeerAddrPort(p):
-  """Is p a (str,int) tuple? I.E. an (ip_address,port)"""
-  if type(p)==tuple and len(p)==2:
-    return type(p[0])==str and type(p[1])==int
-  else:
-    return False
+    """Is p a (str,int) tuple? I.E. an (ip_address,port)"""
+    if type(p)==tuple and len(p)==2:
+        return type(p[0])==str and type(p[1])==int
+    else:
+        return False
 
 class VulneraNetXMLReportGenerator(ReportGenerator):
     """
@@ -103,36 +103,36 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
 
         self.__addToVulnerabilityTypeList(vulnerabilityType)
         if description != "":
-          descriptionNode = self.__xmlDoc.createElement("Description")
-          descriptionNode.appendChild(self.__xmlDoc.createCDATASection(description))
-          vulnerabilityType.appendChild(descriptionNode)
+            descriptionNode = self.__xmlDoc.createElement("Description")
+            descriptionNode.appendChild(self.__xmlDoc.createCDATASection(description))
+            vulnerabilityType.appendChild(descriptionNode)
         if recommendation != "":
-          solutionNode = self.__xmlDoc.createElement("Recommendation")
-          solutionNode.appendChild(self.__xmlDoc.createCDATASection(recommendation))
-          vulnerabilityType.appendChild(solutionNode)
+            solutionNode = self.__xmlDoc.createElement("Recommendation")
+            solutionNode.appendChild(self.__xmlDoc.createCDATASection(recommendation))
+            vulnerabilityType.appendChild(solutionNode)
         if references != "":
-          referencesNode = self.__xmlDoc.createElement("References")
-          for ref in references:
-            referenceNode = self.__xmlDoc.createElement("Reference")
-            titleNode = self.__xmlDoc.createElement("title")
-            urlNode = self.__xmlDoc.createElement("url")
-            titleNode.appendChild(self.__xmlDoc.createTextNode(ref))
-            urlNode.appendChild(self.__xmlDoc.createTextNode(references[ref]))
-            referenceNode.appendChild(titleNode)
-            referenceNode.appendChild(urlNode)
-            referencesNode.appendChild(referenceNode)
-          vulnerabilityType.appendChild(referencesNode)
+            referencesNode = self.__xmlDoc.createElement("References")
+            for ref in references:
+                referenceNode = self.__xmlDoc.createElement("Reference")
+                titleNode = self.__xmlDoc.createElement("title")
+                urlNode = self.__xmlDoc.createElement("url")
+                titleNode.appendChild(self.__xmlDoc.createTextNode(ref))
+                urlNode.appendChild(self.__xmlDoc.createTextNode(references[ref]))
+                referenceNode.appendChild(titleNode)
+                referenceNode.appendChild(urlNode)
+                referencesNode.appendChild(referenceNode)
+            vulnerabilityType.appendChild(referencesNode)
         return vulnerabilityType
 
     def __addToVulnerabilityList(self,vulnerabilityTypeName,vulnerability):
         vulnerabilityType = None
         for node in self.__vulnerabilityTypeList.childNodes:
-          titleNode = node.getElementsByTagName("Title")
-          if titleNode.length >= 1 and titleNode[0].childNodes.length == 1 and titleNode[0].childNodes[0].wholeText == vulnerabilityTypeName:
-            vulnerabilityType = node
-            break
+            titleNode = node.getElementsByTagName("Title")
+            if titleNode.length >= 1 and titleNode[0].childNodes.length == 1 and titleNode[0].childNodes[0].wholeText == vulnerabilityTypeName:
+                vulnerabilityType = node
+                break
         if vulnerabilityType == None:
-          vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
+            vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
         vulnerabilityType.childNodes[0].appendChild(vulnerability)
 
     def logVulnerability(self, vulnerabilityTypeName, level, url, parameter, info, resp=None):
@@ -143,27 +143,27 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         """
 
         if resp == None:
-          peer = None
-          ts = self.__ts
+            peer = None
+            ts = self.__ts
 #        TODO: subclass requests.exceptions.Timeout ?
         elif issubclass(resp.__class__, requests.exceptions.Timeout):
-          peer = None
-          ts = self.__ts
+            peer = None
+            ts = self.__ts
         elif issubclass(resp.__class__, net.HTTP.HTTPResponse):
-          peer = resp.peer
-          ts = resp.timestamp
+            peer = resp.peer
+            ts = resp.timestamp
         else:
-          raise TypeError(resp)
+            raise TypeError(resp)
         
         vulnerability = self.__xmlDoc.createElement("Vulnerability")
 
         stLevel = None;
         if level == 1:
-          stLevel = "Low"
+            stLevel = "Low"
         elif level == 2:
-          stLevel = "Moderate"
+            stLevel = "Moderate"
         else:
-          stLevel = "Important"
+            stLevel = "Important"
 
         levelNode = self.__xmlDoc.createElement("Severity")
         levelNode.appendChild(self.__xmlDoc.createTextNode(stLevel))
@@ -182,20 +182,20 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         urlDetailNode.appendChild(urlNode)
         
         if peer!=None:
-          peerNode = self.__xmlDoc.createElement("Peer")
-          if isPeerAddrPort(peer):
-            addrNode = self.__xmlDoc.createElement("Addr")
-            addrNode.appendChild( self.__xmlDoc.createTextNode(peer[0]) )
-            peerNode.appendChild(addrNode)
-          
-            portNode = self.__xmlDoc.createElement("Port")
-            portNode.appendChild( self.__xmlDoc.createTextNode(str(peer[1])) )
-            peerNode.appendChild(portNode)
-          else:
-            addrNode = self.__xmlDoc.createElement("Addr")
-            addrNode.appendChild( self.__xmlDoc.createTextNode(str(peer)) )
-            peerNode.appendChild(addrNode)
-          urlDetailNode.appendChild(peerNode)
+            peerNode = self.__xmlDoc.createElement("Peer")
+            if isPeerAddrPort(peer):
+                addrNode = self.__xmlDoc.createElement("Addr")
+                addrNode.appendChild( self.__xmlDoc.createTextNode(peer[0]) )
+                peerNode.appendChild(addrNode)
+            
+                portNode = self.__xmlDoc.createElement("Port")
+                portNode.appendChild( self.__xmlDoc.createTextNode(str(peer[1])) )
+                peerNode.appendChild(portNode)
+            else:
+                addrNode = self.__xmlDoc.createElement("Addr")
+                addrNode.appendChild( self.__xmlDoc.createTextNode(str(peer)) )
+                peerNode.appendChild(addrNode)
+            urlDetailNode.appendChild(peerNode)
         
         parameterNode = self.__xmlDoc.createElement("Parameter")
         parameterNode.appendChild(self.__xmlDoc.createTextNode(parameter))
@@ -217,12 +217,11 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         """
         f = open(fileName,"w")
         try:
-          f.write(self.__xmlDoc.toxml(encoding = "UTF-8"))
+            f.write(self.__xmlDoc.toxml(encoding = "UTF-8"))
         finally:
-          f.close()
+            f.close()
 
 if __name__ == "__main__":
-    
     SQL_INJECTION = "Sql Injection"
     FILE_HANDLING = "File Handling"
     XSS = "Cross Site Scripting"
@@ -248,5 +247,4 @@ if __name__ == "__main__":
         xmlGen.generateReport("sampleReport.xml")
     except SystemExit:
         pass
-
 

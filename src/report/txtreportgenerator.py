@@ -26,23 +26,7 @@ from reportgenerator import ReportGenerator
 
 class TXTReportGenerator(ReportGenerator):
     """
-    This class generates a report with the method printToFile(fileName) which contains
-    the information of all the vulnerabilities notified to this object through the 
-    method logVulnerability(vulnerabilityTypeName,level,url,parameter,info).
-    The format of the file is XML and it has the following structure:
-    <report>
-        <vulnerabilityTypeList>
-            <vulnerabilityType name="SQL Injection">
-                <vulnerabilityList>
-                    <vulnerability level="3">
-                        <url>http://www.a.com</url>
-                        <parameters>id=23</parameters>
-                        <info>SQL Injection</info>
-                    </vulnerability>
-                </vulnerabilityList>
-            </vulnerablityType>
-        </vulnerabilityTypeList>
-    </report>
+    TODO: MUST BE CHANGED
     """
 
     __vulnTypes = {}
