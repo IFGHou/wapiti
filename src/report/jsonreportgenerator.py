@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+# JSON Report Generator Module for Wapiti Project
+# Wapiti Project (http://wapiti.sourceforge.net)
+#
+# Copyright (C) 2013 Nicolas SURRIBAS
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+from reportgenerator import ReportGenerator
+import json
+
+class JSONReportGenerator(ReportGenerator):
+    """
+    TODO: MUST BE CHANGED
+    """
+
+    __vulnTypes = {}
+    __vulns = {}
+
+    def __init__(self):
+        pass
+
+    def addVulnerabilityType(self, name,
+                             description="",
+                             solution="",
+                             references={}):
+        if name not in self.__vulnTypes:
+            self.__vulnTypes[name] = {'desc':description,
+                                      'sol':solution,
+                                      'ref':references}
+        if name not in self.__vulns:
+            self.__vulns[name] = []
+
+    def logVulnerability(self,
+                         category=None,
+                         level=0,
+                         request=None,
+                         info=""):
+        """
+        Store the information about the vulnerability to be printed later.
+        The method printToFile(fileName) can be used to save in a file the
+        vulnerabilities notified through the current method.
+        """
+
+        path = request.path
+        vuln_dict = {
+                "method": request.method,
+                "path": request.path,
+                "info": info,
+                "level": level,
+                "http_request": request.http_repr,
+                "curl_command": request.curl_repr,
+                }
+        if category not in self.__vulns:
+            self.__vulns[category] = []
+        self.__vulns[category].append(vuln_dict)
+
+    def generateReport(self, fileName):
+        """
+        Create a json file with a report of the vulnerabilities which have
+        been logged with the logVulnerability method
+        """
+        report_dict = {
+                "classifications":self.__vulnTypes,
+                "vulnerabilities":self.__vulns
+                }
+        #TODO: add info on wapiti ?
+        f = open(fileName,"w")
+        try:
+            json.dump(report_dict, f, indent=2)
+        finally:
+            f.close()
+
