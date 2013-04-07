@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-# XML Report Generator Module for Wapiti Project
+# HTML Report Generator Module for Wapiti Project
 # Wapiti Project (http://wapiti.sourceforge.net)
 #
+# Nicolas SURRIBAS
 # Alberto Pastor
 # David del Pozo
 # Copyright (C) 2008 Informatica Gesfor
@@ -24,21 +25,21 @@
 
 import os
 from os.path import exists
-from xml.dom.minidom import Document
-from xmlreportgenerator import XMLReportGenerator
+from jsonreportgenerator import JSONReportGenerator
 from shutil import copytree, rmtree
 
 
 
-class HTMLReportGenerator(XMLReportGenerator):
+class HTMLReportGenerator(JSONReportGenerator):
     """
+    TODO: change description
     This class generates an XML report calling the method printToFile(fileName) of its Base class (XMLReportGenerator)
     For more information see XMLReportGenerator class
     Also, Copy the report structure in the specified directory
     The structure is as follow:
         /report
 	    index.html (visualization file)
-	    vulnerabilities.xml (report xml file)
+	    vulnerabilities.json (report json file)
 	    /includes
 	        /js (contains all js files)
 		/css (contains the stylesheet files)
@@ -46,7 +47,7 @@ class HTMLReportGenerator(XMLReportGenerator):
     """
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
     REPORT_DIR = "report_template"
-    REPORT_XML_FILE = "vulnerabilities.xml"
+    REPORT_JSON_FILE = "vulnerabilities.json"
     
     def generateReport(self,fileName):
         """
@@ -57,10 +58,17 @@ class HTMLReportGenerator(XMLReportGenerator):
             rmtree(fileName)
         copytree(self.BASE_DIR + "/" + self.REPORT_DIR, fileName)
 	
-        """
-        Create a xml file with a report of the vulnerabilities calling the Base class
-        """
-        XMLReportGenerator.generateReport(self, fileName + "/" + self.REPORT_XML_FILE)
+        JSONReportGenerator.generateReport(self, fileName + "/" + self.REPORT_JSON_FILE)
+        fd = open(fileName + "/" + self.REPORT_JSON_FILE)
+        json_data = fd.read()
+        fd.close()
+
+        fd = open(fileName + "/index.html", "r+")
+        html_data = fd.read()
+        html_data = html_data.replace('__JSON_DATA__', json_data)
+        fd.truncate(0)
+        fd.write(html_data)
+
 
 
 if __name__ == "__main__":
@@ -70,27 +78,27 @@ if __name__ == "__main__":
     XSS = "Cross Site Scripting"
     CRLF = "CRLF"
     EXEC = "Commands execution"
-    
-    try:
-        xmlGen = HTMLReportGenerator()
-        xmlGen.addVulnerabilityType(SQL_INJECTION)
-        xmlGen.addVulnerabilityType(FILE_HANDLING)
-        xmlGen.addVulnerabilityType(XSS)
-        xmlGen.addVulnerabilityType(CRLF)
-        xmlGen.addVulnerabilityType(EXEC)
-        xmlGen.logVulnerability("SQL Inyection", "1", "url1", "parameter1", "info1")
-        xmlGen.logVulnerability("SQL Inyection", "2", "url2", "parameter2", "info2")
-        xmlGen.logVulnerability("SQL Inyection", "2", "url3", "parameter3", "info3")
-        xmlGen.logVulnerability("SQL Inyection", "3", "url4", "parameter4", "info4")
-        xmlGen.logVulnerability("Cross Site Scripting", "3", "url5", "parameter5", "info5")
-        xmlGen.logVulnerability("Cross Site Scripting", "3", "url6", "parameter6", "info6")
-        xmlGen.logVulnerability("Cross Site Scripting", "2", "url7", "parameter7", "info7")
-        xmlGen.logVulnerability("Cross Site Scripting", "1", "url8", "parameter8", "info8")
-        xmlGen.logVulnerability("Google Hacking", "2", "url9", "parameter9", "info9")
-        """xmlGen.printToFile("sampleReport.xml")"""
-	xmlGen.generateReport("hola")
-	
-    except SystemExit:
-        pass
-
-
+#    
+#    try:
+#        xmlGen = HTMLReportGenerator()
+#        xmlGen.addVulnerabilityType(SQL_INJECTION)
+#        xmlGen.addVulnerabilityType(FILE_HANDLING)
+#        xmlGen.addVulnerabilityType(XSS)
+#        xmlGen.addVulnerabilityType(CRLF)
+#        xmlGen.addVulnerabilityType(EXEC)
+#        xmlGen.logVulnerability("SQL Inyection", "1", "url1", "parameter1", "info1")
+#        xmlGen.logVulnerability("SQL Inyection", "2", "url2", "parameter2", "info2")
+#        xmlGen.logVulnerability("SQL Inyection", "2", "url3", "parameter3", "info3")
+#        xmlGen.logVulnerability("SQL Inyection", "3", "url4", "parameter4", "info4")
+#        xmlGen.logVulnerability("Cross Site Scripting", "3", "url5", "parameter5", "info5")
+#        xmlGen.logVulnerability("Cross Site Scripting", "3", "url6", "parameter6", "info6")
+#        xmlGen.logVulnerability("Cross Site Scripting", "2", "url7", "parameter7", "info7")
+#        xmlGen.logVulnerability("Cross Site Scripting", "1", "url8", "parameter8", "info8")
+#        xmlGen.logVulnerability("Google Hacking", "2", "url9", "parameter9", "info9")
+#        """xmlGen.printToFile("sampleReport.xml")"""
+#	xmlGen.generateReport("hola")
+#	
+#    except SystemExit:
+#        pass
+#
+#

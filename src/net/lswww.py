@@ -807,6 +807,13 @@ class linkParser(HTMLParser.HTMLParser):
                 if "?" in tmpdict['src']:
                     self.liens.append(tmpdict['src'])
 
+        if tag.lower() == "meta":
+            if "http-equiv" in tmpdict and "content" in tmpdict:
+                if tmpdict["http-equiv"].lower() == "refresh":
+                    content_str = tmpdict["content"].lower()
+                    if "url=" in content_str:
+                        self.liens.append(content_str.split("url=")[1])
+
     def handle_endtag(self, tag):
         if tag.lower() == 'form':
             self.inform = 0
