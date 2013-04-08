@@ -811,8 +811,9 @@ class linkParser(HTMLParser.HTMLParser):
             if "http-equiv" in tmpdict and "content" in tmpdict:
                 if tmpdict["http-equiv"].lower() == "refresh":
                     content_str = tmpdict["content"].lower()
-                    if "url=" in content_str:
-                        self.liens.append(content_str.split("url=")[1])
+                    url_eq_idx = content_str.find("url=")
+                    if url_eq_idx >= 0:
+                        self.liens.append(tmpdict["content"][url_eq_idx + 4:])
 
     def handle_endtag(self, tag):
         if tag.lower() == 'form':
