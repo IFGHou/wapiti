@@ -15,6 +15,7 @@
           var report_data = __JSON_DATA__ ;
           var details = document.getElementById('details');
 
+          var vuln_count = 0;
           for(var vuln_name in report_data['classifications'])
           {
             console.log(vuln_name);
@@ -38,7 +39,6 @@
             dl.appendChild(dd);
             details.appendChild(dl);
 
-            var vuln_count = 0;
             // Add vulnerabilities of this type
             for(var i=0; i<report_data['vulnerabilities'][vuln_name].length; i++)
             {

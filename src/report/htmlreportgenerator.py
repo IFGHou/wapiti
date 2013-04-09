@@ -66,8 +66,10 @@ class HTMLReportGenerator(JSONReportGenerator):
         fd = open(fileName + "/index.html", "r+")
         html_data = fd.read()
         html_data = html_data.replace('__JSON_DATA__', json_data)
+        fd.seek(0)
         fd.truncate(0)
         fd.write(html_data)
+        fd.close()
 
 
 
