@@ -377,9 +377,9 @@ Supported options are:
                     if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
                         pass
                     elif self.nice > 0:
-                        if self.__countMatches(lien.url) >= self.nice:
+                        if self.__countMatches(lien) >= self.nice:
                             # don't waste time next time we found it
-                            self.excluded.append(lien)
+                            self.excluded.append(lien.url)
                             return False
                         else:
                             self.tobrowse.append(lien)
@@ -537,26 +537,29 @@ Supported options are:
                 match = True
         return match
 
-    def __countMatches(self, url):
+    def __countMatches(self, http_resource):
         """Return the number of known urls matching the pattern of the given url"""
         matches = 0
-        if "?" in url:
-            if "=" in url:
-                i = 0
-                for __ in xrange(0, url.count("=")):
-                    start = url.find("=", i)
-                    i = url.find("&", start)
-                    if i != -1:
-                        for u in self.browsed:
-                            if u.startswith(url[:start] + "=") and u.endswith(url[i:]):
-                                matches += 1
-                    else:
-                        for u in self.browsed:
-                            if u.startswith(url[:start] + "="):
-                                matches += 1
-            else:#QUERY_STRING
-                for a in [u for u in self.browsed if u.find("=") < 0]:
-                    if a.startswith(url.split("?")[0]):
+        for b in self.browsed:                                                       
+            if http_resource.path == b.path:                                         
+                qs = http_resource.encoded_params                                           
+                u = b.encoded_params                                        
+                if http_resource.encoded_get_keys == b.encoded_get_keys:             
+                    # key and value in the query string
+                    if "=" in qs:                                                  
+                        i = 0                                                      
+                        for __ in xrange(0, qs.count("=")):                        
+                            start = qs.find("=", i)                                
+                            i = qs.find("&", start)                                
+                            if i != -1:                                            
+                                if u.startswith(qs[:start] + "=") and u.endswith(qs[i:]):
+                                    matches += 1                                   
+                            else:                                                  
+                                if u.startswith(qs[:start] + "="):                 
+                                    matches += 1                                   
+                else:                                                              
+                    # only a key name is query string (eg: path?key_name)
+                    if "&" not in qs and "&" not in u:                             
                         matches += 1
         return matches
 

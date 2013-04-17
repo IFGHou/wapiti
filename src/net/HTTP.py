@@ -17,6 +17,18 @@ class HTTPResource(object):
     _headers = {}
     _referer = ""
 
+    # Most of the members of a HTTPResource object are immutable so we compute
+    # the data only one time (when asked for) and we keep it in memory for less
+    # calculations in those "cached" vars.
+    _cached_url = None
+    _cached_get_keys = None
+    _cached_post_keys = None
+    _cached_file_keys = None
+    _cached_encoded_params = None
+    _cached_encoded_data   = None
+    _cached_encoded_files  = None
+    _cached_hash = None
+
     # eg: get = [['id', '25'], ['color', 'green']]
     _get_params = []
 
@@ -84,14 +96,17 @@ class HTTPResource(object):
         self._referer = referer
 
 
-    def __hash__(self):
-        get_kv  = tuple([tuple(param) for param in self._get_params])
-        post_kv = tuple([tuple(param) for param in self._post_params])
-        file_kv = tuple([tuple(param) for param in self._file_params])
 
-        # TODO: should the referer be in the hash ?
-        return hash((self._method, self._resource_path,
-                     get_kv, post_kv, file_kv))
+    def __hash__(self):
+        if self._cached_hash is None:
+            get_kv  = tuple([tuple(param) for param in self._get_params])
+            post_kv = tuple([tuple(param) for param in self._post_params])
+            file_kv = tuple([tuple(param) for param in self._file_params])
+
+            # TODO: should the referer be in the hash ?
+            self._cached_hash =  hash((self._method, self._resource_path,
+                                       get_kv, post_kv, file_kv))
+        return self._cached_hash
 
     def __eq__(self, other):
         if not isinstance(other, HTTPResource):
@@ -112,7 +127,7 @@ class HTTPResource(object):
             return True
         else:
             if self.url == other.url:
-                return self._encoded_keys() < other._encoded_keys()
+                return self.encoded_data < other.encoded_data
             return False
 
     def __le__(self, other):
@@ -121,18 +136,18 @@ class HTTPResource(object):
         if self.url < other.url:
             return True
         elif self.url == other.url:
-            return self._encoded_keys() <= other._encoded_keys()
+            return self.encoded_data <= other.encoded_data
         return False
 
     def __ne__(self, other):
         if not isinstance(other, HTTPResource):
             return NotImplemented
 
-        if self._method == other._method:
-            return False
+        if self.method != other.method:
+            return True
 
-        if self._resource_path == other._resource_path:
-            return False
+        if self._resource_path != other._resource_path:
+            return True
 
         return hash(self) != hash(other)
 
@@ -142,7 +157,7 @@ class HTTPResource(object):
         if self.url > other.url:
             return True
         elif self.url == other.url:
-            return self._encoded_keys() > other._encoded_keys()
+            return self.encoded_data > other.encoded_data
         return False
 
     def __ge__(self, other):
@@ -151,13 +166,13 @@ class HTTPResource(object):
         if self.url > other.url:
             return True
         elif self.url == other.url:
-            return self._encoded_keys() >= other._encoded_keys()
+            return self.encoded_data >= other.encoded_data
         return False
 
-    def _encoded_keys(self):
+    def _encoded_keys(self, params):
         quoted_keys = []
-        for k, __ in self._post_params:
-            quoted_keys.append(urllib.quote(k))
+        for k, __ in params:
+            quoted_keys.append(urllib.quote(k, safe='%'))
         return "&".join(quoted_keys)
 
     def __repr__(self):
@@ -211,11 +226,13 @@ class HTTPResource(object):
 
     @property
     def url(self):
-        if self._get_params:
-            return "%s?%s" % (self._resource_path,
-                              self._encode_params(self._get_params))
-        else:
-            return self._resource_path
+        if self._cached_url is None:
+            if self._get_params:
+                self._cached_url = "%s?%s" % (self._resource_path,
+                                              self._encode_params(self._get_params))
+            else:
+                self._cached_url = self._resource_path
+        return self._cached_url
 
     @property
     def path(self):
@@ -280,6 +297,23 @@ class HTTPResource(object):
     def encoded_files(self):
         return self._encode_params(self._file_params)
   
+    @property
+    def encoded_get_keys(self):
+        if self._cached_get_keys is None:
+            self._cached_get_keys  = self._encoded_keys(self._get_params)
+        return self._cached_get_keys
+
+    @property
+    def encoded_post_keys(self):
+        if self._cached_post_keys is None:
+            self._cached_post_keys = self._encoded_keys(self._post_params)
+        return self._cached_post_keys
+
+    @property
+    def encoded_file_keys(self):
+        if self._cached_file_keys is None:
+            self._cached_file_keys = self._encoded_keys(self._file_params)
+        return self._cached_file_keys
 
 class HTTPResponse(object):
     resp = None
@@ -465,3 +499,44 @@ class HTTP(object):
     def setAuthCredentials(self, auth_basic):
         "Set credentials to use if the website require an authentification."
         self.auth_basic = auth_basic
+
+if __name__ == "__main__":
+    res1 = HTTPResource("http://httpbin.org/post?var1=a&var2=b",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    res2 = HTTPResource("http://httpbin.org/post?var1=a&var2=z",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    res3 = HTTPResource("http://httpbin.org/post?var1=a&var2=b",
+                        post_params=[['post1', 'c'], ['post2', 'z']])
+    res4 = HTTPResource("http://httpbin.org/post?var1=a&var2=b",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    res5 = HTTPResource("http://httpbin.org/post?var1=z&var2=b",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    res6 = HTTPResource("http://httpbin.org/post?var3=z&var2=b",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    res7 = HTTPResource("http://httpbin.org/post?var1=z&var2=b&var4=e",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    res8 = HTTPResource("http://httpbin.org/post?var1=z&var2=d",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    res10 = HTTPResource("http://httpbin.org/post?qs0",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    res11 = HTTPResource("http://httpbin.org/post?qs1",
+                        post_params=[['post1', 'c'], ['post2', 'd']])
+    assert res1 < res2
+    assert res2 > res3
+    assert res1 < res3
+    assert res1 == res4
+    assert res1 != res2
+    assert res2 >= res1
+    assert res1 <= res3
+    print "=== Basic representation follows ==="
+    print res1
+    print "=== cURL representation follows ==="
+    print res1.curl_repr
+    print "=== HTTP representation follows ==="
+    print res1.http_repr
+    print "=== POST parameters as an array ==="
+    print res1.post_params
+    print "=== POST keys encoded as string ==="
+    print res1.encoded_post_keys
+    print
+
