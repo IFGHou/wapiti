@@ -101,7 +101,7 @@ class HTTPResource(object):
         if self._cached_hash is None:
             get_kv  = tuple([tuple(param) for param in self._get_params])
             post_kv = tuple([tuple(param) for param in self._post_params])
-            file_kv = tuple([tuple(param) for param in self._file_params])
+            file_kv = tuple([tuple([param[0], param[1][0]]) for param in self._file_params])
 
             # TODO: should the referer be in the hash ?
             self._cached_hash =  hash((self._method, self._resource_path,
@@ -184,7 +184,7 @@ class HTTPResource(object):
         if self._post_params:
             buff += "\n\tdata = %s" % (self.encoded_data)
         if self._file_params:
-            buff += "\n\tfiles = %s" (self.encoded_files)
+            buff += "\n\tfiles = %s" % (self.encoded_files)
         return buff
 
     @property
@@ -277,7 +277,7 @@ class HTTPResource(object):
             if v is None:
                 key_values.append(k)
             else:
-                if isinstance(v, tuple):
+                if isinstance(v, tuple) or isinstance(v, list):
                     # for upload fields
                     v = v[0]
                 v = urllib.quote(v, safe='%')
@@ -400,6 +400,10 @@ class HTTP(object):
         elif isinstance(post_params, list):
             post_data = self.encode(post_params)
 
+        file_data = None
+        if isinstance(file_params, tuple) or isinstance(file_params, list):
+            file_data = file_params
+
         if isinstance(target, HTTPResource):
             if get_data is None:
                 get_data = target.get_params
@@ -410,14 +414,21 @@ class HTTP(object):
                                   timeout=self.timeout,
                                   allow_redirects=False)
             else:
-                _headers.update({'content-type': 'application/x-www-form-urlencoded'})
                 if target.referer:
                     _headers.update({'referer': target.referer})
                 if post_data is None:
                     post_data = target.post_params
+                if file_data is None:
+                    file_data = target.file_params
+                if target.method == "POST" and not file_data:
+                    _headers.update({'content-type': 'application/x-www-form-urlencoded'})
+
                 # TODO: For POST use the TooManyRedirects exception instead ?
-                resp = self.h.post(target.path, params=get_data,
-                                   data=post_data, headers=_headers,
+                resp = self.h.post(target.path,
+                                   params=get_data,
+                                   data=post_data,
+                                   files=file_data,
+                                   headers=_headers,
                                    timeout=self.timeout,
                                    allow_redirects=False)
 

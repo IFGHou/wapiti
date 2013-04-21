@@ -242,8 +242,8 @@ Supported options are:
         headers["user-agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         try:
             if isinstance(web_resource, HTTP.HTTPResource):
-                if web_resource.method == "POST":
-                    headers['content-type'] = 'application/x-www-form-urlencoded'
+#                if web_resource.method == "POST":
+#                    headers['content-type'] = 'application/x-www-form-urlencoded'
                 resp = self.h.send(web_resource, headers=headers)
             else:
                 print "non HTTPResource:", url
@@ -398,15 +398,23 @@ Supported options are:
 
             # urlencode the POST parameters here
             params = form[1]
+            files = []
             for kv in params:
                 if isinstance(kv[0], unicode):
                     kv[0] = kv[0].encode(page_encoding, "ignore")
-                if isinstance(kv[1], unicode):
+                if isinstance(kv[1], list):
+                    fname = kv[1][0]
+                    if isinstance(fname, unicode):
+                        fname = fname.encode(page_encoding, "ignore")
+                    files.append([kv[0], [fname, kv[1][1]]])
+                    params.remove(kv)
+                elif isinstance(kv[1], unicode):
                     kv[1] = kv[1].encode(page_encoding, "ignore")
 
             form_rsrc = HTTP.HTTPResource(action,
                     method="POST",
                     post_params=params,
+                    file_params=files,
                     encoding=page_encoding,
                     referer=url)
             if form_rsrc not in self.forms:

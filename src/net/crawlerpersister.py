@@ -155,7 +155,7 @@ class CrawlerPersister:
             for k, v in http_resource.file_params:
                 inputEl = xml.createElement(self.INPUT)
                 inputEl.setAttribute(self.INPUT_NAME, quote(k))
-                inputEl.setAttribute(self.INPUT_VALUE, quote(v))
+                inputEl.setAttribute(self.INPUT_VALUE, quote(v[0]))
                 fileParamsEl.appendChild(inputEl)
             resEl.appendChild(fileParamsEl)
 
