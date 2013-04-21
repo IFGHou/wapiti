@@ -437,15 +437,19 @@ Supported options are:
             lien = "../"
         # bad protocols
         llien = lien.lower()
-        if llien.find("telnet:", 0) == 0 or llien.find("ftp:", 0) == 0 or \
-        llien.find("mailto:", 0) == 0 or llien.find("javascript:", 0) == 0 or \
-        llien.find("news:", 0) == 0 or llien.find("file:", 0) == 0 or \
-        llien.find("gopher:", 0) == 0 or llien.find("irc:", 0) == 0:
+        if (llien.startswith("telnet:") or
+            llien.startswith("ftp:") or
+            llien.startswith("mailto:") or
+            llien.startswith("javascript:") or
+            llien.startswith("news:") or
+            llien.startswith("file:", 0) or
+            llien.startswith("gopher:") or
+            llien.startswith("irc:", 0)):
             return None
         # Good protocols or relatives links
         else:
             # full url, nothing to do :)
-            if lien.find("http://", 0) == 0 or lien.find("https://", 0) == 0:
+            if lien.startswith("http://") or lien.startswith("https://"):
                 pass
             else:
                 # Protocol relative URLs
@@ -517,14 +521,14 @@ Supported options are:
 
     def __checklink(self, url):
         """Verify the protocol"""
-        if (url.find("http://", 0) == 0) or (url.find("https://", 0) == 0):
+        if url.startswith("http://") or url.startswith("https://"):
             return 0
         else:
             return 1
 
     def __inzone(self, url):
         """Make sure the url is under the root url"""
-        if(url.find(self.scopeURL, 0) == 0):
+        if url.startswith(self.scopeURL):
             return 0
         else:
             return 1
@@ -748,13 +752,35 @@ class linkParser(HTMLParser.HTMLParser):
         self.uploads = []
         self.current_form_method = "get"
         self.url = url
+        self.__defaults = {
+                'checkbox':       'default',
+                'color':          '%23adeadb',
+                'date':           '2011-06-08',
+                'datetime':       '2011-06-09T20:35:34.32',
+                'datetime-local': '2011-06-09T22:41',
+                'file':           ['pix.gif', 'GIF89a'],
+                'hidden':         'default',
+                'email':           'wapiti%40mailinator.com',
+                'month':          '2011-06',
+                'number':         '1337',
+                'password':       'letmein',
+                'radio':          'beton',
+                'range':          '37',
+                'search':         'default',
+                'submit':         'submit',
+                'tel':            '0606060606',
+                'text':           'default',
+                'time':           '13:37',
+                'url':            'http://wapiti.sf.net/',
+                'week':           '2011-W24'
+                }
 
     def handle_starttag(self, tag, attrs):
         tmpdict = {}
         val = None
         for k, v in dict(attrs).items():
             tmpdict[k.lower()] = v
-        if tag.lower() == 'a':
+        if tag.lower() in ['a', 'link']:
             if "href" in tmpdict:
                 self.liens.append(tmpdict['href'])
 
@@ -777,19 +803,22 @@ class linkParser(HTMLParser.HTMLParser):
                 if "type" not in tmpdict:
                     tmpdict["type"] = "text"
                 if "name" in tmpdict:
-                    if tmpdict['type'].lower() in ['text', 'password', 'radio',
-                            'checkbox', 'hidden', 'submit', 'search']:
-                    # use default value if present or set it to 'on'
-                        if "value" in tmpdict:
-                            if tmpdict["value"] != "":
-                                val = tmpdict["value"]
-                            else:
-                                val = u"on"
+                    if tmpdict['type'].lower() in self.__defaults:
+                        # use the value from the form or use our default value
+                        if "value" in tmpdict and tmpdict["value"] != "":
+                            val = tmpdict["value"]
                         else:
-                            val = u"on"
+                            val = self.__defaults[tmpdict['type'].lower()]
                         self.form_values.append([tmpdict['name'], val])
+
                     if tmpdict['type'].lower() == "file":
                         self.uploads.append(self.current_form_url)
+                    if tmpdict['type'].lower() == "image":
+                        self.form_values.append([tmpdict['name'] + ".x", "1"])
+                        self.form_values.append([tmpdict['name'] + ".y", "1"])
+
+            if "formaction" in tmpdict:
+                self.liens.append(tmpdict['formaction'])
 
         if tag.lower() in ["textarea", "select"]:
             if self.inform == 1:
@@ -1052,10 +1081,10 @@ if __name__ == "__main__":
                 print lswww.__doc__
                 sys.exit(0)
             if o in ("-s", "--start"):
-                if (a.find("http://", 0) == 0) or (a.find("https://", 0) == 0):
+                if a.startswith("http://") or a.startswith("https://"):
                     myls.addStartURL(a)
             if o in ("-x", "--exclude"):
-                if (a.find("http://", 0) == 0) or (a.find("https://", 0) == 0):
+                if a.startswith("http://") or a.startswith("https://"):
                     myls.addExcludedURL(a)
             if o in ("-p", "--proxy"):
                     myls.setProxy(a)
