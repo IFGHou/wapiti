@@ -29,9 +29,15 @@ class JSONReportGenerator(ReportGenerator):
 
     __vulnTypes = {}
     __vulns = {}
+    __infos = {}
 
     def __init__(self):
         pass
+
+    def setReportInfo(self, target, scope=None):
+        self.__infos["target"] = target
+        if scope:
+            self.__infos["scope"] = scope
 
     def addVulnerabilityType(self, name,
                              description="",
@@ -75,7 +81,8 @@ class JSONReportGenerator(ReportGenerator):
         """
         report_dict = {
                 "classifications":self.__vulnTypes,
-                "vulnerabilities":self.__vulns
+                "vulnerabilities":self.__vulns,
+                "infos":self.__infos
                 }
         #TODO: add info on wapiti ?
         f = open(fileName,"w")

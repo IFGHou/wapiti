@@ -152,6 +152,8 @@ Supported options are:
 --help
     To print this usage message"""
 
+    target_url = None
+    target_scope = "folder"
     urls  = {}
     forms = []
 
@@ -175,6 +177,7 @@ Supported options are:
 
 
     def __init__(self, root_url):
+        self.target_url = root_url
         server = urlparse.urlparse(root_url).netloc
         self.http_engine = HTTP.HTTP(server)
         self.myls = lswww.lswww(root_url, http_engine = self.http_engine)
@@ -185,7 +188,8 @@ Supported options are:
         for repGenInfo in self.xmlRepGenParser.getReportGenerators():
             if self.reportGeneratorType.lower() == repGenInfo.getKey():
                 self.reportGen = repGenInfo.createInstance()
-                break;
+                self.reportGen.setReportInfo(self.target_url, self.target_scope)
+                break
 
         xmlParser = VulnerabilityXMLParser()
         xmlParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/vulnerabilities.xml"))
@@ -347,6 +351,7 @@ Supported options are:
 
     def setScope(self, scope):
         """Set the scope of the crawler for the analysis of the web pages"""
+        self.target_scope = scope
         self.myls.setScope(scope)
 
     def setColor(self):
@@ -405,10 +410,10 @@ if __name__ == "__main__":
                 print doc
                 sys.exit(0)
             if o in ("-s", "--start"):
-                if (a.find("http://", 0) == 0) or (a.find("https://", 0) == 0):
+                if a.startswith("http://") or a.startswith("https://"):
                     wap.addStartURL(a)
             if o in ("-x", "--exclude"):
-                if (a.find("http://", 0) == 0) or (a.find("https://", 0) == 0):
+                if a.startswith("http://") or a.startswith("https://"):
                     wap.addExcludedURL(a)
             if o in ("-p", "--proxy"):
                 if a.startswith("http://") or a.startswith("https://"):

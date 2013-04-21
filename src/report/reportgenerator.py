@@ -31,3 +31,6 @@ class ReportGenerator:
 
     def generateReport(self, fileName):
         ""
+
+    def setReportInfo(self, target=None, scope=None):
+        ""
