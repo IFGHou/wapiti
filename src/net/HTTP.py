@@ -16,6 +16,8 @@ class HTTPResource(object):
     _status = 0
     _headers = {}
     _referer = ""
+    _start_time = None
+    _elapsed_time = None
 
     # Most of the members of a HTTPResource object are immutable so we compute
     # the data only one time (when asked for) and we keep it in memory for less
@@ -224,6 +226,21 @@ class HTTPResource(object):
         """Set the HTTP headers received while requesting the resource"""
         self._headers = response_headers
 
+    def setStartTime(self):
+        self._start_time = datetime.datetime.utcnow()
+
+    def setElapsedTime(self):
+        """Store the time taken for obtaining a responde to the request."""
+        self._elapsed_time = datetime.datetime.utcnow() - self._start_time
+
+    @property
+    def start_time(self):
+        return self._start_time
+
+    @property
+    def elapsed_time(self):
+        return self._elapsed_time
+
     @property
     def url(self):
         if self._cached_url is None:
@@ -409,10 +426,12 @@ class HTTP(object):
                 get_data = target.get_params
 
             if target.method == "GET":
+                target.setStartTime()
                 resp = self.h.get(target.url,
                                   headers=_headers,
                                   timeout=self.timeout,
                                   allow_redirects=False)
+                target.setElapsedTime()
             else:
                 if target.referer:
                     _headers.update({'referer': target.referer})
@@ -423,7 +442,9 @@ class HTTP(object):
                 if target.method == "POST" and not file_data:
                     _headers.update({'content-type': 'application/x-www-form-urlencoded'})
 
+                # TODO: custom HTTP method for HTTPResource requests
                 # TODO: For POST use the TooManyRedirects exception instead ?
+                target.setStartTime()
                 resp = self.h.post(target.path,
                                    params=get_data,
                                    data=post_data,
@@ -431,6 +452,7 @@ class HTTP(object):
                                    headers=_headers,
                                    timeout=self.timeout,
                                    allow_redirects=False)
+                target.setElapsedTime()
 
         # Keep it for Nikto module
         else:
