@@ -1,6 +1,6 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the Wapiti package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -720,13 +720,10 @@ msgstr "Code d'erreur HTTP 500"
 #: ../attack/vulnerabilitiesdescriptions.py:3
 msgid "500 Error description"
 msgstr ""
-"Description du code d'erreur 500Erreur interne au serveur. Le serveur a fait "
-"face à une situation inattendue qui l'a empêché de traiter convenablement la "
-"requête.<ul>  <li><a href='http://www.w3.org/Protocols/rfc2616/rfc2616-sec10."
-"html#sec10.5'>      World Wide Web Consortium: HTTP/1.1 Status Code "
-"Definitions      </a></li>  <li><a href='http://en.wikipedia.org/wiki/"
-"List_of_HTTP_status_codes#5xx_Server_Error'>      Wikipedia: Liste des codes "
-"de status HTTP      </a></li></ul>"
+"Description du code d'erreur 500 :"
+""
+"Erreur interne au serveur. Le serveur a fait face à une situation inattendue "
+"qui l'a empêché de traiter convenablement la requête."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:3
 msgid "SQL Injection"
@@ -802,7 +799,9 @@ msgid "Cross Site Scripting solution"
 msgstr ""
 "Afin de se protéger des attaques XSS, il faut s'assurer que les données "
 "retournées dans une page ne contiennent pas certains caractères interprétés "
-"par le navigateur.<br />Certains caractères considérés dangereux peuvent "
+"par le navigateur."
+""
+"Certains caractères considérés dangereux peuvent "
 "être remplacés par leur code d'entité HTML."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:59
@@ -814,8 +813,9 @@ msgid "CRLF description"
 msgstr ""
 "Le terme CRLF fait référence à Carriage Return (ASCII 13, \\r) Line Feed "
 "(ASCII 10, \\n). Dans le protocole HTTP, ces deux caractères à la suite "
-"permettent entre autres de passer à la ligne d'entête suivante.<br />Un "
-"script qui insère directement dans ses entêtes des données fournies par "
+"permettent entre autres de passer à la ligne d'entête suivante."
+""
+"Un script qui insère directement dans ses entêtes des données fournies par "
 "l'utilisateur peut alors se voir injecter des lignes d'entêtes qui seront "
 "interprétées par le navigateur de la victime."
 
@@ -853,7 +853,9 @@ msgstr ""
 "qu'il en utilise en temps normal. Certains défauts de conception peuvent "
 "rendre une ressource indisponible pendant un laps de temps après son accès. "
 "En répétant certaines requêtes mal gérées par le serveur ce dernier peut "
-"arriver à saturation.<br />Des faux positifs lors du scan peuvent aussi "
+"arriver à saturation."
+""
+"Des faux positifs lors du scan peuvent aussi "
 "apparaîtrent sous cette catégorie en raison d'un timeout choisi trop faible."
 
 #: ../config/vulnerabilities/vulnerabilities.xml:85
