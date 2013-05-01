@@ -51,6 +51,11 @@ class mod_xss(Attack):
         Attack.__init__(self, HTTP, xmlRepGenerator)
         self.independant_payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
 
+    def random_string(self):
+        """Create a random unique ID that will be used to test injection."""
+        """It doesn't upercase letters as BeautifulSoup make some data lowercase."""
+        return "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)])
+
     def attackGET(self, http_res):
         """This method performs the cross site scripting attack (XSS attack) with method GET"""
 
@@ -65,25 +70,26 @@ class mod_xss(Attack):
 
         # Some PHP scripts doesn't sanitize data coming from $_SERVER['PHP_SELF']
         if page not in self.PHP_SELF:
-            evil_url = None
+            evil_req = None
             if page.endswith("/"):
-                evil_url = HTTP.HTTPResource(page + self.php_self_payload)
+                evil_req = HTTP.HTTPResource(page + self.php_self_payload)
             elif page.endswith(".php"):
-                evil_url = HTTP.HTTPResource(page + "/" + self.php_self_payload)
-            if evil_url is not None:
+                evil_req = HTTP.HTTPResource(page + "/" + self.php_self_payload)
+            if evil_req is not None:
                 if self.verbose == 2:
-                    print "+", evil_url.url
-                data, http_code = self.HTTP.send(evil_url, headers=headers).getPageCode()
+                    print(u"+ {0}".format(evil_req.url))
+                data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                 if self.php_self_check in data:
                     if self.color == 0:
-                        print _("XSS"), "(PHP_SELF)", _("in"), page
-                        print "  " + _("Evil url") + ":", evil_url.url
+                        print(_("XSS vulnerability (via PHP_SELF) found in {0}").format(page))
+                        print(_("  Evil url: {0}").format(evil_req.url))
                     else:
-                        print _("XSS"), "(PHP_SELF)", _("in"), evil_url.url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)
+                        print(_("XSS vulnerability (via PHP_SELF) found in {0}").format(evil_req.url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)))
                     self.reportGen.logVulnerability(category=Vulnerability.XSS,
                                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                    request=evil_url,
-                                                    info=_("XSS") + " (PHP_SELF)")
+                                                    request=evil_req,
+                                                    parameter="PHP_SELF",
+                                                    info=_("XSS vulnerability found via injection in the resource path"))
             self.PHP_SELF.append(page)
 
 
@@ -102,7 +108,7 @@ class mod_xss(Attack):
             if url not in self.attackedGET:
                 self.attackedGET.append(url)
                 err = ""
-                code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)])
+                code = self.random_string()
                 test_url = HTTP.HTTPResource(page + "?" + code)
                 self.GET_XSS[code] = test_url
                 try:
@@ -114,11 +120,11 @@ class mod_xss(Attack):
                 if code in data:
                     payloads = self.generate_payloads(data, code)
                     for payload in payloads:
-                        evil_url = HTTP.HTTPResource(page + "?" + self.HTTP.quote(payload))
+                        evil_req = HTTP.HTTPResource(page + "?" + self.HTTP.quote(payload))
                         if self.verbose == 2:
-                            print "+", evil_url.url
+                            print(u"+ {0}".format(evil_req))
                         try:
-                            resp = self.HTTP.send(evil_url, headers=headers)
+                            resp = self.HTTP.send(evil_req, headers=headers)
                             dat = resp.getPage()
                         except requests.exceptions.Timeout, timeout:
                             dat = ""
@@ -130,14 +136,15 @@ class mod_xss(Attack):
                                 self.SUCCESSFUL_XSS[code] = payload
                                 self.reportGen.logVulnerability(category=Vulnerability.XSS,
                                                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                request=evil_url,
-                                                                info=_("XSS") + " (" + param_name + ")")
+                                                                request=evil_req,
+                                                                parameter=param_name,
+                                                                info=_("XSS vulnerability found via injection in the query string"))
 
                                 if self.color == 0:
-                                    print _("XSS"), "(QUERY_STRING)", _("in"), page
-                                    print "  " + _("Evil url") + ":", evil_url.url
+                                    print(_("XSS vulnerability found (via QUERY_STRING) in {0}").format(page))
+                                    print(_("  Evil url: {0}").format(evil_req.url))
                                 else:
-                                    print _("XSS"), "(QUERY_STRING):", page + "?" + self.RED + self.HTTP.quote(payload) + self.STD
+                                    print(_("XSS vulnerability found (via QUERY_STRING): {0}").format(page + "?" + self.RED + self.HTTP.quote(payload) + self.STD))
                                 # No more payload injection
                                 break
 
@@ -151,9 +158,7 @@ class mod_xss(Attack):
                 url = page + "?" + self.HTTP.encode(params_list)
                 if url not in self.attackedGET:
                     self.attackedGET.append(url)
-                    # Create a random unique ID that will be used to test injection
-                    # don't use upercase as BeautifulSoup make some data lowercase
-                    code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)])
+                    code = self.random_string()
                     params_list[i][1] = code
                     test_url = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
                     self.GET_XSS[code] = test_url
@@ -172,11 +177,11 @@ class mod_xss(Attack):
                             param_name = self.HTTP.quote(params_list[i][0])
                             params_list[i][1] = payload
 
-                            evil_url = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
+                            evil_req = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
                             if self.verbose == 2:
-                                print "+", evil_url
+                                print(u"+ {0}".format(evil_req))
                             try:
-                                resp = self.HTTP.send(evil_url, headers=headers)
+                                resp = self.HTTP.send(evil_req, headers=headers)
                                 dat = resp.getPage()
                             except requests.exceptions.Timeout, timeout:
                                 dat = ""
@@ -187,14 +192,15 @@ class mod_xss(Attack):
                                     self.SUCCESSFUL_XSS[code] = payload
                                     self.reportGen.logVulnerability(category=Vulnerability.XSS,
                                                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                    request=evil_url,
-                                                                    info=_("XSS") + " (" + param_name + ")")
+                                                                    request=evil_req,
+                                                                    parameter=param_name,
+                                                                    info=_("XSS vulnerability found via injection in the parameter {0}").format(param_name))
 
                                     if self.color == 0:
-                                        print _("XSS") + " (" + param_name + ") " + _("in"), page
-                                        print "  " + _("Evil url") + ":", evil_url.url
+                                        print(_("XSS vulnerability via parameter {0} in {1}").format(param_name, page))
+                                        print(_("  Evil url: {0}").format(evil_req.url))
                                     else:
-                                        print _("XSS"), ":", evil_url.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                                        print( _("XSS vulnerability found with url : {0}").format(evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
                                     # stop trying payloads and jum to the next parameter
                                     break
                 # Restore the value of this argument before testing the next one
@@ -209,25 +215,26 @@ class mod_xss(Attack):
             headers["referer"] = referer
 
         if page not in self.PHP_SELF:
-            evil_url = None
+            evil_req = None
             if page.endswith("/"):
-                evil_url = HTTP.HTTPResource(page + self.php_self_payload)
+                evil_req = HTTP.HTTPResource(page + self.php_self_payload)
             elif page.endswith(".php"):
-                evil_url = HTTP.HTTPResource(page + "/" + self.php_self_payload)
-            if evil_url:
+                evil_req = HTTP.HTTPResource(page + "/" + self.php_self_payload)
+            if evil_req:
                 if self.verbose == 2:
-                    print "+", evil_url.url
-                data, http_code = self.HTTP.send(evil_url, headers=headers).getPageCode()
+                    print(u"+ {0}".format(evil_req.url))
+                data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                 if self.php_self_check in data:
                     if self.color == 0:
-                        print _("XSS"), "(PHP_SELF)", _("in"), page
-                        print "  " + _("Evil url") + ":", evil_url.url
+                        print(_("XSS vulnerability found (via (PHP_SELF) in {0}").format(page))
+                        print(_("  Evil url: {0}").format(evil_req.url))
                     else:
-                        print _("XSS"), "(PHP_SELF)", _("in"), evil_url.url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)
+                        print(_("XSS vulnerability (via PHP_SELF) in {0}").format(evil_req.url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)))
                     self.reportGen.logVulnerability(category=Vulnerability.XSS,
                                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                    request=evil_url,
-                                                    info=_("XSS") + " (PHP_SELF)")
+                                                    request=evil_req,
+                                                    parameter="PHP_SELF",
+                                                    info=_("XSS vulnerability found via injection in the resource path"))
             self.PHP_SELF.append(page)
 
         # copies
@@ -248,7 +255,7 @@ class mod_xss(Attack):
                                                    file_params=file_params)
                 if not attack_pattern in self.attackedPOST:
                     self.attackedPOST.append(attack_pattern)
-                    code = "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)]) # don't use upercase as BS make some data lowercase
+                    code = self.random_string()
                     param_list[i][1] = code
                     # will only memorize the last used payload (working or not) but the code will always be the good
                     test_payload = HTTP.HTTPResource(form.path,
@@ -280,7 +287,7 @@ class mod_xss(Attack):
                                     referer=referer)
 
                             if self.verbose == 2:
-                                print "+", evil_req
+                                print(u"+ {0}".format(evil_req))
                             try:
                                 resp = self.HTTP.send(evil_req)
                                 dat = resp.getPage()
@@ -294,20 +301,21 @@ class mod_xss(Attack):
                                     self.reportGen.logVulnerability(category=Vulnerability.XSS,
                                                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                                     request=evil_req,
-                                                                    info=_("XSS") + " (" + param_name + ")")
+                                                                    parameter=param_name,
+                                                                    info=_("XSS vulnerability found via injection in the parameter {0}").format(param_name))
 
                                     #TODO: vuln param name may appear twice (or more)
                                     if self.color == 0:
-                                        print _("Found XSS in"), evil_req.url
-                                        print "  " + _("with params") + " =", self.HTTP.encode(post_params)
+                                        print(_("XSS vulnerability found in {0}").format(evil_req.url))
+                                        print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
                                     else:
                                         if param_list is get_params:
-                                            print _("Found XSS in"), evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
-                                            print "  " + _("with params") + " =", self.HTTP.encode(post_params)
+                                            print(_("XSS vulnerability found in {0}").format(evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                                            print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
                                         else:
-                                            print _("Found XSS in"), evil_req.url
-                                            print "  " + _("with params") + " =", self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
-                                    print "  " + _("coming from"), referer
+                                            print(_("XSS vulenarbility found in {0}").format(evil_req.url))
+                                            print(_("  with parameters: {0}").format(self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                                    print(_("  comming from {0}").format(referer))
                                     # Stop injecting payloads and move to the next parameter
                                     break
 

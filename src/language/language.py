@@ -58,9 +58,9 @@ class Language:
         if lang not in self.AVAILABLE_LANGS: #if lang is not between the lang translated, english by default
             lang = 'en'
         lan = gettext.translation('wapiti', self.LANG_PATH, languages=[lang], codeset="UTF-8")
-        lan.install(unicode=True);
+        lan.install(unicode=1)
 
         #funcion which translates
         def _(key):
-            return lan.lgettext(key);
+            return lan.lgettext(key)
 

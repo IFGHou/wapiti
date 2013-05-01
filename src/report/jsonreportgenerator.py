@@ -54,6 +54,7 @@ class JSONReportGenerator(ReportGenerator):
                          category=None,
                          level=0,
                          request=None,
+                         parameter="",
                          info=""):
         """
         Store the information about the vulnerability to be printed later.
@@ -67,6 +68,7 @@ class JSONReportGenerator(ReportGenerator):
                 "path": request.path,
                 "info": info,
                 "level": level,
+                "parameter": parameter,
                 "http_request": request.http_repr,
                 "curl_command": request.curl_repr,
                 }
