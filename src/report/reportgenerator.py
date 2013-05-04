@@ -22,6 +22,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+
 class ReportGenerator:
     def addVulnerabilityType(self, name, description="", solution="", references={}):
         ""
@@ -32,5 +33,5 @@ class ReportGenerator:
     def generateReport(self, fileName):
         ""
 
-    def setReportInfo(self, target=None, scope=None):
+    def setReportInfo(self, target=None, scope=None, date_string=""):
         ""

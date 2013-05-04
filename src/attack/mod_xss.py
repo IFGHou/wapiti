@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 import random
-import re
-import socket
 import BeautifulSoup
 import requests
 from attack import Attack
@@ -9,18 +7,17 @@ from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 from net import HTTP
 
+
 class mod_xss(Attack):
-    """
-    This class implements a cross site scripting attack
-    """
+    """This class implements a cross site scripting attack"""
 
     # magic strings we must see to be sure script is vulnerable to XSS
     # payloads must be created on those patterns
     script_ok = [
-            "alert('__XSS__')",
-            "alert(\"__XSS__\")",
-            "String.fromCharCode(0,__XSS__,1)"
-            ]
+                    "alert('__XSS__')",
+                    "alert(\"__XSS__\")",
+                    "String.fromCharCode(0,__XSS__,1)"
+                ]
 
     # simple payloads that doesn't rely on their position in the DOM structure
     # payloads injected after closing a tag attibute value (attrval) or in the
@@ -30,7 +27,7 @@ class mod_xss(Attack):
     independant_payloads = []
     php_self_payload = "%3Cscript%3Ephpselfxss()%3C/script%3E"
     php_self_check = "<script>phpselfxss()</script>"
-    
+
     name = "xss"
 
     # two dict exported for permanent XSS scanning
@@ -54,7 +51,7 @@ class mod_xss(Attack):
     def random_string(self):
         """Create a random unique ID that will be used to test injection."""
         """It doesn't upercase letters as BeautifulSoup make some data lowercase."""
-        return "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0,10)])
+        return "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0, 10)])
 
     def attackGET(self, http_res):
         """This method performs the cross site scripting attack (XSS attack) with method GET"""
@@ -85,11 +82,11 @@ class mod_xss(Attack):
                         print(_("  Evil url: {0}").format(evil_req.url))
                     else:
                         print(_("XSS vulnerability (via PHP_SELF) found in {0}").format(evil_req.url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)))
-                    self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                    level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                    request=evil_req,
-                                                    parameter="PHP_SELF",
-                                                    info=_("XSS vulnerability found via injection in the resource path"))
+                    self.logVuln(category=Vulnerability.XSS,
+                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 request=evil_req,
+                                 parameter="PHP_SELF",
+                                 info=_("XSS vulnerability found via injection in the resource path"))
             self.PHP_SELF.append(page)
 
 
@@ -134,11 +131,11 @@ class mod_xss(Attack):
                         if dat is not None and len(dat) > 1:
                             if payload.lower() in dat.lower():
                                 self.SUCCESSFUL_XSS[code] = payload
-                                self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                                level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                request=evil_req,
-                                                                parameter=param_name,
-                                                                info=_("XSS vulnerability found via injection in the query string"))
+                                self.logVuln(category=Vulnerability.XSS,
+                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                             request=evil_req,
+                                             parameter=param_name,
+                                             info=_("XSS vulnerability found via injection in the query string"))
 
                                 if self.color == 0:
                                     print(_("XSS vulnerability found (via QUERY_STRING) in {0}").format(page))
@@ -190,17 +187,17 @@ class mod_xss(Attack):
                             if dat is not None and len(dat) > 1:
                                 if payload.lower() in dat.lower():
                                     self.SUCCESSFUL_XSS[code] = payload
-                                    self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                                    level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                    request=evil_req,
-                                                                    parameter=param_name,
-                                                                    info=_("XSS vulnerability found via injection in the parameter {0}").format(param_name))
+                                    self.logVuln(category=Vulnerability.XSS,
+                                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                 request=evil_req,
+                                                 parameter=param_name,
+                                                 info=_("XSS vulnerability found via injection in the parameter {0}").format(param_name))
 
                                     if self.color == 0:
                                         print(_("XSS vulnerability via parameter {0} in {1}").format(param_name, page))
                                         print(_("  Evil url: {0}").format(evil_req.url))
                                     else:
-                                        print( _("XSS vulnerability found with url : {0}").format(evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                                        print(_("XSS vulnerability found with url : {0}").format(evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
                                     # stop trying payloads and jum to the next parameter
                                     break
                 # Restore the value of this argument before testing the next one
@@ -230,15 +227,15 @@ class mod_xss(Attack):
                         print(_("  Evil url: {0}").format(evil_req.url))
                     else:
                         print(_("XSS vulnerability (via PHP_SELF) in {0}").format(evil_req.url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)))
-                    self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                    level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                    request=evil_req,
-                                                    parameter="PHP_SELF",
-                                                    info=_("XSS vulnerability found via injection in the resource path"))
+                    self.logVuln(category=Vulnerability.XSS,
+                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 request=evil_req,
+                                 parameter="PHP_SELF",
+                                 info=_("XSS vulnerability found via injection in the resource path"))
             self.PHP_SELF.append(page)
 
         # copies
-        get_params  = form.get_params
+        get_params = form.get_params
         post_params = form.post_params
         file_params = form.file_params
 
@@ -298,11 +295,11 @@ class mod_xss(Attack):
                             if dat is not None and len(dat) > 1:
                                 if payload.lower() in dat.lower():
                                     self.SUCCESSFUL_XSS[code] = payload
-                                    self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                                    level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                    request=evil_req,
-                                                                    parameter=param_name,
-                                                                    info=_("XSS vulnerability found via injection in the parameter {0}").format(param_name))
+                                    self.logVuln(category=Vulnerability.XSS,
+                                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                 request=evil_req,
+                                                 parameter=param_name,
+                                                 info=_("XSS vulnerability found via injection in the parameter {0}").format(param_name))
 
                                     #TODO: vuln param name may appear twice (or more)
                                     if self.color == 0:
@@ -334,28 +331,27 @@ class mod_xss(Attack):
                     for k, v in obj.attrs:
                         if keyword in v:
                             #print "Found in attribute value ",k,"of tag",obj.name
-                            entries.append({"type":"attrval", "name":k, "tag":obj.name})
+                            entries.append({"type": "attrval", "name": k, "tag": obj.name})
                         if keyword in k:
                             #print "Found in attribute name ",k,"of tag",obj.name
-                            entries.append({"type":"attrname", "name":k, "tag":obj.name})
+                            entries.append({"type": "attrname", "name": k, "tag": obj.name})
                 elif keyword in obj.name:
                     #print "Found in tag name"
-                    entries.append({"type":"tag", "value":obj.name})
+                    entries.append({"type": "tag", "value": obj.name})
                 else:
                     for x in obj.contents:
                         self.study(x, obj, keyword, entries)
             elif isinstance(obj, BeautifulSoup.NavigableString):
                 if keyword in str(obj):
                     #print "Found in text, tag", parent.name
-                    entries.append({"type":"text", "parent":parent.name})
+                    entries.append({"type": "text", "parent": parent.name})
 
 
     # generate a list of payloads based on where in the webpage the js-code will be injected
     def generate_payloads(self, data, code):
-        headers = {"accept": "text/plain"}
-        soup = BeautifulSoup.BeautifulSoup(data) # il faut garder la page non-retouchee en reserve...
+        soup = BeautifulSoup.BeautifulSoup(data)  # il faut garder la page non-retouchee en reserve...
         e = []
-        self.study(soup, keyword = code, entries = e)
+        self.study(soup, keyword=code, entries=e)
 
         payloads = []
 
@@ -367,10 +363,10 @@ class mod_xss(Attack):
             # Our string is in the value of a tag attribute
             # ex: <a href="our_string"></a>
             if elem['type'] == "attrval":
-                #print "tag->"+elem['tag']
-                #print elem['name']
+                # print "tag->"+elem['tag']
+                # print elem['name']
                 i0 = data.find(code)
-                #i1=data[:i0].rfind("=")
+                # i1=data[:i0].rfind("=")
                 try:
                     # find the position of name of the attribute we are in
                     i1 = data[:i0].rfind(elem['name'])
@@ -381,8 +377,8 @@ class mod_xss(Attack):
                 start = data[i1:i0].replace(" ", "")[len(elem['name']):]
                 # between the tag name and our injected attribute there is an equal sign
                 # and (probably) a quote or a double-quote we need to close before putting our payload
-                if start.startswith("='"): payload="'"
-                if start.startswith('="'): payload='"'
+                if start.startswith("='"): payload = "'"
+                if start.startswith('="'): payload = '"'
                 if elem['tag'].lower() == "img":
                     payload += "/>"
                 else:
@@ -394,10 +390,10 @@ class mod_xss(Attack):
 
             # we control an attribute name
             # ex: <a our_string="/index.html">
-            elif elem['type'] == "attrname": # name,tag
+            elif elem['type'] == "attrname":  # name,tag
                 if code == elem['name']:
                     for xss in self.independant_payloads:
-                        payloads.append('>' + xss.replace("__XSS__",code))
+                        payloads.append('>' + xss.replace("__XSS__", code))
 
             # we control the tag name
             # ex: <our_string name="column" />
@@ -414,13 +410,13 @@ class mod_xss(Attack):
             # ex: <textarea>our_string</textarea>
             elif elem['type'] == "text":
                 payload = ""
-                if elem['parent'] == "title": # Oops we are in the head
+                if elem['parent'] == "title":  # Oops we are in the head
                     payload = "</title>"
 
                 for xss in self.independant_payloads:
                     payloads.append(payload + xss.replace("__XSS__", code))
                 return payloads
 
-            data = data.replace(code, "none", 1)#reduire la zone de recherche
+            data = data.replace(code, "none", 1)  # reduire la zone de recherche
         return payloads
 

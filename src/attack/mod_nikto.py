@@ -20,9 +20,10 @@ import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
-import urllib2, csv, re, os
+import csv
+import re
+import os
 import socket
-from net import HTTP
 
 # Nikto databases are csv files with the following fields (in order) :
 #
@@ -42,6 +43,7 @@ from net import HTTP
 #
 # A possible vulnerability is reported in the following condition :
 # ((6 or 7) and 8) and not (9 or 10)
+
 
 class mod_nikto(Attack):
     """
@@ -65,7 +67,7 @@ class mod_nikto(Attack):
         try:
             fd = open(user_config_dir + "/" + self.CONFIG_FILE)
             reader = csv.reader(fd)
-            self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
+            self.nikto_db = [l for l in reader if l != [] and l[0].isdigit()]
             fd.close()
         except IOError:
             try:
@@ -76,7 +78,7 @@ class mod_nikto(Attack):
 
                 csv.register_dialect("nikto", quoting=csv.QUOTE_ALL, doublequote=False, escapechar="\\")
                 reader = csv.reader(page.split("\n"), "nikto")
-                self.nikto_db = [l for l in reader if l!=[] and l[0].isdigit()]
+                self.nikto_db = [l for l in reader if l != [] and l[0].isdigit()]
 
                 fd = open(user_config_dir + "/" + self.CONFIG_FILE, "w")
                 writer = csv.writer(fd)
@@ -109,15 +111,15 @@ class mod_nikto(Attack):
             if l[4] == "GET":
                 resp = self.HTTP.send(url)
             elif l[4] == "POST":
-                resp = self.HTTP.send(url, post_params = l[11])
+                resp = self.HTTP.send(url, post_params=l[11])
             else:
-                resp = self.HTTP.send(url, post_params = l[11], method = l[4])
+                resp = self.HTTP.send(url, post_params=l[11], method=l[4])
 
             page, code = resp.getPageCode()
             encoding = BeautifulSoup.BeautifulSoup(page).originalEncoding
             if encoding:
                 page = unicode(page, encoding, "ignore")
-            raw = " ".join([x + ": " + y for x,y in resp.getHeaders().items()])
+            raw = " ".join([x + ": " + y for x, y in resp.getHeaders().items()])
             raw += page
 
             # First condition (match)
@@ -175,50 +177,48 @@ class mod_nikto(Attack):
 
                 # CERT
                 m = re.search("(CA\-[0-9]{4}-[0-9]{2})", l[10])
-                if m != None:
+                if m is not None:
                     refs.append("http://www.cert.org/advisories/" + m.group(0) + ".html")
-                
+
                 # SecurityFocus
                 m = re.search("BID\-([0-9]{4})", l[10])
-                if m != None:
+                if m is not None:
                     refs.append("http://www.securityfocus.com/bid/" + m.group(1))
 
                 # Mitre.org
                 m = re.search("((CVE|CAN)\-[0-9]{4}-[0-9]{4})", l[10])
-                if m != None:
+                if m is not None:
                     refs.append("http://cve.mitre.org/cgi-bin/cvename.cgi?name=" + m.group(0))
 
                 # CERT Incidents
                 m = re.search("(IN\-[0-9]{4}\-[0-9]{2})", l[10])
-                if m != None:
+                if m is not None:
                     refs.append("http://www.cert.org/incident_notes/" + m.group(0) + ".html")
 
                 # Microsoft Technet
                 m = re.search("(MS[0-9]{2}\-[0-9]{3})", l[10])
-                if m != None:
+                if m is not None:
                     refs.append("http://www.microsoft.com/technet/security/bulletin/" + m.group(0) + ".asp")
 
                 info = l[10]
                 if refs != []:
-                    print _("References:") +"\n  " + "\n  ".join(refs)
+                    print _("References:") + "\n  " + "\n  ".join(refs)
                     info += "\n" + _("References:") + "\n"
                     info += "\n".join(['<a href="' + x + '">' + x + '</a>' for x in refs])
                 print
 
-
                 if l[4] == "GET":
-                    self.reportGen.logVulnerability(category=Vulnerability.NIKTO,
-                                                    level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                    request=url,
-                                                    info=info)
+                    self.logVuln(category=Vulnerability.NIKTO,
+                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 request=url,
+                                 info=info)
                 elif l[4] == "POST":
-                    self.reportGen.logVulnerability(category=Vulnerability.NIKTO,
-                                                    level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                    request=url,# l[11],
-                                                    info=info)
+                    self.logVuln(category=Vulnerability.NIKTO,
+                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 request=url,  # l[11],
+                                 info=info)
                 else:
-                    self.reportGen.logVulnerability(category=Vulnerability.NIKTO,
-                                                    level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                    request=url, # l[4] + " " + l[11],
-                                                    info=info)
-
+                    self.logVuln(category=Vulnerability.NIKTO,
+                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 request=url,  # l[4] + " " + l[11],
+                                 info=info)

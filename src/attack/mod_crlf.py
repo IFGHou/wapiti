@@ -68,17 +68,17 @@ class mod_crlf(Attack):
                 try:
                     resp = self.HTTP.send(evil_req, headers=headers)
                     if "wapiti" in resp.getHeaders():
-                        self.reportGen.logVulnerability(category=Vulnerability.CRLF,
-                                                        level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                        request=evil_req,
-                                                        info=err + " " + _("(QUERY_STRING)"))
+                        self.logVuln(category=Vulnerability.CRLF,
+                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     request=evil_req,
+                                     info=err + " " + _("(QUERY_STRING)"))
                         print _("CRLF Injection (QUERY_STRING) in"), page
                         print "  " + _("Evil url") + ":", url
                 except requests.exceptions.Timeout, timeout:
-                    self.reportGen.logVulnerability(category=Vulnerability.RES_CONSUMPTION,
-                                                    level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                                    request=evil_req,
-                                                    info=err + " " + _("(QUERY_STRING)"))
+                    self.logVuln(category=Vulnerability.RES_CONSUMPTION,
+                                 level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                                 request=evil_req,
+                                 info=err + " " + _("(QUERY_STRING)"))
                     print _("Timeout (QUERY_STRING) in"), page
                     print "  " + _("caused by") + ":", url
                 except requests.exceptions.HTTPError:
@@ -103,20 +103,22 @@ class mod_crlf(Attack):
                         resp = self.HTTP.send(evil_req, headers=headers)
                         if "wapiti" in resp.getHeaders():
                             err = _("CRLF Injection")
-                            self.reportGen.logVulnerability(category=Vulnerability.CRLF,
-                                                            level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                            request=evil_req,
-                                                            info=err + " (" + param_name + ")")
+                            self.logVuln(category=Vulnerability.CRLF,
+                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                         request=evil_req,
+                                         parameter=param_name,
+                                         info=err + " (" + param_name + ")")
                             if self.color == 0:
                                 print err, "(" + param_name + ") " + _("in"), page
                                 print "  " + _("Evil url") + ":", url
                             else:
                                 print err, ":", url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
                     except requests.exceptions.Timeout, timeout:
-                        self.reportGen.logVulnerability(category=Vulnerability.RES_CONSUMPTION,
-                                                        level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                                        request=evil_req,
-                                                        info=err + " (" + param_name + ")")
+                        self.logVuln(category=Vulnerability.RES_CONSUMPTION,
+                                     level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                                     request=evil_req,
+                                     parameter=param_name,
+                                     info=err + " (" + param_name + ")")
                         print _("Timeout") + " (" + param_name + ") " + _("in"), page
                         print "  " + _("caused by") + ":", url
                     except requests.exceptions.HTTPError:

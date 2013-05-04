@@ -22,9 +22,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import socket # for trapping socket.error
+import socket  # for trapping socket.error
 from file.auxtext import AuxText
 import requests
+
 
 class Attack:
     """
@@ -36,7 +37,7 @@ class Attack:
 
     name = "attack"
 
-    reportGen = None
+    logVuln = None
     HTTP      = None
     auxText   = None
 
@@ -61,7 +62,7 @@ class Attack:
     if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
         CONFIG_DIR = "/usr/local/share/doc/packages/wapiti/config/attacks"
     else:
-        BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),'../..'))
+        BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
         CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
 
     # Color codes
@@ -81,38 +82,38 @@ class Attack:
 
     def __init__(self, HTTP, reportGen):
         self.HTTP = HTTP
-        self.reportGen = reportGen
+        self.logVuln = reportGen.logVulnerability
         self.auxText = AuxText()
         self.attackedGET = []
         self.attackedPOST = []
 
-    def setVerbose(self,verbose):
+    def setVerbose(self, verbose):
         self.verbose = verbose
 
     def setColor(self):
         self.color = 1
 
-    def loadPayloads(self,fileName):
+    def loadPayloads(self, fileName):
         """This method loads the payloads for an attack from the specified file"""
         return self.auxText.readLines(fileName)
 
-    def attackGET(self, page, params_list, headers = {}):
+    def attackGET(self, page, params_list, headers={}):
         return
 
     def attackPOST(self, form):
         return
 
-    def loadRequire(self, obj = []):
+    def loadRequire(self, obj=[]):
         self.deps = obj
 
     def attack(self, http_resources, forms):
-        if self.doGET == True:
+        if self.doGET is True:
             for http_res in http_resources:
                 url = http_res.url
-    
+
                 if self.verbose == 1:
-                    print "+", _("attackGET"), url
-    
+                    print(_("+ attackGET {0}").format(url))
+
                 try:
                     self.attackGET(http_res)
                 except socket.error, se:
@@ -122,7 +123,7 @@ class Attack:
                 #except Exception, e:
                 #    print 'error: %s while attacking %s' % (repr(str(e[0])), url)
   
-        if self.doPOST == True:
+        if self.doPOST is True:
             for form in forms:
                 try:
                     self.attackPOST(form)

@@ -22,6 +22,7 @@
 from reportgenerator import ReportGenerator
 import json
 
+
 class JSONReportGenerator(ReportGenerator):
     """
     TODO: MUST BE CHANGED
@@ -34,7 +35,7 @@ class JSONReportGenerator(ReportGenerator):
     def __init__(self):
         pass
 
-    def setReportInfo(self, target, scope=None):
+    def setReportInfo(self, target, scope=None, date_string=""):
         self.__infos["target"] = target
         if scope:
             self.__infos["scope"] = scope
@@ -44,9 +45,9 @@ class JSONReportGenerator(ReportGenerator):
                              solution="",
                              references={}):
         if name not in self.__vulnTypes:
-            self.__vulnTypes[name] = {'desc':description,
-                                      'sol':solution,
-                                      'ref':references}
+            self.__vulnTypes[name] = {'desc': description,
+                                      'sol': solution,
+                                      'ref': references}
         if name not in self.__vulns:
             self.__vulns[name] = []
 
@@ -62,10 +63,9 @@ class JSONReportGenerator(ReportGenerator):
         vulnerabilities notified through the current method.
         """
 
-        path = request.path
         vuln_dict = {
                 "method": request.method,
-                "path": request.path,
+                "path": request.file_path,  # TODO: path or file_path according to the scope ?
                 "info": info,
                 "level": level,
                 "parameter": parameter,
@@ -82,14 +82,13 @@ class JSONReportGenerator(ReportGenerator):
         been logged with the logVulnerability method
         """
         report_dict = {
-                "classifications":self.__vulnTypes,
-                "vulnerabilities":self.__vulns,
-                "infos":self.__infos
+                "classifications": self.__vulnTypes,
+                "vulnerabilities": self.__vulns,
+                "infos": self.__infos
                 }
         #TODO: add info on wapiti ?
-        f = open(fileName,"w")
+        f = open(fileName, "w")
         try:
             json.dump(report_dict, f, indent=2)
         finally:
             f.close()
-

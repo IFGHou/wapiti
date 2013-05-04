@@ -28,6 +28,7 @@ import sys
 import getopt
 import os
 import urlparse
+import time
 
 from distutils.sysconfig import get_python_lib
 
@@ -63,6 +64,7 @@ from net import HTTP, lswww
 from file.reportgeneratorsxmlparser import ReportGeneratorsXMLParser
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
 from net.crawlerpersister import CrawlerPersister
+
 
 class Wapiti:
     """Wapiti-SVN - A web application vulnerability scanner
@@ -116,7 +118,7 @@ Supported options are:
 
 -u
 --underline
-		Use color to highlight vulnerables parameters in output
+    Use color to highlight vulnerables parameters in output
 
 -v <level>
 --verbose <level>
@@ -154,14 +156,14 @@ Supported options are:
 
     target_url = None
     target_scope = "folder"
-    urls  = {}
+    urls = {}
     forms = []
 
-    color   = 0
+    color = 0
     verbose = 0
 
     reportGeneratorType = "html"
-    REPORT_DIR  = "report"
+    REPORT_DIR = "report"
     REPORT_FILE = "vulnerabilities.xml"
     HOME_DIR = os.getenv('HOME') or os.getenv('USERPROFILE')
     COPY_REPORT_DIR = os.path.join(HOME_DIR, ".wapiti", "generated_report")
@@ -175,12 +177,11 @@ Supported options are:
 
     attacks = []
 
-
     def __init__(self, root_url):
         self.target_url = root_url
         server = urlparse.urlparse(root_url).netloc
         self.http_engine = HTTP.HTTP(server)
-        self.myls = lswww.lswww(root_url, http_engine = self.http_engine)
+        self.myls = lswww.lswww(root_url, http_engine=self.http_engine)
         self.xmlRepGenParser = ReportGeneratorsXMLParser()
         self.xmlRepGenParser.parse(os.path.join(CONF_DIR, "config/reports/generators.xml"))
 
@@ -188,7 +189,9 @@ Supported options are:
         for repGenInfo in self.xmlRepGenParser.getReportGenerators():
             if self.reportGeneratorType.lower() == repGenInfo.getKey():
                 self.reportGen = repGenInfo.createInstance()
-                self.reportGen.setReportInfo(self.target_url, self.target_scope)
+                self.reportGen.setReportInfo(self.target_url,
+                                             self.target_scope,
+                                             time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
                 break
 
         xmlParser = VulnerabilityXMLParser()
@@ -205,7 +208,7 @@ Supported options are:
         attack = __import__("attack")
 
         print "[*]", _("Loading modules"), ":"
-        print "\t"+ ", ".join(attack.modules)
+        print "\t" + ", ".join(attack.modules)
         for mod_name in attack.modules:
             mod = __import__("attack." + mod_name, fromlist=attack.modules)
             mod_instance = getattr(mod, mod_name)(self.http_engine, self.reportGen)
@@ -265,7 +268,7 @@ Supported options are:
                                 if method == "post" or method == "":
                                     x.doPOST = True
 
-    def browse(self,crawlerFile):
+    def browse(self, crawlerFile):
         "Extract hyperlinks and forms from the webpages found on the website"
         #self.urls, self.forms = self.myls.go(crawlerFile)
         self.myls.go(crawlerFile)
@@ -282,14 +285,14 @@ Supported options are:
         self.__initAttacks()
 
         for x in self.attacks:
-            if x.doGET == False and x.doPOST == False:
+            if x.doGET is False and x.doPOST is False:
                 continue
             print
             if x.require != []:
                 t = [y.name for y in self.attacks if y.name in x.require and (y.doGET or y.doPOST)]
                 if x.require != t:
-                    print "[!]", _("Missing dependecies for module"), x.name , ":"
-                    print "  " , ",".join([y for y in x.require if y not in t])
+                    print "[!]", _("Missing dependecies for module"), x.name, ":"
+                    print "  ", ",".join([y for y in x.require if y not in t])
                     continue
                 else:
                     x.loadRequire([y for y in self.attacks if y.name in x.require])
@@ -312,14 +315,14 @@ Supported options are:
         print "------"
         print _("A report has been generated in the file") + " " + self.outputFile
         if self.reportGeneratorType == "html":
-            print _("Open") + " " + self.outputFile+ \
+            print _("Open") + " " + self.outputFile + \
                         "/index.html " + _("with a browser to see this report.")
 
-    def setTimeOut(self, timeout = 6.0):
+    def setTimeOut(self, timeout=6.0):
         "Set the timeout for the time waiting for a HTTP response"
         self.http_engine.setTimeOut(timeout)
 
-    def setProxy(self, proxy = ""):
+    def setProxy(self, proxy=""):
         "Set a proxy to use for HTTP requests."
         self.http_engine.setProxy(proxy)
 
@@ -363,11 +366,11 @@ Supported options are:
         self.verbose = vb
         self.myls.verbosity(vb)
 
-    def setModules(self, options = ""):
+    def setModules(self, options=""):
         """Activate or desactivate (default) all attacks"""
         self.options = options
 
-    def setReportGeneratorType(self, repGentype = "xml"):
+    def setReportGeneratorType(self, repGentype="xml"):
         "Set the format of the generated report. Can be xml, html of txt"
         self.reportGeneratorType = repGentype
 
@@ -380,9 +383,9 @@ if __name__ == "__main__":
     try:
         prox = ""
         auth = []
-        crawlerPersister = CrawlerPersister();
+        crawlerPersister = CrawlerPersister()
         crawlerFile = None
-        attackFile  = None
+        attackFile = None
         if len(sys.argv) < 2:
             print doc
             sys.exit(0)

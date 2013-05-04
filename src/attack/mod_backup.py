@@ -6,12 +6,12 @@
 # Gregory FONTAINE
 # Nicolas SURRIBAS
 
-import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import socket
 from net import HTTP
+
 
 class mod_backup(Attack):
     """
@@ -30,7 +30,6 @@ class mod_backup(Attack):
         Attack.__init__(self, HTTP, xmlRepGenerator)
         self.payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
 
-
     def __returnErrorByCode(self, code):
         err = ""
         if code == 404:
@@ -41,11 +40,8 @@ class mod_backup(Attack):
 
         return err
 
-
     def attackGET(self, http_res):
-
         page = http_res.path
-        params_list = http_res.get_params
         headers = http_res.headers
 
         # Do not attack application-type files
@@ -56,11 +52,11 @@ class mod_backup(Attack):
         elif not "text" in headers["content-type"]:
             return
 
-        for k in self.payloads:
-            url = page + k
-            
+        for ext in self.payloads:
+            url = page + ext
+
             if self.verbose == 2:
-                print "+", url
+                print(u"+ {0}".format(url))
 
             if url not in self.attackedGET:
                 self.attackedGET.append(url)
@@ -77,12 +73,10 @@ class mod_backup(Attack):
                         else:
                             print " +", _("Found backup file !")
                             print "   ->", evil_req.url
-                        self.reportGen.logVulnerability(category=Vulnerability.BACKUP,
-                                                        level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                        request=evil_req,
-                                                        info=_("Backup file found for") + " " + page)
-                        
-                except socket.timeout:
-                    data = ""
-                    break
+                        self.logVuln(category=Vulnerability.BACKUP,
+                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     request=evil_req,
+                                     info=_("Backup file {0} found for {1}").format(url, page))
 
+                except socket.timeout:
+                    break

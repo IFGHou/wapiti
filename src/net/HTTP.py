@@ -9,10 +9,12 @@ import datetime
 import jsoncookie
 from copy import deepcopy
 
+
 class HTTPResource(object):
     _method = "GET"
     _encoding = "ISO-8859-1"
     _resource_path = ""
+    _file_path = ""
     _status = 0
     _headers = {}
     _referer = ""
@@ -27,8 +29,8 @@ class HTTPResource(object):
     _cached_post_keys = None
     _cached_file_keys = None
     _cached_encoded_params = None
-    _cached_encoded_data   = None
-    _cached_encoded_files  = None
+    _cached_encoded_data = None
+    _cached_encoded_files = None
     _cached_hash = None
 
     # eg: get = [['id', '25'], ['color', 'green']]
@@ -39,7 +41,7 @@ class HTTPResource(object):
 
     # eg: files = [['file_field', ('file_name', 'file_content')]]
     _file_params = []
-    
+
     def __init__(self, path, method="", get_params=None, post_params=None,
                  encoding="UTF-8", referer="", file_params=None):
         """Create a new HTTPResource object.
@@ -96,18 +98,17 @@ class HTTPResource(object):
             self._method = method
         self._encoding = encoding
         self._referer = referer
-
-
+        self._file_path = urlparse.urlparse(self._resource_path).path
 
     def __hash__(self):
         if self._cached_hash is None:
-            get_kv  = tuple([tuple(param) for param in self._get_params])
+            get_kv = tuple([tuple(param) for param in self._get_params])
             post_kv = tuple([tuple(param) for param in self._post_params])
             file_kv = tuple([tuple([param[0], param[1][0]]) for param in self._file_params])
 
             # TODO: should the referer be in the hash ?
-            self._cached_hash =  hash((self._method, self._resource_path,
-                                       get_kv, post_kv, file_kv))
+            self._cached_hash = hash((self._method, self._resource_path,
+                                      get_kv, post_kv, file_kv))
         return self._cached_hash
 
     def __eq__(self, other):
@@ -180,9 +181,9 @@ class HTTPResource(object):
     def __repr__(self):
         buff = ""
         if self._get_params:
-            buff= "%s %s" % (self._method, self.url)
+            buff = "%s %s" % (self._method, self.url)
         else:
-            buff =  "%s %s" % (self._method, self._resource_path)
+            buff = "%s %s" % (self._method, self._resource_path)
         if self._post_params:
             buff += "\n\tdata = %s" % (self.encoded_data)
         if self._file_params:
@@ -206,7 +207,7 @@ class HTTPResource(object):
         elif self._post_params:
             http_string += "Content-Type: application/x-www-form-urlencoded\n"
             http_string += "\n%s" % (self.encoded_data)
-            
+
         return http_string
 
     @property
@@ -254,6 +255,10 @@ class HTTPResource(object):
     @property
     def path(self):
         return self._resource_path
+
+    @property
+    def file_path(self):
+        return self._file_path
 
     @property
     def method(self):
@@ -313,11 +318,11 @@ class HTTPResource(object):
     @property
     def encoded_files(self):
         return self._encode_params(self._file_params)
-  
+
     @property
     def encoded_get_keys(self):
         if self._cached_get_keys is None:
-            self._cached_get_keys  = self._encoded_keys(self._get_params)
+            self._cached_get_keys = self._encoded_keys(self._get_params)
         return self._cached_get_keys
 
     @property
@@ -331,6 +336,7 @@ class HTTPResource(object):
         if self._cached_file_keys is None:
             self._cached_file_keys = self._encoded_keys(self._file_params)
         return self._cached_file_keys
+
 
 class HTTPResponse(object):
     resp = None
@@ -382,6 +388,7 @@ class HTTPResponse(object):
         received."""
         return self.timestamp
 
+
 class HTTP(object):
     proxies = {}
     auth_basic = []
@@ -396,8 +403,8 @@ class HTTP(object):
         #TODO: bring back auth (htaccess)
         self.h = requests.session(proxies=self.proxies, cookies=self.cookiejar)
         self.server = server
-        
-    def send(self, target, method = "",
+
+    def send(self, target, method="",
              get_params=None, post_params=None, file_params=None,
              headers={}):
         "Send a HTTP Request. GET or POST (if post_params is set)."
@@ -465,7 +472,7 @@ class HTTP(object):
             if method == "GET":
                 resp = self.h.get(target, headers=_headers,
                                   timeout=self.timeout,
-                                  allow_redirects = False)
+                                  allow_redirects=False)
             elif method == "POST":
                 _headers.update({'content-type': 'application/x-www-form-urlencoded'})
                 resp = self.h.post(target, headers=_headers,
@@ -474,10 +481,10 @@ class HTTP(object):
                                    allow_redirects=False)
             else:
                 resp = self.h.request(method, target,
-                                      timeout = self.timeout,
-                                      allow_redirects = False)
+                                      timeout=self.timeout,
+                                      allow_redirects=False)
 
-        if resp == None:
+        if resp is None:
             return None
         return HTTPResponse(resp, "", datetime.datetime.now())
 
@@ -495,15 +502,15 @@ class HTTP(object):
             encoded_params.append("%s=%s" % (k, v))
         return "&".join(encoded_params)
 
-    def uqe(self, params_list): #, encoding = None):
+    def uqe(self, params_list):  # , encoding = None):
         "urlencode a string then interpret the hex characters (%41 will give 'A')."
-        return urllib.unquote(self.encode(params_list)) #, encoding))
+        return urllib.unquote(self.encode(params_list))  # , encoding))
 
-    def escape(self,url):
+    def escape(self, url):
         "Change special characters in their html entities representation."
-        return cgi.escape(url, quote = True).replace("'", "%27")
+        return cgi.escape(url, quote=True).replace("'", "%27")
 
-    def setTimeOut(self, timeout = 6.0):
+    def setTimeOut(self, timeout=6.0):
         "Set the time to wait for a response from the server."
         self.timeout = timeout
         socket.setdefaulttimeout(self.timeout)
@@ -512,7 +519,7 @@ class HTTP(object):
         "Return the timeout used for HTTP requests."
         return self.timeout
 
-    def setProxy(self, proxy = ""):
+    def setProxy(self, proxy=""):
         "Set a proxy to use for HTTP requests."
         url_parts = urlparse.urlparse(proxy)
         protocol = url_parts.scheme
@@ -551,9 +558,9 @@ if __name__ == "__main__":
     res8 = HTTPResource("http://httpbin.org/post?var1=z&var2=d",
                         post_params=[['post1', 'c'], ['post2', 'd']])
     res10 = HTTPResource("http://httpbin.org/post?qs0",
-                        post_params=[['post1', 'c'], ['post2', 'd']])
+                         post_params=[['post1', 'c'], ['post2', 'd']])
     res11 = HTTPResource("http://httpbin.org/post?qs1",
-                        post_params=[['post1', 'c'], ['post2', 'd']])
+                         post_params=[['post1', 'c'], ['post2', 'd']])
     assert res1 < res2
     assert res2 > res3
     assert res1 < res3
@@ -572,4 +579,3 @@ if __name__ == "__main__":
     print "=== POST keys encoded as string ==="
     print res1.encoded_post_keys
     print
-

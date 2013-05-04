@@ -1,4 +1,3 @@
-import socket
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
@@ -105,26 +104,26 @@ class mod_exec(Attack):
                         err = ""
                         print _("Timeout in"), page
                         print "  " + _("caused by") + ":", evil_req.url
-                        self.reportGen.logVulnerability(category=Vulnerability.RES_CONSUMPTION,
-                                                        level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                                        request=evil_req,
-                                                        info=err + " " + _("(QUERY_STRING)"))
+                        self.logVuln(category=Vulnerability.RES_CONSUMPTION,
+                                     level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                                     request=evil_req,
+                                     info=err + " " + _("(QUERY_STRING)"))
                     else: 
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
                     if err != "":
-                        self.reportGen.logVulnerability(category=Vulnerability.EXEC,
-                                                        level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                        request=evil_req,
-                                                        info=err + " " + _("(QUERY_STRING)"))
+                        self.logVuln(category=Vulnerability.EXEC,
+                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     request=evil_req,
+                                     info=err + " " + _("(QUERY_STRING)"))
                         print err, _("(QUERY_STRING) in"), page
                         print "  " + _("Evil url") + ":", evil_req.url
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
-                            self.reportGen.logVulnerability(category=Vulnerability.EXEC,
-                                                            level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                            request=evil_req,
-                                                            info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
+                            self.logVuln(category=Vulnerability.EXEC,
+                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                         request=evil_req,
+                                         info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
                             print _("500 HTTP Error code with")
                             print "  " + _("Evil url") + ":", evil_req.url
                     if cmd:
@@ -159,17 +158,19 @@ class mod_exec(Attack):
                         err = ""
                         print _("Timeout") + " (" + param_name + ") " + _("in"), page
                         print "  " + _("caused by") + ":", evil_req.url
-                        self.reportGen.logVulnerability(category=Vulnerability.RES_CONSUMPTION,
-                                                        level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                                        request=evil_req,
-                                                        info=err + " (" + param_name + ")")
+                        self.logVuln(category=Vulnerability.RES_CONSUMPTION,
+                                     level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                                     request=evil_req,
+                                     parameter=param_name,
+                                     info=err + " (" + param_name + ")")
                     else:
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
                     if err != "":
-                        self.reportGen.logVulnerability(category=Vulnerability.EXEC,
-                                                        level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                        request=evil_req,
-                                                        info=err + " (" + param_name + ")")
+                        self.logVuln(category=Vulnerability.EXEC,
+                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     request=evil_req,
+                                     parameter=param_name,
+                                     info=err + " (" + param_name + ")")
                         if self.color == 0:
                             print err, "(" + param_name + ") " + _("in"), page
                             print "  " + _("Evil url") + ":", evil_req.url
@@ -182,20 +183,20 @@ class mod_exec(Attack):
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
-                            self.reportGen.logVulnerability(category=Vulnerability.EXEC,
-                                                            level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                            request=evil_req,
-                                                            info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
+                            self.logVuln(category=Vulnerability.EXEC,
+                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                         request=evil_req,
+                                         parameter=param_name,
+                                         info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
                             print _("500 HTTP Error code with")
                             print "  " + _("Evil url") + ":", evil_req.url
             params_list[i][1] = saved_value
 
     def attackPOST(self, form):
         """This method performs the command execution with method POST"""
-        page = form.url
 
         # copies
-        get_params  = form.get_params
+        get_params = form.get_params
         post_params = form.post_params
         file_params = form.file_params
         referer = form.referer
@@ -215,11 +216,11 @@ class mod_exec(Attack):
                         # no quoting: send() will do it for us
                         param_list[i][1] = payload
                         evil_req = HTTP.HTTPResource(form.path,
-                                method=form.method,
-                                get_params=get_params,
-                                post_params=post_params,
-                                file_params=file_params,
-                                referer=referer)
+                                                     method=form.method,
+                                                     get_params=get_params,
+                                                     post_params=post_params,
+                                                     file_params=file_params,
+                                                     referer=referer)
                         if self.verbose == 2:
                             print "+", evil_req
                         err = ""
@@ -231,18 +232,20 @@ class mod_exec(Attack):
                             print _("Timeout in"), evil_req.url
                             print "  " + _("with params") + " =", self.HTTP.encode(post_params)
                             print "  " + _("coming from"), referer
-                            self.reportGen.logVulnerability(category=Vulnerability.RES_CONSUMPTION,
-                                                            level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
-                                                            request=evil_req,
-                                                            info=_("Timeout coming from") + " " + referer)
+                            self.logVuln(category=Vulnerability.RES_CONSUMPTION,
+                                         level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                                         request=evil_req,
+                                         parameter=param_name,
+                                         info=_("Timeout coming from") + " " + referer)
                         else:
                             err, cmd, warned = self.__findPatternInResponse(data, warned)
 
                         if err != "":
-                            self.reportGen.logVulnerability(category=Vulnerability.EXEC,
-                                                            level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                            request=evil_req,
-                                                            info=err + " " + _("coming from") + " " + referer)
+                            self.logVuln(category=Vulnerability.EXEC,
+                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                         request=evil_req,
+                                         parameter=param_name,
+                                         info=err + " " + _("coming from") + " " + referer)
                             print err, _("in"), evil_req.url
                             if self.color == 1:
                                 print "  " + _("with params") + " =", \
@@ -257,11 +260,12 @@ class mod_exec(Attack):
                         else:
                             if code == "500" and err500 == 0:
                                 err500 = 1
-                                self.reportGen.logVulnerability(category=Vulnerability.EXEC,
-                                                                level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                request=evil_req,
-                                                                info=_("500 HTTP Error code coming from") + " " + referer + "\n" + \
-                                                                     VulDescrip.ERROR_500_DESCRIPTION)
+                                self.logVuln(category=Vulnerability.EXEC,
+                                            level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                            request=evil_req,
+                                             parameter=param_name,
+                                            info=_("500 HTTP Error code coming from") + " " + referer + "\n" + \
+                                                 VulDescrip.ERROR_500_DESCRIPTION)
                                 print _("500 HTTP Error code in"), evil_req.url
                                 print "  " + _("with params") + " =", self.HTTP.encode(post_params)
                                 print "  " + _("coming from"), referer

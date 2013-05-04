@@ -1,13 +1,11 @@
 #!/usr/bin/env python
-import random
-import re
 import socket
-import BeautifulSoup
 import requests
 from attack import Attack
 from vulnerability import Vulnerability
 from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 from net import HTTP
+
 
 class mod_permanentxss(Attack):
     """
@@ -92,17 +90,17 @@ class mod_permanentxss(Attack):
                                     end = code_url.index(code) - 1
                                     start = code_url.rfind("&", 0, end)
                                     if start == -1:
-                                        start =  code_url.rfind("?", 0, end)
+                                        start = code_url.rfind("?", 0, end)
                                     k = code_url[start+1:end]
                                     print _("Found permanent XSS in"), url
                                     print "  " + _("with"), evil_req.url.replace(k + "=", self.RED + k + self.STD + "=")
 
-                                self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                                level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                request=evil_req,
-                                                                info=_("Found permanent XSS in") + \
-                                                                       " " + url + " " + \
-                                                                       _("with") + " " + self.HTTP.escape(evil_req.url))
+                                self.logVuln(category=Vulnerability.XSS,
+                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                             request=evil_req,
+                                             info=_("Found permanent XSS in") + \
+                                                    " " + url + " " + \
+                                                    _("with") + " " + self.HTTP.escape(evil_req.url))
                                 # we reported the vuln, now search another code
                                 continue
 
@@ -130,17 +128,17 @@ class mod_permanentxss(Attack):
                                         end = code_url.index(code) - 1
                                         start = code_url.rfind("&", 0, end)
                                         if start == -1:
-                                            start =  code_url.rfind("?", 0, end)
+                                            start = code_url.rfind("?", 0, end)
                                         k = code_url[start+1:end]
                                         print _("Found permanent XSS in"), url
                                         print "  " + _("with"), evil_req.url.replace(k + "=", self.RED + k + self.STD + "=")
 
-                                    self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                                    level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                    request=evil_req,
-                                                                    info=_("Found permanent XSS in") + \
-                                                                          " " + url + " " + \
-                                                                          _("with") + " " + self.HTTP.escape(evil_req.url))
+                                    self.logVuln(category=Vulnerability.XSS,
+                                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                 request=evil_req,
+                                                 info=_("Found permanent XSS in") + \
+                                                       " " + url + " " + \
+                                                       _("with") + " " + self.HTTP.escape(evil_req.url))
                                     # look for another code in the webpage
                                     break
 
@@ -151,9 +149,9 @@ class mod_permanentxss(Attack):
                         if code in self.SUCCESSFUL_XSS:
                             # this code has been used in a successful attack
                             if self.validXSS(data, code, self.SUCCESSFUL_XSS[code]):
-                                
+
                                 code_req = self.POST_XSS[code]
-                                get_params  = code_req.get_params
+                                get_params = code_req.get_params
                                 post_params = code_req.post_params
                                 file_params = code_req.file_params
                                 referer = code_req.referer
@@ -172,13 +170,14 @@ class mod_permanentxss(Attack):
                                                                          file_params=file_params,
                                                                          referer=referer)
 
-                                            self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                                            level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                            request=evil_req,
-                                                                            info=_("Found permanent XSS attacked by") + " " + evil_req.url + \
-                                                                                 " " + _("with fields") + " " + self.HTTP.encode(post_params))
+                                            self.logVuln(category=Vulnerability.XSS,
+                                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                         request=evil_req,
+                                                         parameter=param_name,
+                                                         info=_("Found permanent XSS attacked by") + " " + evil_req.url + \
+                                                              " " + _("with fields") + " " + self.HTTP.encode(post_params))
                                             print _("Found permanent XSS in"), url
-                                            if self.color ==1:
+                                            if self.color == 1:
                                                 print "  " + _("attacked by"), evil_req.url, _("with fields"), \
                                                         self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
                                             else:
@@ -222,11 +221,12 @@ class mod_permanentxss(Attack):
                                                 print 'error: %s while attacking %s' % (repr(str(e[0])), url)
                                                 continue
                                             if self.validXSS(dat, code, payload):
-                                                self.reportGen.logVulnerability(category=Vulnerability.XSS,
-                                                                                level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
-                                                                                request=evil_req,
-                                                                                info=_("Found permanent XSS attacked by") + " " + evil_req.url + \
-                                                                                " " + _("with fields") + " " + self.HTTP.encode(post_params))
+                                                self.logVuln(category=Vulnerability.XSS,
+                                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                             request=evil_req,
+                                                             parameter=param_name,
+                                                             info=_("Found permanent XSS attacked by") + " " + evil_req.url + \
+                                                             " " + _("with fields") + " " + self.HTTP.encode(post_params))
 
                                                 print _("Found permanent XSS in"), url
                                                 if self.color == 1:
@@ -240,17 +240,16 @@ class mod_permanentxss(Attack):
 
     # check weither our JS payload is injected in the webpage
     def validXSS(self, page, code, payload):
-        if page == None or page == "":
+        if page is None or page == "":
             return False
         if payload.lower() in page.lower():
             return True
         return False
 
-    def loadRequire(self, obj = []):
+    def loadRequire(self, obj=[]):
         self.deps = obj
         for x in self.deps:
             if x.name == "xss":
                 self.GET_XSS = x.GET_XSS
                 self.POST_XSS = x.POST_XSS
                 self.SUCCESSFUL_XSS = x.SUCCESSFUL_XSS
-
