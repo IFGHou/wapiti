@@ -1,4 +1,3 @@
-import socket
 from attack import Attack
 from vulnerability import Vulnerability
 import requests
@@ -26,6 +25,7 @@ from net import HTTP
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 
 class mod_crlf(Attack):
     """
@@ -63,8 +63,8 @@ class mod_crlf(Attack):
             if url not in self.attackedGET:
                 evil_req = HTTP.HTTPResource(url)
                 if self.verbose == 2:
-                    #print "+ " + page + "?http://www.google.fr\\r\\nwapiti: SVN version"
-                    print "+ " + evil_req.url
+                    # print "+ " + page + "?http://www.google.fr\\r\\nwapiti: SVN version"
+                    print(u"+ {0}".format(evil_req.url))
                 try:
                     resp = self.HTTP.send(evil_req, headers=headers)
                     if "wapiti" in resp.getHeaders():
@@ -72,17 +72,17 @@ class mod_crlf(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      info=err + " " + _("(QUERY_STRING)"))
-                        print _("CRLF Injection (QUERY_STRING) in"), page
-                        print "  " + _("Evil url") + ":", url
+                        print(_("CRLF Injection (QUERY_STRING) in {0}").format(page))
+                        print(_("  Evil url:").format(url))
                 except requests.exceptions.Timeout, timeout:
                     self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                  level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                  request=evil_req,
                                  info=err + " " + _("(QUERY_STRING)"))
-                    print _("Timeout (QUERY_STRING) in"), page
-                    print "  " + _("caused by") + ":", url
+                    print(_("Timeout (QUERY_STRING) in {0}").format(page))
+                    print(_("  caused by:").format(url))
                 except requests.exceptions.HTTPError:
-                    #print "Error: The server did not understand this request"
+                    # print "Error: The server did not understand this request"
                     pass
                 self.attackedGET.append(url)
         else:
@@ -98,7 +98,7 @@ class mod_crlf(Attack):
                     self.attackedGET.append(url)
                     evil_req = HTTP.HTTPResource(url)
                     if self.verbose == 2:
-                        print "+", evil_req.url
+                        print(u"+ {0}".format(evil_req.url))
                     try:
                         resp = self.HTTP.send(evil_req, headers=headers)
                         if "wapiti" in resp.getHeaders():
@@ -109,19 +109,18 @@ class mod_crlf(Attack):
                                          parameter=param_name,
                                          info=err + " (" + param_name + ")")
                             if self.color == 0:
-                                print err, "(" + param_name + ") " + _("in"), page
-                                print "  " + _("Evil url") + ":", url
+                                print(_("{0} ({1}) in {2}").format(err, page, param_name))
+                                print(_("  Evil url:").format(url))
                             else:
-                                print err, ":", url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                                print(u"{0}: {1}".format(err, url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
                     except requests.exceptions.Timeout, timeout:
                         self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                      level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
                                      info=err + " (" + param_name + ")")
-                        print _("Timeout") + " (" + param_name + ") " + _("in"), page
-                        print "  " + _("caused by") + ":", url
+                        print(_("Timeout ({0}) in {1}").format(param_name, page))
+                        print(_("  caused by: {0}").format(url))
                     except requests.exceptions.HTTPError:
-                        print _("Error: The server did not understand this request")
+                        print(_("Error: The server did not understand this request"))
                 params_list[i][1] = saved_value
-

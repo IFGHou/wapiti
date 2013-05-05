@@ -4,7 +4,6 @@ import BeautifulSoup
 import requests
 from attack import Attack
 from vulnerability import Vulnerability
-from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 from net import HTTP
 
 
@@ -104,7 +103,6 @@ class mod_xss(Attack):
             url = page + "?__XSS__"
             if url not in self.attackedGET:
                 self.attackedGET.append(url)
-                err = ""
                 code = self.random_string()
                 test_url = HTTP.HTTPResource(page + "?" + code)
                 self.GET_XSS[code] = test_url
@@ -149,7 +147,6 @@ class mod_xss(Attack):
         # URL contains parameters
         else:
             for i in xrange(len(params_list)):
-                err = ""
                 saved_value = params_list[i][1]
                 params_list[i][1] = "__XSS__"
                 url = page + "?" + self.HTTP.encode(params_list)
@@ -256,11 +253,11 @@ class mod_xss(Attack):
                     param_list[i][1] = code
                     # will only memorize the last used payload (working or not) but the code will always be the good
                     test_payload = HTTP.HTTPResource(form.path,
-                            method=form.method,
-                            get_params=get_params,
-                            post_params=post_params,
-                            file_params=file_params,
-                            referer=referer)
+                                                     method=form.method,
+                                                     get_params=get_params,
+                                                     post_params=post_params,
+                                                     file_params=file_params,
+                                                     referer=referer)
 
                     self.POST_XSS[code] = test_payload
                     try:
@@ -277,11 +274,11 @@ class mod_xss(Attack):
                             param_list[i][1] = payload
 
                             evil_req = HTTP.HTTPResource(form.path,
-                                    method=form.method,
-                                    get_params=get_params,
-                                    post_params=post_params,
-                                    file_params=file_params,
-                                    referer=referer)
+                                                         method=form.method,
+                                                         get_params=get_params,
+                                                         post_params=post_params,
+                                                         file_params=file_params,
+                                                         referer=referer)
 
                             if self.verbose == 2:
                                 print(u"+ {0}".format(evil_req))
@@ -310,7 +307,7 @@ class mod_xss(Attack):
                                             print(_("XSS vulnerability found in {0}").format(evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
                                             print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
                                         else:
-                                            print(_("XSS vulenarbility found in {0}").format(evil_req.url))
+                                            print(_("XSS vulnerability found in {0}").format(evil_req.url))
                                             print(_("  with parameters: {0}").format(self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")))
                                     print(_("  comming from {0}").format(referer))
                                     # Stop injecting payloads and move to the next parameter
@@ -330,20 +327,20 @@ class mod_xss(Attack):
                 if keyword in str(obj.attrs):
                     for k, v in obj.attrs:
                         if keyword in v:
-                            #print "Found in attribute value ",k,"of tag",obj.name
+                            # print "Found in attribute value ",k,"of tag",obj.name
                             entries.append({"type": "attrval", "name": k, "tag": obj.name})
                         if keyword in k:
-                            #print "Found in attribute name ",k,"of tag",obj.name
+                            # print "Found in attribute name ",k,"of tag",obj.name
                             entries.append({"type": "attrname", "name": k, "tag": obj.name})
                 elif keyword in obj.name:
-                    #print "Found in tag name"
+                    # print "Found in tag name"
                     entries.append({"type": "tag", "value": obj.name})
                 else:
                     for x in obj.contents:
                         self.study(x, obj, keyword, entries)
             elif isinstance(obj, BeautifulSoup.NavigableString):
                 if keyword in str(obj):
-                    #print "Found in text, tag", parent.name
+                    # print "Found in text, tag", parent.name
                     entries.append({"type": "text", "parent": parent.name})
 
 
@@ -377,8 +374,10 @@ class mod_xss(Attack):
                 start = data[i1:i0].replace(" ", "")[len(elem['name']):]
                 # between the tag name and our injected attribute there is an equal sign
                 # and (probably) a quote or a double-quote we need to close before putting our payload
-                if start.startswith("='"): payload = "'"
-                if start.startswith('="'): payload = '"'
+                if start.startswith("='"):
+                    payload = "'"
+                if start.startswith('="'):
+                    payload = '"'
                 if elem['tag'].lower() == "img":
                     payload += "/>"
                 else:
@@ -419,4 +418,3 @@ class mod_xss(Attack):
 
             data = data.replace(code, "none", 1)  # reduire la zone de recherche
         return payloads
-

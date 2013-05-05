@@ -45,7 +45,8 @@ if not BASE_DIR:
 if not BASE_DIR:
     sys.path.append("")
     if "__file__" in dir():
-        BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
+        BASE_DIR = os.path.join(os.path.abspath(__file__), '..')
+        BASE_DIR = os.path.normpath(BASE_DIR)
     else:
         BASE_DIR = os.getcwd()
 
@@ -55,74 +56,76 @@ from xml.dom import minidom
 from crawlerpersister import CrawlerPersister
 import BeautifulSoup
 
+
 class lswww:
     """
-		lswww explore a website and extract links and forms fields.
+    lswww explore a website and extract links and forms fields.
 
-Usage: python lswww.py http://server.com/base/url/ [options]
+    Usage: python lswww.py http://server.com/base/url/ [options]
 
-Supported options are:
--s <url>
---start <url>
-		To specify an url to start with
+    Supported options are:
+        -s <url>
+        --start <url>
+            To specify an url to start with
 
--x <url>
---exclude <url>
-		To exclude an url from the scan (for example logout scripts)
-		You can also use a wildcard (*)
-		Exemple : -x "http://server/base/?page=*&module=test"
-		or -x http://server/base/admin/* to exclude a directory
+        -x <url>
+        --exclude <url>
+            To exclude an url from the scan (for example logout scripts)
+            You can also use a wildcard (*)
+            Exemple : -x "http://server/base/?page=*&module=test"
+            or -x http://server/base/admin/* to exclude a directory
 
--p <url_proxy>
---proxy <url_proxy>
-		To specify a proxy
-		Exemple: -p http://proxy:port/
+        -p <url_proxy>
+        --proxy <url_proxy>
+            To specify a proxy
+            Exemple: -p http://proxy:port/
 
--c <cookie_file>
---cookie <cookie_file>
-		To use a cookie
+        -c <cookie_file>
+        --cookie <cookie_file>
+            To use a cookie
 
--a <login%password>
---auth <login%password>
-		Set credentials for HTTP authentication
-		Doesn't work with Python 2.4
+        -a <login%password>
+        --auth <login%password>
+            Set credentials for HTTP authentication
+            Doesn't work with Python 2.4
 
--r <parameter_name>
---remove <parameter_name>
-		Remove a parameter from URLs
+        -r <parameter_name>
+        --remove <parameter_name>
+            Remove a parameter from URLs
 
--v <level>
---verbose <level>
-		Set verbosity level
-		0: only print results
-		1: print a dot for each url found (default)
-		2: print each url
+        -v <level>
+        --verbose <level>
+            Set verbosity level
+            0: only print results
+            1: print a dot for each url found (default)
+            2: print each url
 
--t <timeout>
---timeout <timeout>
-		Set the timeout (in seconds)
+        -t <timeout>
+        --timeout <timeout>
+            Set the timeout (in seconds)
 
--n <limit>
---nice <limit>
-    Define a limit of urls to read with the same pattern
-    Use this option to prevent endless loops
-    Must be greater than 0
+        -n <limit>
+        --nice <limit>
+            Define a limit of urls to read with the same pattern
+            Use this option to prevent endless loops
+            Must be greater than 0
 
--i <file>
---continue <file>
-		This parameter indicates Wapiti to continue with the scan from the specified
-    file, this file should contain data from a previous scan.
-		The file is optional, if it is not specified, Wapiti takes the default file
-    from \"scans\" folder.
+        -i <file>
+        --continue <file>
+            This parameter indicates Wapiti to continue with the scan
+            from the specified file, this file should contain data
+            from a previous scan.
+            The file is optional, if it is not specified, Wapiti takes
+            the default file from \"scans\" folder.
 
--h
---help
-		To print this usage message
+        -h
+        --help
+            To print this usage message
     """
 
-    SCOPE_DOMAIN  = "domain"
-    SCOPE_FOLDER  = "folder"
-    SCOPE_PAGE    = "page"
+    SCOPE_DOMAIN = "domain"
+    SCOPE_FOLDER = "folder"
+    SCOPE_PAGE = "page"
     SCOPE_DEFAULT = "default"
 
     root = ""
@@ -134,8 +137,8 @@ Supported options are:
     forms = []
     uploads = []
     allowed = ['php', 'html', 'htm', 'xml', 'xhtml', 'xht', 'xhtm',
-                        'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
-                        'shtml', 'phtm', 'phtml', 'jhtml', 'pl', 'jsp', 'cfm', 'cfml']
+               'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
+               'shtml', 'phtm', 'phtml', 'jhtml', 'pl', 'jsp', 'cfm', 'cfml']
     verbose = 0
     auth_basic = []
     bad_params = []
@@ -154,21 +157,21 @@ Supported options are:
     def __init__(self, root, http_engine=None, crawlerFile=None):
         self.h = http_engine
         if root.startswith("-"):
-            print _("First argument must be the root url !")
+            print(_("First argument must be the root url !"))
             sys.exit(0)
         if not "://" in root:
             root = "http://" + root
         if(self.__checklink(root)):
-            print _("Invalid protocol:"), root.split("://")[0]
+            print(_("Invalid protocol: {0}").format(root.split("://")[0]))
             sys.exit(0)
         if root[-1] != "/" and not "/" in root.split("://")[1]:
             root += "/"
 
         server = (root.split("://")[1]).split("/")[0]
-        self.root     = HTTP.HTTPResource(root)   # Initial URL
-        self.server   = server # Domain
-        self.scopeURL = root   # Scope of the analysis
-        
+        self.root = HTTP.HTTPResource(root)   # Initial URL
+        self.server = server  # Domain
+        self.scopeURL = root  # Scope of the analysis
+
         self.tobrowse.append(self.root)
         self.persister = CrawlerPersister()
 
@@ -198,7 +201,7 @@ Supported options are:
 
     def addStartURL(self, url):
         if(self.__checklink(url)):
-            print _("Invalid link argument") + ":", url
+            print(_("Invalid link argument: {0}").format(url))
             sys.exit(0)
         if(self.__inzone(url) == 0):
             self.tobrowse.append(HTTP.HTTPResource(url))
@@ -242,11 +245,9 @@ Supported options are:
         headers["user-agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         try:
             if isinstance(web_resource, HTTP.HTTPResource):
-#                if web_resource.method == "POST":
-#                    headers['content-type'] = 'application/x-www-form-urlencoded'
                 resp = self.h.send(web_resource, headers=headers)
             else:
-                print "non HTTPResource:", url
+                print(u"non HTTPResource: {0}".format(url))
                 sys.exit()
         except socket.timeout:
             self.excluded.append(url)
@@ -256,7 +257,7 @@ Supported options are:
             return False
         except socket.error, msg:
             if msg.errno == 111:
-                print _("Connection refused!")
+                print(_("Connection refused!"))
             self.excluded.append(url)
             return False
         except Exception:
@@ -274,25 +275,29 @@ Supported options are:
 
         proto = url.split("://")[0]
         if proto == "http" or proto == "https":
-            if not isinstance(proto, unicode): proto = unicode(proto)
+            if not isinstance(proto, unicode):
+                proto = unicode(proto)
             # Check the content-type first
-            #if not info.has_key("content-type"):
-                # Sometimes there's no content-type... so we rely on the document extension
-            #  if (current.split(".")[-1] not in self.allowed) and current[-1] != "/":
+            # if not info.has_key("content-type"):
+                # Sometimes there's no content-type...
+                #so we rely on the document extension
+            # if (current.split(".")[-1] not in self.allowed)
+            #    and current[-1] != "/":
             #    return info
-            #elif info["content-type"].find("text") == -1:
-            #  return info
+            # elif info["content-type"].find("text") == -1:
+            #   return info
 
         # No files more than 2MB
-        if info.has_key("content-length"):
+        if "content-length" in info:
             if int(info["content-length"]) > 2097152:
                 return False
 
         page_encoding = None
         resp_encoding = resp.getEncoding()
-        # Requests says it found an encoding... so the content must be some HTML
+        # Requests says it found an encoding... the content must be some HTML
         if resp_encoding:
-            # But Requests doesn't take a deep look at the webpage, so check it with BeautifulSoup
+            # But Requests doesn't take a deep look at the webpage,
+            # so check it with BeautifulSoup
             page_encoding = BeautifulSoup.BeautifulSoup(resp.getRawPage()).originalEncoding
             if page_encoding and page_encoding.upper() != resp_encoding:
                 # Mismatch ! Convert the response text to the encoding detected by BeautifulSoup
@@ -303,9 +308,9 @@ Supported options are:
             data = resp.getRawPage()
 
         # Manage redirections
-        if info.has_key("location"):
+        if "location" in info:
             redir = self.correctlink(info["location"], current, currentdir, proto, None)
-            if redir != None:
+            if redir is not None:
                 if(self.__inzone(redir) == 0):
                     self.link_encoding[redir] = self.link_encoding[url]
                     redir = HTTP.HTTPResource(redir)
@@ -324,7 +329,7 @@ Supported options are:
             if bs.head:
                 baseTags = bs.head.findAll("base")
                 for base in baseTags:
-                    if base.has_key("href"):
+                    if "href" in base:
                         # Found a base url, now set it as the current url
                         current = base["href"].split("#")[0]
                         # We don't need destination anchors
@@ -343,7 +348,7 @@ Supported options are:
             p.feed(htmlSource)
         except HTMLParser.HTMLParseError, err:
             htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
-            if not isinstance(htmlSource, unicode) and page_encoding != None:
+            if not isinstance(htmlSource, unicode) and page_encoding is not None:
                 htmlSource = unicode(htmlSource, page_encoding, "ignore")
             try:
                 p.reset()
@@ -355,7 +360,7 @@ Supported options are:
         # Sometimes the page is badcoded but the parser doesn't see the error
         # So if we got no links we can force a correction of the page
         if len(p.liens) == 0:
-            if page_encoding != None:
+            if page_encoding is not None:
                 htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify(page_encoding)
             try:
                 p.reset()
@@ -367,10 +372,10 @@ Supported options are:
         for lien in p.uploads:
             self.uploads.append(self.correctlink(lien, current, currentdir, proto, page_encoding))
         for lien in p.liens:
-            if lien != None and page_encoding != None and isinstance(lien, unicode):
+            if (lien is not None) and (page_encoding is not None) and isinstance(lien, unicode):
                 lien = lien.encode(page_encoding, "ignore")
             lien = self.correctlink(lien, current, currentdir, proto, page_encoding)
-            if lien != None:
+            if lien is not None:
                 if(self.__inzone(lien) == 0):
                     # Is the document already visited of forbidden ?
                     lien = HTTP.HTTPResource(lien, encoding=page_encoding, referer=url)
@@ -393,7 +398,7 @@ Supported options are:
 
         for form in p.forms:
             action = self.correctlink(form[0], current, currentdir, proto, page_encoding)
-            if action == None:
+            if action is None:
                 action = current
 
             # urlencode the POST parameters here
@@ -412,11 +417,11 @@ Supported options are:
                     kv[1] = kv[1].encode(page_encoding, "ignore")
 
             form_rsrc = HTTP.HTTPResource(action,
-                    method="POST",
-                    post_params=params,
-                    file_params=files,
-                    encoding=page_encoding,
-                    referer=url)
+                                          method="POST",
+                                          post_params=params,
+                                          file_params=files,
+                                          encoding=page_encoding,
+                                          referer=url)
             if form_rsrc not in self.forms:
                 self.forms.append(form_rsrc)
             if not (form_rsrc in self.browsed or form_rsrc in self.tobrowse):
@@ -428,7 +433,6 @@ Supported options are:
 
         return True
 
-
     def correctlink(self, lien, current_url, current_directory, protocol, encoding):
         """Transform relatives urls in absolutes ones"""
 
@@ -437,7 +441,7 @@ Supported options are:
 
         # No leading or trailing whitespaces
         lien = lien.strip()
-        
+
         if lien == "":
             return current_url
 
@@ -487,7 +491,7 @@ Supported options are:
 
                 # a hack for auto-generated Apache directory index
                 if args in ["C=D;O=A", "C=D;O=D", "C=M;O=A", "C=M;O=D",
-                        "C=N;O=A", "C=N;O=D", "C=S;O=A", "C=S;O=D"]:
+                            "C=N;O=A", "C=N;O=D", "C=S;O=A", "C=S;O=D"]:
                     args = ""
 
                 if "&" in args:
@@ -495,14 +499,14 @@ Supported options are:
                     args = [i for i in args if i != "" and "=" in i]
                     for i in self.bad_params:
                         for j in args:
-                            if j.startswith(i + "="): args.remove(j)
+                            if j.startswith(i + "="):
+                                args.remove(j)
                     args = "&".join(args)
 
             # First part of the url (path) must be encoded with UTF-8
             if isinstance(lien, unicode):
                 lien = lien.encode("UTF-8", "ignore")
             lien = urllib.quote(lien, safe='/#%[]=:;$&()+,!?*')
-
 
             # remove useless slashes repetitions (expect those from the protocol)
             lien = re.sub("([^:])//+", r"\1/", lien)
@@ -514,9 +518,9 @@ Supported options are:
             path = parsed.path
 
             # links going to a parrent directory (..)
-            while re.search("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", path) != None:
+            while re.search("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", path) is not None:
                 path = re.sub("/([~:!,;a-zA-Z0-9\.\-+_]+)/\.\./", "/", path)
-            while re.search("/\./", path) != None:
+            while re.search("/\./", path) is not None:
                 path = re.sub("/\./", "/", path)
             if path == "":
                 path = '/'
@@ -607,30 +611,31 @@ Supported options are:
             return match
         for block in blocks:
             i = string.find(block)
-            if i == -1: return False
+            if i == -1:
+                return False
             string = string[i + len(block):]
         return match
 
     def go(self, crawlerFile):
         # load of the crawler status if a file is passed to it.
-        if crawlerFile != None:
+        if crawlerFile is not None:
             if self.persister.isDataForUrl(crawlerFile) == 1:
                 self.persister.loadXML(crawlerFile)
                 self.tobrowse = self.persister.getToBrose()
                 # TODO: change xml file for browsed urls
-                self.browsed  = self.persister.getBrowsed()
-                self.forms    = self.persister.getForms()
-                self.uploads  = self.persister.getUploads()
-                print _("File") + " " + crawlerFile + " " + _("loaded, the scan continues") + ":"
+                self.browsed = self.persister.getBrowsed()
+                self.forms = self.persister.getForms()
+                self.uploads = self.persister.getUploads()
+                print(_("File {0} loaded, the scan continues:").format(crawlerFile))
                 if self.verbose == 2:
-                    print " * " + _("URLs to browse")
+                    print(_(" * URLs to browse"))
                     for x in self.tobrowse:
-                        print "    + " + x
-                    print " * " + _("URLs browsed")
+                        print(u"    + {0}".format(x))
+                    print(_(" * URLs browsed"))
                     for x in self.browsed:
-                        print "    + " + x
+                        print(u"    + {0}".format(x))
             else:
-                print _("File") + " " + crawlerFile + " " + _("not found, Wapiti will scan again the web site")
+                print(_("File {0} not found, Wapiti will scan again the web site").format(crawlerFile))
 
         # while url list isn't empty, continue browsing
         # if the user stop the scan with Ctrl+C, give him all found urls
@@ -643,7 +648,7 @@ Supported options are:
                         if self.verbose == 1:
                             sys.stderr.write('.')
                         elif self.verbose == 2:
-                            print lien
+                            print(lien)
                         self.browsed.append(lien)
 
 #            if not "link_encoding" in lien.headers:
@@ -654,18 +659,19 @@ Supported options are:
                 if(self.scope == self.SCOPE_PAGE):
                     self.tobrowse = []
             self.saveCrawlerData()
-            print ""
-            print " " + _("Notice") + " "
-            print "========"
-            print _("This scan has been saved in the file") + " " + self.persister.CRAWLER_DATA_DIR + '/' + self.server + ".xml"
-            print _("You can use it to perform attacks without scanning again the web site with the \"-k\" parameter")
+            print('')
+            print(_(" Notice"))
+            print("========")
+            print(_("This scan has been saved in the file {0}/{1}.xml").format(self.persister.CRAWLER_DATA_DIR, self.server))
+            print(_("You can use it to perform attacks without scanning again the web site with the \"-k\" parameter"))
         except KeyboardInterrupt:
             self.saveCrawlerData()
-            print ""
-            print " " + _("Notice") + " "
-            print "========"
-            print _("Scan stopped, the data has been saved in the file") + " " + self.persister.CRAWLER_DATA_DIR + '/' + self.server + ".xml"
-            print _("To continue this scan, you should launch Wapiti with the \"-i\" parameter")
+            print('')
+            print(_(" Notice"))
+            print("========")
+            print(_("Scan stopped, the data has been saved"
+                    "in the file {0}/{1}.xml").format(self.persister.CRAWLER_DATA_DIR, self.server))
+            print(_("To continue this scan, you should launch Wapiti with the \"-i\" parameter"))
             pass
 
     def verbosity(self, vb):
@@ -674,28 +680,28 @@ Supported options are:
 
     def printLinks(self):
         """Print found URLs on standard output"""
-        browsed.sort()
+        self.browsed.sort()
         sys.stderr.write("\n+ " + _("URLs") + ":\n")
-        for lien in browsed:
-            print lien
+        for lien in self.browsed:
+            print(lien)
 
     def printForms(self):
         """Print found forms on standard output"""
         if self.forms != []:
             sys.stderr.write("\n+ "+_("Forms Info") + ":\n")
             for form in self.forms:
-                print _("From") + ":", form[2]
-                print _("To")   + ":", form[0]
+                print(_("From: {0}").format(form[2]))
+                print(_("To: {0}").format(form[0]))
                 for k, v in form[1].items():
-                    print "\t" + k, ":", v
-                print
+                    print(u"\t{0} : {1}".format(k, v))
+                print('')
 
     def printUploads(self):
         """Print urls accepting uploads"""
         if self.uploads != []:
             sys.stderr.write("\n+ " + _("Upload Scripts") + ":\n")
             for up in self.uploads:
-                print up
+                print(up)
 
     def exportXML(self, filename, encoding="UTF-8"):
         "Export the urls and the forms found in an XML file."
@@ -725,7 +731,7 @@ Supported options are:
             upl.setAttribute("url", up)
             items.appendChild(upl)
 
-        fd = open(filename,"w")
+        fd = open(filename, "w")
         xml.writexml(fd, "    ", "    ", "\n", encoding)
         fd.close()
 
@@ -740,16 +746,17 @@ Supported options are:
         return self.uploads
 
     def saveCrawlerData(self):
-        self.persister.setRootURL(self.root);
-        self.persister.setToBrose(self.tobrowse);
-        self.persister.setBrowsed(self.browsed);
-        self.persister.setForms  (self.forms);
-        self.persister.setUploads(self.uploads);
+        self.persister.setRootURL(self.root)
+        self.persister.setToBrose(self.tobrowse)
+        self.persister.setBrowsed(self.browsed)
+        self.persister.setForms(self.forms)
+        self.persister.setUploads(self.uploads)
         self.persister.saveXML(self.persister.CRAWLER_DATA_DIR + '/' + self.server + '.xml')
+
 
 class linkParser(HTMLParser.HTMLParser):
     """Extract urls in 'a' href HTML tags"""
-    def __init__(self, url = ""):
+    def __init__(self, url=""):
         HTMLParser.HTMLParser.__init__(self)
         self.liens = []
         self.forms = []
@@ -876,6 +883,7 @@ class linkParser(HTMLParser.HTMLParser):
                 if '/' in jstr or '.' in jstr or '?' in jstr:
                     self.liens.append(jstr)
 
+
 class linkParser2:
     verbose = 0
 
@@ -893,7 +901,7 @@ class linkParser2:
     def __findTagAttributes(self, tag):
         attDouble = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*"(.*?)"[ +|>]', tag)
         attSingle = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*\'(.*?)\'[ +|>]', tag)
-        attNone   = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*["|\']?(.*?)["|\']?[ +|>]', tag)
+        attNone = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*["|\']?(.*?)["|\']?[ +|>]', tag)
         attNone.extend(attSingle)
         attNone.extend(attDouble)
         return attNone
@@ -917,13 +925,13 @@ class linkParser2:
 
         #Processing the forms, obtaining the method and all the inputs
         #Also finding the method of the forms
-        inputsInForms    = []
+        inputsInForms = []
         textAreasInForms = []
-        selectsInForms   = []
+        selectsInForms = []
         for form in forms:
-            inputsInForms   .append(re.findall('<input.*?>', form))
+            inputsInForms.append(re.findall('<input.*?>', form))
             textAreasInForms.append(re.findall('<textarea.*?>', form))
-            selectsInForms  .append(re.findall('<select.*?>', form))
+            selectsInForms.append(re.findall('<select.*?>', form))
 
         #Extracting the attributes of the <input> tag as XML parser
         inputsAttributes = []
@@ -945,31 +953,34 @@ class linkParser2:
                 textAreasAttributes[i].append(self.__findTagAttributes(textArea))
 
         if(self.verbose == 3):
-            print "\n\n" + _("Forms")
-            print "====="
+            print('')
+            print('')
+            print(_("Forms"))
+            print("=====")
             for i in xrange(len(forms)):
-                print _("Form") + " " + str(i)
+                print(_("Form {0}").format(str(i)))
                 tmpdict = {}
                 for k, v in dict(formsAttributes[i]).items():
                     tmpdict[k.lower()] = v
-                print " * " + _("Method") + ":  " + self.__decode_htmlentities(tmpdict['action'])
-                print " * " + _("Intputs") + ": "
+                print(_(" * Method:  {0}").format(self.__decode_htmlentities(tmpdict['action'])))
+                print(_(" * Intputs:"))
                 for j in xrange(len(inputsInForms[i])):
-                    print "    + " + inputsInForms[i][j]
+                    print(u"    + " + inputsInForms[i][j])
                     for att in inputsAttributes[i][j]:
-                        print "       - " + str(att)
-                print " * " + _("Selects") + ": "
+                        print(u"       - " + str(att))
+                print(_(" * Selects:"))
                 for j in xrange(len(selectsInForms[i])):
-                    print "    + " + selectsInForms[i][j]
+                    print(u"    + " + selectsInForms[i][j])
                     for att in selectsAttributes[i][j]:
-                        print "       - " + str(att)
-                print " * " + _("TextAreas")+": "
+                        print(u"       - " + str(att))
+                print(_(" * TextAreas:"))
                 for j in xrange(len(textAreasInForms[i])):
-                    print "    + " + textAreasInForms[i][j]
+                    print(u"    + " + textAreasInForms[i][j])
                     for att in textAreasAttributes[i][j]:
-                        print "       - " + str(att)
-            print "\n"+_("URLS")
-            print "===="
+                        print(u"       - " + str(att))
+            print('')
+            print(_("URLS"))
+            print("====")
 
         for i in xrange(len(links)):
             tmpdict = {}
@@ -978,7 +989,7 @@ class linkParser2:
             if "href" in tmpdict:
                 self.liens.append(self.__decode_htmlentities(tmpdict['href']))
                 if(self.verbose == 3):
-                    print self.__decode_htmlentities(tmpdict['href'])
+                    print(self.__decode_htmlentities(tmpdict['href']))
 
         for i in xrange(len(forms)):
             tmpdict = {}
@@ -1004,12 +1015,15 @@ class linkParser2:
                     if "name" in tmpdict:
                         if tmpdict['type'].lower() in \
                             ['text', 'password', 'radio', 'checkbox', 'hidden',
-                                    'submit', 'search']:
+                             'submit', 'search']:
                             # use default value if present or set it to 'on'
                             if "value" in tmpdict:
-                                if tmpdict["value"] != "": val = tmpdict["value"]
-                                else: val = u"on"
-                            else: val = u"on"
+                                if tmpdict["value"] != "":
+                                    val = tmpdict["value"]
+                                else:
+                                    val = u"on"
+                            else:
+                                val = u"on"
                             self.form_values.append([tmpdict['name'], val])
                         if tmpdict['type'].lower() == "file":
                             self.uploads.append(self.current_form_url)
@@ -1068,25 +1082,25 @@ if __name__ == "__main__":
         xmloutput = ""
         crawlerFile = None
 
-        if len(sys.argv)<2:
-            print lswww.__doc__
+        if len(sys.argv) < 2:
+            print(lswww.__doc__)
             sys.exit(0)
         if '-h' in sys.argv or '--help' in sys.argv:
-            print lswww.__doc__
+            print(lswww.__doc__)
             sys.exit(0)
         myls = lswww(sys.argv[1])
         myls.verbosity(1)
         try:
             opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:ib:",
                     ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
-                      "remove=", "verbose=", "timeout=", "nice=", "export=", "continue",
-                      "scope="])
+                     "remove=", "verbose=", "timeout=", "nice=", "export=", "continue",
+                     "scope="])
         except getopt.GetoptError, e:
-            print e
+            print(e)
             sys.exit(2)
         for o, a in opts:
             if o in ("-h", "--help"):
-                print lswww.__doc__
+                print(lswww.__doc__)
                 sys.exit(0)
             if o in ("-s", "--start"):
                 if a.startswith("http://") or a.startswith("https://"):

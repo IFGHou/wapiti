@@ -22,9 +22,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+
 class AuxText:
     """Class for reading and writing in text files"""
-    def readLines(self,fileName):
+    def readLines(self, fileName):
         """returns a array"""
         lines = []
         f = None
@@ -33,9 +34,9 @@ class AuxText:
             for line in f:
                 cleanLine = line.strip(" \n")
                 if cleanLine != "":
-                    lines.append(cleanLine.replace("\\0","\0"))
-        except IOError,e:
-            print e
+                    lines.append(cleanLine.replace("\\0", "\0"))
+        except IOError, e:
+            print(e)
         #finally clause do not work with jyton
         #finally:
             #if f!=None:
@@ -48,6 +49,6 @@ if __name__ == "__main__":
         l = AuxText()
         ll = l.readLines("./config/execPayloads.txt")
         for li in ll:
-            print li
+            print(li)
     except SystemExit:
         pass

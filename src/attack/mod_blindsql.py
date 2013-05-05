@@ -1,6 +1,5 @@
 from attack import Attack
 from vulnerability import Vulnerability
-from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
 from net import HTTP
 
@@ -103,7 +102,7 @@ class mod_blindsql(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter="QUERY_STRING",
-                                         info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
+                                         info=_("The server responded with a 500 HTTP error code"))
                             print(_("The server responsed with a 500 HTTP error code"))
                             print(_("  Evil url: {0}").format(evil_req.url))
         else:
@@ -153,7 +152,7 @@ class mod_blindsql(Attack):
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
+                                             info=_("The server responded with a 500 HTTP error code"))
                                 print(_("The server responded with a 500 HTTP error code"))
                                 print(_("  Evil url: {0}").format(evil_req.url))
                 params_list[i][1] = saved_value
@@ -221,7 +220,7 @@ class mod_blindsql(Attack):
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=_("The server responded with a 500 HTTP error code coming from").format(referer, VulDescrip.ERROR_500_DESCRIPTION))
+                                             info=_("The server responded with a 500 HTTP error code coming from {0}").format(referer))
                                 print(_("The server responded with a 500 HTTP error code in {0}").format(evil_req.url))
                                 print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
                                 print(_("  coming from {0}").format(referer))
@@ -233,4 +232,3 @@ class mod_blindsql(Attack):
             if x.name == "sql":
                 self.excludedGET = x.vulnerableGET
                 self.excludedPOST = x.vulnerablePOST
-

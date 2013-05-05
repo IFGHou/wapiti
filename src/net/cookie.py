@@ -37,10 +37,10 @@ liste = []
 if len(sys.argv) > 3:
     data = sys.argv[3:]
     for l in data:
-        liste.append( tuple( l.split("=") ) )
+        liste.append(tuple(l.split("=")))
 params = urllib.urlencode(liste)
 
-txheaders =  {'user-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
+txheaders = {'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
 try:
     if params:
@@ -49,8 +49,8 @@ try:
     else:
         r = requests.get(url, headers=txheaders)
 except IOError, e:
-        print _("Error getting url"), url
-        print e
+        print(_("Error getting url {0}").format(url))
+        print(e)
         sys.exit(1)
 
 jc = jsoncookie.jsoncookie()

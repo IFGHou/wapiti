@@ -25,7 +25,6 @@
 
 from attack import Attack
 from vulnerability import Vulnerability
-from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 from net import HTTP
 
 
@@ -64,67 +63,64 @@ class mod_htaccess(Attack):
         if referer:
             headers["referer"] = referer
 
-        err = ""
         url = page
         if url not in self.attackedGET:
-            #print the url if verbose equal 2
             if self.verbose == 2:
-                print "+", url
+                print(u"+ {0}".format(url))
 
             err1 = self.__returnErrorByCode(resp_headers["status_code"])
 
             if err1 != "ok":
                 data1 = self.HTTP.send(url, headers=headers).getPage()
-                #htaccess protection detected
+                # .htaccess protection detected
                 if self.verbose >= 1:
-                    print _("HtAccess protection found:"), url
+                    print(_("HtAccess protection found: {0}").format(url))
 
                 evil_req = HTTP.HTTPResource(url, method="ABC")
                 data2, code2 = self.HTTP.send(evil_req, headers=headers).getPageCode()
                 err2 = self.__returnErrorByCode(code2)
 
                 if err2 == "ok":
-                    #htaccess bypass success
+                    # .htaccess bypass success
 
-                    #print output informations by verbosity option
                     if self.verbose >= 1:
                         if self.color == 1:
-                            print self.CYAN + "|HTTP Code : ", resp_headers["status_code"], ":", err1 + self.STD
+                            print(_("{0}|HTTP Code: {1} : {2}{3}").format(self.CYAN, resp_headers["status_code"], err1, self.STD))
                         else:
-                            print "|HTTP Code : ", resp_headers["status_code"], ":", err1
+                            print(_("|HTTP Code: {0} : {1}").format(resp_headers["status_code"], err1))
 
                     if self.verbose == 2:
                         if self.color == 1:
-                            print self.YELLOW + _("Source code:") + self.STD
-                            print self.GB + data1 + self.STD
+                            print(_("{0}Source code:{1}").format(self.YELLOW, self.STD))
+                            print(u"{0}{1}{2}".format(self.GB, data1, self.STD))
                         else:
-                            print _("Source code:")
-                            print data1
+                            print(_("Source code:"))
+                            print(data1)
 
-                    #report xml generator (ROMULUS) not implemented for htaccess
+                    # report xml generator (ROMULUS) not implemented for htaccess
                     self.logVuln(category=Vulnerability.HTACCESS,
                                  level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                  request=evil_req,
-                                 info=err + " HtAccess")
+                                 info=_("{0} HtAccess").format(err1))
                     if self.color == 1:
-                        print self.RED + "  " + _(".htaccess bypass vulnerability:"), evil_req.url + self.STD
+                        print(_("{0}  .htaccess bypass vulnerability: {1}{2}").format(self.RED, evil_req.url, self.STD))
                     else:
-                        print "  " + _(".htaccess bypass vulnerability:"), evil_req.url
+                        print(_("  .htaccess bypass vulnerability: {0}").format(evil_req.url))
 
-                    #print output informations by verbosity option
+                    # print output informations by verbosity option
                     if self.verbose >= 1:
                         if self.color == 1:
-                            print self.CYAN + "|HTTP Code : ", code2 + self.STD
+                            print(_("{0}|HTTP Code: {1}{2}").format(self.CYAN, code2, self.STD))
                         else:
-                            print "|HTTP Code : ", code2
+                            print(_("|HTTP Code: {0}").format(code2))
 
                     if self.verbose == 2:
                         if self.color == 1:
-                            print self.YELLOW + _("Source code:") + self.STD
-                            print self.GB + data2 + self.STD
+                            print(_("{0}Source code:{1}").format(self.YELLOW, self.STD))
+                            print(u"{0}{1}{2}".format(self.GB, data2, self.STD))
                         else:
-                            print _("Source code:")
-                            print data2
+                            print(_("Source code:"))
+                            print(data2)
 
                 else:
                     # TODO : still need this ?
@@ -132,9 +128,9 @@ class mod_htaccess(Attack):
                         self.logVuln(category=Vulnerability.HTACCESS,
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
-                                     info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
-                        print _("500 HTTP Error code with")
-                        print "  " + _("Evil url") + ":", url
+                                     info=_("The server responded with a 500 HTTP error code"))
+                        print(_("500 HTTP Error code with"))
+                        print(_("  Evil url: {0}").format(url))
 
-                    #add the url with the url attacked
+                    # add the url with the url attacked
                 self.attackedGET.append(url)

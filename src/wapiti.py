@@ -207,8 +207,8 @@ Supported options are:
 
         attack = __import__("attack")
 
-        print "[*]", _("Loading modules"), ":"
-        print "\t" + ", ".join(attack.modules)
+        print(_("[*] Loading modules:"))
+        print(u"\t {0}".format(u", ".join(attack.modules)))
         for mod_name in attack.modules:
             mod = __import__("attack." + mod_name, fromlist=attack.modules)
             mod_instance = getattr(mod, mod_name)(self.http_engine, self.reportGen)
@@ -278,8 +278,8 @@ Supported options are:
     def attack(self):
         "Launch the attacks based on the preferences set by the command line"
         if self.urls == {} and self.forms == []:
-            print _("No links or forms found in this page !")
-            print _("Make sure the url is correct.")
+            print(_("No links or forms found in this page !"))
+            print(_("Make sure the url is correct."))
             sys.exit(1)
 
         self.__initAttacks()
@@ -287,36 +287,37 @@ Supported options are:
         for x in self.attacks:
             if x.doGET is False and x.doPOST is False:
                 continue
-            print
+            print('')
             if x.require != []:
                 t = [y.name for y in self.attacks if y.name in x.require and (y.doGET or y.doPOST)]
                 if x.require != t:
-                    print "[!]", _("Missing dependecies for module"), x.name, ":"
-                    print "  ", ",".join([y for y in x.require if y not in t])
+                    print(_("[!] Missing dependecies for module {0}:").format(x.name))
+                    print(u"  {0}".format(",".join([y for y in x.require if y not in t])))
                     continue
                 else:
                     x.loadRequire([y for y in self.attacks if y.name in x.require])
 
-            print "[+]", _("Launching module"), x.name
+            print(_("[+] Launching module").format(x.name))
             x.attack(self.urls, self.forms)
 
         if self.myls.getUploads() != []:
-            print "\n" + _("Upload scripts found") + ":"
-            print "----------------------"
+            print('')
+            print(_("Upload scripts found:"))
+            print("----------------------")
             for url in self.myls.getUploads():
-                print url
+                print(url)
         if not self.outputFile:
             if self.reportGeneratorType == "html":
                 self.outputFile = self.COPY_REPORT_DIR
             else:
                 self.outputFile = self.REPORT_FILE
         self.reportGen.generateReport(self.outputFile)
-        print "\n" + _("Report")
-        print "------"
-        print _("A report has been generated in the file") + " " + self.outputFile
+        print('')
+        print(_("Report"))
+        print("------")
+        print(_("A report has been generated in the file {0}").format(self.outputFile))
         if self.reportGeneratorType == "html":
-            print _("Open") + " " + self.outputFile + \
-                        "/index.html " + _("with a browser to see this report.")
+            print(_("Open {0}/index.html with a browser to see this report.").format(self.outputFile))
 
     def setTimeOut(self, timeout=6.0):
         "Set the timeout for the time waiting for a HTTP response"
@@ -387,10 +388,10 @@ if __name__ == "__main__":
         crawlerFile = None
         attackFile = None
         if len(sys.argv) < 2:
-            print doc
+            print(doc)
             sys.exit(0)
         if '-h' in sys.argv or '--help' in sys.argv:
-            print doc
+            print(doc)
             sys.exit(0)
 
         if not os.path.isdir(crawlerPersister.CRAWLER_DATA_DIR):
@@ -406,11 +407,11 @@ if __name__ == "__main__":
                         "module=", "outputfile", "reportType", "nice=",
                         "attack", "continue", "scope="])
         except getopt.GetoptError, e:
-            print e
+            print(e)
             sys.exit(2)
         for o, a in opts:
             if o in ("-h", "--help"):
-                print doc
+                print(doc)
                 sys.exit(0)
             if o in ("-s", "--start"):
                 if a.startswith("http://") or a.startswith("https://"):
@@ -474,29 +475,30 @@ if __name__ == "__main__":
                 if a != '' and a[0] != '-':
                     crawlerFile = a
 
-        print _("Wapiti-SVN (wapiti.sourceforge.net)")
-        print _("WARNING: This is a development version. Some features may be broken.")
-        if attackFile != None:
+        print(_("Wapiti-SVN (wapiti.sourceforge.net)"))
+        print(_("WARNING: This is a development version. Some features may be broken."))
+        if attackFile is not None:
             if crawlerPersister.isDataForUrl(attackFile) == 1:
                 crawlerPersister.loadXML(attackFile)
                 # TODO: xml structure
                 wap.urls  = crawlerPersister.getBrowsed()
                 wap.forms = crawlerPersister.getForms()
                 # wap.uploads = crawlerPersister.getUploads()
-                print _("File") + " " + attackFile + " " + \
-                        _("loaded, Wapiti will use it to perform the attacks")
+                print(_("File {0} loaded. Wapiti will use it to perform the attack").format(attackFile))
             else:
-                print _("File") + " " + attackFile + " " + \
-                        _("not found, Wapiti will scan again the web site")
+                print(_("File {0} not found."
+                        "Wapiti will scan the web site again").format(attackFile))
                 wap.browse(crawlerFile)
         else:
             wap.browse(crawlerFile)
         try:
             wap.attack()
         except KeyboardInterrupt:
-            print ""
-            print _("Attack process interrupted. To perform again the attack, lauch Wapiti with \"-i\" or \"-k\" parameter.")
-            print ""
+            print('')
+            print(_("Attack process interrupted."
+                    "To perform again the attack,"
+                    "lauch Wapiti with \"-i\" or \"-k\" parameter."))
+            print('')
             pass
     except SystemExit:
         pass

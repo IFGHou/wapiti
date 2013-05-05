@@ -24,6 +24,7 @@
 from xml.parsers import expat
 from report.reportgeneratorinfo import ReportGeneratorInfo
 
+
 class ReportGeneratorsXMLParser:
 
     REPORT_GENERATOR = "reportGenerator"
@@ -37,18 +38,18 @@ class ReportGeneratorsXMLParser:
 
     def __init__(self):
         self._parser = expat.ParserCreate()
-        self._parser.StartElementHandler  = self.start_element
-        self._parser.EndElementHandler    = self.end_element
+        self._parser.StartElementHandler = self.start_element
+        self._parser.EndElementHandler = self.end_element
         self._parser.CharacterDataHandler = self.char_data
 
-    def parse(self,fileName):
+    def parse(self, fileName):
         f = None
         try:
             f = open(fileName)
             content = f.read()
             self.feed(content)
         finally:
-            if f!=None:
+            if f is not None:
                 f.close()
 
     def feed(self, data):
@@ -83,4 +84,3 @@ class ReportGeneratorsXMLParser:
 
     def getReportGenerators(self):
         return self.reportGenerators
-

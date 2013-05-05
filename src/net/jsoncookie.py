@@ -1,7 +1,7 @@
 import json
-import Cookie
 import cookielib
 import requests
+
 
 class jsoncookie:
 
@@ -34,10 +34,10 @@ class jsoncookie:
                     if isinstance(cookieobj, cookielib.Cookie):
                         print cookieobj
                         cookie_attrs = {}
-                        cookie_attrs["value"]   = cookieobj.value
+                        cookie_attrs["value"] = cookieobj.value
                         cookie_attrs["expires"] = cookieobj.expires
-                        cookie_attrs["secure"]  = cookieobj.secure
-                        cookie_attrs["port"]    = cookieobj.port
+                        cookie_attrs["secure"] = cookieobj.secure
+                        cookie_attrs["port"] = cookieobj.port
                         cookie_attrs["version"] = cookieobj.version
                         self.cookiedict[dotdomain][path][key] = cookie_attrs
 
@@ -58,22 +58,22 @@ class jsoncookie:
                 for cookie_name, cookie_attrs in self.cookiedict[d][path].items():
                     ck = cookielib.Cookie(
                             version=cookie_attrs["version"],
-                            name  = cookie_name,
-                            value = cookie_attrs["value"],
-                            port  = None,
-                            port_specified = False,
-                            domain = d,
-                            domain_specified = True,
-                            domain_initial_dot = False,
-                            path = path,
-                            path_specified = True,
-                            secure = cookie_attrs["secure"],
-                            expires = cookie_attrs["expires"],
-                            discard = True,
-                            comment = None,
-                            comment_url = None,
-                            rest = {'HttpOnly': None},
-                            rfc2109 = False)
+                            name=cookie_name,
+                            value=cookie_attrs["value"],
+                            port=None,
+                            port_specified=False,
+                            domain=d,
+                            domain_specified=True,
+                            domain_initial_dot=False,
+                            path=path,
+                            path_specified=True,
+                            secure=cookie_attrs["secure"],
+                            expires=cookie_attrs["expires"],
+                            discard=True,
+                            comment=None,
+                            comment_url=None,
+                            rest={'HttpOnly': None},
+                            rfc2109=False)
 
                     if cookie_attrs["port"]:
                         ck.port = cookie_attrs["port"]
@@ -101,19 +101,18 @@ class jsoncookie:
             # remove every data on the specified domain for the matching path
             self.cookiedict[domain].pop(path)
             return True
-        
+
         if key in self.cookiedict[domain][path].keys():
             self.cookiedict[domain][path].pop(key)
             return True
         return False
-
 
     def dump(self):
         if not self.fd:
             return False
         self.fd.seek(0)
         self.fd.truncate()
-        json.dump(self.cookiedict, self.fd, indent = 2)
+        json.dump(self.cookiedict, self.fd, indent=2)
         return True
 
     def close(self):

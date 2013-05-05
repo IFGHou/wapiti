@@ -19,7 +19,6 @@
 import BeautifulSoup
 from attack import Attack
 from vulnerability import Vulnerability
-from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import csv
 import re
 import os
@@ -71,8 +70,8 @@ class mod_nikto(Attack):
             fd.close()
         except IOError:
             try:
-                print _("Problem with local nikto database.")
-                print _("Downloading from the web...")
+                print(_("Problem with local nikto database."))
+                print(_("Downloading from the web..."))
                 resp = self.HTTP.send("http://cirt.net/nikto/UPDATES/2.1.5/db_tests")
                 page = resp.getRawPage()
 
@@ -85,7 +84,7 @@ class mod_nikto(Attack):
                 writer.writerows(self.nikto_db)
                 fd.close()
             except socket.timeout:
-                print _("Error downloading Nikto database")
+                print(_("Error downloading Nikto database"))
 
     def attack(self, urls, forms):
         for l in self.nikto_db:
@@ -169,8 +168,8 @@ class mod_nikto(Attack):
                         fail_or = True
 
             if ((match or match_or) and match_and) and not (fail or fail_or):
-                print url
-                print l[10]
+                print(url)
+                print(l[10])
                 refs = []
                 if l[1] != "0":
                     refs.append("http://osvdb.org/show/osvdb/" + l[1])
@@ -202,10 +201,11 @@ class mod_nikto(Attack):
 
                 info = l[10]
                 if refs != []:
-                    print _("References:") + "\n  " + "\n  ".join(refs)
+                    print(_("References:"))
+                    print(u"  {0}".format(u"\n  ".join(refs)))
                     info += "\n" + _("References:") + "\n"
                     info += "\n".join(['<a href="' + x + '">' + x + '</a>' for x in refs])
-                print
+                print('')
 
                 if l[4] == "GET":
                     self.logVuln(category=Vulnerability.NIKTO,

@@ -33,13 +33,13 @@ class Attack:
     for any class which implements a new type of attack
     """
     verbose = 0
-    color   = 0
+    color = 0
 
     name = "attack"
 
     logVuln = None
-    HTTP      = None
-    auxText   = None
+    HTTP = None
+    auxText = None
 
     doGET = True
     doPOST = True
@@ -52,17 +52,18 @@ class Attack:
     deps = []
 
     # List of attack's url already launched in the current module
-    attackedGET  = []
+    attackedGET = []
     attackedPOST = []
 
-    vulnerableGET  = []
+    vulnerableGET = []
     vulnerablePOST = []
 
     CONFIG_DIR = ""
     if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
         CONFIG_DIR = "/usr/local/share/doc/packages/wapiti/config/attacks"
     else:
-        BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
+        BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),
+                                                 '../..'))
         CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
 
     # Color codes
@@ -73,9 +74,9 @@ class Attack:
     GB = "\033[0;30m\033[47m"
 
     allowed = ['php', 'html', 'htm', 'xml', 'xhtml', 'xht', 'xhtm',
-              'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
-              'shtml', 'phtm', 'phtml', 'jhtml', 'pl', 'jsp', 'cfm',
-              'cfml', 'py']
+               'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
+               'shtml', 'phtm', 'phtml', 'jhtml', 'pl', 'jsp', 'cfm',
+               'cfml', 'py']
 
     # The priority of the module, from 0 (first) to 10 (last). Default is 5
     PRIORITY = 5
@@ -94,7 +95,7 @@ class Attack:
         self.color = 1
 
     def loadPayloads(self, fileName):
-        """This method loads the payloads for an attack from the specified file"""
+        """Load the payloads from the specified file"""
         return self.auxText.readLines(fileName)
 
     def attackGET(self, page, params_list, headers={}):
@@ -117,19 +118,19 @@ class Attack:
                 try:
                     self.attackGET(http_res)
                 except socket.error, se:
-                    print 'error: %s while attacking %s' % (repr(str(se[0])), url)
+                    print(_('error: {0} while attacking {1}').format(repr(str(se[0])), url))
                 except requests.exceptions.Timeout, te:
-                    print 'error: timeout while attacking %s' % (url)
+                    print(_('error: timeout while attacking {0}').format(url))
                 #except Exception, e:
                 #    print 'error: %s while attacking %s' % (repr(str(e[0])), url)
-  
+
         if self.doPOST is True:
             for form in forms:
                 try:
                     self.attackPOST(form)
                 except socket.error, se:
-                    print 'error: %s while attacking %s' % (repr(str(se[0])), url)
+                    print(_('error: {0} while attacking {1}').format(repr(str(se[0])), url))
                 except requests.exceptions.Timeout, te:
-                    print 'error: timeout while attacking %s' % (url)
+                    print(_('error: timeout while attacking {0}').format(url))
          #       except Exception, e:
          #           print 'error: %s while attacking %s' % (repr(str(e[0])), url)

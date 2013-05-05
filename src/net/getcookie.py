@@ -18,7 +18,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import urllib
 import urlparse
 import sys
 import lswww
@@ -48,10 +47,9 @@ proxy = None
 server = urlparse.urlparse(url).netloc
 
 try:
-    opts, args = getopt.getopt(sys.argv[3:], "p:",
-            ["proxy="])
+    opts, args = getopt.getopt(sys.argv[3:], "p:", ["proxy="])
 except getopt.GetoptError, e:
-    print e
+    print(e)
     sys.exit(2)
 for o, a in opts:
     if o in ("-p", "--proxy"):
@@ -68,7 +66,7 @@ current = current.split("?")[0]
 currentdir = "/".join(current.split("/")[:-1]) + "/"
 proto = url.split("://")[0]
 
-txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
+txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
 session = requests.session(proxies=proxy)
 r = session.get(url, headers=txheaders)
@@ -91,22 +89,22 @@ except HTMLParser.HTMLParseError, err:
 jc.addcookies(r.cookies)
 
 if len(p.forms) == 0:
-    print _("No forms found in this page !")
+    print(_("No forms found in this page !"))
     sys.exit(1)
 
 myls = lswww.lswww(url)
 i = 0
 nchoice = 0
 if len(p.forms) > 1:
-    print _("Choose the form you want to use :")
+    print(_("Choose the form you want to use :"))
     for form in p.forms:
-        print
-        print "%d) %s" % (i, myls.correctlink(form[0], current, currentdir, proto))
+        print('')
+        print(u"{0}) {1}".format(i, myls.correctlink(form[0], current, currentdir, proto)))
         for field, value in form[1].items():
-            print "\t" + field + " (" + value + ")"
+            print(u"\t{0} ({1})".format(field, value))
         i += 1
     ok = False
-    while ok == False:
+    while not ok:
         choice = raw_input(_("Enter a number : "))
         if choice.isdigit():
             nchoice = int(choice)
@@ -114,8 +112,8 @@ if len(p.forms) > 1:
                 ok = True
 
 form = p.forms[nchoice]
-print _("Please enter values for the following form: ")
-print "url = " + myls.correctlink(form[0], current, currentdir, proto)
+print(_("Please enter values for the following form: "))
+print(_("url = {0}").format(myls.correctlink(form[0], current, currentdir, proto)))
 
 for i in range(len(form[1])):
     field, value = form[1][i]
@@ -126,8 +124,8 @@ url = myls.correctlink(form[0], current, currentdir, proto)
 
 #params = urllib.urlencode(form[1])
 
-txheaders =  {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
-              'Content-type': 'application/x-www-form-urlencoded'}
+txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
+             'Content-type': 'application/x-www-form-urlencoded'}
 
 r = session.post(url, data=form[1], headers=txheaders)
 

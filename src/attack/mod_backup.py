@@ -8,7 +8,6 @@
 
 from attack import Attack
 from vulnerability import Vulnerability
-from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import socket
 from net import HTTP
 
@@ -68,11 +67,11 @@ class mod_backup(Attack):
                     err = self.__returnErrorByCode(code)
                     if err == "ok":
                         if self.color == 1:
-                            print self.RED + _("Found backup file !") + self.STD
-                            print self.RED + "    -> " + evil_req.url + self.STD
+                            print(_("{0}Found backup file !{1}").format(self.RED, self.STD))
+                            print(u"{0}    -> {1}{2}".format(self.RED, evil_req.url, self.STD))
                         else:
-                            print " +", _("Found backup file !")
-                            print "   ->", evil_req.url
+                            print(_(" + Found backup file !"))
+                            print(u"   -> {0}".format(evil_req.url))
                         self.logVuln(category=Vulnerability.BACKUP,
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,

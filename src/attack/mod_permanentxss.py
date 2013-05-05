@@ -3,7 +3,6 @@ import socket
 import requests
 from attack import Attack
 from vulnerability import Vulnerability
-from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 from net import HTTP
 
 
@@ -58,7 +57,7 @@ class mod_permanentxss(Attack):
             if referer:
                 headers["referer"] = referer
             if self.verbose >= 1:
-                print "+", url
+                print(u"+ {0}".format(url))
             try:
                 resp = self.HTTP.send(url, headers=headers)
                 data = resp.getPage()
@@ -68,9 +67,9 @@ class mod_permanentxss(Attack):
             except socket.error, se:
                 data = ""
                 resp = None
-                print 'error: %s while attacking %s' % (repr(str(se[1])), url)
+                print(_('error: {0} while attacking {1}').format(repr(str(se[1])), url))
             except Exception, e:
-                print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+                print(_('error: {0} while attacking {1}').format(repr(str(e[0])), url))
                 continue
 
             # Search for permanent XSS vulns which were injected via GET
@@ -85,22 +84,21 @@ class mod_permanentxss(Attack):
                                 # if we can find the payload again, this is a stored XSS
                                 evil_req = HTTP.HTTPResource(code_url.replace(code, self.SUCCESSFUL_XSS[code]))
                                 if self.color == 0:
-                                    print _("Found permanent XSS in"), url, _("with"), evil_req.url
+                                    print(_("Found permanent XSS in {0} with {1}").format(url, evil_req.url))
                                 else:
                                     end = code_url.index(code) - 1
                                     start = code_url.rfind("&", 0, end)
                                     if start == -1:
                                         start = code_url.rfind("?", 0, end)
                                     k = code_url[start+1:end]
-                                    print _("Found permanent XSS in"), url
-                                    print "  " + _("with"), evil_req.url.replace(k + "=", self.RED + k + self.STD + "=")
+                                    print(_("Found permanent XSS in {0}").format(url))
+                                    print(_("  with: {0}").format(evil_req.url.replace(k + "=", self.RED + k + self.STD + "=")))
 
                                 self.logVuln(category=Vulnerability.XSS,
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
-                                             info=_("Found permanent XSS in") + \
-                                                    " " + url + " " + \
-                                                    _("with") + " " + self.HTTP.escape(evil_req.url))
+                                             info=_("Found permanent XSS in {0}"
+                                                    " with").format(url, self.HTTP.escape(evil_req.url)))
                                 # we reported the vuln, now search another code
                                 continue
 
@@ -117,28 +115,28 @@ class mod_permanentxss(Attack):
                                     dat = ""
                                     resp = timeout
                                 except Exception, e:
-                                    print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+                                    print(_('error: {0} while attacking {1}').format(repr(str(e[0])), url))
                                     continue
 
                                 if self.validXSS(dat, code, payload):
                                     # injection successful :)
                                     if self.color == 0:
-                                        print _("Found permanent XSS in"), url, _("with"), evil_req.url
+                                        print(_("Found permanent XSS in {0} with {1}").format(url, evil_req.url))
                                     else:
                                         end = code_url.index(code) - 1
                                         start = code_url.rfind("&", 0, end)
                                         if start == -1:
                                             start = code_url.rfind("?", 0, end)
                                         k = code_url[start+1:end]
-                                        print _("Found permanent XSS in"), url
-                                        print "  " + _("with"), evil_req.url.replace(k + "=", self.RED + k + self.STD + "=")
+                                        print(_("Found permanent XSS in {0}").format(url))
+                                        print(_("  with {0}")
+                                              .format(evil_req.url.replace(k + "=", self.RED + k + self.STD + "=")))
 
                                     self.logVuln(category=Vulnerability.XSS,
                                                  level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                  request=evil_req,
-                                                 info=_("Found permanent XSS in") + \
-                                                       " " + url + " " + \
-                                                       _("with") + " " + self.HTTP.escape(evil_req.url))
+                                                 info=_("Found permanent XSS in {0}"
+                                                        " with {1}").format(url, self.HTTP.escape(evil_req.url)))
                                     # look for another code in the webpage
                                     break
 
@@ -174,16 +172,23 @@ class mod_permanentxss(Attack):
                                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                          request=evil_req,
                                                          parameter=param_name,
-                                                         info=_("Found permanent XSS attacked by") + " " + evil_req.url + \
-                                                              " " + _("with fields") + " " + self.HTTP.encode(post_params))
-                                            print _("Found permanent XSS in"), url
+                                                         info=_("Found permanent XSS attacked by {0}"
+                                                                " with field {1}").format(evil_req.url,
+                                                                                          self.HTTP.encode(post_params)))
+                                            print(_("Found permanent XSS in {0}").format(url))
                                             if self.color == 1:
-                                                print "  " + _("attacked by"), evil_req.url, _("with fields"), \
-                                                        self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                                                print(_("  attacked by {0}"
+                                                        "with fields {1}")
+                                                      .format(evil_req.url,
+                                                              self.HTTP.encode(post_params)
+                                                              .replace(param_name + "=",
+                                                                       self.RED + param_name + self.STD + "=")))
                                             else:
-                                                print "  " + _("attacked by"), evil_req.url, _("with fields"), self.HTTP.encode(post_params)
+                                                print(_("  attacked by {0}"
+                                                        " with fields").format(evil_req.url,
+                                                                               self.HTTP.encode(post_params)))
                                             if url != evil_req.url:
-                                                print "  " + _("injected from ") + referer
+                                                print(_("  injected from {0}").format(referer))
                                             # search for the next code in the webpage
                                     continue
 
@@ -218,24 +223,29 @@ class mod_permanentxss(Attack):
                                                 dat = ""
                                                 resp = timeout
                                             except Exception, e:
-                                                print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+                                                print(_('error: {0} while attacking {1}').format(repr(str(e[0])), url))
                                                 continue
                                             if self.validXSS(dat, code, payload):
                                                 self.logVuln(category=Vulnerability.XSS,
                                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                              request=evil_req,
                                                              parameter=param_name,
-                                                             info=_("Found permanent XSS attacked by") + " " + evil_req.url + \
-                                                             " " + _("with fields") + " " + self.HTTP.encode(post_params))
+                                                             info=_("Found permanent XSS attacked by {0}"
+                                                                    " with fields {1}").format(evil_req.url,
+                                                                                               self.HTTP.encode(post_params)))
 
-                                                print _("Found permanent XSS in"), url
+                                                print(_("Found permanent XSS in {0}").format(url))
                                                 if self.color == 1:
-                                                    print "  " + _("attacked by"), evil_req.url, _("with fields"), \
-                                                            self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                                                    print(_("  attacked by {0} with fields {1}")
+                                                          .format(evil_req.url,
+                                                                  self.HTTP.encode(post_params)
+                                                                  .replace(param_name + "=",
+                                                                           self.RED + param_name + self.STD + "=")))
                                                 else:
-                                                    print "  " + _("attacked by"), evil_req.url, _("with fields"), self.HTTP.encode(post_params)
+                                                    print(_("  attacked by {0} with fields {1}")
+                                                          .format(evil_req.url, self.HTTP.encode(post_params)))
                                                 if url != evil_req.url:
-                                                    print "  " + _("injected from ") + referer
+                                                    print(_("  injected from {0}").format(referer))
                                                 break
 
     # check weither our JS payload is injected in the webpage

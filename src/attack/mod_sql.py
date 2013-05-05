@@ -1,7 +1,6 @@
 import re
 from attack import Attack
 from vulnerability import Vulnerability
-from vulnerabilitiesdescriptions import VulnerabilitiesDescriptions as VulDescrip
 import requests
 from net import HTTP
 
@@ -112,7 +111,7 @@ class mod_sql(Attack):
                 evil_req = HTTP.HTTPResource(url)
 
                 if self.verbose == 2:
-                    print "+", url
+                    print(u"+ {0}".format(url))
                 try:
                     resp = self.HTTP.send(evil_req, headers=headers)
                     data, code = resp.getPageCode()
@@ -129,9 +128,9 @@ class mod_sql(Attack):
                     self.logVuln(category=Vulnerability.SQL_INJECTION,
                                  level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                  request=evil_req,
-                                 info=err + " " + _("(QUERY_STRING)"))
-                    print err, _("(QUERY_STRING) in"), page
-                    print "  " + _("Evil url") + ":", evil_req.url
+                                 info=u"{0} (QUERY_STRING)".format(err))
+                    print(_("{0} (QUERY_STRING) in {1}").format(err, page))
+                    print(_("  Evil url: {0}").format(evil_req.url))
 
                     self.vulnerableGET.append(page + "?" + "__SQL__")
 
@@ -140,9 +139,9 @@ class mod_sql(Attack):
                         self.logVuln(category=Vulnerability.SQL_INJECTION,
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
-                                     info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
-                        print _("500 HTTP Error code with")
-                        print "  " + _("Evil url") + ":", evil_req.url
+                                     info=_("The server responded with a 500 HTTP error code"))
+                        print(_("500 HTTP Error code with"))
+                        print(_("  Evil url:").format(evil_req.url))
         else:
             for i in range(len(params_list)):
                 err = ""
@@ -158,7 +157,7 @@ class mod_sql(Attack):
                     evil_req = HTTP.HTTPResource(url)
 
                     if self.verbose == 2:
-                        print "+", evil_req.url
+                        print(u"+ {0}".format(evil_req.url))
                     try:
                         resp = self.HTTP.send(evil_req, headers=headers)
                         data, code = resp.getPageCode()
@@ -177,10 +176,13 @@ class mod_sql(Attack):
                                      parameter=param_name,
                                      info=err + " (" + param_name + ")")
                         if self.color == 0:
-                            print err, "(" + param_name + ") " + _("in"), page
-                            print "  " + _("Evil url") + ":", evil_req.url
+                            print(_("{0} ({1} in {2}").format(err, param_name, page))
+                            print(_("  Evil url: {0}").format(evil_req.url))
                         else:
-                            print err, ":", evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                            print(u"{0}: {1}"
+                                  .format(err,
+                                          evil_req.url.replace(param_name + "=",
+                                                               self.RED + param_name + self.STD + "=")))
                         self.vulnerableGET.append(pattern_url)
 
                     elif code == "500":
@@ -188,9 +190,9 @@ class mod_sql(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=VulDescrip.ERROR_500 + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
-                            print _("500 HTTP Error code with")
-                            print "  " + _("Evil url") + ":", evil_req.url
+                                         info=_("The server responded with a 500 HTTP error code"))
+                            print(_("500 HTTP Error code with"))
+                            print(_("  Evil url: {0}").format(evil_req.url))
                 params_list[i][1] = saved_value
 
     def attackPOST(self, form):
@@ -226,7 +228,7 @@ class mod_sql(Attack):
                                                  file_params=file_params,
                                                  referer=referer)
                     if self.verbose == 2:
-                        print "+", evil_req
+                        print(u"+ {0}".format(evil_req))
 
                     try:
                         resp = self.HTTP.send(evil_req)
@@ -243,14 +245,16 @@ class mod_sql(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=err + " " + _("coming from") + " " + referer)
-                        print err, _("in"), evil_req.url
+                                     info=_("{0} coming from {1}").format(err, referer))
+                        print(_("{0} in {1}").format(err, evil_req.url))
                         if self.color == 1:
-                            print "  " + _("with params") + " =", \
-                                    self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")
+                            print(_("  with parameters: {0}")
+                                  .format(self.HTTP.encode(post_params)
+                                  .replace(param_name + "=",
+                                           self.RED + param_name + self.STD + "=")))
                         else:
-                            print "  " + _("with params") + " =", self.HTTP.encode(post_params)
-                        print "  " + _("coming from"), referer
+                            print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
+                        print(_("  coming from").format(referer))
                         self.vulnerablePOST.append(attack_pattern)
 
                     else:
@@ -259,10 +263,9 @@ class mod_sql(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("500 HTTP Error code coming from") + " " + \
-                                              referer + "\n" + VulDescrip.ERROR_500_DESCRIPTION)
-                            print _("500 HTTP Error code in"), evil_req.url
-                            print "  " + _("with params") + " =", self.HTTP.encode(post_params)
-                            print "  " + _("coming from"), referer
+                                         info=_("The server responded with a 500 HTTP error code coming from {0}").format(referer))
+                            print(_("500 HTTP Error code in {0}").format(evil_req.url))
+                            print(_("  with parameters: {1}").format(self.HTTP.encode(post_params)))
+                            print(_("  coming from {0}").format(referer))
 
                 param_list[i][1] = saved_value
