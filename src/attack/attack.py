@@ -107,6 +107,12 @@ class Attack:
     def loadRequire(self, obj=[]):
         self.deps = obj
 
+    def log(self, fmt_string, *args):
+        if len(args) == 0:
+            print(fmt_string)
+        else:
+            print(fmt_string.format(*args))
+
     def attack(self, http_resources, forms):
         if self.doGET is True:
             for http_res in http_resources:

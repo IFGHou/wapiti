@@ -12,11 +12,7 @@ class mod_xss(Attack):
 
     # magic strings we must see to be sure script is vulnerable to XSS
     # payloads must be created on those patterns
-    script_ok = [
-                    "alert('__XSS__')",
-                    "alert(\"__XSS__\")",
-                    "String.fromCharCode(0,__XSS__,1)"
-                ]
+    script_ok = ["alert('__XSS__')", "alert(\"__XSS__\")", "String.fromCharCode(0,__XSS__,1)"]
 
     # simple payloads that doesn't rely on their position in the DOM structure
     # payloads injected after closing a tag attibute value (attrval) or in the
@@ -34,7 +30,7 @@ class mod_xss(Attack):
     # {uniq_code : http://url/?param1=value1&param2=uniq_code&param3..., next_uniq_code : ...}
     GET_XSS = {}
     # POST XSS structure :
-    # {uniq_code : [target_url, {param1: value1, param2: uniq_code, param3:...}, referer_ul], next_uniq_code : [...]...}
+    # {uniq_code: [target_url, {param1: val1, param2: uniq_code, param3:...}, referer_ul], next_uniq_code : [...]...}
     POST_XSS = {}
     PHP_SELF = []
 
@@ -42,6 +38,8 @@ class mod_xss(Attack):
     SUCCESSFUL_XSS = {}
 
     CONFIG_FILE = "xssPayloads.txt"
+
+    MSG_VULN = _("XSS vulnerability")
 
     def __init__(self, HTTP, xmlRepGenerator):
         Attack.__init__(self, HTTP, xmlRepGenerator)
@@ -76,18 +74,21 @@ class mod_xss(Attack):
                     print(u"+ {0}".format(evil_req.url))
                 data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                 if self.php_self_check in data:
+                    self.log(Vulnerability.MSG_PATH_INJECT,
+                             self.MSG_VULN,
+                             page)
                     if self.color == 0:
-                        print(_("XSS vulnerability (via PHP_SELF) found in {0}").format(page))
-                        print(_("  Evil url: {0}").format(evil_req.url))
+                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     else:
-                        print(_("XSS vulnerability (via PHP_SELF) found in {0}").format(evil_req.url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)))
+                        self.log(Vulnerability.MSG_EVIL_URL,
+                                 evil_req.url.replace(self.php_self_payload,
+                                                      self.RED + self.php_self_payload + self.STD))
                     self.logVuln(category=Vulnerability.XSS,
                                  level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                  request=evil_req,
                                  parameter="PHP_SELF",
                                  info=_("XSS vulnerability found via injection in the resource path"))
             self.PHP_SELF.append(page)
-
 
         # page is the url of the script
         # params_list is a list of [key, value] lists
@@ -135,14 +136,16 @@ class mod_xss(Attack):
                                              parameter=param_name,
                                              info=_("XSS vulnerability found via injection in the query string"))
 
+                                self.log(Vulnerability.MSG_QS_INJECT,
+                                         self.MSG_VULN,
+                                         page)
                                 if self.color == 0:
-                                    print(_("XSS vulnerability found (via QUERY_STRING) in {0}").format(page))
-                                    print(_("  Evil url: {0}").format(evil_req.url))
+                                    self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                                 else:
-                                    print(_("XSS vulnerability found (via QUERY_STRING): {0}").format(page + "?" + self.RED + self.HTTP.quote(payload) + self.STD))
+                                    self.log(Vulnerability.MSG_EVIL_URL,
+                                             page + "?" + self.RED + self.HTTP.quote(payload) + self.STD)
                                 # No more payload injection
                                 break
-
 
         # URL contains parameters
         else:
@@ -188,13 +191,20 @@ class mod_xss(Attack):
                                                  level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                  request=evil_req,
                                                  parameter=param_name,
-                                                 info=_("XSS vulnerability found via injection in the parameter {0}").format(param_name))
+                                                 info=_("XSS vulnerability found via injection"
+                                                        " in the parameter {0}").format(param_name))
+
+                                    self.log(Vulnerability.MSG_PARAM_INJECT,
+                                             self.MSG_VULN,
+                                             page,
+                                             param_name)
 
                                     if self.color == 0:
-                                        print(_("XSS vulnerability via parameter {0} in {1}").format(param_name, page))
-                                        print(_("  Evil url: {0}").format(evil_req.url))
+                                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                                     else:
-                                        print(_("XSS vulnerability found with url : {0}").format(evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                                        self.log(Vulnerability.MSG_EVIL_URL,
+                                                 evil_req.url.replace(param_name + "=",
+                                                                      self.RED + param_name + self.STD + "="))
                                     # stop trying payloads and jum to the next parameter
                                     break
                 # Restore the value of this argument before testing the next one
@@ -219,11 +229,15 @@ class mod_xss(Attack):
                     print(u"+ {0}".format(evil_req.url))
                 data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                 if self.php_self_check in data:
+                    self.log(Vulnerability.MSG_PATH_INJECT,
+                             self.MSG_VULN,
+                             page)
                     if self.color == 0:
-                        print(_("XSS vulnerability found (via (PHP_SELF) in {0}").format(page))
-                        print(_("  Evil url: {0}").format(evil_req.url))
+                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     else:
-                        print(_("XSS vulnerability (via PHP_SELF) in {0}").format(evil_req.url.replace(self.php_self_payload, self.RED + self.php_self_payload + self.STD)))
+                        self.log(Vulnerability.MSG_EVIL_URL,
+                                 evil_req.url.replace(self.php_self_payload,
+                                                      self.RED + self.php_self_payload + self.STD))
                     self.logVuln(category=Vulnerability.XSS,
                                  level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                  request=evil_req,
@@ -241,7 +255,7 @@ class mod_xss(Attack):
                 param_name = self.HTTP.quote(param_list[i][0])
                 saved_value = param_list[i][1]
                 param_list[i][1] = "__XSS__"
-                # We keep an attack pattern to make sure a given form won't be attacked on the same field several times
+                # We keep an attack pattern to be sure a given form won't be attacked on the same field several times
                 attack_pattern = HTTP.HTTPResource(form.path,
                                                    method=form.method,
                                                    get_params=get_params,
@@ -296,19 +310,35 @@ class mod_xss(Attack):
                                                  level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                  request=evil_req,
                                                  parameter=param_name,
-                                                 info=_("XSS vulnerability found via injection in the parameter {0}").format(param_name))
+                                                 info=_("XSS vulnerability found via injection"
+                                                        " in the parameter {0}").format(param_name))
 
                                     #TODO: vuln param name may appear twice (or more)
                                     if self.color == 0:
-                                        print(_("XSS vulnerability found in {0}").format(evil_req.url))
-                                        print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
+                                        self.log(Vulnerability.MSG_PARAM_INJECT,
+                                                 self.MSG_VULN,
+                                                 evil_req.url,
+                                                 param_name)
+                                        self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
                                     else:
                                         if param_list is get_params:
-                                            print(_("XSS vulnerability found in {0}").format(evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
-                                            print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
+                                            self.log(Vulnerability.msg_inject_param,
+                                                     self.msg_xss,
+                                                     evil_req.url.replace(param_name + "=",
+                                                                          self.red + param_name + self.std + "="),
+                                                     param_name)
+                                            self.log(Vulnerability.msg_with_params,
+                                                     self.http.encode(post_params))
+
                                         else:
-                                            print(_("XSS vulnerability found in {0}").format(evil_req.url))
-                                            print(_("  with parameters: {0}").format(self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                                            self.log(Vulnerability.msg_inject_param,
+                                                     self.msg_xss,
+                                                     evil_req.url,
+                                                     param_name)
+                                            self.log(Vulnerability.msg_with_params,
+                                                     self.http.encode(post_params)
+                                                     .replace(param_name + "=",
+                                                              self.RED + param_name + self.STD + "="))
                                     print(_("  comming from {0}").format(referer))
                                     # Stop injecting payloads and move to the next parameter
                                     break
@@ -316,33 +346,31 @@ class mod_xss(Attack):
                 # restore the saved parameter in the list
                 param_list[i][1] = saved_value
 
-
     # type/name/tag ex: attrval/img/src
     # TODO: entries is a mutable argument, check this
     def study(self, obj, parent=None, keyword="", entries=[]):
         #if parent==None:
-        #  print "Keyword is:",keyword
+        #  print("Keyword is: {0}".format(keyword))
         if keyword in str(obj):
             if isinstance(obj, BeautifulSoup.Tag):
                 if keyword in str(obj.attrs):
                     for k, v in obj.attrs:
                         if keyword in v:
-                            # print "Found in attribute value ",k,"of tag",obj.name
+                            # print("Found in attribute value {0} of tag {1}".format(k, obj.name))
                             entries.append({"type": "attrval", "name": k, "tag": obj.name})
                         if keyword in k:
-                            # print "Found in attribute name ",k,"of tag",obj.name
+                            # print("Found in attribute name {0} of tag {1}".format(k, obj.name))
                             entries.append({"type": "attrname", "name": k, "tag": obj.name})
                 elif keyword in obj.name:
-                    # print "Found in tag name"
+                    # print("Found in tag name")
                     entries.append({"type": "tag", "value": obj.name})
                 else:
                     for x in obj.contents:
                         self.study(x, obj, keyword, entries)
             elif isinstance(obj, BeautifulSoup.NavigableString):
                 if keyword in str(obj):
-                    # print "Found in text, tag", parent.name
+                    # print("Found in text, tag {0}".format(parent.name))
                     entries.append({"type": "text", "parent": parent.name})
-
 
     # generate a list of payloads based on where in the webpage the js-code will be injected
     def generate_payloads(self, data, code):
@@ -360,8 +388,8 @@ class mod_xss(Attack):
             # Our string is in the value of a tag attribute
             # ex: <a href="our_string"></a>
             if elem['type'] == "attrval":
-                # print "tag->"+elem['tag']
-                # print elem['name']
+                # print("tag -> {0}".format(elem['tag']))
+                # print(elem['name'])
                 i0 = data.find(code)
                 # i1=data[:i0].rfind("=")
                 try:

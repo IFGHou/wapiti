@@ -33,6 +33,7 @@ class mod_crlf(Attack):
     """
 
     name = "crlf"
+    MSG_VULN = _("CRLF injection")
 
     def __init__(self, HTTP, xmlRepGenerator):
         Attack.__init__(self, HTTP, xmlRepGenerator)
@@ -58,12 +59,10 @@ class mod_crlf(Attack):
             elif not "text" in resp_headers["content-type"]:
                 return
 
-            err = ""
             url = page + "?" + payload
             if url not in self.attackedGET:
                 evil_req = HTTP.HTTPResource(url)
                 if self.verbose == 2:
-                    # print "+ " + page + "?http://www.google.fr\\r\\nwapiti: SVN version"
                     print(u"+ {0}".format(evil_req.url))
                 try:
                     resp = self.HTTP.send(evil_req, headers=headers)
@@ -71,23 +70,22 @@ class mod_crlf(Attack):
                         self.logVuln(category=Vulnerability.CRLF,
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
-                                     info=err + " " + _("(QUERY_STRING)"))
-                        print(_("CRLF Injection (QUERY_STRING) in {0}").format(page))
-                        print(_("  Evil url:").format(url))
-                except requests.exceptions.Timeout, timeout:
+                                     info=self.MSG_VULN + " " + _("(QUERY_STRING)"))
+                        self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
+                        self.log(Vulnerability.MSG_EVIL_URL, url)
+                except requests.exceptions.Timeout:
                     self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                  level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                  request=evil_req,
-                                 info=err + " " + _("(QUERY_STRING)"))
-                    print(_("Timeout (QUERY_STRING) in {0}").format(page))
-                    print(_("  caused by:").format(url))
+                                 info=self.MSG_VULN + " " + _("(QUERY_STRING)"))
+                    self.log(Vulnerability.MSG_TIMEOUT, page)
+                    self.log(Vulnerability.MSG_EVIL_URL, url)
                 except requests.exceptions.HTTPError:
-                    # print "Error: The server did not understand this request"
+                    # print("Error: The server did not understand this request")
                     pass
                 self.attackedGET.append(url)
         else:
             for i in range(len(params_list)):
-                err = ""
                 saved_value = params_list[i][1]
                 # payload is already escaped, see at top
                 params_list[i][1] = payload
@@ -102,25 +100,28 @@ class mod_crlf(Attack):
                     try:
                         resp = self.HTTP.send(evil_req, headers=headers)
                         if "wapiti" in resp.getHeaders():
-                            err = _("CRLF Injection")
                             self.logVuln(category=Vulnerability.CRLF,
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=err + " (" + param_name + ")")
+                                         info=self.MSG_VULN + " (" + param_name + ")")
                             if self.color == 0:
-                                print(_("{0} ({1}) in {2}").format(err, page, param_name))
-                                print(_("  Evil url:").format(url))
+                                self.log(Vulnerability.MSG_PARAM_INJECT,
+                                         self.MSG_VULN,
+                                         page,
+                                         param_name)
+                                self.log(Vulnerability.MSG_EVIL_URL, url)
                             else:
-                                print(u"{0}: {1}".format(err, url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
-                    except requests.exceptions.Timeout, timeout:
+                                self.log(Vulnerability.MSG_EVIL_URL,
+                                         url.replace(param_name + "=", self.RED + param_name + self.STD + "="))
+                    except requests.exceptions.Timeout:
                         self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                      level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=err + " (" + param_name + ")")
-                        print(_("Timeout ({0}) in {1}").format(param_name, page))
-                        print(_("  caused by: {0}").format(url))
+                                     info="Timeout (" + param_name + ")")
+                        self.log(Vulnerability.MSG_TIMEOUT, page)
+                        self.log(Vulnerability.MSG_EVIL_URL, url)
                     except requests.exceptions.HTTPError:
                         print(_("Error: The server did not understand this request"))
                 params_list[i][1] = saved_value

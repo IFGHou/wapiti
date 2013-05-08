@@ -36,7 +36,7 @@ class mod_file(Attack):
 
     name = "file"
 
-    warning_messages = [
+    warnings_desc = [
             ("java.io.FileNotFoundException:",        "Java include/open"),
             ("fread(): supplied argument is not",     "fread()"),
             ("fpassthru(): supplied argument is not", "fpassthru()"),
@@ -62,26 +62,26 @@ class mod_file(Attack):
 
     def __findPatternInResponse(self, data, warn):
         """This method searches patterns in the response from the server"""
-        err = ""
+        err_msg = ""
         inc = 0
         if "root:x:0:0" in data:
-            err = "Unix include/fread"
+            err_msg = _("Unix local file disclosure vulnerability")
             inc = 1
         if "root:*:0:0" in data:
-            err = "BSD include/fread"
+            err_msg = _("BSD local file disclosure vulnerability")
             inc = 1
         if "[boot loader]" in data:
-            err = "Windows include/fread"
+            err_msg = _("Windows local file disclosure vulnerability")
             inc = 1
         if "<title>Google</title>" in data:
-            err = _("Remote include")
+            err_msg = _("Remote inclusion vulnerability")
             inc = 1
-        for pattern, funcname in self.warning_messages:
+        for pattern, funcname in self.warnings_desc:
             if pattern in data and warn == 0:
-                err = "Warning " + funcname
+                err_msg = _("Possible {0} vulnerability").format(funcname)
                 warn = 1
                 break
-        return err, inc, warn
+        return err_msg, inc, warn
 
     def attackGET(self, http_res):
         """This method performs the file handling attack with method GET"""
@@ -118,34 +118,39 @@ class mod_file(Attack):
                         continue
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
-                    except requests.exceptions.Timeout, timeout:
+                    except requests.exceptions.Timeout:
                         data = ""
                         code = "408"
                         err = ""
+                        info_msg = _("The request timed out while attempting to inject a payload"
+                                     " in the query string")
                         self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                      level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                      request=evil_req,
-                                     info=_("Timeout (QUERY_STRING) in").format(str(page)))
-                        print(_("Timeout (QUERY_STRING) in {0}").format(page))
-                        print(_("  caused by: {0}").format(evil_req.url))
+                                     info=info_msg)
+                        self.log(Vulnerability.MSG_TIMEOUT, page)
+                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     else:
                         err, inc, warn = self.__findPatternInResponse(data, warn)
+
                     if err != "":
                         self.logVuln(category=Vulnerability.FILE_HANDLING,
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
-                                     info=u"{0} (QUERY_STRING) in {1}".format(err, str(page)))
-                        print(u"{0} (QUERY_STRING) in {1}".format(err, page))
-                        print(_("  Evil url:").format(url))
+                                     info=_("{0} via injection in the query string").format(err))
+                        self.log(Vulnerability.MSG_QS_INJECT, err)
+                        self.log(Vulnerability.MSG_EVIL_URL)
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
+                            info_msg = _("The server responded with a 500 HTTP error code while"
+                                         " attempting to inject a payload in the query string")
                             self.logVuln(category=Vulnerability.FILE_HANDLING,
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
-                                         info=_("The server responded with a 500 HTTP error code"))
-                            print(_("500 HTTP Error code with"))
-                            print(_("  Evil url: {0}").format(url))
+                                         info=info_msg)
+                            self.log(Vulnerability.MSG_500, evil_req.path)
+                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
 
         for i in range(len(params_list)):
             warn = 0
@@ -166,17 +171,19 @@ class mod_file(Attack):
                     evil_req = HTTP.HTTPResource(url)
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
-                    except requests.exceptions.Timeout, timeout:
+                    except requests.exceptions.Timeout:
                         data = ""
                         code = "408"
                         err = ""
+                        info_msg = _("The request timed out while attempting to inject a payload"
+                                     " in the parameter {0}")
                         self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                      level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=u"{0} ({1})".format(err, param_name))
-                        print(_("Timeout ({0}) in {1}").format(param_name, page))
-                        print(_("  caused by: {0}").format(evil_req.url))
+                                     info=info_msg.format(param_name))
+                        self.log(Vulnerability.MSG_TIMEOUT, page)
+                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     else:
                         err, inc, warn = self.__findPatternInResponse(data, warn)
                     if err != "":
@@ -184,22 +191,26 @@ class mod_file(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=u"{0} ({1})".format(err, param_name))
+                                     info=_("{0} via injection in the parameter {1}").format(err, param_name))
+                        self.log(Vulnerability.MSG_PARAM_INJECT, err, page, param_name)
                         if self.color == 0:
-                            print(_("{0} ({1}) in {2}").format(err, param_name, page))
-                            print(_("  Evil url: {0}").format(evil_req.url))
+                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                         else:
-                            print(u"{0}: {1}".format(err, evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                            self.log(Vulnerability.MSG_EVIL_URL,
+                                     evil_req.url.replace(param_name + "=",
+                                                          self.RED + param_name + self.STD + "="))
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
+                            info_msg = _("The server responded with a 500 HTTP error code while"
+                                         " attempting to inject a payload in the parameter {0}")
                             self.logVuln(category=Vulnerability.FILE_HANDLING,
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("The server responded with a 500 HTTP error code"))
-                            print(_("500 HTTP Error code with"))
-                            print(_("  Evil url: {0}").format(evil_req.url))
+                                         info=info_msg.format(info_msg))
+                            self.log(Vulnerability.MSG_500, evil_req.path)
+                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
             params_list[i][1] = saved_value
 
     def attackPOST(self, form):
@@ -240,43 +251,52 @@ class mod_file(Attack):
                             print(u"+ {0}".format(evil_req))
                         try:
                             data, code = self.HTTP.send(evil_req).getPageCode()
-                        except requests.exceptions.Timeout, timeout:
+                        except requests.exceptions.Timeout:
                             data = ""
                             code = "408"
+                            info_msg = _("The request timed out while attempting to inject a payload"
+                                         " in the parameter {0}.\nReferer: {1}")
                             self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                          level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("Timeout coming from {0}").format(referer))
-                            print(_("Timeout in {0}").format(evil_req.url))
-                            print(_("  with parameters: {0}").format(self.HTTP.encode(evil_req.post_params)))
-                            print(_("  coming from {0}").format(referer))
+                                         info=info_msg.format(param_name, referer))
+                            self.log(Vulnerability.MSG_TIMEOUT, evil_req.path)
+                            self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(evil_req.post_params))
+                            self.log(Vulnerability.MSG_FROM, referer)
                         else:
                             err, inc, warn = self.__findPatternInResponse(data, warn)
                         if err != "":
+                            info_msg = _("{0} via injection in the parameter {1}\nReferer: {2}")
                             self.logVuln(category=Vulnerability.FILE_HANDLING,
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("{0} coming from {1}").format(err, referer))
-                            print(_("{0} in {1}").format(err, evil_req.url))
+                                         info=info_msg.format(err, param_name, referer))
+                            self.log(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
                             if self.color == 1:
-                                print(_("  with parameters: {0}").format(self.HTTP.encode(evil_req.post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                                self.log(Vulnerability.MSG_WITH_PARAMS,
+                                         self.HTTP.encode(evil_req.post_params)
+                                         .replace(param_name + "=",
+                                                  self.RED + param_name + self.STD + "="))
                             else:
-                                print(_("  with parameters: {0}").format(self.HTTP.encode(evil_req.post_params)))
-                            print(_("  coming from {0}").format(referer))
+                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(evil_req.post_params))
+                            self.log(Vulnerability.MSG_FROM, referer)
                             if inc:
                                 break
 
                         else:
                             if code == "500" and err500 == 0:
                                 err500 = 1
+                                info_msg = _("The server responded with a 500 HTTP error code while"
+                                             " attempting to inject a payload in the parameter {0}"
+                                             "\nReferer: {1}")
                                 self.logVuln(category=Vulnerability.FILE_HANDLING,
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=_("500 HTTP Error code coming from {0}").format(referer))
-                                print(_("500 HTTP Error code in {0}").format(evil_req.post_params))
-                                print(_("  with parameters: {0}").format(self.HTTP.encode(evil_req.post_params)))
-                                print(_("  coming from {0}").format(referer))
+                                             info=info_msg.format(param_name, referer))
+                                self.log(Vulnerability.MSG_500, evil_req.url)
+                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(evil_req.post_params))
+                                self.log(Vulnerability.MSG_FROM, referer)
                 param_list[i][1] = saved_value
