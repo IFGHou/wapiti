@@ -401,11 +401,11 @@ if __name__ == "__main__":
         wap = Wapiti(url)
         try:
             opts, args = getopt.getopt(sys.argv[2:],
-                    "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",
-                    ["help", "underline", "proxy=", "start=", "exclude=",
-                        "cookie=", "auth=", "remove=", "verbose=", "timeout=",
-                        "module=", "outputfile", "reportType", "nice=",
-                        "attack", "continue", "scope="])
+                                       "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",
+                                       ["help", "underline", "proxy=", "start=", "exclude=",
+                                        "cookie=", "auth=", "remove=", "verbose=", "timeout=",
+                                        "module=", "outputfile", "reportType", "nice=",
+                                        "attack", "continue", "scope="])
         except getopt.GetoptError, e:
             print(e)
             sys.exit(2)
@@ -453,18 +453,18 @@ if __name__ == "__main__":
             if o in ("-b", "--scope"):
                 wap.setScope(a)
             if o in ("-k", "--attack"):
-                attackFile = crawlerPersister.CRAWLER_DATA_DIR + '/' + \
-                        (url.split("://")[1]).split("/")[0] + '.xml'
+                hostname = url.split("://")[1].split("/")[0]
+                attackFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
             if o in ("-i", "--continue"):
-                crawlerFile = crawlerPersister.CRAWLER_DATA_DIR + '/' + \
-                        (url.split("://")[1]).split("/")[0] + '.xml'
+                hostname = url.split("://")[1].split("/")[0]
+                crawlerFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
         try:
             opts, args = getopt.getopt(sys.argv[2:],
-                    "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:b:",
-                    ["help", "underline", "proxy=", "start=", "exclude=",
-                        "cookie=", "auth=", "remove=", "verbose=", "timeout=",
-                        "module=", "outputfile", "reportType", "nice=",
-                        "attack=", "continue=", "scope="])
+                                       "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:b:",
+                                       ["help", "underline", "proxy=", "start=", "exclude=",
+                                        "cookie=", "auth=", "remove=", "verbose=", "timeout=",
+                                        "module=", "outputfile", "reportType", "nice=",
+                                        "attack=", "continue=", "scope="])
         except getopt.GetoptError, e:
             ""
         for o, a in opts:
@@ -481,7 +481,7 @@ if __name__ == "__main__":
             if crawlerPersister.isDataForUrl(attackFile) == 1:
                 crawlerPersister.loadXML(attackFile)
                 # TODO: xml structure
-                wap.urls  = crawlerPersister.getBrowsed()
+                wap.urls = crawlerPersister.getBrowsed()
                 wap.forms = crawlerPersister.getForms()
                 # wap.uploads = crawlerPersister.getUploads()
                 print(_("File {0} loaded. Wapiti will use it to perform the attack").format(attackFile))

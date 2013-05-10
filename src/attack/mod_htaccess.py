@@ -85,7 +85,8 @@ class mod_htaccess(Attack):
 
                     if self.verbose >= 1:
                         if self.color == 1:
-                            print(_("{0}|HTTP Code: {1} : {2}{3}").format(self.CYAN, resp_headers["status_code"], err1, self.STD))
+                            print(_("{0}|HTTP Code: {1} : {2}{3}")
+                                  .format(self.CYAN, resp_headers["status_code"], err1, self.STD))
                         else:
                             print(_("|HTTP Code: {0} : {1}").format(resp_headers["status_code"], err1))
 
@@ -103,7 +104,8 @@ class mod_htaccess(Attack):
                                  request=evil_req,
                                  info=_("{0} HtAccess").format(err1))
                     if self.color == 1:
-                        print(_("{0}  .htaccess bypass vulnerability: {1}{2}").format(self.RED, evil_req.url, self.STD))
+                        print(_("{0}  .htaccess bypass vulnerability: {1}{2}")
+                              .format(self.RED, evil_req.url, self.STD))
                     else:
                         print(_("  .htaccess bypass vulnerability: {0}").format(evil_req.url))
 
@@ -129,8 +131,8 @@ class mod_htaccess(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      info=_("The server responded with a 500 HTTP error code"))
-                        print(_("500 HTTP Error code with"))
-                        print(_("  Evil url: {0}").format(url))
+                        self.log(Vulnerability.MSG_500, page)
+                        self.log(Vulnerability.MSG_EVIL_URL, url)
 
                     # add the url with the url attacked
                 self.attackedGET.append(url)

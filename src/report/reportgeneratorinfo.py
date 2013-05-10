@@ -2,13 +2,13 @@ class ReportGeneratorInfo:
     key = None
     className = None
     classModule = None
-    
+
     def getKey(self):
         return self.name
 
     def getClassModule(self):
         return self.classModule
-    
+
     def getClassName(self):
         return self.className
 

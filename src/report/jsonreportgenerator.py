@@ -63,15 +63,14 @@ class JSONReportGenerator(ReportGenerator):
         vulnerabilities notified through the current method.
         """
 
-        vuln_dict = {
-                "method": request.method,
-                "path": request.file_path,  # TODO: path or file_path according to the scope ?
-                "info": info,
-                "level": level,
-                "parameter": parameter,
-                "http_request": request.http_repr,
-                "curl_command": request.curl_repr,
-                }
+        vuln_dict = {"method": request.method,
+                     "path": request.file_path,  # TODO: path or file_path according to the scope ?
+                     "info": info,
+                     "level": level,
+                     "parameter": parameter,
+                     "http_request": request.http_repr,
+                     "curl_command": request.curl_repr,
+                     }
         if category not in self.__vulns:
             self.__vulns[category] = []
         self.__vulns[category].append(vuln_dict)
@@ -81,11 +80,10 @@ class JSONReportGenerator(ReportGenerator):
         Create a json file with a report of the vulnerabilities which have
         been logged with the logVulnerability method
         """
-        report_dict = {
-                "classifications": self.__vulnTypes,
-                "vulnerabilities": self.__vulns,
-                "infos": self.__infos
-                }
+        report_dict = {"classifications": self.__vulnTypes,
+                       "vulnerabilities": self.__vulns,
+                       "infos": self.__infos
+                       }
         #TODO: add info on wapiti ?
         f = open(fileName, "w")
         try:

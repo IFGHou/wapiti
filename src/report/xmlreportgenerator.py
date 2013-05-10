@@ -25,23 +25,22 @@
 
 from xml.dom.minidom import Document
 from reportgenerator import ReportGenerator
-import net.HTTP
-import datetime
-import requests
 
-WAPITI_VERSION = "Wapiti SVN";
+WAPITI_VERSION = "Wapiti SVN"
+
 
 def isPeerAddrPort(p):
-  """Is p a (str,int) tuple? I.E. an (ip_address,port)"""
-  if type(p)==tuple and len(p)==2:
-    return type(p[0])==str and type(p[1])==int
-  else:
-    return False
+    """Is p a (str,int) tuple? I.E. an (ip_address,port)"""
+    if type(p) == tuple and len(p) == 2:
+        return type(p[0]) == str and type(p[1]) == int
+    else:
+        return False
+
 
 class XMLReportGenerator(ReportGenerator):
     """
     This class generates a report with the method printToFile(fileName) which contains
-    the information of all the vulnerabilities notified to this object through the 
+    the information of all the vulnerabilities notified to this object through the
     method logVulnerability(vulnerabilityTypeName,level,url,parameter,info).
     The format of the file is XML and it has the following structure:
     <report type="security">
@@ -72,7 +71,7 @@ class XMLReportGenerator(ReportGenerator):
         self.__xmlDoc = Document()
         report = self.__addReport()
         generated = self.__xmlDoc.createElement("generatedBy")
-        generated.setAttribute("id", WAPITI_VERSION);
+        generated.setAttribute("id", WAPITI_VERSION)
         report.appendChild(generated)
         self.__vulnerabilityTypeList = self.__xmlDoc.createElement("bugTypeList")
         report.appendChild(self.__vulnerabilityTypeList)
@@ -83,14 +82,14 @@ class XMLReportGenerator(ReportGenerator):
         self.__xmlDoc.appendChild(report)
         return report
 
-    def __addToVulnerabilityTypeList(self,vulnerabilityType):
+    def __addToVulnerabilityTypeList(self, vulnerabilityType):
         self.__vulnerabilityTypeList.appendChild(vulnerabilityType)
 
-    def addVulnerabilityType(self, name, description = "", solution = "", references = {}):
+    def addVulnerabilityType(self, name, description="", solution="", references={}):
         """
         This method adds a vulnerability type, it can be invoked to include in the
-        report the type. 
-        The types are not stored previously, they are added when the method 
+        report the type.
+        The types are not stored previously, they are added when the method
         logVulnerability(vulnerabilityTypeName,level,url,parameter,info) is invoked
         and if there is no vulnerabilty of a type, this type will not be presented
         in the report
@@ -100,34 +99,34 @@ class XMLReportGenerator(ReportGenerator):
         vulnerabilityType.appendChild(self.__xmlDoc.createElement("bugList"))
         self.__addToVulnerabilityTypeList(vulnerabilityType)
         if description != "":
-          descriptionNode = self.__xmlDoc.createElement("description")
-          descriptionNode.appendChild(self.__xmlDoc.createCDATASection(description))
-          vulnerabilityType.appendChild(descriptionNode)
+            descriptionNode = self.__xmlDoc.createElement("description")
+            descriptionNode.appendChild(self.__xmlDoc.createCDATASection(description))
+            vulnerabilityType.appendChild(descriptionNode)
         if solution != "":
-          solutionNode = self.__xmlDoc.createElement("solution")
-          solutionNode.appendChild(self.__xmlDoc.createCDATASection(solution))
-          vulnerabilityType.appendChild(solutionNode)
+            solutionNode = self.__xmlDoc.createElement("solution")
+            solutionNode.appendChild(self.__xmlDoc.createCDATASection(solution))
+            vulnerabilityType.appendChild(solutionNode)
         if references != "":
-          referencesNode = self.__xmlDoc.createElement("references")
-          for ref in references:
-            referenceNode = self.__xmlDoc.createElement("reference")
-            titleNode = self.__xmlDoc.createElement("title")
-            urlNode = self.__xmlDoc.createElement("url")
-            titleNode.appendChild(self.__xmlDoc.createTextNode(ref))
-            urlNode.appendChild(self.__xmlDoc.createTextNode(references[ref]))
-            referenceNode.appendChild(titleNode)
-            referenceNode.appendChild(urlNode)
-            referencesNode.appendChild(referenceNode)
-          vulnerabilityType.appendChild(referencesNode)
+            referencesNode = self.__xmlDoc.createElement("references")
+            for ref in references:
+                referenceNode = self.__xmlDoc.createElement("reference")
+                titleNode = self.__xmlDoc.createElement("title")
+                urlNode = self.__xmlDoc.createElement("url")
+                titleNode.appendChild(self.__xmlDoc.createTextNode(ref))
+                urlNode.appendChild(self.__xmlDoc.createTextNode(references[ref]))
+                referenceNode.appendChild(titleNode)
+                referenceNode.appendChild(urlNode)
+                referencesNode.appendChild(referenceNode)
+            vulnerabilityType.appendChild(referencesNode)
         return vulnerabilityType
 
-    def __addToVulnerabilityList(self,vulnerabilityTypeName,vulnerability):
+    def __addToVulnerabilityList(self, vulnerabilityTypeName, vulnerability):
         vulnerabilityType = None
         for node in self.__vulnerabilityTypeList.childNodes:
             if node.nodeType == node.ELEMENT_NODE and node.getAttribute("name") == vulnerabilityTypeName:
                 vulnerabilityType = node
                 break
-        if vulnerabilityType == None:
+        if vulnerabilityType is None:
             vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
         vulnerabilityType.childNodes[0].appendChild(vulnerability)
 
@@ -154,25 +153,25 @@ class XMLReportGenerator(ReportGenerator):
 #          ts = resp.timestamp
 #        else:
 #          raise TypeError(resp)
-        
+
         vulnerability = self.__xmlDoc.createElement("bug")
         vulnerability.setAttribute("level", level)
-        
+
 #        tsNode = self.__xmlDoc.createElement("timestamp")
 #        tsNode.appendChild(self.__xmlDoc.createTextNode(ts.isoformat()))
 #        vulnerability.appendChild(tsNode)
-        
+
         urlNode = self.__xmlDoc.createElement("url")
         urlNode.appendChild(self.__xmlDoc.createTextNode(url.encode("UTF-8")))
         vulnerability.appendChild(urlNode)
-        
+
 #        if peer!=None:
 #          peerNode = self.__xmlDoc.createElement("peer")
 #          if isPeerAddrPort(peer):
 #            addrNode = self.__xmlDoc.createElement("addr")
 #            addrNode.appendChild( self.__xmlDoc.createTextNode(peer[0]) )
 #            peerNode.appendChild(addrNode)
-#          
+#
 #            portNode = self.__xmlDoc.createElement("port")
 #            portNode.appendChild( self.__xmlDoc.createTextNode(str(peer[1])) )
 #            peerNode.appendChild(portNode)
@@ -194,25 +193,25 @@ class XMLReportGenerator(ReportGenerator):
         vulnerability.appendChild(infoNode)
         self.__addToVulnerabilityList(category, vulnerability)
 
-    def generateReport(self,fileName):
+    def generateReport(self, fileName):
         """
-        Create a xml file with a report of the vulnerabilities which have been logged with 
+        Create a xml file with a report of the vulnerabilities which have been logged with
         the method logVulnerability(vulnerabilityTypeName,level,url,parameter,info)
         """
-        f = open(fileName,"w")
+        f = open(fileName, "w")
         try:
-          f.write(self.__xmlDoc.toprettyxml(indent = "    ", encoding = "UTF-8"))
+            f.write(self.__xmlDoc.toprettyxml(indent="    ", encoding="UTF-8"))
         finally:
-          f.close()
+            f.close()
 
 if __name__ == "__main__":
-    
+
     SQL_INJECTION = "Sql Injection"
     FILE_HANDLING = "File Handling"
     XSS = "Cross Site Scripting"
     CRLF = "CRLF"
     EXEC = "Commands execution"
-    
+
     try:
         xmlGen = XMLReportGenerator()
         xmlGen.addVulnerabilityType(SQL_INJECTION)
@@ -232,5 +231,3 @@ if __name__ == "__main__":
         xmlGen.printToFile("sampleReport.xml")
     except SystemExit:
         pass
-
-

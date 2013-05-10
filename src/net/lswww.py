@@ -346,14 +346,14 @@ class lswww:
         p = linkParser(url)
         try:
             p.feed(htmlSource)
-        except HTMLParser.HTMLParseError, err:
+        except HTMLParser.HTMLParseError:
             htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
             if not isinstance(htmlSource, unicode) and page_encoding is not None:
                 htmlSource = unicode(htmlSource, page_encoding, "ignore")
             try:
                 p.reset()
                 p.feed(htmlSource)
-            except HTMLParser.HTMLParseError, err:
+            except HTMLParser.HTMLParseError:
                 p = linkParser2(url, self.verbose)
                 p.feed(htmlSource)
 
@@ -365,7 +365,7 @@ class lswww:
             try:
                 p.reset()
                 p.feed(htmlSource)
-            except HTMLParser.HTMLParseError, err:
+            except HTMLParser.HTMLParseError:
                 p = linkParser2(url, self.verbose)
                 p.feed(htmlSource)
 
@@ -456,7 +456,7 @@ class lswww:
             llien.startswith("news:") or
             llien.startswith("file:", 0) or
             llien.startswith("gopher:") or
-            llien.startswith("irc:", 0)):
+                llien.startswith("irc:", 0)):
             return None
         # Good protocols or relatives links
         else:
@@ -557,8 +557,7 @@ class lswww:
         """Return the number of known urls matching the pattern of the given url"""
         matches = 0
         for b in self.browsed:
-            if (http_resource.path == b.path and
-                http_resource.method == b.method == "GET"):
+            if (http_resource.path == b.path and http_resource.method == b.method == "GET"):
                 qs = http_resource.encoded_params
                 u = b.encoded_params
                 if http_resource.encoded_get_keys == b.encoded_get_keys:
@@ -662,7 +661,8 @@ class lswww:
             print('')
             print(_(" Notice"))
             print("========")
-            print(_("This scan has been saved in the file {0}/{1}.xml").format(self.persister.CRAWLER_DATA_DIR, self.server))
+            print(_("This scan has been saved in the file {0}/{1}.xml").format(self.persister.CRAWLER_DATA_DIR,
+                                                                               self.server))
             print(_("You can use it to perform attacks without scanning again the web site with the \"-k\" parameter"))
         except KeyboardInterrupt:
             self.saveCrawlerData()
@@ -767,28 +767,27 @@ class linkParser(HTMLParser.HTMLParser):
         self.uploads = []
         self.current_form_method = "get"
         self.url = url
-        self.__defaults = {
-                'checkbox':       'default',
-                'color':          '%23adeadb',
-                'date':           '2011-06-08',
-                'datetime':       '2011-06-09T20:35:34.32',
-                'datetime-local': '2011-06-09T22:41',
-                'file':           ['pix.gif', 'GIF89a'],
-                'hidden':         'default',
-                'email':           'wapiti%40mailinator.com',
-                'month':          '2011-06',
-                'number':         '1337',
-                'password':       'letmein',
-                'radio':          'beton',
-                'range':          '37',
-                'search':         'default',
-                'submit':         'submit',
-                'tel':            '0606060606',
-                'text':           'default',
-                'time':           '13:37',
-                'url':            'http://wapiti.sf.net/',
-                'week':           '2011-W24'
-                }
+        self.__defaults = {'checkbox':       'default',
+                           'color':          '%23adeadb',
+                           'date':           '2011-06-08',
+                           'datetime':       '2011-06-09T20:35:34.32',
+                           'datetime-local': '2011-06-09T22:41',
+                           'file':           ['pix.gif', 'GIF89a'],
+                           'hidden':         'default',
+                           'email':           'wapiti%40mailinator.com',
+                           'month':          '2011-06',
+                           'number':         '1337',
+                           'password':       'letmein',
+                           'radio':          'beton',
+                           'range':          '37',
+                           'search':         'default',
+                           'submit':         'submit',
+                           'tel':            '0606060606',
+                           'text':           'default',
+                           'time':           '13:37',
+                           'url':            'http://wapiti.sf.net/',
+                           'week':           '2011-W24'
+                           }
 
     def handle_starttag(self, tag, attrs):
         tmpdict = {}
@@ -1091,10 +1090,11 @@ if __name__ == "__main__":
         myls = lswww(sys.argv[1])
         myls.verbosity(1)
         try:
-            opts, args = getopt.getopt(sys.argv[2:], "hp:s:x:c:a:r:v:t:n:e:ib:",
-                    ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
-                     "remove=", "verbose=", "timeout=", "nice=", "export=", "continue",
-                     "scope="])
+            opts, args = getopt.getopt(sys.argv[2:],
+                                       "hp:s:x:c:a:r:v:t:n:e:ib:",
+                                       ["help", "proxy=", "start=", "exclude=", "cookie=", "auth=",
+                                        "remove=", "verbose=", "timeout=", "nice=", "export=", "continue",
+                                        "scope="])
         except getopt.GetoptError, e:
             print(e)
             sys.exit(2)
@@ -1136,10 +1136,10 @@ if __name__ == "__main__":
                 crawlerFile = crawlerPersister.CRAWLER_DATA_DIR + '/' + sys.argv[1].split("://")[1] + '.xml'
         try:
             opts, args = getopt.getopt(sys.argv[2:],
-                    "hp:s:x:c:a:r:v:t:n:e:i:b:",
-                    ["help", "proxy=", "start=", "exclude=", "cookie=",
-                    "auth=", "remove=", "verbose=", "timeout=", "nice=",
-                    "export=", "continue=", "scope="])
+                                       "hp:s:x:c:a:r:v:t:n:e:i:b:",
+                                       ["help", "proxy=", "start=", "exclude=", "cookie=",
+                                        "auth=", "remove=", "verbose=", "timeout=", "nice=",
+                                        "export=", "continue=", "scope="])
         except getopt.GetoptError, e:
             ""
         for o, a in opts:

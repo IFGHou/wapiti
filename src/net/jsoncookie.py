@@ -56,24 +56,23 @@ class jsoncookie:
         for d in matching_domains:
             for path in self.cookiedict[d]:
                 for cookie_name, cookie_attrs in self.cookiedict[d][path].items():
-                    ck = cookielib.Cookie(
-                            version=cookie_attrs["version"],
-                            name=cookie_name,
-                            value=cookie_attrs["value"],
-                            port=None,
-                            port_specified=False,
-                            domain=d,
-                            domain_specified=True,
-                            domain_initial_dot=False,
-                            path=path,
-                            path_specified=True,
-                            secure=cookie_attrs["secure"],
-                            expires=cookie_attrs["expires"],
-                            discard=True,
-                            comment=None,
-                            comment_url=None,
-                            rest={'HttpOnly': None},
-                            rfc2109=False)
+                    ck = cookielib.Cookie(version=cookie_attrs["version"],
+                                          name=cookie_name,
+                                          value=cookie_attrs["value"],
+                                          port=None,
+                                          port_specified=False,
+                                          domain=d,
+                                          domain_specified=True,
+                                          domain_initial_dot=False,
+                                          path=path,
+                                          path_specified=True,
+                                          secure=cookie_attrs["secure"],
+                                          expires=cookie_attrs["expires"],
+                                          discard=True,
+                                          comment=None,
+                                          comment_url=None,
+                                          rest={'HttpOnly': None},
+                                          rfc2109=False)
 
                     if cookie_attrs["port"]:
                         ck.port = cookie_attrs["port"]

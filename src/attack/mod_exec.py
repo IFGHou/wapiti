@@ -98,12 +98,12 @@ class mod_exec(Attack):
                     self.attackedGET.append(url)
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
-                    except requests.exceptions.Timeout, timeout:
+                    except requests.exceptions.Timeout:
                         data = ""
                         code = "408"
                         err = ""
-                        print(_("Timeout in {0}").format(page))
-                        print(_("  caused by: {0}").format(evil_req.url))
+                        self.log(Vulnerability.MSG_TIMEOUT, page)
+                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                         self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                      level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                      request=evil_req,
@@ -115,8 +115,8 @@ class mod_exec(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      info="{0} (QUERY_STRING)".format(err))
-                        print(u"{0} (QUERY_STRING) in {1}".format(err, page))
-                        print(_("  Evil url:").format(evil_req.url))
+                        self.log(Vulnerability.MSG_QS_INJECT, err, page)
+                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
@@ -124,8 +124,8 @@ class mod_exec(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          info=_("The server responded with a 500 HTTP error code"))
-                            print(_("500 HTTP Error code with"))
-                            print(_("  Evil url:").format(evil_req.url))
+                            self.log(Vulnerability.MSG_500, page)
+                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     if cmd:
                         break
 
@@ -152,12 +152,12 @@ class mod_exec(Attack):
 
                     try:
                         data, code = self.HTTP.send(evil_req.url, headers=headers).getPageCode()
-                    except requests.exceptions.Timeout, timeout:
+                    except requests.exceptions.Timeout:
                         data = ""
                         code = "408"
                         err = ""
-                        print(_("Timeout ({0}) in {1}").format(param_name, page))
-                        print(_("  caused by: {0}").format(evil_req.url))
+                        self.log(Vulnerability.MSG_TIMEOUT, page)
+                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                         self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                      level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                      request=evil_req,
@@ -171,11 +171,15 @@ class mod_exec(Attack):
                                      request=evil_req,
                                      parameter=param_name,
                                      info=u"{0} ({1})".format(err, param_name))
-                        if self.color == 0:
-                            print(u"{0} ({1}) in {2}".format(err, param_name, page))
-                            print(_("  Evil url:").format(evil_req.url))
+                        self.log(Vulnerability.MSG_PARAM_INJECT,
+                                 err,
+                                 page,
+                                 param_name)
+                        if self.color:
+                            self.log(Vulnerability.MSG_EVIL_URL,
+                                     evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "="))
                         else:
-                            print(u"{0}: {1}".format(err, evil_req.url.replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
 
                         if cmd:
                             # Successful command execution, go to the next field
@@ -188,8 +192,8 @@ class mod_exec(Attack):
                                          request=evil_req,
                                          parameter=param_name,
                                          info=_("The server responded with a 500 HTTP error code"))
-                            print(_("500 HTTP Error code with"))
-                            print(_("  Evil url:").format(evil_req.url))
+                            self.log(Vulnerability.MSG_500, page)
+                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
             params_list[i][1] = saved_value
 
     def attackPOST(self, form):
@@ -230,12 +234,12 @@ class mod_exec(Attack):
                         err = ""
                         try:
                             data, code = self.HTTP.send(evil_req).getPageCode()
-                        except requests.exceptions.Timeout, timeout:
+                        except requests.exceptions.Timeout:
                             data = ""
                             code = "408"
-                            print(_("Timeout in {0}").format(evil_req.url))
-                            print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
-                            print(_("  coming from").format(referer))
+                            self.log(Vulnerability.MSG_TIMEOUT, evil_req.url)
+                            self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
+                            self.log(Vulnerability.MSG_FROM, referer)
                             self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                          level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                          request=evil_req,
@@ -250,12 +254,14 @@ class mod_exec(Attack):
                                          request=evil_req,
                                          parameter=param_name,
                                          info=u"{0} coming from {1}".format(err, referer))
-                            print(u"{0} in {1}".format(err, evil_req.url))
+                            self.log(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
                             if self.color == 1:
-                                print(_("  with parameters: {0}").format(self.HTTP.encode(post_params).replace(param_name + "=", self.RED + param_name + self.STD + "=")))
+                                self.log(Vulnerability.MSG_WITH_PARAMS,
+                                         self.HTTP.encode(post_params)
+                                         .replace(param_name + "=", self.RED + param_name + self.STD + "="))
                             else:
-                                print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
-                            print(_("  coming from {0}").format(referer))
+                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
+                            self.log(Vulnerability.MSG_FROM, referer)
                             if cmd:
                                 # Successful command execution, go to the next field
                                 break
@@ -267,8 +273,9 @@ class mod_exec(Attack):
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=_("The server responded with a 500 HTTP error code coming from {0}").format(referer))
-                                print(_("500 HTTP Error code in {0}").format(evil_req.url))
-                                print(_("  with parameters: {0}").format(self.HTTP.encode(post_params)))
-                                print(_("  coming from {0}").format(referer))
+                                             info=_("The server responded with a 500 HTTP "
+                                                    "error code coming from {0}").format(referer))
+                                self.log(Vulnerability.MSG_500, evil_req.url)
+                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
+                                self.log(Vulnerability.MSG_REFERER, referer)
                 param_list[i][1] = saved_value

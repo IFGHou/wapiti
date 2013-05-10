@@ -24,10 +24,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-from os.path import exists
 from jsonreportgenerator import JSONReportGenerator
 from shutil import copytree, rmtree
-
 
 
 class HTMLReportGenerator(JSONReportGenerator):
@@ -38,18 +36,18 @@ class HTMLReportGenerator(JSONReportGenerator):
     Also, Copy the report structure in the specified directory
     The structure is as follow:
         /report
-	    index.html (visualization file)
-	    vulnerabilities.json (report json file)
-	    /includes
-	        /js (contains all js files)
-		/css (contains the stylesheet files)
-		/images (contains the required images)
+        index.html (visualization file)
+        vulnerabilities.json (report json file)
+        /includes
+            /js (contains all js files)
+        /css (contains the stylesheet files)
+        /images (contains the required images)
     """
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
     REPORT_DIR = "report_template"
     REPORT_JSON_FILE = "vulnerabilities.json"
-    
-    def generateReport(self,fileName):
+
+    def generateReport(self, fileName):
         """
         Copy the report structure in the specified 'fileName' directory
         If these path exists, it will be overwritten
@@ -57,7 +55,7 @@ class HTMLReportGenerator(JSONReportGenerator):
         if os.path.exists(fileName):
             rmtree(fileName)
         copytree(self.BASE_DIR + "/" + self.REPORT_DIR, fileName)
-	
+
         JSONReportGenerator.generateReport(self, fileName + "/" + self.REPORT_JSON_FILE)
         fd = open(fileName + "/" + self.REPORT_JSON_FILE)
         json_data = fd.read()
@@ -71,16 +69,14 @@ class HTMLReportGenerator(JSONReportGenerator):
         fd.write(html_data)
         fd.close()
 
-
-
 if __name__ == "__main__":
-    
+
     SQL_INJECTION = "Sql Injection"
     FILE_HANDLING = "File Handling"
     XSS = "Cross Site Scripting"
     CRLF = "CRLF"
     EXEC = "Commands execution"
-#    
+#
 #    try:
 #        xmlGen = HTMLReportGenerator()
 #        xmlGen.addVulnerabilityType(SQL_INJECTION)
@@ -99,7 +95,7 @@ if __name__ == "__main__":
 #        xmlGen.logVulnerability("Google Hacking", "2", "url9", "parameter9", "info9")
 #        """xmlGen.printToFile("sampleReport.xml")"""
 #	xmlGen.generateReport("hola")
-#	
+#
 #    except SystemExit:
 #        pass
 #

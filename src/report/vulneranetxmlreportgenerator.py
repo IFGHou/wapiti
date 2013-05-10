@@ -28,19 +28,21 @@ import net.HTTP
 import datetime
 import requests
 
-WAPITI_VERSION = "Wapiti SVN";
+WAPITI_VERSION = "Wapiti SVN"
+
 
 def isPeerAddrPort(p):
     """Is p a (str,int) tuple? I.E. an (ip_address,port)"""
-    if type(p)==tuple and len(p)==2:
-        return type(p[0])==str and type(p[1])==int
+    if type(p) == tuple and len(p) == 2:
+        return type(p[0]) == str and type(p[1]) == int
     else:
         return False
+
 
 class VulneraNetXMLReportGenerator(ReportGenerator):
     """
     This class generates a report with the method printToFile(fileName) which contains
-    the information of all the vulnerabilities notified to this object through the 
+    the information of all the vulnerabilities notified to this object through the
     method logVulnerability(vulnerabilityTypeName,level,url,parameter,info).
     The format of the file is XML and it has the following structure:
     <report type="security">
@@ -69,7 +71,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
     __ts = None
 
     def __init__(self):
-        self.__ts = datetime.datetime.now();
+        self.__ts = datetime.datetime.now()
         self.__xmlDoc = Document()
         report = self.__addReport()
         report.setAttribute("generatedBy", WAPITI_VERSION)
@@ -82,21 +84,21 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         self.__xmlDoc.appendChild(report)
         return report
 
-    def __addToVulnerabilityTypeList(self,vulnerabilityType):
+    def __addToVulnerabilityTypeList(self, vulnerabilityType):
         self.__vulnerabilityTypeList.appendChild(vulnerabilityType)
 
-    def addVulnerabilityType(self, title, description = "", recommendation = "", references = {}):
+    def addVulnerabilityType(self, title, description="", recommendation="", references={}):
         """
         This method adds a vulnerability type, it can be invoked to include in the
-        report the type. 
-        The types are not stored previously, they are added when the method 
+        report the type.
+        The types are not stored previously, they are added when the method
         logVulnerability(vulnerabilityTypeName,level,url,parameter,info) is invoked
         and if there is no vulnerabilty of a type, this type will not be presented
         in the report
         """
         vulnerabilityType = self.__xmlDoc.createElement("VulnerabilityType")
         vulnerabilityType.appendChild(self.__xmlDoc.createElement("VulnerabilityList"))
-        
+
         vulTitleNode = self.__xmlDoc.createElement("Title")
         vulTitleNode.appendChild(self.__xmlDoc.createTextNode(title))
         vulnerabilityType.appendChild(vulTitleNode)
@@ -124,14 +126,16 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
             vulnerabilityType.appendChild(referencesNode)
         return vulnerabilityType
 
-    def __addToVulnerabilityList(self,vulnerabilityTypeName,vulnerability):
+    def __addToVulnerabilityList(self, vulnerabilityTypeName, vulnerability):
         vulnerabilityType = None
         for node in self.__vulnerabilityTypeList.childNodes:
             titleNode = node.getElementsByTagName("Title")
-            if titleNode.length >= 1 and titleNode[0].childNodes.length == 1 and titleNode[0].childNodes[0].wholeText == vulnerabilityTypeName:
+            if (titleNode.length >= 1 and
+                titleNode[0].childNodes.length == 1 and
+                    titleNode[0].childNodes[0].wholeText == vulnerabilityTypeName):
                 vulnerabilityType = node
                 break
-        if vulnerabilityType == None:
+        if vulnerabilityType is None:
             vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
         vulnerabilityType.childNodes[0].appendChild(vulnerability)
 
@@ -142,7 +146,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         vulnerabilities notified through the current method.
         """
 
-        if resp == None:
+        if resp is None:
             peer = None
             ts = self.__ts
 #        TODO: subclass requests.exceptions.Timeout ?
@@ -154,10 +158,10 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
             ts = resp.timestamp
         else:
             raise TypeError(resp)
-        
+
         vulnerability = self.__xmlDoc.createElement("Vulnerability")
 
-        stLevel = None;
+        stLevel = None
         if level == 1:
             stLevel = "Low"
         elif level == 2:
@@ -168,7 +172,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         levelNode = self.__xmlDoc.createElement("Severity")
         levelNode.appendChild(self.__xmlDoc.createTextNode(stLevel))
         vulnerability.appendChild(levelNode)
-        
+
         tsNode = self.__xmlDoc.createElement("DetectionDate")
         tsNode.appendChild(self.__xmlDoc.createTextNode(ts.isoformat()))
         vulnerability.appendChild(tsNode)
@@ -180,23 +184,23 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         urlNode = self.__xmlDoc.createElement("URL")
         urlNode.appendChild(self.__xmlDoc.createTextNode(url))
         urlDetailNode.appendChild(urlNode)
-        
-        if peer!=None:
+
+        if peer is not None:
             peerNode = self.__xmlDoc.createElement("Peer")
             if isPeerAddrPort(peer):
                 addrNode = self.__xmlDoc.createElement("Addr")
-                addrNode.appendChild( self.__xmlDoc.createTextNode(peer[0]) )
+                addrNode.appendChild(self.__xmlDoc.createTextNode(peer[0]))
                 peerNode.appendChild(addrNode)
-            
+
                 portNode = self.__xmlDoc.createElement("Port")
-                portNode.appendChild( self.__xmlDoc.createTextNode(str(peer[1])) )
+                portNode.appendChild(self.__xmlDoc.createTextNode(str(peer[1])))
                 peerNode.appendChild(portNode)
             else:
                 addrNode = self.__xmlDoc.createElement("Addr")
-                addrNode.appendChild( self.__xmlDoc.createTextNode(str(peer)) )
+                addrNode.appendChild(self.__xmlDoc.createTextNode(str(peer)))
                 peerNode.appendChild(addrNode)
             urlDetailNode.appendChild(peerNode)
-        
+
         parameterNode = self.__xmlDoc.createElement("Parameter")
         parameterNode.appendChild(self.__xmlDoc.createTextNode(parameter))
         urlDetailNode.appendChild(parameterNode)
@@ -208,16 +212,16 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         infoNode.appendChild(self.__xmlDoc.createTextNode(info))
         urlDetailNode.appendChild(infoNode)
 
-        self.__addToVulnerabilityList(vulnerabilityTypeName,vulnerability)
+        self.__addToVulnerabilityList(vulnerabilityTypeName, vulnerability)
 
-    def generateReport(self,fileName):
+    def generateReport(self, fileName):
         """
-        Create a xml file with a report of the vulnerabilities which have been logged with 
+        Create a xml file with a report of the vulnerabilities which have been logged with
         the method logVulnerability(vulnerabilityTypeName,level,url,parameter,info)
         """
-        f = open(fileName,"w")
+        f = open(fileName, "w")
         try:
-            f.write(self.__xmlDoc.toxml(encoding = "UTF-8"))
+            f.write(self.__xmlDoc.toxml(encoding="UTF-8"))
         finally:
             f.close()
 
@@ -227,7 +231,7 @@ if __name__ == "__main__":
     XSS = "Cross Site Scripting"
     CRLF = "CRLF"
     EXEC = "Commands execution"
-    
+
     try:
         xmlGen = VulneraNetXMLReportGenerator()
         xmlGen.addVulnerabilityType(SQL_INJECTION, "desc", "recomm")
@@ -247,4 +251,3 @@ if __name__ == "__main__":
         xmlGen.generateReport("sampleReport.xml")
     except SystemExit:
         pass
-

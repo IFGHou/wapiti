@@ -106,7 +106,7 @@ class mod_xss(Attack):
                 self.attackedGET.append(url)
                 code = self.random_string()
                 test_url = HTTP.HTTPResource(page + "?" + code)
-                self.GET_XSS[code] = test_url
+                self.GET_XSS[code] = (test_url, "QUERY_STRING")
                 try:
                     resp = self.HTTP.send(test_url, headers=headers)
                     data = resp.getPage()
@@ -151,14 +151,16 @@ class mod_xss(Attack):
         else:
             for i in xrange(len(params_list)):
                 saved_value = params_list[i][1]
+                param_name = self.HTTP.quote(params_list[i][0])
                 params_list[i][1] = "__XSS__"
                 url = page + "?" + self.HTTP.encode(params_list)
+
                 if url not in self.attackedGET:
                     self.attackedGET.append(url)
                     code = self.random_string()
                     params_list[i][1] = code
                     test_url = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
-                    self.GET_XSS[code] = test_url
+                    self.GET_XSS[code] = (test_url, param_name)
                     try:
                         resp = self.HTTP.send(test_url, headers=headers)
                         data = resp.getPage()
@@ -171,7 +173,6 @@ class mod_xss(Attack):
                         payloads = self.generate_payloads(data, code)
                         for payload in payloads:
 
-                            param_name = self.HTTP.quote(params_list[i][0])
                             params_list[i][1] = payload
 
                             evil_req = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
@@ -273,7 +274,7 @@ class mod_xss(Attack):
                                                      file_params=file_params,
                                                      referer=referer)
 
-                    self.POST_XSS[code] = test_payload
+                    self.POST_XSS[code] = (test_payload, param_name)
                     try:
                         resp = self.HTTP.send(test_payload)
                         data = resp.getPage()
