@@ -128,7 +128,7 @@ class mod_sql(Attack):
                     self.logVuln(category=Vulnerability.SQL_INJECTION,
                                  level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                  request=evil_req,
-                                 info=u"{0} (QUERY_STRING)".format(err))
+                                 info=_("{0} via injection in the query string").format(err))
                     self.log(Vulnerability.MSG_QS_INJECT, err, page)
                     self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
 
@@ -139,7 +139,7 @@ class mod_sql(Attack):
                         self.logVuln(category=Vulnerability.SQL_INJECTION,
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
-                                     info=_("The server responded with a 500 HTTP error code"))
+                                     info=Vulnerability.MSG_QS_500)
                         self.log(Vulnerability.MSG_500, page)
                         self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
         else:
@@ -174,7 +174,7 @@ class mod_sql(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=err + " (" + param_name + ")")
+                                     info=("{0} via injection in the parameter {1}").format(err, param_name))
                         self.log(Vulnerability.MSG_PARAM_INJECT,
                                  err,
                                  page,
@@ -192,7 +192,7 @@ class mod_sql(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("The server responded with a 500 HTTP error code"))
+                                         info=Vulnerability.MSG_PARAM_500.format(param_name))
                             self.log(Vulnerability.MSG_500,
                                      page)
                             self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
@@ -248,7 +248,7 @@ class mod_sql(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=_("{0} coming from {1}").format(err, referer))
+                                     info=_("{0} via injection in the parameter {1}").format(err, param_name))
                         self.log(Vulnerability.MSG_PARAM_INJECT,
                                  err,
                                  evil_req.url,
@@ -268,8 +268,7 @@ class mod_sql(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("The server responded with a 500 HTTP"
-                                                " error coming from {0}").format(referer))
+                                         info=Vulnerability.MSG_PARAM_500.format(param_name))
                             self.log(Vulnerability.MSG_500, evil_req.url)
                             self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
                             self.log(Vulnerability.MSG_FROM, referer)

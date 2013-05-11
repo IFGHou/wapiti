@@ -93,7 +93,7 @@ class mod_blindsql(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter="QUERY_STRING",
-                                     info=_("Blind SQL Injection vulnerability found via the query string"))
+                                     info=_("{0} via injection in the query string").format(self.MSG_VULN))
                         self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
                         self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                         break
@@ -104,7 +104,7 @@ class mod_blindsql(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter="QUERY_STRING",
-                                         info=_("The server responded with a 500 HTTP error code"))
+                                         info=Vulnerability.MSG_QS_500)
                             self.log(Vulnerability.MSG_500, page)
                             self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
         else:
@@ -139,7 +139,8 @@ class mod_blindsql(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("Blind SQL Injection") + " (" + param_name + ")")
+                                         info=_("{0} via injection in "
+                                                "the parameter {1}").format(self.MSG_VULN, param_name))
                             self.log(Vulnerability.MSG_PARAM_INJECT,
                                      self.MSG_VULN,
                                      page,
@@ -159,7 +160,7 @@ class mod_blindsql(Attack):
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=_("The server responded with a 500 HTTP error code"))
+                                             info=Vulnerability.MSG_PARAM_500.format(param_name))
                                 self.log(Vulnerability.MSG_500, page)
                                 self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                 params_list[i][1] = saved_value
@@ -211,7 +212,8 @@ class mod_blindsql(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("Blind SQL Injection coming from {0}").format(referer))
+                                         info=_("{0} via injection in the "
+                                                "parameter {1}").format(self.MSG_VULN, param_name))
                             self.log(Vulnerability.MSG_PARAM_INJECT,
                                      self.MSG_VULN,
                                      evil_req.url,
@@ -234,8 +236,7 @@ class mod_blindsql(Attack):
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=_("The server responded with a 500"
-                                                    " HTTP error coming from {0}").format(referer))
+                                             info=Vulnerability.MSG_PARAM_500.format(param_name))
                                 self.log(Vulnerability.MSG_500, evil_req.url)
                                 self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
                                 self.log(Vulnerability.MSG_FROM, referer)

@@ -13,11 +13,7 @@ class mod_permanentxss(Attack):
 
     # magic strings we must see to be sure script is vulnerable to XSS
     # payloads must be created on those paterns
-    script_ok = [
-            "alert('__XSS__')",
-            "alert(\"__XSS__\")",
-            "String.fromCharCode(0,__XSS__,1)"
-            ]
+    script_ok = ["alert('__XSS__')", "alert(\"__XSS__\")", "String.fromCharCode(0,__XSS__,1)"]
 
     # simple payloads that doesn't rely on their position in the DOM structure
     # payloads injected after closing a tag aatibute value (attrval) or in the
@@ -54,6 +50,7 @@ class mod_permanentxss(Attack):
             if http_resource.method != "GET":
                 continue
             url = http_resource.url
+            page = http_resource.path
             referer = http_resource.referer
             headers = {}
             if referer:
@@ -87,16 +84,13 @@ class mod_permanentxss(Attack):
                             if self.validXSS(data, code, self.SUCCESSFUL_XSS[code]):
                                 # if we can find the payload again, this is a stored XSS
                                 evil_req = HTTP.HTTPResource(code_url.replace(code, self.SUCCESSFUL_XSS[code]))
-                                if self.color == 0:
-                                    if param_name == "QUERY_STRING":
-                                        self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
-                                    else:
-                                        self.log(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
-                                    self.log(Vulnerability.MSG_EVIL_URL, code_url)
 
+                                if param_name == "QUERY_STRING":
+                                    self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
+                                    self.log(Vulnerability.MSG_EVIL_URL, code_url)
                                 else:
-                                    if param_name == "QUERY_STRING":
-                                        self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
+                                    if self.color == 0:
+                                        self.log(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
                                         self.log(Vulnerability.MSG_EVIL_URL, code_url)
                                     else:
                                         self.log(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
@@ -108,7 +102,7 @@ class mod_permanentxss(Attack):
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
                                              info=_("Found permanent XSS in {0}"
-                                                    " with").format(url, self.HTTP.escape(evil_req.url)))
+                                                    " with {1}").format(page, self.HTTP.escape(evil_req.url)))
                                 # we reported the vuln, now search another code
                                 continue
 
@@ -187,7 +181,7 @@ class mod_permanentxss(Attack):
                                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                                          request=evil_req,
                                                          parameter=param_name,
-                                                         info=_("Found permanent XSS attacked by {0} with field"
+                                                         info=_("Found permanent XSS attacked by {0} with fields"
                                                                 " {1}").format(evil_req.url,
                                                                                self.HTTP.encode(post_params)))
                                             self.log(Vulnerability.MSG_PARAM_INJECT,

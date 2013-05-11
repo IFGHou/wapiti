@@ -44,7 +44,7 @@ class mod_exec(Attack):
         err = ""
         cmd = 0
         if "eval()'d code</b> on line <b>" in data and not warned:
-            err = "Warning eval()"
+            err = ("Warning eval()")
             warned = 1
         if "PATH=" in data and "PWD=" in data:
             err = _("Command execution")
@@ -53,10 +53,10 @@ class mod_exec(Attack):
             err = _("PHP evaluation")
             cmd = 1
         if "Cannot execute a blank command in" in data and not warned:
-            err = "Warning exec"
+            err = _("Warning exec")
             warned = 1
         if "sh: command substitution:" in data and not warned:
-            err = "Warning exec"
+            err = _("Warning exec")
             warned = 1
         if "Fatal error</b>:  preg_replace" in data and not warned:
             err = _("preg_replace injection")
@@ -107,14 +107,14 @@ class mod_exec(Attack):
                         self.logVuln(category=Vulnerability.RES_CONSUMPTION,
                                      level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                      request=evil_req,
-                                     info="{0} (QUERY_STRING)".format(err))
+                                     info=Vulnerability.MSG_QS_TIMEOUT)
                     else:
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
                     if err != "":
                         self.logVuln(category=Vulnerability.EXEC,
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
-                                     info="{0} (QUERY_STRING)".format(err))
+                                     info=Vulnerability.MSG_QS_INJECT.format(err, page))
                         self.log(Vulnerability.MSG_QS_INJECT, err, page)
                         self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     else:
@@ -123,7 +123,7 @@ class mod_exec(Attack):
                             self.logVuln(category=Vulnerability.EXEC,
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
-                                         info=_("The server responded with a 500 HTTP error code"))
+                                         info=Vulnerability.MSG_QS_500)
                             self.log(Vulnerability.MSG_500, page)
                             self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     if cmd:
@@ -162,7 +162,7 @@ class mod_exec(Attack):
                                      level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=u"{0} ({1})".format(err, param_name))
+                                     info=Vulnerability.MSG_PARAM_TIMEOUT.format(param_name))
                     else:
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
                     if err != "":
@@ -170,7 +170,7 @@ class mod_exec(Attack):
                                      level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=u"{0} ({1})".format(err, param_name))
+                                     info=_("{0} via injection in the parameter {1}").format(err, param_name))
                         self.log(Vulnerability.MSG_PARAM_INJECT,
                                  err,
                                  page,
@@ -191,7 +191,7 @@ class mod_exec(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("The server responded with a 500 HTTP error code"))
+                                         info=Vulnerability.MSG_PARAM_500.format(param_name))
                             self.log(Vulnerability.MSG_500, page)
                             self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
             params_list[i][1] = saved_value
@@ -244,7 +244,7 @@ class mod_exec(Attack):
                                          level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=_("Timeout coming from {0}").format(referer))
+                                         info=Vulnerability.MSG_PARAM_TIMEOUT.format(param_name))
                         else:
                             err, cmd, warned = self.__findPatternInResponse(data, warned)
 
@@ -253,7 +253,7 @@ class mod_exec(Attack):
                                          level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=u"{0} coming from {1}".format(err, referer))
+                                         info=_("{0} via injection in the parameter {1}").format(err, param_name))
                             self.log(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
                             if self.color == 1:
                                 self.log(Vulnerability.MSG_WITH_PARAMS,
@@ -273,8 +273,7 @@ class mod_exec(Attack):
                                              level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=_("The server responded with a 500 HTTP "
-                                                    "error code coming from {0}").format(referer))
+                                             info=Vulnerability.MSG_PARAM_500.format(param_name))
                                 self.log(Vulnerability.MSG_500, evil_req.url)
                                 self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
                                 self.log(Vulnerability.MSG_REFERER, referer)
