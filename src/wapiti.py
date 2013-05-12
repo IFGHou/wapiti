@@ -304,8 +304,8 @@ Supported options are:
             print('')
             print(_("Upload scripts found:"))
             print("----------------------")
-            for url in self.myls.getUploads():
-                print(url)
+            for upload_form in self.myls.getUploads():
+                print(upload_form)
         if not self.outputFile:
             if self.reportGeneratorType == "html":
                 self.outputFile = self.COPY_REPORT_DIR

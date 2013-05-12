@@ -202,8 +202,14 @@ class HTTPResource(object):
             http_string += "Referer: %s\n" % (self._referer)
         if self._file_params:
             boundary = "------------------------boundarystring"
-            http_string += "Content-Type: multipart/form-data; boundary=%s\n" % (boundary)
-            #TODO: boundary http repr
+            http_string += "Content-Type: multipart/form-data; boundary=%s\n\n" % (boundary)
+            for field_name, field_value in self._post_params:
+                http_string += ("{0}\nContent-Disposition: form-data; "
+                                "name=\"{1}\"\n\n{2}\n").format(boundary, field_name, field_value)
+            for field_name, field_value in self._file_params:
+                http_string += ("{0}\nContent-Disposition: form-data; name=\"{1}\"; filename=\"{2}\"\n\n"
+                                "/* snip file content snip */\n").format(boundary, field_name, field_value[0])
+            http_string += "{0}--\n".format(boundary)
         elif self._post_params:
             http_string += "Content-Type: application/x-www-form-urlencoded\n"
             http_string += "\n%s" % (self.encoded_data)
@@ -212,14 +218,17 @@ class HTTPResource(object):
 
     @property
     def curl_repr(self):
-        curl_string = "curl \"%s\"" % (self.url)
+        curl_string = "curl \"{0}\"".format(self.url)
         if self._referer:
-            curl_string += " -e \"%s\"" % (self._referer)
+            curl_string += " -e \"{0}\"".format(self._referer)
         if self._file_params:
-            #TODO: upload curl repr
+            for field_name, field_value in self._post_params:
+                curl_string += " -F \"{0}={1}\"".format(field_name, field_value)
+            for field_name, field_value in self._file_params:
+                curl_string += " -F \"{0}=@your_local_file;filename={1}\"".format(field_name, field_value[0])
             pass
         elif self._post_params:
-            curl_string += " -d \"%s\"" % (self.encoded_data)
+            curl_string += " -d \"{0}\"".format(self.encoded_data)
 
         return curl_string
 
@@ -246,8 +255,8 @@ class HTTPResource(object):
     def url(self):
         if self._cached_url is None:
             if self._get_params:
-                self._cached_url = "%s?%s" % (self._resource_path,
-                                              self._encode_params(self._get_params))
+                self._cached_url = "{0}?{1}".format(self._resource_path,
+                                                    self._encode_params(self._get_params))
             else:
                 self._cached_url = self._resource_path
         return self._cached_url
@@ -561,6 +570,9 @@ if __name__ == "__main__":
                          post_params=[['post1', 'c'], ['post2', 'd']])
     res11 = HTTPResource("http://httpbin.org/post?qs1",
                          post_params=[['post1', 'c'], ['post2', 'd']])
+    res12 = HTTPResource("http://httpbin.org/post?qs1",
+                         post_params=[['post1', 'c'], ['post2', 'd']],
+                         file_params=[['file1', ['fname1', 'content']], ['file2', ['fname2', 'content']]])
     assert res1 < res2
     assert res2 > res3
     assert res1 < res3
@@ -578,4 +590,10 @@ if __name__ == "__main__":
     print res1.post_params
     print "=== POST keys encoded as string ==="
     print res1.encoded_post_keys
+    print "=== Upload HTTP representation  ==="
+    print res12.http_repr
+    print "=== Upload basic representation ==="
+    print res12
+    print "=== Upload cURL representation  ==="
+    print res12.curl_repr
     print

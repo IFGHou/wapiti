@@ -369,8 +369,6 @@ class lswww:
                 p = linkParser2(url, self.verbose)
                 p.feed(htmlSource)
 
-        for lien in p.uploads:
-            self.uploads.append(self.correctlink(lien, current, currentdir, proto, page_encoding))
         for lien in p.liens:
             if (lien is not None) and (page_encoding is not None) and isinstance(lien, unicode):
                 lien = lien.encode(page_encoding, "ignore")
@@ -403,22 +401,25 @@ class lswww:
 
             # urlencode the POST parameters here
             params = form[1]
+            post_params = []
             files = []
             for kv in params:
                 if isinstance(kv[0], unicode):
                     kv[0] = kv[0].encode(page_encoding, "ignore")
+
                 if isinstance(kv[1], list):
                     fname = kv[1][0]
                     if isinstance(fname, unicode):
                         fname = fname.encode(page_encoding, "ignore")
                     files.append([kv[0], [fname, kv[1][1]]])
-                    params.remove(kv)
-                elif isinstance(kv[1], unicode):
-                    kv[1] = kv[1].encode(page_encoding, "ignore")
+                else:
+                    if isinstance(kv[1], unicode):
+                        kv[1] = kv[1].encode(page_encoding, "ignore")
+                    post_params.append([kv[0], kv[1]])
 
             form_rsrc = HTTP.HTTPResource(action,
                                           method="POST",
-                                          post_params=params,
+                                          post_params=post_params,
                                           file_params=files,
                                           encoding=page_encoding,
                                           referer=url)
@@ -426,6 +427,9 @@ class lswww:
                 self.forms.append(form_rsrc)
             if not (form_rsrc in self.browsed or form_rsrc in self.tobrowse):
                 self.tobrowse.append(form_rsrc)
+            if files:
+                if form_rsrc not in self.uploads:
+                    self.uploads.append(form_rsrc)
         # We automaticaly exclude 404 urls
         if code == "404":
             self.excluded.append(url)
@@ -624,7 +628,6 @@ class lswww:
                 # TODO: change xml file for browsed urls
                 self.browsed = self.persister.getBrowsed()
                 self.forms = self.persister.getForms()
-                self.uploads = self.persister.getUploads()
                 print(_("File {0} loaded, the scan continues:").format(crawlerFile))
                 if self.verbose == 2:
                     print(_(" * URLs to browse"))
@@ -726,11 +729,6 @@ class lswww:
                 post.appendChild(var)
             items.appendChild(post)
 
-        for up in self.uploads:
-            upl = xml.createElement("upload")
-            upl.setAttribute("url", up)
-            items.appendChild(upl)
-
         fd = open(filename, "w")
         xml.writexml(fd, "    ", "    ", "\n", encoding)
         fd.close()
@@ -825,8 +823,6 @@ class linkParser(HTMLParser.HTMLParser):
                             val = self.__defaults[tmpdict['type'].lower()]
                         self.form_values.append([tmpdict['name'], val])
 
-                    if tmpdict['type'].lower() == "file":
-                        self.uploads.append(self.current_form_url)
                     if tmpdict['type'].lower() == "image":
                         self.form_values.append([tmpdict['name'] + ".x", "1"])
                         self.form_values.append([tmpdict['name'] + ".y", "1"])
