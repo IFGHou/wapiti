@@ -20,6 +20,7 @@
 
           // Fill the title with info about the target
           report_title.innerHTML += report_data['infos']['target'];
+          infos.innerHTML = infos.innerHTML.replace('__DATETIME__', report_data['infos']['date']);
           infos.innerHTML += report_data['infos']['scope'];
 
           var vuln_count = 0;
@@ -181,7 +182,7 @@
     <div id="page">
         <header id="header">
           <h1 id="title">Wapiti vulnerability report for </h1>
-          <h1 id="target_infos" class="subheader">Scope of the web scanner : </h1>
+          <h1 id="target_infos" class="subheader">Date of the scan: __DATETIME__. Scope of the web scanner : </h1>
         </header>
         <hr />
         <h2>Sumary</h3>
