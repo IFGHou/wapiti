@@ -1,5 +1,5 @@
 from attack import Attack
-from vulnerability import Vulnerability
+from vulnerability import Vulnerability, Anomaly
 import requests
 from net import HTTP
 
@@ -68,18 +68,18 @@ class mod_crlf(Attack):
                     resp = self.HTTP.send(evil_req, headers=headers)
                     if "wapiti" in resp.getHeaders():
                         self.logVuln(category=Vulnerability.CRLF,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      info=self.MSG_VULN + " " + _("(QUERY_STRING)"))
                         self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
                         self.log(Vulnerability.MSG_EVIL_URL, url)
                 except requests.exceptions.Timeout:
-                    self.logVuln(category=Vulnerability.RES_CONSUMPTION,
-                                 level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                    self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                 level=Anomaly.MEDIUM_LEVEL,
                                  request=evil_req,
                                  info=self.MSG_VULN + " " + _("(QUERY_STRING)"))
-                    self.log(Vulnerability.MSG_TIMEOUT, page)
-                    self.log(Vulnerability.MSG_EVIL_URL, url)
+                    self.log(Anomaly.MSG_TIMEOUT, page)
+                    self.log(Anomaly.MSG_EVIL_URL, url)
                 except requests.exceptions.HTTPError:
                     # print("Error: The server did not understand this request")
                     pass
@@ -101,7 +101,7 @@ class mod_crlf(Attack):
                         resp = self.HTTP.send(evil_req, headers=headers)
                         if "wapiti" in resp.getHeaders():
                             self.logVuln(category=Vulnerability.CRLF,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                         level=Vulnerability.HIGH_LEVEL,
                                          request=evil_req,
                                          parameter=param_name,
                                          info=self.MSG_VULN + " (" + param_name + ")")
@@ -115,13 +115,13 @@ class mod_crlf(Attack):
                                 self.log(Vulnerability.MSG_EVIL_URL,
                                          url.replace(param_name + "=", self.RED + param_name + self.STD + "="))
                     except requests.exceptions.Timeout:
-                        self.logVuln(category=Vulnerability.RES_CONSUMPTION,
-                                     level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                        self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                     level=Anomaly.MEDIUM_LEVEL,
                                      request=evil_req,
                                      parameter=param_name,
                                      info="Timeout (" + param_name + ")")
-                        self.log(Vulnerability.MSG_TIMEOUT, page)
-                        self.log(Vulnerability.MSG_EVIL_URL, url)
+                        self.log(Anomaly.MSG_TIMEOUT, page)
+                        self.log(Anomaly.MSG_EVIL_URL, url)
                     except requests.exceptions.HTTPError:
                         print(_("Error: The server did not understand this request"))
                 params_list[i][1] = saved_value

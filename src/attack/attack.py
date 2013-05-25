@@ -38,6 +38,7 @@ class Attack:
     name = "attack"
 
     logVuln = None
+    logAnom = None
     HTTP = None
     auxText = None
 
@@ -84,6 +85,7 @@ class Attack:
     def __init__(self, HTTP, reportGen):
         self.HTTP = HTTP
         self.logVuln = reportGen.logVulnerability
+        self.logAnom = reportGen.logAnomaly
         self.auxText = AuxText()
         self.attackedGET = []
         self.attackedPOST = []

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<anomalies>
+    <anomaly name="Internal Server Error">
+        <description>Internal server error description</description>
+        <solution text="Internal server error solution"/>
+        <references>
+            <reference>
+                <title>http://www.owasp.org/index.php/TO_CHANGE</title>
+                <url>http://www.owasp.org/index.php/TO_CHANGE</url>
+            </reference>
+            <reference>
+                <title>http://en.wikipedia.org/wiki/TO_CHANGE</title>
+                <url>http://en.wikipedia.org/wiki/SQL_injection</url>
+            </reference>
+        </references>
+    </anomaly>
+    <anomaly name="Resource consumption">
+        <description>Resource consumption description</description>
+        <solution text="Resource consumption solution"/>
+        <references>
+            <reference>
+                <title>http://www.owasp.org/index.php/Asymmetric_resource_consumption_(amplification)</title>
+                <url>http://www.owasp.org/index.php/Asymmetric_resource_consumption_(amplification)</url>
+            </reference>
+            <reference>
+                <title><![CDATA[CWE-400: Uncontrolled Resource Consumption ('Resource Exhaustion')]]></title>
+                <url>http://cwe.mitre.org/data/definitions/400.html</url>
+            </reference>
+        </references>
+    </anomaly>
+</anomalies>

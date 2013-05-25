@@ -24,14 +24,22 @@
 
 
 class ReportGenerator:
-    def addVulnerabilityType(self, name, description="", solution="", references={}):
-        ""
-
-    def logVulnerability(self, vulnerabilityTypeName, level, url, parameter, info, resp):
-        ""
-
     def generateReport(self, fileName):
-        ""
+        pass
 
     def setReportInfo(self, target=None, scope=None, date_string=""):
-        ""
+        pass
+
+    # Vulnerabilities
+    def addVulnerabilityType(self, name, description="", solution="", references={}):
+        pass
+
+    def logVulnerability(self, category=None, level=0, request=None, parameter="", info=""):
+        pass
+
+    # Anomalies
+    def addAnomalyType(self, name, description="", solution="", references={}):
+        pass
+
+    def logAnomaly(self, category=None, level=0, request=None, parameter="", info=""):
+        pass

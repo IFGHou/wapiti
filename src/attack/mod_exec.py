@@ -1,5 +1,5 @@
 from attack import Attack
-from vulnerability import Vulnerability
+from vulnerability import Vulnerability, Anomaly
 import requests
 from net import HTTP
 
@@ -102,17 +102,17 @@ class mod_exec(Attack):
                         data = ""
                         code = "408"
                         err = ""
-                        self.log(Vulnerability.MSG_TIMEOUT, page)
-                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                        self.logVuln(category=Vulnerability.RES_CONSUMPTION,
-                                     level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                        self.log(Anomaly.MSG_TIMEOUT, page)
+                        self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
+                        self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                     level=Anomaly.MEDIUM_LEVEL,
                                      request=evil_req,
-                                     info=Vulnerability.MSG_QS_TIMEOUT)
+                                     info=Anomaly.MSG_QS_TIMEOUT)
                     else:
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
                     if err != "":
                         self.logVuln(category=Vulnerability.EXEC,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      info=Vulnerability.MSG_QS_INJECT.format(err, page))
                         self.log(Vulnerability.MSG_QS_INJECT, err, page)
@@ -120,12 +120,12 @@ class mod_exec(Attack):
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
-                            self.logVuln(category=Vulnerability.EXEC,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            self.logAnom(category=Anomaly.ERROR_500,
+                                         level=Anomaly.HIGH_LEVEL,
                                          request=evil_req,
                                          info=Vulnerability.MSG_QS_500)
-                            self.log(Vulnerability.MSG_500, page)
-                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
+                            self.log(Anomaly.MSG_500, page)
+                            self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
                     if cmd:
                         break
 
@@ -156,18 +156,18 @@ class mod_exec(Attack):
                         data = ""
                         code = "408"
                         err = ""
-                        self.log(Vulnerability.MSG_TIMEOUT, page)
-                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                        self.logVuln(category=Vulnerability.RES_CONSUMPTION,
-                                     level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                        self.log(Anomaly.MSG_TIMEOUT, page)
+                        self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
+                        self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                     level=Anomaly.MEDIUM_LEVEL,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=Vulnerability.MSG_PARAM_TIMEOUT.format(param_name))
+                                     info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
                     else:
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
                     if err != "":
                         self.logVuln(category=Vulnerability.EXEC,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      parameter=param_name,
                                      info=_("{0} via injection in the parameter {1}").format(err, param_name))
@@ -187,13 +187,13 @@ class mod_exec(Attack):
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
-                            self.logVuln(category=Vulnerability.EXEC,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            self.logAnom(category=Anomaly.ERROR_500,
+                                         level=Anomaly.HIGH_LEVEL,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=Vulnerability.MSG_PARAM_500.format(param_name))
-                            self.log(Vulnerability.MSG_500, page)
-                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
+                                         info=Anomaly.MSG_PARAM_500.format(param_name))
+                            self.log(Anomaly.MSG_500, page)
+                            self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
             params_list[i][1] = saved_value
 
     def attackPOST(self, form):
@@ -237,20 +237,20 @@ class mod_exec(Attack):
                         except requests.exceptions.Timeout:
                             data = ""
                             code = "408"
-                            self.log(Vulnerability.MSG_TIMEOUT, evil_req.url)
-                            self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                            self.log(Vulnerability.MSG_FROM, referer)
-                            self.logVuln(category=Vulnerability.RES_CONSUMPTION,
-                                         level=Vulnerability.MEDIUM_LEVEL_VULNERABILITY,
+                            self.log(Anomaly.MSG_TIMEOUT, evil_req.url)
+                            self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
+                            self.log(Anomaly.MSG_FROM, referer)
+                            self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                         level=Anomaly.MEDIUM_LEVEL,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=Vulnerability.MSG_PARAM_TIMEOUT.format(param_name))
+                                         info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
                         else:
                             err, cmd, warned = self.__findPatternInResponse(data, warned)
 
                         if err != "":
                             self.logVuln(category=Vulnerability.EXEC,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                         level=Vulnerability.HIGH_LEVEL,
                                          request=evil_req,
                                          parameter=param_name,
                                          info=_("{0} via injection in the parameter {1}").format(err, param_name))
@@ -269,12 +269,12 @@ class mod_exec(Attack):
                         else:
                             if code == "500" and err500 == 0:
                                 err500 = 1
-                                self.logVuln(category=Vulnerability.EXEC,
-                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                self.logAnom(category=Anomaly.ERROR_500,
+                                             level=Anomaly.HIGH_LEVEL,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=Vulnerability.MSG_PARAM_500.format(param_name))
-                                self.log(Vulnerability.MSG_500, evil_req.url)
-                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                                self.log(Vulnerability.MSG_REFERER, referer)
+                                             info=Anomaly.MSG_PARAM_500.format(param_name))
+                                self.log(Anomaly.MSG_500, evil_req.url)
+                                self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
+                                self.log(Anomaly.MSG_REFERER, referer)
                 param_list[i][1] = saved_value

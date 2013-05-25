@@ -99,7 +99,7 @@ class mod_permanentxss(Attack):
                                                                       self.RED + param_name + self.STD + "="))
 
                                 self.logVuln(category=Vulnerability.XSS,
-                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                             level=Vulnerability.HIGH_LEVEL,
                                              request=evil_req,
                                              info=_("Found permanent XSS in {0}"
                                                     " with {1}").format(page, self.HTTP.escape(evil_req.url)))
@@ -142,7 +142,7 @@ class mod_permanentxss(Attack):
                                                                           self.RED + param_name + self.STD + "="))
 
                                     self.logVuln(category=Vulnerability.XSS,
-                                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                 level=Vulnerability.HIGH_LEVEL,
                                                  request=evil_req,
                                                  info=_("Found permanent XSS in {0}"
                                                         " with {1}").format(url, self.HTTP.escape(evil_req.url)))
@@ -178,7 +178,7 @@ class mod_permanentxss(Attack):
                                                                          referer=referer)
 
                                             self.logVuln(category=Vulnerability.XSS,
-                                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                         level=Vulnerability.HIGH_LEVEL,
                                                          request=evil_req,
                                                          parameter=param_name,
                                                          info=_("Found permanent XSS attacked by {0} with fields"
@@ -239,7 +239,7 @@ class mod_permanentxss(Attack):
                                                 continue
                                             if self.validXSS(dat, code, payload):
                                                 self.logVuln(category=Vulnerability.XSS,
-                                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                             level=Vulnerability.HIGH_LEVEL,
                                                              request=evil_req,
                                                              parameter=param_name,
                                                              info=_("Found permanent XSS attacked by {0} with fields"

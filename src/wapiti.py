@@ -63,6 +63,7 @@ lan.configure()
 from net import HTTP, lswww
 from file.reportgeneratorsxmlparser import ReportGeneratorsXMLParser
 from file.vulnerabilityxmlparser import VulnerabilityXMLParser
+from file.anomalyxmlparser import AnomalyXMLParser
 from net.crawlerpersister import CrawlerPersister
 
 
@@ -194,13 +195,22 @@ Supported options are:
                                              time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
                 break
 
-        xmlParser = VulnerabilityXMLParser()
-        xmlParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/vulnerabilities.xml"))
-        for vul in xmlParser.getVulnerabilities():
+        vulnXMLParser = VulnerabilityXMLParser()
+        vulnXMLParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/vulnerabilities.xml"))
+        for vul in vulnXMLParser.getVulnerabilities():
             self.reportGen.addVulnerabilityType(_(vul.getName()),
                                                 (vul.getDescription()),
                                                 _(vul.getSolution()),
                                                 vul.getReferences())
+
+        anomXMLParser = AnomalyXMLParser()
+        anomXMLParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/anomalies.xml"))
+        for anomaly in anomXMLParser.getAnomalies():
+            print anomaly
+            self.reportGen.addAnomalyType(_(anomaly.getName()),
+                                            (anomaly.getDescription()),
+                                            _(anomaly.getSolution()),
+                                            anomaly.getReferences())
 
     def __initAttacks(self):
         self.__initReport()

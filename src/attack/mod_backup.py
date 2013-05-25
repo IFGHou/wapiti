@@ -73,7 +73,7 @@ class mod_backup(Attack):
                             print(_(" + Found backup file !"))
                             print(u"   -> {0}".format(evil_req.url))
                         self.logVuln(category=Vulnerability.BACKUP,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      info=_("Backup file {0} found for {1}").format(url, page))
 

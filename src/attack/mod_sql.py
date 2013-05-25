@@ -1,6 +1,6 @@
 import re
 from attack import Attack
-from vulnerability import Vulnerability
+from vulnerability import Vulnerability, Anomaly
 import requests
 from net import HTTP
 
@@ -126,7 +126,7 @@ class mod_sql(Attack):
                 if err != "":
                     vuln_found += 1
                     self.logVuln(category=Vulnerability.SQL_INJECTION,
-                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
                                  info=_("{0} via injection in the query string").format(err))
                     self.log(Vulnerability.MSG_QS_INJECT, err, page)
@@ -136,12 +136,12 @@ class mod_sql(Attack):
 
                 else:
                     if code == "500":
-                        self.logVuln(category=Vulnerability.SQL_INJECTION,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                        self.logAnom(category=Anomaly.ERROR_500,
+                                     level=Anomaly.HIGH_LEVEL,
                                      request=evil_req,
-                                     info=Vulnerability.MSG_QS_500)
-                        self.log(Vulnerability.MSG_500, page)
-                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
+                                     info=Anomaly.MSG_QS_500)
+                        self.log(Anomaly.MSG_500, page)
+                        self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
         else:
             for i in range(len(params_list)):
                 err = ""
@@ -171,7 +171,7 @@ class mod_sql(Attack):
                         err = self.__findPatternInResponse(data)
                     if err != "":
                         self.logVuln(category=Vulnerability.SQL_INJECTION,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      parameter=param_name,
                                      info=("{0} via injection in the parameter {1}").format(err, param_name))
@@ -188,14 +188,13 @@ class mod_sql(Attack):
                         self.vulnerableGET.append(pattern_url)
 
                     elif code == "500":
-                            self.logVuln(category=Vulnerability.SQL_INJECTION,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            self.logAnom(category=Anomaly.ERROR_500,
+                                         level=Anomaly.HIGH_LEVEL,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=Vulnerability.MSG_PARAM_500.format(param_name))
-                            self.log(Vulnerability.MSG_500,
-                                     page)
-                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
+                                         info=Anomaly.MSG_PARAM_500.format(param_name))
+                            self.log(Anomaly.MSG_500, page)
+                            self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
                 params_list[i][1] = saved_value
 
     def attackPOST(self, form):
@@ -245,7 +244,7 @@ class mod_sql(Attack):
                         err = self.__findPatternInResponse(data)
                     if err != "":
                         self.logVuln(category=Vulnerability.SQL_INJECTION,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      parameter=param_name,
                                      info=_("{0} via injection in the parameter {1}").format(err, param_name))
@@ -264,12 +263,12 @@ class mod_sql(Attack):
 
                     else:
                         if code == "500":
-                            self.logVuln(category=Vulnerability.SQL_INJECTION,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            self.logAnom(category=Anomaly.ERROR_500,
+                                         level=Anomaly.HIGH_LEVEL,
                                          request=evil_req,
                                          parameter=param_name,
-                                         info=Vulnerability.MSG_PARAM_500.format(param_name))
-                            self.log(Vulnerability.MSG_500, evil_req.url)
+                                         info=Anomaly.MSG_PARAM_500.format(param_name))
+                            self.log(Anomaly.MSG_500, evil_req.url)
                             self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
                             self.log(Vulnerability.MSG_FROM, referer)
 

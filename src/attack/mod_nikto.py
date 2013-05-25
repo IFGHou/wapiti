@@ -209,16 +209,16 @@ class mod_nikto(Attack):
 
                 if l[4] == "GET":
                     self.logVuln(category=Vulnerability.NIKTO,
-                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 level=Vulnerability.HIGH_LEVEL,
                                  request=url,
                                  info=info)
                 elif l[4] == "POST":
                     self.logVuln(category=Vulnerability.NIKTO,
-                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 level=Vulnerability.HIGH_LEVEL,
                                  request=url,  # l[11],
                                  info=info)
                 else:
                     self.logVuln(category=Vulnerability.NIKTO,
-                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 level=Vulnerability.HIGH_LEVEL,
                                  request=url,  # l[4] + " " + l[11],
                                  info=info)

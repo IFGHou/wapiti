@@ -1,5 +1,5 @@
 from attack import Attack
-from vulnerability import Vulnerability
+from vulnerability import Vulnerability, Anomaly
 import requests
 from net import HTTP
 
@@ -90,7 +90,7 @@ class mod_blindsql(Attack):
                         data, code = resp.getPageCode()
                     except requests.exceptions.Timeout:
                         self.logVuln(category=Vulnerability.BLIND_SQL_INJECTION,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                     level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      parameter="QUERY_STRING",
                                      info=_("{0} via injection in the query string").format(self.MSG_VULN))
@@ -100,13 +100,13 @@ class mod_blindsql(Attack):
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
-                            self.logVuln(category=Vulnerability.BLIND_SQL_INJECTION,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                            self.logAnom(category=Anomaly.ERROR_500,
+                                         level=Anomaly.HIGH_LEVEL,
                                          request=evil_req,
                                          parameter="QUERY_STRING",
-                                         info=Vulnerability.MSG_QS_500)
-                            self.log(Vulnerability.MSG_500, page)
-                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
+                                         info=Anomaly.MSG_QS_500)
+                            self.log(Anomaly.MSG_500, page)
+                            self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
         else:
             for i in range(len(params_list)):
                 saved_value = params_list[i][1]
@@ -136,7 +136,7 @@ class mod_blindsql(Attack):
                             data, code = resp.getPageCode()
                         except requests.exceptions.Timeout:
                             self.logVuln(category=Vulnerability.BLIND_SQL_INJECTION,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                         level=Vulnerability.HIGH_LEVEL,
                                          request=evil_req,
                                          parameter=param_name,
                                          info=_("{0} via injection in "
@@ -156,13 +156,13 @@ class mod_blindsql(Attack):
                         else:
                             if code == "500" and err500 == 0:
                                 err500 = 1
-                                self.logVuln(category=Vulnerability.BLIND_SQL_INJECTION,
-                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                self.logAnom(category=Anomaly.ERROR_500,
+                                             level=Anomaly.HIGH_LEVEL,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=Vulnerability.MSG_PARAM_500.format(param_name))
-                                self.log(Vulnerability.MSG_500, page)
-                                self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
+                                             info=Anomaly.MSG_PARAM_500.format(param_name))
+                                self.log(Anomaly.MSG_500, page)
+                                self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
                 params_list[i][1] = saved_value
 
     def attackPOST(self, form):
@@ -209,7 +209,7 @@ class mod_blindsql(Attack):
                         except requests.exceptions.Timeout:
                             # Timeout means time-based SQL injection
                             self.logVuln(category=Vulnerability.BLIND_SQL_INJECTION,
-                                         level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                         level=Vulnerability.HIGH_LEVEL,
                                          request=evil_req,
                                          parameter=param_name,
                                          info=_("{0} via injection in the "
@@ -232,14 +232,14 @@ class mod_blindsql(Attack):
                         else:
                             if code == "500" and err500 == 0:
                                 err500 = 1
-                                self.logVuln(category=Vulnerability.BLIND_SQL_INJECTION,
-                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                self.logAnom(category=Anomaly.ERROR_500,
+                                             level=Anomaly.HIGH_LEVEL,
                                              request=evil_req,
                                              parameter=param_name,
-                                             info=Vulnerability.MSG_PARAM_500.format(param_name))
-                                self.log(Vulnerability.MSG_500, evil_req.url)
-                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                                self.log(Vulnerability.MSG_FROM, referer)
+                                             info=Anomaly.MSG_PARAM_500.format(param_name))
+                                self.log(Anomaly.MSG_500, evil_req.url)
+                                self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
+                                self.log(Anomaly.MSG_FROM, referer)
                 param_list[i][1] = saved_value
 
     def loadRequire(self, obj=[]):

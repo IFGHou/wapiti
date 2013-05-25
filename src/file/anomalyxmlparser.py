@@ -23,22 +23,22 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from xml.parsers import expat
-from vulnerability import Vulnerability
+from vulnerability import Anomaly
 
 
-class VulnerabilityXMLParser:
+class AnomalyXMLParser:
 
-    VULNERABILITY = "vulnerability"
-    VULNERABILITY_NAME = "name"
-    VULNERABILITY_DESCRIPTION = "description"
-    VULNERABILITY_SOLUTION = "solution"
-    VULNERABILITY_REFERENCE = "reference"
-    VULNERABILITY_REFERENCES = "references"
-    VULNERABILITY_REFERENCE_TITLE = "title"
-    VULNERABILITY_REFERENCE_URL = "url"
+    ANOMALY = "anomaly"
+    ANOMALY_NAME = "name"
+    ANOMALY_DESCRIPTION = "description"
+    ANOMALY_SOLUTION = "solution"
+    ANOMALY_REFERENCE = "reference"
+    ANOMALY_REFERENCES = "references"
+    ANOMALY_REFERENCE_TITLE = "title"
+    ANOMALY_REFERENCE_URL = "url"
 
-    vulnerabilities = []
-    vul = None
+    anomalies = []
+    anom = None
     references = {}
     title = ""
     url = ""
@@ -68,41 +68,41 @@ class VulnerabilityXMLParser:
         del self._parser
 
     def start_element(self, name, attrs):
-        if name == self.VULNERABILITY:
-            self.vul = Vulnerability()
-            self.vul.setName(attrs[self.VULNERABILITY_NAME])
-        elif name == self.VULNERABILITY_DESCRIPTION:
-            self.tag = self.VULNERABILITY_DESCRIPTION
-        elif name == self.VULNERABILITY_SOLUTION:
-            #self.tag = self.VULNERABILITY_SOLUTION
-            self.vul.setSolution(attrs["text"])
-        elif name == self.VULNERABILITY_REFERENCES:
+        if name == self.ANOMALY:
+            self.anom = Anomaly()
+            self.anom.setName(attrs[self.ANOMALY_NAME])
+        elif name == self.ANOMALY_DESCRIPTION:
+            self.tag = self.ANOMALY_DESCRIPTION
+        elif name == self.ANOMALY_SOLUTION:
+            #self.tag = self.ANOMALY_SOLUTION
+            self.anom.setSolution(attrs["text"])
+        elif name == self.ANOMALY_REFERENCES:
             self.references = {}
-        elif name == self.VULNERABILITY_REFERENCE:
-            self.tag = self.VULNERABILITY_REFERENCE
-        elif name == self.VULNERABILITY_REFERENCE_TITLE:
-            self.tag = self.VULNERABILITY_REFERENCE_TITLE
-        elif name == self.VULNERABILITY_REFERENCE_URL:
-            self.tag = self.VULNERABILITY_REFERENCE_URL
+        elif name == self.ANOMALY_REFERENCE:
+            self.tag = self.ANOMALY_REFERENCE
+        elif name == self.ANOMALY_REFERENCE_TITLE:
+            self.tag = self.ANOMALY_REFERENCE_TITLE
+        elif name == self.ANOMALY_REFERENCE_URL:
+            self.tag = self.ANOMALY_REFERENCE_URL
 
     def end_element(self, name):
-        if name == self.VULNERABILITY:
-            self.vulnerabilities.append(self.vul)
-        elif name == self.VULNERABILITY_REFERENCE:
+        if name == self.ANOMALY:
+            self.anomalies.append(self.anom)
+        elif name == self.ANOMALY_REFERENCE:
             self.references[self.title] = self.url
-        elif name == self.VULNERABILITY_REFERENCES:
-            self.vul.setReferences(self.references)
+        elif name == self.ANOMALY_REFERENCES:
+            self.anom.setReferences(self.references)
 
     def char_data(self, data):
-        if self.tag == self.VULNERABILITY_DESCRIPTION:
-            self.vul.setDescription(data)
-#    elif self.tag==self.VULNERABILITY_SOLUTION:
-#      self.vul.setSolution(data)
-        elif self.tag == self.VULNERABILITY_REFERENCE_TITLE:
+        if self.tag == self.ANOMALY_DESCRIPTION:
+            self.anom.setDescription(data)
+#    elif self.tag==self.ANOMALY_SOLUTION:
+#      self.anom.setSolution(data)
+        elif self.tag == self.ANOMALY_REFERENCE_TITLE:
             self.title = data
-        elif self.tag == self.VULNERABILITY_REFERENCE_URL:
+        elif self.tag == self.ANOMALY_REFERENCE_URL:
             self.url = data
         self.tag = ""
 
-    def getVulnerabilities(self):
-        return self.vulnerabilities
+    def getAnomalies(self):
+        return self.anomalies

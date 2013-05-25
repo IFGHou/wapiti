@@ -24,7 +24,7 @@
 # Nicolas SURRIBAS
 
 from attack import Attack
-from vulnerability import Vulnerability
+from vulnerability import Vulnerability, Anomaly
 from net import HTTP
 
 
@@ -100,7 +100,7 @@ class mod_htaccess(Attack):
 
                     # report xml generator (ROMULUS) not implemented for htaccess
                     self.logVuln(category=Vulnerability.HTACCESS,
-                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
                                  info=_("{0} HtAccess").format(err1))
                     if self.color == 1:
@@ -127,12 +127,12 @@ class mod_htaccess(Attack):
                 else:
                     # TODO : still need this ?
                     if code2 == 500:
-                        self.logVuln(category=Vulnerability.HTACCESS,
-                                     level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                        self.logAnom(category=Anomaly.ERROR_500,
+                                     level=Anomaly.HIGH_LEVEL,
                                      request=evil_req,
                                      info=_("The server responded with a 500 HTTP error code"))
-                        self.log(Vulnerability.MSG_500, page)
-                        self.log(Vulnerability.MSG_EVIL_URL, url)
+                        self.log(Anomaly.MSG_500, page)
+                        self.log(Anomaly.MSG_EVIL_URL, url)
 
                     # add the url with the url attacked
                 self.attackedGET.append(url)

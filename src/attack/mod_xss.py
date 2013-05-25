@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# TODO: add err 500 and res consumption check ?
 import random
 import BeautifulSoup
 import requests
@@ -84,7 +85,7 @@ class mod_xss(Attack):
                                  evil_req.url.replace(self.php_self_payload,
                                                       self.RED + self.php_self_payload + self.STD))
                     self.logVuln(category=Vulnerability.XSS,
-                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
                                  parameter="PHP_SELF",
                                  info=_("XSS vulnerability found via injection in the resource path"))
@@ -131,7 +132,7 @@ class mod_xss(Attack):
                             if payload.lower() in dat.lower():
                                 self.SUCCESSFUL_XSS[code] = payload
                                 self.logVuln(category=Vulnerability.XSS,
-                                             level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                             level=Vulnerability.HIGH_LEVEL,
                                              request=evil_req,
                                              parameter=param_name,
                                              info=_("XSS vulnerability found via injection in the query string"))
@@ -189,7 +190,7 @@ class mod_xss(Attack):
                                 if payload.lower() in dat.lower():
                                     self.SUCCESSFUL_XSS[code] = payload
                                     self.logVuln(category=Vulnerability.XSS,
-                                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                 level=Vulnerability.HIGH_LEVEL,
                                                  request=evil_req,
                                                  parameter=param_name,
                                                  info=_("XSS vulnerability found via injection"
@@ -240,7 +241,7 @@ class mod_xss(Attack):
                                  evil_req.url.replace(self.php_self_payload,
                                                       self.RED + self.php_self_payload + self.STD))
                     self.logVuln(category=Vulnerability.XSS,
-                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                 level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
                                  parameter="PHP_SELF",
                                  info=_("XSS vulnerability found via injection in the resource path"))
@@ -308,7 +309,7 @@ class mod_xss(Attack):
                                 if payload.lower() in dat.lower():
                                     self.SUCCESSFUL_XSS[code] = payload
                                     self.logVuln(category=Vulnerability.XSS,
-                                                 level=Vulnerability.HIGH_LEVEL_VULNERABILITY,
+                                                 level=Vulnerability.HIGH_LEVEL,
                                                  request=evil_req,
                                                  parameter=param_name,
                                                  info=_("XSS vulnerability found via injection"
