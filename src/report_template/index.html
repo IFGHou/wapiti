@@ -10,6 +10,15 @@
     <link rel="stylesheet" type="text/css" href="css/master.css" />
     <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript">
+        if (!String.prototype.format) {                                                                            
+            String.prototype.format = function() {                                                                 
+                var args = arguments;                                                                            
+                return this.replace(/{(\d+)}/g, function(match, number) {                                        
+                    return typeof args[number] != 'undefined' ? args[number] : match ;                         
+                });                                                                                              
+            };                                                                                                     
+        }
+
         function fillReport()
         {
           var report_data = __JSON_DATA__ ;
@@ -24,147 +33,154 @@
           infos.innerHTML += report_data['infos']['scope'];
 
           var vuln_count = 0;
-          for(var vuln_name in report_data['classifications'])
+          var flawTypes = ['vulnerabilities', 'anomalies'];
+          var flawFound = {'vulnerabilities': 'Vulnerability found in {0}', 'anomalies': 'Anomaly found in {0}'};
+          for(var flaw_idx=0; flaw_idx < flawTypes.length; flaw_idx++)
           {
-            var nb_vulns = report_data['vulnerabilities'][vuln_name].length;
-            var tr = document.createElement('tr');
-            var td1 = document.createElement('td');
-            td1.setAttribute('class', 'small');
-            var td2 = document.createElement('td');
-            td2.setAttribute('class', 'small .text-centered');
-            if(nb_vulns == 0)
+            var flaw_name = flawTypes[flaw_idx];
+            for(var vuln_name in report_data['classifications'])
             {
-                td1.innerHTML = vuln_name;
+              if(!report_data[flaw_name].hasOwnProperty(vuln_name)) continue;
+              var nb_vulns = report_data[flaw_name][vuln_name].length;
+              var tr = document.createElement('tr');
+              var td1 = document.createElement('td');
+              td1.setAttribute('class', 'small');
+              var td2 = document.createElement('td');
+              td2.setAttribute('class', 'small .text-centered');
+              if(nb_vulns == 0)
+              {
+                  td1.innerHTML = vuln_name;
+              }
+              else
+              {
+                  var section_link = document.createElement('a');
+                  section_link.innerHTML = vuln_name;
+                  section_link.setAttribute('href', '#vuln_type_' + vuln_count);
+                  td1.appendChild(section_link);
+              }
+              td2.innerHTML = nb_vulns;
+              tr.appendChild(td1);
+              tr.appendChild(td2);
+              summary.appendChild(tr);
+
+              if(nb_vulns == 0) continue;
+              var vuln_infos = report_data['classifications'][vuln_name];
+              var vuln_desc = vuln_infos['desc'];
+              var vuln_solution = vuln_infos['sol'];
+              var vuln_refs = vuln_infos['ref'];
+
+              // Add vuln type header
+              var h2 = document.createElement('h2');
+              h2.setAttribute('id', 'vuln_type_' + vuln_count);
+              h2.innerHTML = vuln_name;
+              details.appendChild(h2);
+
+              // Add vuln type definition
+              var dl = document.createElement('dl');
+              var dt = document.createElement('dt');
+              dt.innerHTML = "Description";
+              var dd = document.createElement('dd');
+              dd.innerHTML = vuln_desc;
+              dl.appendChild(dt);
+              dl.appendChild(dd);
+              details.appendChild(dl);
+
+              // Add vulnerabilities of this type
+              for(var i=0; i<nb_vulns; i++)
+              {
+                var vuln_obj = report_data[flaw_name][vuln_name][i];
+                var h3 = document.createElement("h3");
+                h3.innerHTML = flawFound[flaw_name].format(vuln_obj.path);
+                details.appendChild(h3);
+
+                var nav = document.createElement("nav");
+                nav.setAttribute("class", "nav-tabs");
+                nav.setAttribute("data-toggle", "tabs");
+                nav.setAttribute("data-height", "equal");
+
+                var tab_ul = document.createElement('ul');
+                var tab_li1 = document.createElement('li');
+                var tab_link1 =document.createElement('a');
+                tab_link1.innerHTML = "Description";
+                tab_link1.setAttribute("class", "active");
+                tab_link1.setAttribute("href", "#tab" + vuln_count + "-1");
+                tab_li1.appendChild(tab_link1);
+
+                var tab_li2 = document.createElement('li');
+                var tab_link2 =document.createElement('a');
+                tab_link2.innerHTML = "HTTP Request";
+                tab_link2.setAttribute("href", "#tab" + vuln_count + "-2");
+                tab_li2.appendChild(tab_link2);
+
+                var tab_li3 = document.createElement('li');
+                var tab_link3 =document.createElement('a');
+                tab_link3.innerHTML = "cURL command line";
+                tab_link3.setAttribute("href", "#tab" + vuln_count + "-3");
+                tab_li3.appendChild(tab_link3);
+
+                tab_ul.appendChild(tab_li1);
+                tab_ul.appendChild(tab_li2);
+                tab_ul.appendChild(tab_li3);
+
+                nav.appendChild(tab_ul);
+                details.appendChild(nav);
+
+                // Description div
+                var div1 = document.createElement("div");
+                div1.setAttribute("id", "tab" + vuln_count + "-1");
+                var desc_pre = document.createElement('pre');
+                desc_pre.innerHTML = vuln_obj.info;
+                div1.appendChild(desc_pre);
+
+                // HTTP Request div
+                var div2 = document.createElement("div");
+                div2.setAttribute("id", "tab" + vuln_count + "-2");
+                var http_pre = document.createElement('pre');
+                http_pre.innerHTML = vuln_obj.http_request;
+                div2.appendChild(http_pre);
+
+                // cURL cmd div
+                var div3 = document.createElement("div");
+                div3.setAttribute("id", "tab" + vuln_count + "-3");
+                var curl_pre = document.createElement('pre');
+                curl_pre.innerHTML = vuln_obj.curl_command;
+                div3.appendChild(curl_pre);
+
+                details.appendChild(div1);
+                details.appendChild(div2);
+                details.appendChild(div3);
+                vuln_count++;
+              }
+
+              // Add vuln type solution
+              var dl_solution = document.createElement('dl');
+              var dt_solution = document.createElement('dt');
+              dt_solution.innerHTML = "Solutions";
+              var dd_solution = document.createElement('dd');
+              dd_solution.innerHTML = vuln_solution;
+              dl_solution.appendChild(dt_solution);
+              dl_solution.appendChild(dd_solution);
+              details.appendChild(dl_solution);
+
+
+              // Add vuln type references
+              var h5 = document.createElement('h5');
+              h5.innerHTML = "References";
+              details.appendChild(h5);
+              var ul = document.createElement('ul');
+              for(var ref_desc in vuln_refs)
+              {
+                var li = document.createElement('li');
+                var ref_link = document.createElement("a");
+                ref_link.innerHTML = ref_desc;
+                ref_link.setAttribute("href", vuln_refs[ref_desc]);
+                li.appendChild(ref_link);
+                details.appendChild(li);
+              }
+              details.appendChild(document.createElement('br'));
+              details.appendChild(document.createElement('hr'));
+
             }
-            else
-            {
-                var section_link = document.createElement('a');
-                section_link.innerHTML = vuln_name;
-                section_link.setAttribute('href', '#vuln_type_' + vuln_count);
-                td1.appendChild(section_link);
-            }
-            td2.innerHTML = nb_vulns;
-            tr.appendChild(td1);
-            tr.appendChild(td2);
-            summary.appendChild(tr);
-
-            if(nb_vulns == 0) continue;
-            var vuln_infos = report_data['classifications'][vuln_name];
-            var vuln_desc = vuln_infos['desc'];
-            var vuln_solution = vuln_infos['sol'];
-            var vuln_refs = vuln_infos['ref'];
-
-            // Add vuln type header
-            var h2 = document.createElement('h2');
-            h2.setAttribute('id', 'vuln_type_' + vuln_count);
-            h2.innerHTML = vuln_name;
-            details.appendChild(h2);
-
-            // Add vuln type definition
-            var dl = document.createElement('dl');
-            var dt = document.createElement('dt');
-            dt.innerHTML = "Description";
-            var dd = document.createElement('dd');
-            dd.innerHTML = vuln_desc;
-            dl.appendChild(dt);
-            dl.appendChild(dd);
-            details.appendChild(dl);
-
-            // Add vulnerabilities of this type
-            for(var i=0; i<nb_vulns; i++)
-            {
-              var vuln_obj = report_data['vulnerabilities'][vuln_name][i];
-              var h3 = document.createElement("h3");
-              h3.innerHTML = "Vulnerability found in " + vuln_obj.path;
-              details.appendChild(h3);
-
-              var nav = document.createElement("nav");
-              nav.setAttribute("class", "nav-tabs");
-              nav.setAttribute("data-toggle", "tabs");
-              nav.setAttribute("data-height", "equal");
-
-              var tab_ul = document.createElement('ul');
-              var tab_li1 = document.createElement('li');
-              var tab_link1 =document.createElement('a');
-              tab_link1.innerHTML = "Description";
-              tab_link1.setAttribute("class", "active");
-              tab_link1.setAttribute("href", "#tab" + vuln_count + "-1");
-              tab_li1.appendChild(tab_link1);
-
-              var tab_li2 = document.createElement('li');
-              var tab_link2 =document.createElement('a');
-              tab_link2.innerHTML = "HTTP Request";
-              tab_link2.setAttribute("href", "#tab" + vuln_count + "-2");
-              tab_li2.appendChild(tab_link2);
-
-              var tab_li3 = document.createElement('li');
-              var tab_link3 =document.createElement('a');
-              tab_link3.innerHTML = "cURL command line";
-              tab_link3.setAttribute("href", "#tab" + vuln_count + "-3");
-              tab_li3.appendChild(tab_link3);
-
-              tab_ul.appendChild(tab_li1);
-              tab_ul.appendChild(tab_li2);
-              tab_ul.appendChild(tab_li3);
-
-              nav.appendChild(tab_ul);
-              details.appendChild(nav);
-
-              // Description div
-              var div1 = document.createElement("div");
-              div1.setAttribute("id", "tab" + vuln_count + "-1");
-              var desc_pre = document.createElement('pre');
-              desc_pre.innerHTML = vuln_obj.info;
-              div1.appendChild(desc_pre);
-
-              // HTTP Request div
-              var div2 = document.createElement("div");
-              div2.setAttribute("id", "tab" + vuln_count + "-2");
-              var http_pre = document.createElement('pre');
-              http_pre.innerHTML = vuln_obj.http_request;
-              div2.appendChild(http_pre);
-
-              // cURL cmd div
-              var div3 = document.createElement("div");
-              div3.setAttribute("id", "tab" + vuln_count + "-3");
-              var curl_pre = document.createElement('pre');
-              curl_pre.innerHTML = vuln_obj.curl_command;
-              div3.appendChild(curl_pre);
-
-              details.appendChild(div1);
-              details.appendChild(div2);
-              details.appendChild(div3);
-              vuln_count++;
-            }
-
-            // Add vuln type solution
-            var dl_solution = document.createElement('dl');
-            var dt_solution = document.createElement('dt');
-            dt_solution.innerHTML = "Solutions";
-            var dd_solution = document.createElement('dd');
-            dd_solution.innerHTML = vuln_solution;
-            dl_solution.appendChild(dt_solution);
-            dl_solution.appendChild(dd_solution);
-            details.appendChild(dl_solution);
-
-
-            // Add vuln type references
-            var h5 = document.createElement('h5');
-            h5.innerHTML = "References";
-            details.appendChild(h5);
-            var ul = document.createElement('ul');
-            for(var ref_desc in vuln_refs)
-            {
-              var li = document.createElement('li');
-              var ref_link = document.createElement("a");
-              ref_link.innerHTML = ref_desc;
-              ref_link.setAttribute("href", vuln_refs[ref_desc]);
-              li.appendChild(ref_link);
-              details.appendChild(li);
-            }
-            details.appendChild(document.createElement('br'));
-            details.appendChild(document.createElement('hr'));
-
           }
 
           kube_tabs_js = document.createElement('script');

@@ -112,20 +112,6 @@
             </reference>
         </references>
     </vulnerability>
-    <vulnerability name="Resource consumption">
-        <description>Resource consumption description</description>
-        <solution text="Resource consumption solution"/>
-        <references>
-            <reference>
-                <title>http://www.owasp.org/index.php/Asymmetric_resource_consumption_(amplification)</title>
-                <url>http://www.owasp.org/index.php/Asymmetric_resource_consumption_(amplification)</url>
-            </reference>
-            <reference>
-                <title><![CDATA[CWE-400: Uncontrolled Resource Consumption ('Resource Exhaustion')]]></title>
-                <url>http://cwe.mitre.org/data/definitions/400.html</url>
-            </reference>
-        </references>
-    </vulnerability>
     <vulnerability name="Htaccess Bypass">
         <description>Htaccess bypass description</description>
         <solution text="Htaccess bypass solution"/>
