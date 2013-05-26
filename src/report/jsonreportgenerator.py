@@ -28,8 +28,12 @@ class JSONReportGenerator(ReportGenerator):
     TODO: MUST BE CHANGED
     """
 
-    __vulnTypes = {}
+    # Use only one dict for vulnerability and anomaly types
+    __flawTypes = {}
+
     __vulns = {}
+    __anomalies = {}
+
     __infos = {}
 
     def __init__(self):
@@ -41,12 +45,30 @@ class JSONReportGenerator(ReportGenerator):
         if scope:
             self.__infos["scope"] = scope
 
+    def generateReport(self, fileName):
+        """
+        Create a json file with a report of the vulnerabilities which have
+        been logged with the logVulnerability method
+        """
+        report_dict = {"classifications": self.__flawTypes,
+                       "vulnerabilities": self.__vulns,
+                       "anomalies": self.__anomalies,
+                       "infos": self.__infos
+                       }
+        #TODO: add info on wapiti ?
+        f = open(fileName, "w")
+        try:
+            json.dump(report_dict, f, indent=2)
+        finally:
+            f.close()
+
+    # Vulnerabilities
     def addVulnerabilityType(self, name,
                              description="",
                              solution="",
                              references={}):
-        if name not in self.__vulnTypes:
-            self.__vulnTypes[name] = {'desc': description,
+        if name not in self.__flawTypes:
+            self.__flawTypes[name] = {'desc': description,
                                       'sol': solution,
                                       'ref': references}
         if name not in self.__vulns:
@@ -76,18 +98,38 @@ class JSONReportGenerator(ReportGenerator):
             self.__vulns[category] = []
         self.__vulns[category].append(vuln_dict)
 
-    def generateReport(self, fileName):
+    # Anomalies
+    def addAnomalyType(self, name,
+                       description="",
+                       solution="",
+                       references={}):
+        if name not in self.__flawTypes:
+            self.__flawTypes[name] = {'desc': description,
+                                      'sol': solution,
+                                      'ref': references}
+        if name not in self.__anomalies:
+            self.__anomalies[name] = []
+
+    def logAnomaly(self,
+                   category=None,
+                   level=0,
+                   request=None,
+                   parameter="",
+                   info=""):
         """
-        Create a json file with a report of the vulnerabilities which have
-        been logged with the logVulnerability method
+        Store the information about the vulnerability to be printed later.
+        The method printToFile(fileName) can be used to save in a file the
+        vulnerabilities notified through the current method.
         """
-        report_dict = {"classifications": self.__vulnTypes,
-                       "vulnerabilities": self.__vulns,
-                       "infos": self.__infos
-                       }
-        #TODO: add info on wapiti ?
-        f = open(fileName, "w")
-        try:
-            json.dump(report_dict, f, indent=2)
-        finally:
-            f.close()
+
+        anom_dict = {"method": request.method,
+                     "path": request.file_path,  # TODO: path or file_path according to the scope ?
+                     "info": info,
+                     "level": level,
+                     "parameter": parameter,
+                     "http_request": request.http_repr,
+                     "curl_command": request.curl_repr,
+                     }
+        if category not in self.__anomalies:
+            self.__anomalies[category] = []
+        self.__anomalies[category].append(anom_dict)
