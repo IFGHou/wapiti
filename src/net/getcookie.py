@@ -68,7 +68,8 @@ proto = url.split("://")[0]
 
 txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
-session = requests.session(proxies=proxy)
+session = requests.Session()
+session.proxies = proxy
 r = session.get(url, headers=txheaders)
 
 htmlSource = r.text

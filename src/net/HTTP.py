@@ -405,14 +405,18 @@ class HTTP(object):
     auth_basic = []
     timeout = 6.0
     h = None
-    cookiejar = None
+    cookiejar = {}
     server = ""
 
     configured = 0
 
     def __init__(self, server):
         #TODO: bring back auth (htaccess)
-        self.h = requests.session(proxies=self.proxies, cookies=self.cookiejar)
+        #TODO: check proxy and cookies support again
+        self.h = requests.Session()
+        if self.cookiejar:
+            self.h.cookies = self.cookiejar
+        self.h.proxies = self.proxies
         self.server = server
 
     def send(self, target, method="",

@@ -206,7 +206,6 @@ Supported options are:
         anomXMLParser = AnomalyXMLParser()
         anomXMLParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/anomalies.xml"))
         for anomaly in anomXMLParser.getAnomalies():
-            print anomaly
             self.reportGen.addAnomalyType(_(anomaly.getName()),
                                             (anomaly.getDescription()),
                                             _(anomaly.getSolution()),
