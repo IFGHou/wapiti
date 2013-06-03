@@ -33,6 +33,7 @@ class AuxText:
             f = open(fileName)
             for line in f:
                 cleanLine = line.strip(" \n")
+                cleanLine = cleanLine.replace("[TAB]", "\t")
                 if cleanLine != "":
                     lines.append(cleanLine.replace("\\0", "\0"))
         except IOError, e:

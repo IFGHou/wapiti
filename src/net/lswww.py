@@ -361,13 +361,16 @@ class lswww:
         # So if we got no links we can force a correction of the page
         if len(p.liens) == 0:
             if page_encoding is not None:
-                htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify(page_encoding)
-            try:
-                p.reset()
-                p.feed(htmlSource)
-            except HTMLParser.HTMLParseError:
-                p = linkParser2(url, self.verbose)
-                p.feed(htmlSource)
+                try:
+                    htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify(page_encoding)
+                    p.reset()
+                    p.feed(htmlSource)
+                except UnicodeEncodeError:
+                    # The resource is not a valid webpage (for example an image)
+                    htmlSource = ""
+                except HTMLParser.HTMLParseError:
+                    p = linkParser2(url, self.verbose)
+                    p.feed(htmlSource)
 
         for lien in p.liens:
             if (lien is not None) and (page_encoding is not None) and isinstance(lien, unicode):
