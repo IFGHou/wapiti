@@ -257,7 +257,7 @@ class mod_xss(Attack):
                 param_name = self.HTTP.quote(param_list[i][0])
                 saved_value = param_list[i][1]
                 if param_list is file_params:
-                    param_list[i][1][0] = "_XSS__"
+                    param_list[i][1] = ["_XSS__", param_list[i][1][1]]
                 else:
                     param_list[i][1] = "__XSS__"
                 # We keep an attack pattern to be sure a given form won't be attacked on the same field several times

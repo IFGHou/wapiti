@@ -8,7 +8,15 @@ import requests
 import datetime
 import jsoncookie
 from copy import deepcopy
-from pipes import quote as shell_escape
+
+
+def shell_escape(s):
+    s = s.replace('\\', '\\\\')
+    s = s.replace('"', '\\"')
+    s = s.replace('$', '\\$')
+    s = s.replace('!', '\\!')
+    s = s.replace('`', '\\`')
+    return s
 
 
 class HTTPResource(object):
@@ -227,7 +235,7 @@ class HTTPResource(object):
                 curl_string += " -F {0}".format(shell_escape("{0}={1}".format(field_name, field_value)))
             for field_name, field_value in self._file_params:
                 curl_upload_kv = "{0}=@your_local_file;filename={1}".format(field_name, field_value[0])
-                curl_string += " -F {0}".format(shell_escape(curl_upload_kv))
+                curl_string += " -F \"{0}\"".format(shell_escape(curl_upload_kv))
             pass
         elif self._post_params:
             curl_string += " -d {0}".format(shell_escape(self.encoded_data))

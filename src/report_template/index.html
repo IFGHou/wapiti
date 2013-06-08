@@ -19,6 +19,11 @@
             };                                                                                                     
         }
 
+        function htmlspecialchars(string)
+        {
+            return $('<span>').text(string).html();
+        }
+
         function fillReport()
         {
           var report_data = __JSON_DATA__ ;
@@ -136,14 +141,14 @@
                 var div2 = document.createElement("div");
                 div2.setAttribute("id", "tab" + vuln_count + "-2");
                 var http_pre = document.createElement('pre');
-                http_pre.innerHTML = vuln_obj.http_request;
+                http_pre.innerHTML = htmlspecialchars(vuln_obj.http_request);
                 div2.appendChild(http_pre);
 
                 // cURL cmd div
                 var div3 = document.createElement("div");
                 div3.setAttribute("id", "tab" + vuln_count + "-3");
                 var curl_pre = document.createElement('pre');
-                curl_pre.innerHTML = vuln_obj.curl_command;
+                curl_pre.innerHTML = htmlspecialchars(vuln_obj.curl_command);
                 div3.appendChild(curl_pre);
 
                 details.appendChild(div1);
