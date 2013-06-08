@@ -256,7 +256,10 @@ class mod_xss(Attack):
             for i in xrange(len(param_list)):
                 param_name = self.HTTP.quote(param_list[i][0])
                 saved_value = param_list[i][1]
-                param_list[i][1] = "__XSS__"
+                if param_list is file_params:
+                    param_list[i][1][0] = "_XSS__"
+                else:
+                    param_list[i][1] = "__XSS__"
                 # We keep an attack pattern to be sure a given form won't be attacked on the same field several times
                 attack_pattern = HTTP.HTTPResource(form.path,
                                                    method=form.method,
@@ -266,7 +269,10 @@ class mod_xss(Attack):
                 if not attack_pattern in self.attackedPOST:
                     self.attackedPOST.append(attack_pattern)
                     code = self.random_string()
-                    param_list[i][1] = code
+                    if param_list is file_params:
+                        param_list[i][1][0] = code
+                    else:
+                        param_list[i][1] = code
                     # will only memorize the last used payload (working or not) but the code will always be the good
                     test_payload = HTTP.HTTPResource(form.path,
                                                      method=form.method,
@@ -287,7 +293,10 @@ class mod_xss(Attack):
                         # found, now study where the payload is injected and how to exploit it
                         payloads = self.generate_payloads(data, code)
                         for payload in payloads:
-                            param_list[i][1] = payload
+                            if param_list is file_params:
+                                param_list[i][1][0] = payload
+                            else:
+                                param_list[i][1] = payload
 
                             evil_req = HTTP.HTTPResource(form.path,
                                                          method=form.method,
