@@ -126,6 +126,7 @@ class mod_blindsql(Attack):
                     err500 = 0
                     for payload in self.blind_sql_payloads:
 
+                        payload = payload.replace("[VALUE]", saved_value)
                         params_list[i][1] = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
                         url = page + "?" + self.HTTP.encode(params_list)
                         evil_req = HTTP.HTTPResource(url)

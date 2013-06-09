@@ -59,6 +59,8 @@ class mod_sql(Attack):
             return _("PostgreSQL Injection")
         if "XPathException" in data:
             return _("XPath Injection")
+        if "Warning: SimpleXMLElement::xpath():" in data:
+            return _("XPath Injection")
         if "supplied argument is not a valid ldap" in data or "javax.naming.NameNotFoundException" in data:
             return _("LDAP Injection")
         if "DB2 SQL error:" in data:

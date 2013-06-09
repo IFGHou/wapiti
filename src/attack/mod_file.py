@@ -156,6 +156,8 @@ class mod_file(Attack):
             saved_value = params_list[i][1]
             for payload in self.payloads:
                 err = ""
+                payload = payload.replace('[VALUE]', saved_value)
+                payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/',1)[0])
                 params_list[i][1] = self.HTTP.quote(payload)
                 url = page + "?" + self.HTTP.encode(params_list)
                 if url not in self.attackedGET:

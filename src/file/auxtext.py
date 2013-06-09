@@ -34,6 +34,7 @@ class AuxText:
             for line in f:
                 cleanLine = line.strip(" \n")
                 cleanLine = cleanLine.replace("[TAB]", "\t")
+                cleanLine = cleanLine.replace("[LF]", "\n")
                 if cleanLine != "":
                     lines.append(cleanLine.replace("\\0", "\0"))
         except IOError, e:

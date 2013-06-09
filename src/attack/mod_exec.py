@@ -61,6 +61,18 @@ class mod_exec(Attack):
         if "Fatal error</b>:  preg_replace" in data and not warned:
             err = _("preg_replace injection")
             warned = 1
+        if "Warning: usort()" in data and not warned:
+            err = _("Warning usort()")
+            warned = 1
+        if "Warning: preg_replace():" in data and not warned:
+            err = _("preg_replace injection")
+            warned = 1
+        if "Warning: assert():" in data and not warned:
+            err = _("Warning assert")
+            warned = 1
+        if "Failure evaluating code:" in data and not warned:
+            err = _("Evalutation warning")
+            warned = 1
         return err, cmd, warned
 
     def attackGET(self, http_res):
@@ -144,6 +156,7 @@ class mod_exec(Attack):
 
                 for payload in self.payloads:
                     err = ""
+                    payload = payload.replace("[VALUE]", saved_value)
                     params_list[i][1] = self.HTTP.quote(payload)
                     evil_req = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
 
@@ -165,6 +178,7 @@ class mod_exec(Attack):
                                      info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
                     else:
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
+
                     if err != "":
                         self.logVuln(category=Vulnerability.EXEC,
                                      level=Vulnerability.HIGH_LEVEL,
