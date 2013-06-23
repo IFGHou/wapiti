@@ -53,7 +53,11 @@ class mod_file(Attack):
             ("Warning: highlight_file(",              "highlight_file()"),
             ("<b>Warning:</b>  highlight_file(",      "highlight_file()"),
             ("System.IO.FileNotFoundException:",      ".NET File.Open*"),
-            ("error '800a0046'",                      "VBScript OpenTextFile")
+            ("error '800a0046'",                      "VBScript OpenTextFile"),
+            ("s:12:\"pear.php.net\";",                "File disclosure in include_path"),
+            ("PHP Extension and Application Reposit", "File disclosure in include_path"),
+            ("PEAR,&nbsp;the&nbsp;PHP&nbsp;Extensio", "highlight_file() in basedir"), 
+            ("either use the CLI php executable",     "include() of file in include_path")
             ]
 
     def __init__(self, HTTP, xmlRepGenerator):
@@ -217,15 +221,20 @@ class mod_file(Attack):
         referer = form.referer
 
         err = ""
-        for param_list in [get_params, post_params, file_params]:
-            for i in xrange(len(param_list)):
+        for params_list in [get_params, post_params, file_params]:
+            for i in xrange(len(params_list)):
                 warn = 0
                 inc = 0
                 err500 = 0
 
-                saved_value = param_list[i][1]
-                param_name = self.HTTP.quote(param_list[i][0])
-                param_list[i][1] = "__FILE__"
+                saved_value = params_list[i][1]
+                param_name = self.HTTP.quote(params_list[i][0])
+
+                if params_list is file_params:
+                    params_list[i][1] = ["_FILE__", params_list[i][1][1]]
+                else:
+                    params_list[i][1] = "__FILE__"
+
                 attack_pattern = HTTP.HTTPResource(form.path,
                                                    method=form.method,
                                                    get_params=get_params,
@@ -234,7 +243,10 @@ class mod_file(Attack):
                 if attack_pattern not in self.attackedPOST:
                     self.attackedPOST.append(attack_pattern)
                     for payload in self.payloads:
-                        param_list[i][1] = payload
+                        if params_list is file_params:
+                            params_list[i][1][0] = payload
+                        else:
+                            params_list[i][1] = payload
                         evil_req = HTTP.HTTPResource(form.path,
                                                      method=form.method,
                                                      get_params=get_params,
@@ -288,4 +300,4 @@ class mod_file(Attack):
                                 self.log(Anomaly.MSG_500, evil_req.url)
                                 self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(evil_req.post_params))
                                 self.log(Anomaly.MSG_FROM, referer)
-                param_list[i][1] = saved_value
+                params_list[i][1] = saved_value

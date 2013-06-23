@@ -168,7 +168,11 @@ class mod_permanentxss(Attack):
                                         param_name, v = params_list[i]
                                         param_name = self.HTTP.quote(param_name)
                                         if v == code:
-                                            params_list[i][1] = self.SUCCESSFUL_XSS[code]
+                                            if params_list is file_params:
+                                                params_list[i][1][0] = self.SUCCESSFUL_XSS[code]
+                                            else:
+                                                params_list[i][1] = self.SUCCESSFUL_XSS[code]
+
                                             # we found the xss payload again -> stored xss vuln
                                             evil_req = HTTP.HTTPResource(code_req.path,
                                                                          method="POST",
@@ -219,7 +223,10 @@ class mod_permanentxss(Attack):
                                     if v == code:
                                         for xss in self.independant_payloads:
                                             payload = xss.replace("__XSS__", code)
-                                            params_list[i][1] = payload
+                                            if params_list is file_params:
+                                                params_list[i][1][0] = payload
+                                            else:
+                                                params_list[i][1] = payload
                                             try:
                                                 evil_req = HTTP.HTTPResource(code_req.path,
                                                                              method=code_req.method,

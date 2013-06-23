@@ -202,6 +202,7 @@ class mod_sql(Attack):
     def attackPOST(self, form):
         """This method performs the SQL Injection attack with method POST"""
         payload = "\xbf'\"("
+        filename_payload = "'\"("
         err = ""
 
         # copies
@@ -210,12 +211,16 @@ class mod_sql(Attack):
         file_params = form.file_params
         referer = form.referer
 
-        for param_list in [get_params, post_params, file_params]:
-            for i in xrange(len(param_list)):
-                saved_value = param_list[i][1]
+        for params_list in [get_params, post_params, file_params]:
+            for i in xrange(len(params_list)):
+                saved_value = params_list[i][1]
 
-                param_list[i][1] = "__SQL__"
-                param_name = self.HTTP.quote(param_list[i][0])
+                if params_list is file_params:
+                    params_list[i][1] = ["_SQL__", params_list[i][1][1]]
+                else:
+                    params_list[i][1] = "__SQL__"
+
+                param_name = self.HTTP.quote(params_list[i][0])
                 attack_pattern = HTTP.HTTPResource(form.path,
                                                    method=form.method,
                                                    get_params=get_params,
@@ -224,7 +229,11 @@ class mod_sql(Attack):
                 if attack_pattern not in self.attackedPOST:
                     self.attackedPOST.append(attack_pattern)
 
-                    param_list[i][1] = payload
+                    if params_list is file_params:
+                        params_list[i][1][0] = filename_payload
+                    else:
+                        params_list[i][1] = payload
+
                     evil_req = HTTP.HTTPResource(form.path,
                                                  method=form.method,
                                                  get_params=get_params,
@@ -274,4 +283,4 @@ class mod_sql(Attack):
                             self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
                             self.log(Vulnerability.MSG_FROM, referer)
 
-                param_list[i][1] = saved_value
+                params_list[i][1] = saved_value

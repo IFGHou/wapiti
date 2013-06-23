@@ -252,14 +252,14 @@ class mod_xss(Attack):
         post_params = form.post_params
         file_params = form.file_params
 
-        for param_list in [get_params, post_params, file_params]:
-            for i in xrange(len(param_list)):
-                param_name = self.HTTP.quote(param_list[i][0])
-                saved_value = param_list[i][1]
-                if param_list is file_params:
-                    param_list[i][1] = ["_XSS__", param_list[i][1][1]]
+        for params_list in [get_params, post_params, file_params]:
+            for i in xrange(len(params_list)):
+                param_name = self.HTTP.quote(params_list[i][0])
+                saved_value = params_list[i][1]
+                if params_list is file_params:
+                    params_list[i][1] = ["_XSS__", params_list[i][1][1]]
                 else:
-                    param_list[i][1] = "__XSS__"
+                    params_list[i][1] = "__XSS__"
                 # We keep an attack pattern to be sure a given form won't be attacked on the same field several times
                 attack_pattern = HTTP.HTTPResource(form.path,
                                                    method=form.method,
@@ -269,10 +269,10 @@ class mod_xss(Attack):
                 if not attack_pattern in self.attackedPOST:
                     self.attackedPOST.append(attack_pattern)
                     code = self.random_string()
-                    if param_list is file_params:
-                        param_list[i][1][0] = code
+                    if params_list is file_params:
+                        params_list[i][1][0] = code
                     else:
-                        param_list[i][1] = code
+                        params_list[i][1] = code
                     # will only memorize the last used payload (working or not) but the code will always be the good
                     test_payload = HTTP.HTTPResource(form.path,
                                                      method=form.method,
@@ -293,10 +293,10 @@ class mod_xss(Attack):
                         # found, now study where the payload is injected and how to exploit it
                         payloads = self.generate_payloads(data, code)
                         for payload in payloads:
-                            if param_list is file_params:
-                                param_list[i][1][0] = payload
+                            if params_list is file_params:
+                                params_list[i][1][0] = payload
                             else:
-                                param_list[i][1] = payload
+                                params_list[i][1] = payload
 
                             evil_req = HTTP.HTTPResource(form.path,
                                                          method=form.method,
@@ -332,7 +332,7 @@ class mod_xss(Attack):
                                                  param_name)
                                         self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
                                     else:
-                                        if param_list is get_params:
+                                        if params_list is get_params:
                                             self.log(Vulnerability.msg_inject_param,
                                                      self.msg_xss,
                                                      evil_req.url.replace(param_name + "=",
@@ -355,7 +355,7 @@ class mod_xss(Attack):
                                     break
 
                 # restore the saved parameter in the list
-                param_list[i][1] = saved_value
+                params_list[i][1] = saved_value
 
     # type/name/tag ex: attrval/img/src
     # TODO: entries is a mutable argument, check this

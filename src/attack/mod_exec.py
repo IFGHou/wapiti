@@ -219,14 +219,19 @@ class mod_exec(Attack):
         file_params = form.file_params
         referer = form.referer
 
-        for param_list in [get_params, post_params, file_params]:
-            for i in xrange(len(param_list)):
-                saved_value = param_list[i][1]
+        for params_list in [get_params, post_params, file_params]:
+            for i in xrange(len(params_list)):
+                saved_value = params_list[i][1]
                 warned = 0
                 cmd = 0
                 err500 = 0
-                param_name = self.HTTP.quote(param_list[i][0])
-                param_list[i][1] = "__EXEC__"
+                param_name = self.HTTP.quote(params_list[i][0])
+
+                if params_list is file_params:
+                    params_list[i][1] = ["_EXEC__", params_list[i][1][1]]
+                else:
+                    params_list[i][1] = "__EXEC__"
+
                 attack_pattern = HTTP.HTTPResource(form.path,
                                                    method=form.method,
                                                    get_params=get_params,
@@ -236,7 +241,11 @@ class mod_exec(Attack):
                     self.attackedPOST.append(attack_pattern)
                     for payload in self.payloads:
                         # no quoting: send() will do it for us
-                        param_list[i][1] = payload
+                        if params_list is file_params:
+                            params_list[i][1][0] = payload
+                        else:
+                            params_list[i][1] = payload
+
                         evil_req = HTTP.HTTPResource(form.path,
                                                      method=form.method,
                                                      get_params=get_params,
@@ -290,5 +299,5 @@ class mod_exec(Attack):
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
                                 self.log(Anomaly.MSG_500, evil_req.url)
                                 self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                                self.log(Anomaly.MSG_REFERER, referer)
-                param_list[i][1] = saved_value
+                                self.log(Anomaly.MSG_FROM, referer)
+                params_list[i][1] = saved_value

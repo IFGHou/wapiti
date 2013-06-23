@@ -175,11 +175,16 @@ class mod_blindsql(Attack):
         file_params = form.file_params
         referer = form.referer
 
-        for param_list in [get_params, post_params, file_params]:
-            for i in xrange(len(param_list)):
-                saved_value = param_list[i][1]
-                param_name = self.HTTP.quote(param_list[i][0])
-                param_list[i][1] = "__SQL__"
+        for params_list in [get_params, post_params, file_params]:
+            for i in xrange(len(params_list)):
+                saved_value = params_list[i][1]
+                param_name = self.HTTP.quote(params_list[i][0])
+
+                if params_list is file_params:
+                    params_list[i][1] = ["_SQL__", params_list[i][1][1]]
+                else:
+                    params_list[i][1] = "__SQL__"
+
                 attack_pattern = HTTP.HTTPResource(form.path,
                                                    method=form.method,
                                                    get_params=get_params,
@@ -187,14 +192,18 @@ class mod_blindsql(Attack):
                                                    file_params=file_params)
 
                 if attack_pattern in self.excludedPOST:
-                    param_list[i][1] = saved_value
+                    params_list[i][1] = saved_value
                     continue
 
                 err500 = 0
                 if attack_pattern not in self.attackedPOST:
                     self.attackedPOST.append(attack_pattern)
                     for payload in self.blind_sql_payloads:
-                        param_list[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
+                        if params_list is file_params:
+                            params_list[i][1][0] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
+                        else:
+                            params_list[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
+
                         evil_req = HTTP.HTTPResource(form.path,
                                                      method=form.method,
                                                      get_params=get_params,
@@ -241,7 +250,7 @@ class mod_blindsql(Attack):
                                 self.log(Anomaly.MSG_500, evil_req.url)
                                 self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
                                 self.log(Anomaly.MSG_FROM, referer)
-                param_list[i][1] = saved_value
+                params_list[i][1] = saved_value
 
     def loadRequire(self, obj=[]):
         self.deps = obj
