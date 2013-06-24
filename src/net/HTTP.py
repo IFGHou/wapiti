@@ -280,6 +280,10 @@ class HTTPResource(object):
         return self._file_path
 
     @property
+    def file_name(self):
+        return os.path.basename(self.file_path)
+
+    @property
     def method(self):
         return self._method
 
