@@ -80,6 +80,8 @@ class mod_blindsql(Attack):
                 self.attackedGET.append(pattern_url)
                 err500 = 0
                 for payload in self.blind_sql_payloads:
+                    if "[VALUE]" in payload:
+                        continue
                     payload = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
                     url = page + "?" + payload
                     evil_req = HTTP.HTTPResource(url)
@@ -125,7 +127,6 @@ class mod_blindsql(Attack):
 
                     err500 = 0
                     for payload in self.blind_sql_payloads:
-
                         payload = payload.replace("[VALUE]", saved_value)
                         params_list[i][1] = self.HTTP.quote(payload.replace("__TIME__", self.TIME_TO_SLEEP))
                         url = page + "?" + self.HTTP.encode(params_list)
@@ -200,8 +201,10 @@ class mod_blindsql(Attack):
                     self.attackedPOST.append(attack_pattern)
                     for payload in self.blind_sql_payloads:
                         if params_list is file_params:
+                            payload = payload.replace("[VALUE]", saved_value[0])
                             params_list[i][1][0] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
                         else:
+                            payload = payload.replace("[VALUE]", saved_value)
                             params_list[i][1] = payload.replace("__TIME__", self.TIME_TO_SLEEP)
 
                         evil_req = HTTP.HTTPResource(form.path,

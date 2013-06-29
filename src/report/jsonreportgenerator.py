@@ -39,9 +39,10 @@ class JSONReportGenerator(ReportGenerator):
     def __init__(self):
         pass
 
-    def setReportInfo(self, target, scope=None, date_string=""):
+    def setReportInfo(self, target, scope=None, date_string="", version=""):
         self.__infos["target"] = target
         self.__infos["date"] = date_string
+        self.__infos["version"] = version
         if scope:
             self.__infos["scope"] = scope
 

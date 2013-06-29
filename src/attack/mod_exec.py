@@ -100,6 +100,9 @@ class mod_exec(Attack):
             err500 = 0
 
             for payload in self.payloads:
+                if "[VALUE]" in payload:
+                    continue
+
                 err = ""
                 url = page + "?" + self.HTTP.quote(payload)
 
@@ -242,8 +245,10 @@ class mod_exec(Attack):
                     for payload in self.payloads:
                         # no quoting: send() will do it for us
                         if params_list is file_params:
+                            payload = payload.replace("[VALUE]", saved_value[0])
                             params_list[i][1][0] = payload
                         else:
+                            payload = payload.replace("[VALUE]", saved_value)
                             params_list[i][1] = payload
 
                         evil_req = HTTP.HTTPResource(form.path,

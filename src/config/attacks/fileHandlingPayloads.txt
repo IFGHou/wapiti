@@ -45,3 +45,5 @@ c:\\boot.ini\0index.css
 .depdb\0
 pearcmd.php
 pearcmd.php\0
+[FILE_NAME]
+[FILE_NAME]\0

@@ -27,7 +27,7 @@ class ReportGenerator:
     def generateReport(self, fileName):
         pass
 
-    def setReportInfo(self, target=None, scope=None, date_string=""):
+    def setReportInfo(self, target=None, scope=None, date_string="", version=""):
         pass
 
     # Vulnerabilities

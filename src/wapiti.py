@@ -33,6 +33,7 @@ import time
 from distutils.sysconfig import get_python_lib
 
 BASE_DIR = None
+WAPITI_VERSION = "Wapiti SVN"
 if '' in sys.path:
     sys.path.remove('')
 for python_dir in sys.path:
@@ -190,9 +191,10 @@ Supported options are:
         for repGenInfo in self.xmlRepGenParser.getReportGenerators():
             if self.reportGeneratorType.lower() == repGenInfo.getKey():
                 self.reportGen = repGenInfo.createInstance()
-                self.reportGen.setReportInfo(self.target_url,
-                                             self.target_scope,
-                                             time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
+                self.reportGen.setReportInfo(target=self.target_url,
+                                             scope=self.target_scope,
+                                             date_string=time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()),
+                                             version=WAPITI_VERSION)
                 break
 
         vulnXMLParser = VulnerabilityXMLParser()

@@ -37,6 +37,9 @@
           infos.innerHTML = infos.innerHTML.replace('__DATETIME__', report_data['infos']['date']);
           infos.innerHTML += report_data['infos']['scope'];
 
+          // Set the Wapiti version in the footer
+          document.getElementById('wapiti_link').innerHTML = report_data['infos']['version'];
+
           var vuln_count = 0;
           var flawTypes = ['vulnerabilities', 'anomalies'];
           var flawFound = {'vulnerabilities': 'Vulnerability found in {0}', 'anomalies': 'Anomaly found in {0}'};
@@ -220,7 +223,7 @@
         <hr />
         <div id="details">
         </div>
-        <footer class="small" id="footer"><a href="http://wapiti.sf.net/">Wapiti</a> &copy; Nicolas SURRIBAS 2013</footer>
+        <footer class="small" id="footer"><a href="http://wapiti.sf.net/" id="wapiti_link">Wapiti</a> &copy; Nicolas SURRIBAS 2013</footer>
 	</div>
 </body>
 </html>

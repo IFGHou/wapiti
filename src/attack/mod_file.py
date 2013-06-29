@@ -111,6 +111,8 @@ class mod_file(Attack):
             err500 = 0
 
             for payload in self.payloads:
+                if "[VALUE]" in payload or "[DIRVALUE]" in payload or "[FILE_NAME]" in payload:
+                    continue
                 err = ""
                 url = page + "?" + self.HTTP.quote(payload)
                 if url not in self.attackedGET:
@@ -160,8 +162,11 @@ class mod_file(Attack):
             saved_value = params_list[i][1]
             for payload in self.payloads:
                 err = ""
+
                 payload = payload.replace('[VALUE]', saved_value)
                 payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/',1)[0])
+                payload = payload.replace('[FILE_NAME]', http_res.file_name)
+
                 params_list[i][1] = self.HTTP.quote(payload)
                 url = page + "?" + self.HTTP.encode(params_list)
                 if url not in self.attackedGET:
@@ -243,9 +248,15 @@ class mod_file(Attack):
                 if attack_pattern not in self.attackedPOST:
                     self.attackedPOST.append(attack_pattern)
                     for payload in self.payloads:
+                        payload = payload.replace('[FILE_NAME]', form.file_name)
+
                         if params_list is file_params:
+                            payload = payload.replace('[VALUE]', saved_value[0])
+                            payload = payload.replace('[DIRVALUE]', saved_value[0].rsplit('/',1)[0])
                             params_list[i][1][0] = payload
                         else:
+                            payload = payload.replace('[VALUE]', saved_value)
+                            payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/',1)[0])
                             params_list[i][1] = payload
                         evil_req = HTTP.HTTPResource(form.path,
                                                      method=form.method,
