@@ -56,7 +56,7 @@ class mod_file(Attack):
             ("error '800a0046'",                      "VBScript OpenTextFile"),
             ("s:12:\"pear.php.net\";",                "File disclosure in include_path"),
             ("PHP Extension and Application Reposit", "File disclosure in include_path"),
-            ("PEAR,&nbsp;the&nbsp;PHP&nbsp;Extensio", "highlight_file() in basedir"), 
+            ("PEAR,&nbsp;the&nbsp;PHP&nbsp;Extensio", "highlight_file() in basedir"),
             ("either use the CLI php executable",     "include() of file in include_path")
             ]
 
@@ -164,7 +164,7 @@ class mod_file(Attack):
                 err = ""
 
                 payload = payload.replace('[VALUE]', saved_value)
-                payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/',1)[0])
+                payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/', 1)[0])
                 payload = payload.replace('[FILE_NAME]', http_res.file_name)
 
                 params_list[i][1] = self.HTTP.quote(payload)
@@ -252,11 +252,11 @@ class mod_file(Attack):
 
                         if params_list is file_params:
                             payload = payload.replace('[VALUE]', saved_value[0])
-                            payload = payload.replace('[DIRVALUE]', saved_value[0].rsplit('/',1)[0])
+                            payload = payload.replace('[DIRVALUE]', saved_value[0].rsplit('/', 1)[0])
                             params_list[i][1][0] = payload
                         else:
                             payload = payload.replace('[VALUE]', saved_value)
-                            payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/',1)[0])
+                            payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/', 1)[0])
                             params_list[i][1] = payload
                         evil_req = HTTP.HTTPResource(form.path,
                                                      method=form.method,
@@ -277,8 +277,8 @@ class mod_file(Attack):
                                          parameter=param_name,
                                          info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
                             self.log(Anomaly.MSG_TIMEOUT, evil_req.path)
-                            self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(evil_req.post_params))
-                            self.log(Anomaly.MSG_FROM, referer)
+                            self.log(Anomaly.MSG_EVIL_REQUEST)
+                            self.log(evil_req.http_repr)
                         else:
                             err, inc, warn = self.__findPatternInResponse(data, warn)
                         if err != "":
@@ -290,13 +290,11 @@ class mod_file(Attack):
                                          info=info_msg.format(err, param_name))
                             self.log(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
                             if self.color == 1:
-                                self.log(Vulnerability.MSG_WITH_PARAMS,
-                                         self.HTTP.encode(evil_req.post_params)
-                                         .replace(param_name + "=",
-                                                  self.RED + param_name + self.STD + "="))
+                                self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                self.logR(evil_req.http_repr)
                             else:
-                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(evil_req.post_params))
-                            self.log(Vulnerability.MSG_FROM, referer)
+                                self.log(Vulnerability.MSG_EVIL_REQUEST)
+                                self.log(evil_req.http_repr)
                             if inc:
                                 break
 
@@ -309,6 +307,6 @@ class mod_file(Attack):
                                              parameter=param_name,
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
                                 self.log(Anomaly.MSG_500, evil_req.url)
-                                self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(evil_req.post_params))
-                                self.log(Anomaly.MSG_FROM, referer)
+                                self.log(Anomaly.MSG_EVIL_REQUEST)
+                                self.log(evil_req.http_repr)
                 params_list[i][1] = saved_value

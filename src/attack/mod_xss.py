@@ -324,33 +324,17 @@ class mod_xss(Attack):
                                                  info=_("XSS vulnerability found via injection"
                                                         " in the parameter {0}").format(param_name))
 
-                                    #TODO: vuln param name may appear twice (or more)
-                                    if self.color == 0:
-                                        self.log(Vulnerability.MSG_PARAM_INJECT,
-                                                 self.MSG_VULN,
-                                                 evil_req.url,
-                                                 param_name)
-                                        self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                                    else:
-                                        if params_list is get_params:
-                                            self.log(Vulnerability.msg_inject_param,
-                                                     self.msg_xss,
-                                                     evil_req.url.replace(param_name + "=",
-                                                                          self.red + param_name + self.std + "="),
-                                                     param_name)
-                                            self.log(Vulnerability.msg_with_params,
-                                                     self.http.encode(post_params))
+                                    self.log(Vulnerability.MSG_PARAM_INJECT,
+                                             self.MSG_VULN,
+                                             evil_req.url,
+                                             param_name)
 
-                                        else:
-                                            self.log(Vulnerability.msg_inject_param,
-                                                     self.msg_xss,
-                                                     evil_req.url,
-                                                     param_name)
-                                            self.log(Vulnerability.msg_with_params,
-                                                     self.http.encode(post_params)
-                                                     .replace(param_name + "=",
-                                                              self.RED + param_name + self.STD + "="))
-                                    print(_("  comming from {0}").format(referer))
+                                    if self.color:
+                                        self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                        self.logR(evil_req.http_repr)
+                                    else:
+                                        self.log(Vulnerability.MSG_EVIL_REQUEST)
+                                        self.log(evil_req.http_repr)
                                     # Stop injecting payloads and move to the next parameter
                                     break
 

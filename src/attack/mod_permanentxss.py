@@ -193,17 +193,11 @@ class mod_permanentxss(Attack):
                                                      evil_req.path,
                                                      param_name)
                                             if self.color == 1:
-                                                print(_("  attacked by {0}"
-                                                        "with fields {1}")
-                                                      .format(evil_req.url,
-                                                              self.HTTP.encode(post_params)
-                                                              .replace(param_name + "=",
-                                                                       self.RED + param_name + self.STD + "=")))
+                                                self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                                self.logR(evil_req.http_repr)
                                             else:
-                                                self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                                            if url != evil_req.url:
-                                                self.log(Vulnerability.MSG_FROM, referer)
+                                                self.log(Vulnerability.MSG_EVIL_REQUEST)
+                                                self.log(evil_req.http_repr)
                                             # search for the next code in the webpage
                                     continue
 
@@ -258,15 +252,11 @@ class mod_permanentxss(Attack):
                                                          evil_req.path,
                                                          param_name)
                                                 if self.color:
-                                                    self.log(Vulnerability.MSG_WITH_PARAMS,
-                                                             self.HTTP.encode(post_params)
-                                                             .replace(param_name + "=",
-                                                                      self.RED + param_name + self.STD + "="))
+                                                    self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                                    self.logR(evil_req.http_repr)
                                                 else:
-                                                    self.log(Vulnerability.MSG_WITH_PARAMS,
-                                                             self.HTTP.encode(post_params))
-                                                if url != evil_req.url:
-                                                    self.log(Vulnerability.MSG_FROM, referer)
+                                                    self.log(Vulnerability.MSG_EVIL_REQUEST)
+                                                    self.log(evil_req.http_repr)
                                                 break
 
     # check weither our JS payload is injected in the webpage

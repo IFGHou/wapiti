@@ -25,6 +25,7 @@ import os
 import socket  # for trapping socket.error
 from file.auxtext import AuxText
 import requests
+import sys
 
 
 class Attack:
@@ -115,6 +116,21 @@ class Attack:
         else:
             print(fmt_string.format(*args))
 
+    def logR(self, fmt_string, *args):
+        sys.stdout.write(self.RED)
+        self.log(fmt_string, args)
+        sys.stdout.write(self.STD)
+
+    def logY(self, fmt_string, *args):
+        sys.stdout.write(self.YELLOW)
+        self.log(fmt_string, args)
+        sys.stdout.write(self.STD)
+
+    def logC(self, fmt_string, *args):
+        sys.stdout.write(self.CYAN)
+        self.log(fmt_string, args)
+        sys.stdout.write(self.STD)
+
     def attack(self, http_resources, forms):
         if self.doGET is True:
             for http_res in http_resources:
@@ -127,7 +143,7 @@ class Attack:
                     self.attackGET(http_res)
                 except socket.error, se:
                     print(_('error: {0} while attacking {1}').format(repr(str(se[0])), url))
-                except requests.exceptions.Timeout, te:
+                except requests.exceptions.Timeout:
                     print(_('error: timeout while attacking {0}').format(url))
                 #except Exception, e:
                 #    print 'error: %s while attacking %s' % (repr(str(e[0])), url)
@@ -138,7 +154,7 @@ class Attack:
                     self.attackPOST(form)
                 except socket.error, se:
                     print(_('error: {0} while attacking {1}').format(repr(str(se[0])), url))
-                except requests.exceptions.Timeout, te:
+                except requests.exceptions.Timeout:
                     print(_('error: timeout while attacking {0}').format(url))
          #       except Exception, e:
          #           print 'error: %s while attacking %s' % (repr(str(e[0])), url)

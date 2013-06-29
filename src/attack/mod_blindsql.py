@@ -232,14 +232,11 @@ class mod_blindsql(Attack):
                                      evil_req.url,
                                      param_name)
                             if self.color:
-                                self.log(Vulnerability.MSG_WITH_PARAMS,
-                                         self.HTTP.encode(post_params)
-                                         .replace(param_name + "=",
-                                                  self.RED + param_name + self.STD + "="))
+                                self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                self.logR(evil_req.http_repr)
                             else:
-                                self.log(Vulnerability.MSG_WITH_PARAMS,
-                                         self.HTTP.encode(post_params))
-                            self.log(Vulnerability.MSG_FROM, referer)
+                                self.log(Vulnerability.MSG_EVIL_REQUEST)
+                                self.log(evil_req.http_repr)
                             break
 
                         else:
@@ -251,8 +248,8 @@ class mod_blindsql(Attack):
                                              parameter=param_name,
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
                                 self.log(Anomaly.MSG_500, evil_req.url)
-                                self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                                self.log(Anomaly.MSG_FROM, referer)
+                                self.logR(Anomaly.MSG_EVIL_REQUEST)
+                                self.logR(evil_req.http_repr)
                 params_list[i][1] = saved_value
 
     def loadRequire(self, obj=[]):

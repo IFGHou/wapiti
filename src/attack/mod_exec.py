@@ -266,8 +266,8 @@ class mod_exec(Attack):
                             data = ""
                             code = "408"
                             self.log(Anomaly.MSG_TIMEOUT, evil_req.url)
-                            self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                            self.log(Anomaly.MSG_FROM, referer)
+                            self.log(Anomaly.MSG_EVIL_REQUEST)
+                            self.log(evil_req.http_repr)
                             self.logAnom(category=Anomaly.RES_CONSUMPTION,
                                          level=Anomaly.MEDIUM_LEVEL,
                                          request=evil_req,
@@ -284,12 +284,12 @@ class mod_exec(Attack):
                                          info=_("{0} via injection in the parameter {1}").format(err, param_name))
                             self.log(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
                             if self.color == 1:
-                                self.log(Vulnerability.MSG_WITH_PARAMS,
-                                         self.HTTP.encode(post_params)
-                                         .replace(param_name + "=", self.RED + param_name + self.STD + "="))
+                                self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                self.logR(evil_req.http_repr)
                             else:
-                                self.log(Vulnerability.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                            self.log(Vulnerability.MSG_FROM, referer)
+                                self.log(Vulnerability.MSG_EVIL_REQUEST)
+                                self.log(evil_req.http_repr)
+
                             if cmd:
                                 # Successful command execution, go to the next field
                                 break
@@ -303,6 +303,6 @@ class mod_exec(Attack):
                                              parameter=param_name,
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
                                 self.log(Anomaly.MSG_500, evil_req.url)
-                                self.log(Anomaly.MSG_WITH_PARAMS, self.HTTP.encode(post_params))
-                                self.log(Anomaly.MSG_FROM, referer)
+                                self.log(Vulnerability.MSG_EVIL_REQUEST)
+                                self.log(evil_req.http_repr)
                 params_list[i][1] = saved_value
