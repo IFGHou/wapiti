@@ -308,7 +308,7 @@ Supported options are:
                 else:
                     x.loadRequire([y for y in self.attacks if y.name in x.require])
 
-            print(_("[+] Launching module {0}").format(x.name))
+            x.logG(_("[+] Launching module {0}"), x.name)
             x.attack(self.urls, self.forms)
 
         if self.myls.getUploads() != []:

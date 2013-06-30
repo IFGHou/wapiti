@@ -66,12 +66,8 @@ class mod_backup(Attack):
                     data, code = resp.getPageCode()
                     err = self.__returnErrorByCode(code)
                     if err == "ok":
-                        if self.color == 1:
-                            print(_("{0}Found backup file !{1}").format(self.RED, self.STD))
-                            print(u"{0}    -> {1}{2}".format(self.RED, evil_req.url, self.STD))
-                        else:
-                            print(_(" + Found backup file !"))
-                            print(u"   -> {0}".format(evil_req.url))
+                        self.logR(_("Found backup file !"))
+                        self.logR(u"    -> {0}".format(evil_req.url))
                         self.logVuln(category=Vulnerability.BACKUP,
                                      level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,

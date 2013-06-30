@@ -71,15 +71,15 @@ class mod_crlf(Attack):
                                      level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      info=self.MSG_VULN + " " + _("(QUERY_STRING)"))
-                        self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
-                        self.log(Vulnerability.MSG_EVIL_URL, url)
+                        self.logR(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
+                        self.logR(Vulnerability.MSG_EVIL_URL, url)
                 except requests.exceptions.Timeout:
                     self.logAnom(category=Anomaly.RES_CONSUMPTION,
                                  level=Anomaly.MEDIUM_LEVEL,
                                  request=evil_req,
                                  info=self.MSG_VULN + " " + _("(QUERY_STRING)"))
-                    self.log(Anomaly.MSG_TIMEOUT, page)
-                    self.log(Anomaly.MSG_EVIL_URL, url)
+                    self.logO(Anomaly.MSG_TIMEOUT, page)
+                    self.logO(Anomaly.MSG_EVIL_URL, url)
                 except requests.exceptions.HTTPError:
                     # print("Error: The server did not understand this request")
                     pass
@@ -105,23 +105,19 @@ class mod_crlf(Attack):
                                          request=evil_req,
                                          parameter=param_name,
                                          info=self.MSG_VULN + " (" + param_name + ")")
-                            if self.color == 0:
-                                self.log(Vulnerability.MSG_PARAM_INJECT,
-                                         self.MSG_VULN,
-                                         page,
-                                         param_name)
-                                self.log(Vulnerability.MSG_EVIL_URL, url)
-                            else:
-                                self.log(Vulnerability.MSG_EVIL_URL,
-                                         url.replace(param_name + "=", self.RED + param_name + self.STD + "="))
+                            self.logR(Vulnerability.MSG_PARAM_INJECT,
+                                      self.MSG_VULN,
+                                      page,
+                                      param_name)
+                            self.logR(Vulnerability.MSG_EVIL_URL, url)
                     except requests.exceptions.Timeout:
                         self.logAnom(category=Anomaly.RES_CONSUMPTION,
                                      level=Anomaly.MEDIUM_LEVEL,
                                      request=evil_req,
                                      parameter=param_name,
                                      info="Timeout (" + param_name + ")")
-                        self.log(Anomaly.MSG_TIMEOUT, page)
-                        self.log(Anomaly.MSG_EVIL_URL, url)
+                        self.logO(Anomaly.MSG_TIMEOUT, page)
+                        self.logO(Anomaly.MSG_EVIL_URL, url)
                     except requests.exceptions.HTTPError:
-                        print(_("Error: The server did not understand this request"))
+                        self.log(_("Error: The server did not understand this request"))
                 params_list[i][1] = saved_value

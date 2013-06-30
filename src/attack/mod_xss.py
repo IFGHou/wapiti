@@ -75,15 +75,9 @@ class mod_xss(Attack):
                     print(u"+ {0}".format(evil_req.url))
                 data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                 if self.php_self_check in data:
-                    self.log(Vulnerability.MSG_PATH_INJECT,
-                             self.MSG_VULN,
-                             page)
-                    if self.color == 0:
-                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                    else:
-                        self.log(Vulnerability.MSG_EVIL_URL,
-                                 evil_req.url.replace(self.php_self_payload,
-                                                      self.RED + self.php_self_payload + self.STD))
+                    self.logR(Vulnerability.MSG_PATH_INJECT, self.MSG_VULN, page)
+                    self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
+
                     self.logVuln(category=Vulnerability.XSS,
                                  level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
@@ -137,14 +131,8 @@ class mod_xss(Attack):
                                              parameter=param_name,
                                              info=_("XSS vulnerability found via injection in the query string"))
 
-                                self.log(Vulnerability.MSG_QS_INJECT,
-                                         self.MSG_VULN,
-                                         page)
-                                if self.color == 0:
-                                    self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                                else:
-                                    self.log(Vulnerability.MSG_EVIL_URL,
-                                             page + "?" + self.RED + self.HTTP.quote(payload) + self.STD)
+                                self.logR(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
+                                self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
                                 # No more payload injection
                                 break
 
@@ -196,17 +184,12 @@ class mod_xss(Attack):
                                                  info=_("XSS vulnerability found via injection"
                                                         " in the parameter {0}").format(param_name))
 
-                                    self.log(Vulnerability.MSG_PARAM_INJECT,
-                                             self.MSG_VULN,
-                                             page,
-                                             param_name)
+                                    self.logR(Vulnerability.MSG_PARAM_INJECT,
+                                              self.MSG_VULN,
+                                              page,
+                                              param_name)
 
-                                    if self.color == 0:
-                                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                                    else:
-                                        self.log(Vulnerability.MSG_EVIL_URL,
-                                                 evil_req.url.replace(param_name + "=",
-                                                                      self.RED + param_name + self.STD + "="))
+                                    self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
                                     # stop trying payloads and jum to the next parameter
                                     break
                 # Restore the value of this argument before testing the next one
@@ -231,15 +214,9 @@ class mod_xss(Attack):
                     print(u"+ {0}".format(evil_req.url))
                 data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                 if self.php_self_check in data:
-                    self.log(Vulnerability.MSG_PATH_INJECT,
-                             self.MSG_VULN,
-                             page)
-                    if self.color == 0:
-                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                    else:
-                        self.log(Vulnerability.MSG_EVIL_URL,
-                                 evil_req.url.replace(self.php_self_payload,
-                                                      self.RED + self.php_self_payload + self.STD))
+                    self.logR(Vulnerability.MSG_PATH_INJECT, self.MSG_VULN, page)
+                    self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
+
                     self.logVuln(category=Vulnerability.XSS,
                                  level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
@@ -324,17 +301,13 @@ class mod_xss(Attack):
                                                  info=_("XSS vulnerability found via injection"
                                                         " in the parameter {0}").format(param_name))
 
-                                    self.log(Vulnerability.MSG_PARAM_INJECT,
-                                             self.MSG_VULN,
-                                             evil_req.url,
-                                             param_name)
+                                    self.logR(Vulnerability.MSG_PARAM_INJECT,
+                                              self.MSG_VULN,
+                                              evil_req.url,
+                                              param_name)
 
-                                    if self.color:
-                                        self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                                        self.logR(evil_req.http_repr)
-                                    else:
-                                        self.log(Vulnerability.MSG_EVIL_REQUEST)
-                                        self.log(evil_req.http_repr)
+                                    self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                    self.logR(evil_req.http_repr)
                                     # Stop injecting payloads and move to the next parameter
                                     break
 

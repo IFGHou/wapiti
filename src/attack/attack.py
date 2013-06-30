@@ -70,9 +70,13 @@ class Attack:
 
     # Color codes
     STD = "\033[0;0m"
-    RED = "\033[1;31m"
+    RED = "\033[0;31m"
+    GREEN = "\033[0;32m"
+    ORANGE = "\033[0;33m"
     YELLOW = "\033[1;33m"
-    CYAN = "\033[1;36m"
+    BLUE = "\033[1;34m"
+    MAGENTA = "\033[0;35m"
+    CYAN = "\033[0;36m"
     GB = "\033[0;30m\033[47m"
 
     allowed = ['php', 'html', 'htm', 'xml', 'xhtml', 'xht', 'xhtm',
@@ -115,21 +119,48 @@ class Attack:
             print(fmt_string)
         else:
             print(fmt_string.format(*args))
+        if self.color:
+            sys.stdout.write(self.STD)
 
     def logR(self, fmt_string, *args):
-        sys.stdout.write(self.RED)
-        self.log(fmt_string, args)
-        sys.stdout.write(self.STD)
+        if self.color:
+            sys.stdout.write(self.RED)
+        self.log(fmt_string, *args)
+
+    def logG(self, fmt_string, *args):
+        if self.color:
+            sys.stdout.write(self.GREEN)
+        self.log(fmt_string, *args)
 
     def logY(self, fmt_string, *args):
-        sys.stdout.write(self.YELLOW)
-        self.log(fmt_string, args)
-        sys.stdout.write(self.STD)
+        if self.color:
+            sys.stdout.write(self.YELLOW)
+        self.log(fmt_string, *args)
 
     def logC(self, fmt_string, *args):
-        sys.stdout.write(self.CYAN)
-        self.log(fmt_string, args)
-        sys.stdout.write(self.STD)
+        if self.color:
+            sys.stdout.write(self.CYAN)
+        self.log(fmt_string, *args)
+
+    def logW(self, fmt_string, *args):
+        if self.color:
+            sys.stdout.write(self.GB)
+        self.log(fmt_string, *args)
+
+    def logM(self, fmt_string, *args):
+        if self.color:
+            sys.stdout.write(self.MAGENTA)
+        self.log(fmt_string, *args)
+
+    def logB(self, fmt_string, *args):
+        if self.color:
+            sys.stdout.write(self.BLUE)
+        self.log(fmt_string, *args)
+
+    def logO(self, fmt_string, *args):
+        if self.color:
+            sys.stdout.write(self.ORANGE)
+        self.log(fmt_string, *args)
 
     def attack(self, http_resources, forms):
         if self.doGET is True:

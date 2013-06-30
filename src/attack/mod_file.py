@@ -132,8 +132,8 @@ class mod_file(Attack):
                                      level=Anomaly.MEDIUM_LEVEL,
                                      request=evil_req,
                                      info=Anomaly.MSG_QS_TIMEOUT)
-                        self.log(Anomaly.MSG_TIMEOUT, page)
-                        self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
+                        self.logO(Anomaly.MSG_TIMEOUT, page)
+                        self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
                     else:
                         err, inc, warn = self.__findPatternInResponse(data, warn)
 
@@ -142,8 +142,8 @@ class mod_file(Attack):
                                      level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      info=_("{0} via injection in the query string").format(err))
-                        self.log(Vulnerability.MSG_QS_INJECT, err)
-                        self.log(Vulnerability.MSG_EVIL_URL)
+                        self.logR(Vulnerability.MSG_QS_INJECT, err)
+                        self.logR(Vulnerability.MSG_EVIL_URL)
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
@@ -151,8 +151,8 @@ class mod_file(Attack):
                                          level=Anomaly.HIGH_LEVEL,
                                          request=evil_req,
                                          info=Anomaly.MSG_QS_500)
-                            self.log(Anomaly.MSG_500, evil_req.path)
-                            self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
+                            self.logO(Anomaly.MSG_500, evil_req.path)
+                            self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
 
         for i in range(len(params_list)):
             warn = 0
@@ -187,8 +187,8 @@ class mod_file(Attack):
                                      request=evil_req,
                                      parameter=param_name,
                                      info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
-                        self.log(Anomaly.MSG_TIMEOUT, page)
-                        self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
+                        self.logO(Anomaly.MSG_TIMEOUT, page)
+                        self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
                     else:
                         err, inc, warn = self.__findPatternInResponse(data, warn)
                     if err != "":
@@ -197,13 +197,8 @@ class mod_file(Attack):
                                      request=evil_req,
                                      parameter=param_name,
                                      info=_("{0} via injection in the parameter {1}").format(err, param_name))
-                        self.log(Vulnerability.MSG_PARAM_INJECT, err, page, param_name)
-                        if self.color == 0:
-                            self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                        else:
-                            self.log(Vulnerability.MSG_EVIL_URL,
-                                     evil_req.url.replace(param_name + "=",
-                                                          self.RED + param_name + self.STD + "="))
+                        self.logR(Vulnerability.MSG_PARAM_INJECT, err, page, param_name)
+                        self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
@@ -212,8 +207,8 @@ class mod_file(Attack):
                                          request=evil_req,
                                          parameter=param_name,
                                          info=Anomaly.MSG_PARAM_500.format(param_name))
-                            self.log(Anomaly.MSG_500, evil_req.path)
-                            self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
+                            self.logO(Anomaly.MSG_500, evil_req.path)
+                            self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
             params_list[i][1] = saved_value
 
     def attackPOST(self, form):
@@ -276,9 +271,9 @@ class mod_file(Attack):
                                          request=evil_req,
                                          parameter=param_name,
                                          info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
-                            self.log(Anomaly.MSG_TIMEOUT, evil_req.path)
-                            self.log(Anomaly.MSG_EVIL_REQUEST)
-                            self.log(evil_req.http_repr)
+                            self.logO(Anomaly.MSG_TIMEOUT, evil_req.path)
+                            self.logO(Anomaly.MSG_EVIL_REQUEST)
+                            self.logO(evil_req.http_repr)
                         else:
                             err, inc, warn = self.__findPatternInResponse(data, warn)
                         if err != "":
@@ -288,13 +283,9 @@ class mod_file(Attack):
                                          request=evil_req,
                                          parameter=param_name,
                                          info=info_msg.format(err, param_name))
-                            self.log(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
-                            if self.color == 1:
-                                self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                                self.logR(evil_req.http_repr)
-                            else:
-                                self.log(Vulnerability.MSG_EVIL_REQUEST)
-                                self.log(evil_req.http_repr)
+                            self.logR(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
+                            self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                            self.logR(evil_req.http_repr)
                             if inc:
                                 break
 
@@ -306,7 +297,7 @@ class mod_file(Attack):
                                              request=evil_req,
                                              parameter=param_name,
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
-                                self.log(Anomaly.MSG_500, evil_req.url)
-                                self.log(Anomaly.MSG_EVIL_REQUEST)
-                                self.log(evil_req.http_repr)
+                                self.logO(Anomaly.MSG_500, evil_req.url)
+                                self.logO(Anomaly.MSG_EVIL_REQUEST)
+                                self.logO(evil_req.http_repr)
                 params_list[i][1] = saved_value

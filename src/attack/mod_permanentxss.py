@@ -86,17 +86,10 @@ class mod_permanentxss(Attack):
                                 evil_req = HTTP.HTTPResource(code_url.replace(code, self.SUCCESSFUL_XSS[code]))
 
                                 if param_name == "QUERY_STRING":
-                                    self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
-                                    self.log(Vulnerability.MSG_EVIL_URL, code_url)
+                                    self.logR(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
                                 else:
-                                    if self.color == 0:
-                                        self.log(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
-                                        self.log(Vulnerability.MSG_EVIL_URL, code_url)
-                                    else:
-                                        self.log(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
-                                        self.log(Vulnerability.MSG_EVIL_URL,
-                                                 evil_req.url.replace(param_name + "=",
-                                                                      self.RED + param_name + self.STD + "="))
+                                    self.logR(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
+                                self.logR(Vulnerability.MSG_EVIL_URL, code_url)
 
                                 self.logVuln(category=Vulnerability.XSS,
                                              level=Vulnerability.HIGH_LEVEL,
@@ -124,22 +117,11 @@ class mod_permanentxss(Attack):
 
                                 if self.validXSS(dat, code, payload):
                                     # injection successful :)
-                                    if self.color == 0:
-                                        if param_name == "QUERY_STRING":
-                                            self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
-                                        else:
-                                            self.log(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
-                                        self.log(Vulnerability.MSG_EVIL_URL, code_url)
-
+                                    if param_name == "QUERY_STRING":
+                                        self.logR(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
                                     else:
-                                        if param_name == "QUERY_STRING":
-                                            self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
-                                            self.log(Vulnerability.MSG_EVIL_URL, code_url)
-                                        else:
-                                            self.log(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
-                                            self.log(Vulnerability.MSG_EVIL_URL,
-                                                     evil_req.url.replace(param_name + "=",
-                                                                          self.RED + param_name + self.STD + "="))
+                                        self.logR(Vulnerability.MSG_PARAM_INJECT, self.MSG_VULN, page, param_name)
+                                    self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
 
                                     self.logVuln(category=Vulnerability.XSS,
                                                  level=Vulnerability.HIGH_LEVEL,
@@ -188,16 +170,12 @@ class mod_permanentxss(Attack):
                                                          info=_("Found permanent XSS attacked by {0} with fields"
                                                                 " {1}").format(evil_req.url,
                                                                                self.HTTP.encode(post_params)))
-                                            self.log(Vulnerability.MSG_PARAM_INJECT,
-                                                     self.MSG_VULN,
-                                                     evil_req.path,
-                                                     param_name)
-                                            if self.color == 1:
-                                                self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                                                self.logR(evil_req.http_repr)
-                                            else:
-                                                self.log(Vulnerability.MSG_EVIL_REQUEST)
-                                                self.log(evil_req.http_repr)
+                                            self.logR(Vulnerability.MSG_PARAM_INJECT,
+                                                      self.MSG_VULN,
+                                                      evil_req.path,
+                                                      param_name)
+                                            self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                            self.logR(evil_req.http_repr)
                                             # search for the next code in the webpage
                                     continue
 
@@ -247,16 +225,12 @@ class mod_permanentxss(Attack):
                                                                     " {1}").format(evil_req.url,
                                                                                    self.HTTP.encode(post_params)))
 
-                                                self.log(Vulnerability.MSG_PARAM_INJECT,
-                                                         self.MSG_VULN,
-                                                         evil_req.path,
-                                                         param_name)
-                                                if self.color:
-                                                    self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                                                    self.logR(evil_req.http_repr)
-                                                else:
-                                                    self.log(Vulnerability.MSG_EVIL_REQUEST)
-                                                    self.log(evil_req.http_repr)
+                                                self.logR(Vulnerability.MSG_PARAM_INJECT,
+                                                          self.MSG_VULN,
+                                                          evil_req.path,
+                                                          param_name)
+                                                self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                                                self.logR(evil_req.http_repr)
                                                 break
 
     # check weither our JS payload is injected in the webpage

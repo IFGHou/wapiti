@@ -96,8 +96,8 @@ class mod_blindsql(Attack):
                                      request=evil_req,
                                      parameter="QUERY_STRING",
                                      info=_("{0} via injection in the query string").format(self.MSG_VULN))
-                        self.log(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
-                        self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
+                        self.logR(Vulnerability.MSG_QS_INJECT, self.MSG_VULN, page)
+                        self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
                         break
                     else:
                         if code == "500" and err500 == 0:
@@ -107,8 +107,8 @@ class mod_blindsql(Attack):
                                          request=evil_req,
                                          parameter="QUERY_STRING",
                                          info=Anomaly.MSG_QS_500)
-                            self.log(Anomaly.MSG_500, page)
-                            self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
+                            self.logO(Anomaly.MSG_500, page)
+                            self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
         else:
             for i in range(len(params_list)):
                 saved_value = params_list[i][1]
@@ -143,16 +143,11 @@ class mod_blindsql(Attack):
                                          parameter=param_name,
                                          info=_("{0} via injection in "
                                                 "the parameter {1}").format(self.MSG_VULN, param_name))
-                            self.log(Vulnerability.MSG_PARAM_INJECT,
-                                     self.MSG_VULN,
-                                     page,
-                                     param_name)
-                            if self.color == 0:
-                                self.log(Vulnerability.MSG_EVIL_URL, evil_req.url)
-                            else:
-                                self.log(Vulnerability.MSG_EVIL_URL,
-                                         evil_req.url.replace(param_name + "=",
-                                                              self.RED + param_name + self.STD + "="))
+                            self.logR(Vulnerability.MSG_PARAM_INJECT,
+                                      self.MSG_VULN,
+                                      page,
+                                      param_name)
+                            self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
                             # One payload worked. Now jum to next field
                             break
                         else:
@@ -163,8 +158,8 @@ class mod_blindsql(Attack):
                                              request=evil_req,
                                              parameter=param_name,
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
-                                self.log(Anomaly.MSG_500, page)
-                                self.log(Anomaly.MSG_EVIL_URL, evil_req.url)
+                                self.logO(Anomaly.MSG_500, page)
+                                self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
                 params_list[i][1] = saved_value
 
     def attackPOST(self, form):
@@ -227,16 +222,12 @@ class mod_blindsql(Attack):
                                          parameter=param_name,
                                          info=_("{0} via injection in the "
                                                 "parameter {1}").format(self.MSG_VULN, param_name))
-                            self.log(Vulnerability.MSG_PARAM_INJECT,
-                                     self.MSG_VULN,
-                                     evil_req.url,
-                                     param_name)
-                            if self.color:
-                                self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                                self.logR(evil_req.http_repr)
-                            else:
-                                self.log(Vulnerability.MSG_EVIL_REQUEST)
-                                self.log(evil_req.http_repr)
+                            self.logR(Vulnerability.MSG_PARAM_INJECT,
+                                      self.MSG_VULN,
+                                      evil_req.url,
+                                      param_name)
+                            self.logR(Vulnerability.MSG_EVIL_REQUEST)
+                            self.logR(evil_req.http_repr)
                             break
 
                         else:
@@ -247,9 +238,9 @@ class mod_blindsql(Attack):
                                              request=evil_req,
                                              parameter=param_name,
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
-                                self.log(Anomaly.MSG_500, evil_req.url)
-                                self.logR(Anomaly.MSG_EVIL_REQUEST)
-                                self.logR(evil_req.http_repr)
+                                self.logO(Anomaly.MSG_500, evil_req.url)
+                                self.logO(Anomaly.MSG_EVIL_REQUEST)
+                                self.logO(evil_req.http_repr)
                 params_list[i][1] = saved_value
 
     def loadRequire(self, obj=[]):
