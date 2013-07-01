@@ -134,6 +134,7 @@ class XMLReportGenerator(ReportGenerator):
                          category=None,
                          level=0,
                          request=None,
+                         parameter="",
                          info=""):
         """
         Store the information about the vulnerability to be printed later.
@@ -181,10 +182,9 @@ class XMLReportGenerator(ReportGenerator):
 #            peerNode.appendChild(addrNode)
 #          vulnerability.appendChild(peerNode)
 
-# bring back a parameter argument ?
-#        parameterNode = self.__xmlDoc.createElement("parameter")
-#        parameterNode.appendChild(self.__xmlDoc.createTextNode(parameter))
-#        vulnerability.appendChild(parameterNode)
+        parameterNode = self.__xmlDoc.createElement("parameter")
+        parameterNode.appendChild(self.__xmlDoc.createTextNode(parameter))
+        vulnerability.appendChild(parameterNode)
 
         infoNode = self.__xmlDoc.createElement("info")
         info = info.replace("\n", "<br />")

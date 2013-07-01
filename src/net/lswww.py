@@ -197,7 +197,7 @@ class lswww:
         if scope == self.SCOPE_FOLDER:
             self.scopeURL = "/".join(self.root.url.split("/")[:-1]) + "/"
         elif scope == self.SCOPE_DOMAIN:
-            self.scopeURL = "http://" + self.server
+            self.scopeURL = self.root.url.split("/")[0] + "//" + self.server
 
     def addStartURL(self, url):
         if(self.__checklink(url)):
