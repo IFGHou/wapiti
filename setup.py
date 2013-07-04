@@ -62,7 +62,6 @@ if a script is vulnerable.""",
                 "wapiti.file", 
                 "wapiti.language", 
                 "wapiti.net", 
-                "wapiti.net.httplib2", 
                 "wapiti.report" 
     ],
     data_files = doc_and_conf_files,

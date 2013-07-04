@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 # Wapiti SVN - A web application vulnerability scanner
 # Wapiti Project (http://wapiti.sourceforge.net)
@@ -151,6 +151,10 @@ Supported options are:
     website and following the data of this file.
     The file is optional, if it is not specified, Wapiti takes the default file
     from \"scans\" folder.
+
+--verify-ssl <0|1>
+    This parameter indicates whether Wapiti must check SSL certificates.
+    Default is to verify certificates
 
 -h
 --help
@@ -334,6 +338,10 @@ Supported options are:
         "Set the timeout for the time waiting for a HTTP response"
         self.http_engine.setTimeOut(timeout)
 
+    def setVerifySsl(self, verify=True):
+        "Set whether SSL must be verified."
+        self.http_engine.setVerifySsl(verify)
+
     def setProxy(self, proxy=""):
         "Set a proxy to use for HTTP requests."
         self.http_engine.setProxy(proxy)
@@ -416,7 +424,7 @@ if __name__ == "__main__":
                                        ["help", "underline", "proxy=", "start=", "exclude=",
                                         "cookie=", "auth=", "remove=", "verbose=", "timeout=",
                                         "module=", "outputfile", "reportType", "nice=",
-                                        "attack", "continue", "scope="])
+                                        "attack", "continue", "scope=", "verify-ssl="])
         except getopt.GetoptError, e:
             print(e)
             sys.exit(2)
@@ -469,13 +477,16 @@ if __name__ == "__main__":
             if o in ("-i", "--continue"):
                 hostname = url.split("://")[1].split("/")[0]
                 crawlerFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
+            if o in ("--verify-ssl"):
+                if str.isdigit(a):
+                    wap.setVerifySsl(bool(int(a)))
         try:
             opts, args = getopt.getopt(sys.argv[2:],
                                        "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:b:",
                                        ["help", "underline", "proxy=", "start=", "exclude=",
                                         "cookie=", "auth=", "remove=", "verbose=", "timeout=",
                                         "module=", "outputfile", "reportType", "nice=",
-                                        "attack=", "continue=", "scope="])
+                                        "attack=", "continue=", "scope=", "verify-ssl="])
         except getopt.GetoptError, e:
             ""
         for o, a in opts:

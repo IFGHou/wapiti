@@ -260,7 +260,8 @@ class lswww:
                 print(_("Connection refused!"))
             self.excluded.append(url)
             return False
-        except Exception:
+        except Exception, e:
+            print(_("Exception in lswww.browse: {0}").format(e))
             self.excluded.append(url)
             return False
 
@@ -380,7 +381,7 @@ class lswww:
                 if(self.__inzone(lien) == 0):
                     # Is the document already visited of forbidden ?
                     lien = HTTP.HTTPResource(lien, encoding=page_encoding, referer=url)
-                    if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien):
+                    if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien) or self.__inzone(lien.url) != 0:
                         pass
                     elif self.nice > 0:
                         if self.__countMatches(lien) >= self.nice:
@@ -401,6 +402,8 @@ class lswww:
             action = self.correctlink(form[0], current, currentdir, proto, page_encoding)
             if action is None:
                 action = current
+            if self.__inzone(action) != 0:
+                continue
 
             # urlencode the POST parameters here
             params = form[1]
@@ -476,7 +479,7 @@ class lswww:
                     lien = protocol + ":" + lien
                 # root-url related link
                 elif lien[0] == '/':
-                    lien = protocol + u"://" + self.server + lien
+                    lien = "{0}://{1}{2}".format(protocol, self.server, lien)
                 else:
                     # same page + query string
                     if lien[0] == '?':

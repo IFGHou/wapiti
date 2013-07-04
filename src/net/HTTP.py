@@ -419,6 +419,7 @@ class HTTP(object):
     h = None
     cookiejar = {}
     server = ""
+    verify_ssl = True
 
     configured = 0
 
@@ -464,7 +465,8 @@ class HTTP(object):
                 resp = self.h.get(target.url,
                                   headers=_headers,
                                   timeout=self.timeout,
-                                  allow_redirects=False)
+                                  allow_redirects=False,
+                                  verify=self.verify_ssl)
                 target.setElapsedTime()
             else:
                 if target.referer:
@@ -485,7 +487,8 @@ class HTTP(object):
                                    files=file_data,
                                    headers=_headers,
                                    timeout=self.timeout,
-                                   allow_redirects=False)
+                                   allow_redirects=False,
+                                   verify=self.verify_ssl)
                 target.setElapsedTime()
 
         # Keep it for Nikto module
@@ -499,17 +502,20 @@ class HTTP(object):
             if method == "GET":
                 resp = self.h.get(target, headers=_headers,
                                   timeout=self.timeout,
-                                  allow_redirects=False)
+                                  allow_redirects=False,
+                                  verify=self.verify_ssl)
             elif method == "POST":
                 _headers.update({'content-type': 'application/x-www-form-urlencoded'})
                 resp = self.h.post(target, headers=_headers,
                                    data=post_data,
                                    timeout=self.timeout,
-                                   allow_redirects=False)
+                                   allow_redirects=False,
+                                   verify=self.verify_ssl)
             else:
                 resp = self.h.request(method, target,
                                       timeout=self.timeout,
-                                      allow_redirects=False)
+                                      allow_redirects=False,
+                                      verify=self.verify_ssl)
 
         if resp is None:
             return None
@@ -545,6 +551,10 @@ class HTTP(object):
     def getTimeOut(self):
         "Return the timeout used for HTTP requests."
         return self.timeout
+
+    def setVerifySsl(self, verify=True):
+        "Set whether SSL must be verified."
+        self.verify_ssl = verify
 
     def setProxy(self, proxy=""):
         "Set a proxy to use for HTTP requests."
