@@ -95,6 +95,7 @@ class mod_exec(Attack):
             elif not "text" in resp_headers["content-type"]:
                 return
 
+            timeouted = False
             warned = 0
             cmd = 0
             err500 = 0
@@ -114,6 +115,8 @@ class mod_exec(Attack):
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                     except requests.exceptions.Timeout:
+                        if timeouted:
+                            continue
                         data = ""
                         code = "408"
                         err = ""
@@ -123,6 +126,7 @@ class mod_exec(Attack):
                                      level=Anomaly.MEDIUM_LEVEL,
                                      request=evil_req,
                                      info=Anomaly.MSG_QS_TIMEOUT)
+                        timeouted = True
                     else:
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
                     if err != "":
@@ -145,6 +149,7 @@ class mod_exec(Attack):
                         break
 
         for i in range(len(params_list)):
+            timeouted = False
             warned = 0
             cmd = 0
             err500 = 0
@@ -169,6 +174,8 @@ class mod_exec(Attack):
                     try:
                         data, code = self.HTTP.send(evil_req.url, headers=headers).getPageCode()
                     except requests.exceptions.Timeout:
+                        if timeouted:
+                            continue
                         data = ""
                         code = "408"
                         err = ""
@@ -179,6 +186,7 @@ class mod_exec(Attack):
                                      request=evil_req,
                                      parameter=param_name,
                                      info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+                        timeouted = True
                     else:
                         err, cmd, warned = self.__findPatternInResponse(data, warned)
 
@@ -221,6 +229,7 @@ class mod_exec(Attack):
         for params_list in [get_params, post_params, file_params]:
             for i in xrange(len(params_list)):
                 saved_value = params_list[i][1]
+                timeouted = False
                 warned = 0
                 cmd = 0
                 err500 = 0
@@ -259,6 +268,8 @@ class mod_exec(Attack):
                         try:
                             data, code = self.HTTP.send(evil_req).getPageCode()
                         except requests.exceptions.Timeout:
+                            if timeouted:
+                                continue
                             data = ""
                             code = "408"
                             self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
@@ -269,6 +280,7 @@ class mod_exec(Attack):
                                          request=evil_req,
                                          parameter=param_name,
                                          info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+                            timeouted = True
                         else:
                             err, cmd, warned = self.__findPatternInResponse(data, warned)
 

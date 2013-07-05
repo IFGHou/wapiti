@@ -106,6 +106,7 @@ class mod_file(Attack):
             elif not "text" in resp_headers["content-type"]:
                 return
 
+            timeouted = False
             warn = 0
             inc = 0
             err500 = 0
@@ -125,6 +126,9 @@ class mod_file(Attack):
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                     except requests.exceptions.Timeout:
+                        # Display a warning about timeout only once for a parameter
+                        if timeouted:
+                            continue
                         data = ""
                         code = "408"
                         err = ""
@@ -134,6 +138,7 @@ class mod_file(Attack):
                                      info=Anomaly.MSG_QS_TIMEOUT)
                         self.logO(Anomaly.MSG_TIMEOUT, page)
                         self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
+                        timeouted = True
                     else:
                         err, inc, warn = self.__findPatternInResponse(data, warn)
 
@@ -155,11 +160,13 @@ class mod_file(Attack):
                             self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
 
         for i in range(len(params_list)):
+            timeouted = False
             warn = 0
             inc = 0
             err500 = 0
             param_name = self.HTTP.quote(params_list[i][0])
             saved_value = params_list[i][1]
+
             for payload in self.payloads:
                 err = ""
 
@@ -179,6 +186,8 @@ class mod_file(Attack):
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                     except requests.exceptions.Timeout:
+                        if timeouted:
+                            continue
                         data = ""
                         code = "408"
                         err = ""
@@ -189,6 +198,7 @@ class mod_file(Attack):
                                      info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
                         self.logO(Anomaly.MSG_TIMEOUT, page)
                         self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
+                        timeouted = True
                     else:
                         err, inc, warn = self.__findPatternInResponse(data, warn)
                     if err != "":
@@ -223,6 +233,7 @@ class mod_file(Attack):
         err = ""
         for params_list in [get_params, post_params, file_params]:
             for i in xrange(len(params_list)):
+                timeouted = False
                 warn = 0
                 inc = 0
                 err500 = 0
@@ -264,6 +275,8 @@ class mod_file(Attack):
                         try:
                             data, code = self.HTTP.send(evil_req).getPageCode()
                         except requests.exceptions.Timeout:
+                            if timeouted:
+                                continue
                             data = ""
                             code = "408"
                             self.logAnom(category=Anomaly.RES_CONSUMPTION,
@@ -274,6 +287,7 @@ class mod_file(Attack):
                             self.logO(Anomaly.MSG_TIMEOUT, evil_req.path)
                             self.logO(Anomaly.MSG_EVIL_REQUEST)
                             self.logO(evil_req.http_repr)
+                            timeouted = True
                         else:
                             err, inc, warn = self.__findPatternInResponse(data, warn)
                         if err != "":
