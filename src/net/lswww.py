@@ -269,8 +269,6 @@ class lswww:
         code = resp.getCode()
         info["status_code"] = code
 
-        web_resource.setHeaders(info)
-
         if not url in self.link_encoding:
             self.link_encoding[url] = ""
 

@@ -51,6 +51,16 @@ class mod_xss(Attack):
         """It doesn't upercase letters as BeautifulSoup make some data lowercase."""
         return "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0, 10)])
 
+    def _validXSSContentType(self, http_res):
+        """Check wether the returned content-type header allow javascript evaluation."""
+        # When no content-type is returned, browsers try to display the HTML
+        if not "content-type" in http_res.headers:
+            return True
+        # else only text/html will allow javascript (maybe text/plain will work for IE...)
+        if "text/html" in http_res.headers["content-type"]:
+            return True
+        return False
+
     def attackGET(self, http_res):
         """This method performs the cross site scripting attack (XSS attack) with method GET"""
 
@@ -74,7 +84,7 @@ class mod_xss(Attack):
                 if self.verbose == 2:
                     print(u"+ {0}".format(evil_req.url))
                 data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
-                if self.php_self_check in data:
+                if self._validXSSContentType(evil_req) and self.php_self_check in data:
                     self.logR(Vulnerability.MSG_PATH_INJECT, self.MSG_VULN, page)
                     self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
 
@@ -122,7 +132,7 @@ class mod_xss(Attack):
                             resp = timeout
                         param_name = "QUERY_STRING"
 
-                        if dat is not None and len(dat) > 1:
+                        if self._validXSSContentType(evil_req) and dat is not None and len(dat) > 1:
                             if payload.lower() in dat.lower():
                                 self.SUCCESSFUL_XSS[code] = payload
                                 self.logVuln(category=Vulnerability.XSS,
@@ -174,7 +184,7 @@ class mod_xss(Attack):
                                 dat = ""
                                 resp = timeout
 
-                            if dat is not None and len(dat) > 1:
+                            if self._validXSSContentType(evil_req) and dat is not None and len(dat) > 1:
                                 if payload.lower() in dat.lower():
                                     self.SUCCESSFUL_XSS[code] = payload
                                     self.logVuln(category=Vulnerability.XSS,
@@ -213,7 +223,7 @@ class mod_xss(Attack):
                 if self.verbose == 2:
                     print(u"+ {0}".format(evil_req.url))
                 data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
-                if self.php_self_check in data:
+                if self._validXSSContentType(evil_req) and self.php_self_check in data:
                     self.logR(Vulnerability.MSG_PATH_INJECT, self.MSG_VULN, page)
                     self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
 
@@ -291,7 +301,7 @@ class mod_xss(Attack):
                                 dat = ""
                                 resp = timeout
 
-                            if dat is not None and len(dat) > 1:
+                            if self._validXSSContentType(evil_req) and dat is not None and len(dat) > 1:
                                 if payload.lower() in dat.lower():
                                     self.SUCCESSFUL_XSS[code] = payload
                                     self.logVuln(category=Vulnerability.XSS,

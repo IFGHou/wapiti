@@ -460,14 +460,13 @@ class HTTP(object):
             if get_data is None:
                 get_data = target.get_params
 
+            target.setStartTime()
             if target.method == "GET":
-                target.setStartTime()
                 resp = self.h.get(target.url,
                                   headers=_headers,
                                   timeout=self.timeout,
                                   allow_redirects=False,
                                   verify=self.verify_ssl)
-                target.setElapsedTime()
             else:
                 if target.referer:
                     _headers.update({'referer': target.referer})
@@ -480,7 +479,6 @@ class HTTP(object):
 
                 # TODO: custom HTTP method for HTTPResource requests
                 # TODO: For POST use the TooManyRedirects exception instead ?
-                target.setStartTime()
                 resp = self.h.post(target.path,
                                    params=get_data,
                                    data=post_data,
@@ -489,7 +487,8 @@ class HTTP(object):
                                    timeout=self.timeout,
                                    allow_redirects=False,
                                    verify=self.verify_ssl)
-                target.setElapsedTime()
+            target.setElapsedTime()
+            target.setHeaders(resp.headers)
 
         # Keep it for Nikto module
         else:
