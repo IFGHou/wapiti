@@ -175,7 +175,8 @@ class mod_permanentxss(Attack):
                                                       evil_req.path,
                                                       param_name)
                                             self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                                            self.logR(evil_req.http_repr)
+                                            self.logC(evil_req.http_repr)
+                                            print('')
                                             # search for the next code in the webpage
                                     continue
 
@@ -230,7 +231,8 @@ class mod_permanentxss(Attack):
                                                           evil_req.path,
                                                           param_name)
                                                 self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                                                self.logR(evil_req.http_repr)
+                                                self.logC(evil_req.http_repr)
+                                                print('')
                                                 break
 
     # check weither our JS payload is injected in the webpage
@@ -238,6 +240,14 @@ class mod_permanentxss(Attack):
         if page is None or page == "":
             return False
         if payload.lower() in page.lower():
+            return True
+        return False
+
+    def validContentType(self, http_res):
+        """Check wether the returned content-type header allow javascript evaluation."""
+        if not "content-type" in http_res.headers:
+            return True
+        if "text/html" in http_res.headers["content-type"]:
             return True
         return False
 

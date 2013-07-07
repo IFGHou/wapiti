@@ -168,24 +168,27 @@ class Attack:
                 url = http_res.url
 
                 if self.verbose == 1:
-                    print(_("+ attackGET {0}").format(url))
+                    self.log(_("+ attackGET {0}"), url)
 
                 try:
                     self.attackGET(http_res)
                 except socket.error, se:
-                    print(_('error: {0} while attacking {1}').format(repr(str(se[0])), url))
+                    self.log(_('error: {0} while attacking {1}'), repr(str(se[0])), url)
                 except requests.exceptions.Timeout:
-                    print(_('error: timeout while attacking {0}').format(url))
+                    self.log(_('error: timeout while attacking {0}'), url)
                 #except Exception, e:
-                #    print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+                #    self.log(_('error: {0} while attacking {1}'), repr(str(e[0])), url)
 
         if self.doPOST is True:
             for form in forms:
+                if self.verbose == 1:
+                    self.log(_("+ attackPOST {0} from {1}"), form.url, form.referer)
+
                 try:
                     self.attackPOST(form)
                 except socket.error, se:
-                    print(_('error: {0} while attacking {1}').format(repr(str(se[0])), url))
+                    self.log(_('error: {0} while attacking {1}'), repr(str(se[0])), url)
                 except requests.exceptions.Timeout:
                     print(_('error: timeout while attacking {0}').format(url))
          #       except Exception, e:
-         #           print 'error: %s while attacking %s' % (repr(str(e[0])), url)
+         #           self.log(_('error: {0} while attacking {1}'), repr(str(e[0])), url)

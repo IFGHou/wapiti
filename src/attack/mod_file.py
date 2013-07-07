@@ -36,29 +36,39 @@ class mod_file(Attack):
 
     name = "file"
 
+    # The following table contains tuples of (pattern, description, severity)
+    # a severity of 1 is a file disclosure (inclusion, read etc) vulnerability
+    # a severity of 0 is just the detection of an error returned by the server
+    # Most important patterns must appear at the top of this table.
     warnings_desc = [
-            ("java.io.FileNotFoundException:",        "Java include/open"),
-            ("fread(): supplied argument is not",     "fread()"),
-            ("fpassthru(): supplied argument is not", "fpassthru()"),
-            ("for inclusion (include_path=",          "include()"),
-            ("Failed opening required",               "require()"),
-            ("Warning: file(",                        "file()"),
-            ("<b>Warning</b>:  file(",                "file()"),
-            ("Warning: readfile(",                    "readfile()"),
-            ("<b>Warning:</b>  readfile(",            "readfile()"),
-            ("Warning: file_get_contents(",           "file_get_contents()"),
-            ("<b>Warning</b>:  file_get_contents(",   "file_get_contents()"),
-            ("Warning: show_source(",                 "show_source()"),
-            ("<b>Warning:</b>  show_source(",         "show_source()"),
-            ("Warning: highlight_file(",              "highlight_file()"),
-            ("<b>Warning:</b>  highlight_file(",      "highlight_file()"),
-            ("System.IO.FileNotFoundException:",      ".NET File.Open*"),
-            ("error '800a0046'",                      "VBScript OpenTextFile"),
-            ("s:12:\"pear.php.net\";",                "File disclosure in include_path"),
-            ("PHP Extension and Application Reposit", "File disclosure in include_path"),
-            ("PEAR,&nbsp;the&nbsp;PHP&nbsp;Extensio", "highlight_file() in basedir"),
-            ("either use the CLI php executable",     "include() of file in include_path")
-            ]
+            # Vulnerabilities
+            ("<title>Google</title>",                 _("Remote inclusion vulnerability"), 1),
+            ("root:x:0:0",                            _("Linux local file disclosure vulnerability"), 1),
+            ("root:*:0:0",                            _("BSD local file disclosure vulnerability"), 1),
+            ("[boot loader]",                         _("Windows local file disclosure vulnerability"), 1),
+            ("s:12:\"pear.php.net\";",                _("File disclosure vulnerability in include_path"), 1),
+            ("PHP Extension and Application Reposit", _("File disclosure vulnerability in include_path"), 1),
+            ("PEAR,&nbsp;the&nbsp;PHP&nbsp;Extensio", _("highlight_file() vulnerability in basedir"), 1),
+            ("either use the CLI php executable",     _("include() of file in include_path"), 1),
+            # Warnings
+            ("java.io.FileNotFoundException:",        "Java include/open", 0),
+            ("fread(): supplied argument is not",     "fread()", 0),
+            ("fpassthru(): supplied argument is not", "fpassthru()", 0),
+            ("for inclusion (include_path=",          "include()", 0),
+            ("Failed opening required",               "require()", 0),
+            ("Warning: file(",                        "file()", 0),
+            ("<b>Warning</b>:  file(",                "file()", 0),
+            ("Warning: readfile(",                    "readfile()", 0),
+            ("<b>Warning:</b>  readfile(",            "readfile()", 0),
+            ("Warning: file_get_contents(",           "file_get_contents()", 0),
+            ("<b>Warning</b>:  file_get_contents(",   "file_get_contents()", 0),
+            ("Warning: show_source(",                 "show_source()", 0),
+            ("<b>Warning:</b>  show_source(",         "show_source()", 0),
+            ("Warning: highlight_file(",              "highlight_file()", 0),
+            ("<b>Warning:</b>  highlight_file(",      "highlight_file()", 0),
+            ("System.IO.FileNotFoundException:",      ".NET File.Open*", 0),
+            ("error '800a0046'",                      "VBScript OpenTextFile", 0)
+    ]
 
     def __init__(self, HTTP, xmlRepGenerator):
         Attack.__init__(self, HTTP, xmlRepGenerator)
@@ -68,23 +78,17 @@ class mod_file(Attack):
         """This method searches patterns in the response from the server"""
         err_msg = ""
         inc = 0
-        if "root:x:0:0" in data:  # Unix platform
-            err_msg = _("Local file disclosure vulnerability")
-            inc = 1
-        if "root:*:0:0" in data:  # BSD/Apple platform
-            err_msg = _("BSD local file disclosure vulnerability")
-            inc = 1
-        if "[boot loader]" in data:  # Windows platform
-            err_msg = _("Windows local file disclosure vulnerability")
-            inc = 1
-        if "<title>Google</title>" in data:
-            err_msg = _("Remote inclusion vulnerability")
-            inc = 1
-        for pattern, funcname in self.warnings_desc:
-            if pattern in data and warn == 0:
-                err_msg = _("Possible {0} vulnerability").format(funcname)
-                warn = 1
-                break
+        for pattern, description, level in self.warnings_desc:
+            if pattern in data:
+                if level == 1:
+                    err_msg = description
+                    inc = 1
+                    break
+                else:
+                    if warn == 0:
+                        err_msg = _("Possible {0} vulnerability").format(description)
+                        warn = 1
+                        break
         return err_msg, inc, warn
 
     def attackGET(self, http_res):
@@ -121,8 +125,6 @@ class mod_file(Attack):
                         print(u"+ {0}".format(url))
                     self.attackedGET.append(url)
                     evil_req = HTTP.HTTPResource(url)
-                    if inc:
-                        continue
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                     except requests.exceptions.Timeout:
@@ -149,6 +151,8 @@ class mod_file(Attack):
                                      info=_("{0} via injection in the query string").format(err))
                         self.logR(Vulnerability.MSG_QS_INJECT, err)
                         self.logR(Vulnerability.MSG_EVIL_URL)
+                        if inc:
+                            break
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
@@ -180,8 +184,6 @@ class mod_file(Attack):
                     if self.verbose == 2:
                         print(u"+ {0}".format(url))
                     self.attackedGET.append(url)
-                    if inc == 1:
-                        continue
                     evil_req = HTTP.HTTPResource(url)
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
@@ -209,6 +211,8 @@ class mod_file(Attack):
                                      info=_("{0} via injection in the parameter {1}").format(err, param_name))
                         self.logR(Vulnerability.MSG_PARAM_INJECT, err, page, param_name)
                         self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
+                        if inc:
+                            break
                     else:
                         if code == "500" and err500 == 0:
                             err500 = 1
@@ -286,7 +290,8 @@ class mod_file(Attack):
                                          info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
                             self.logO(Anomaly.MSG_TIMEOUT, evil_req.path)
                             self.logO(Anomaly.MSG_EVIL_REQUEST)
-                            self.logO(evil_req.http_repr)
+                            self.logC(evil_req.http_repr)
+                            print('')
                             timeouted = True
                         else:
                             err, inc, warn = self.__findPatternInResponse(data, warn)
@@ -299,7 +304,8 @@ class mod_file(Attack):
                                          info=info_msg.format(err, param_name))
                             self.logR(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
                             self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                            self.logR(evil_req.http_repr)
+                            self.logC(evil_req.http_repr)
+                            print('')
                             if inc:
                                 break
 
@@ -313,5 +319,6 @@ class mod_file(Attack):
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
                                 self.logO(Anomaly.MSG_500, evil_req.url)
                                 self.logO(Anomaly.MSG_EVIL_REQUEST)
-                                self.logO(evil_req.http_repr)
+                                self.logC(evil_req.http_repr)
+                                print('')
                 params_list[i][1] = saved_value

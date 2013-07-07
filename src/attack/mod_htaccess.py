@@ -105,15 +105,4 @@ class mod_htaccess(Attack):
                         self.logY(_("Source code:"))
                         self.logW(data2)
 
-                else:
-                    # TODO : still need this ?
-                    if code2 == 500:
-                        self.logAnom(category=Anomaly.ERROR_500,
-                                     level=Anomaly.HIGH_LEVEL,
-                                     request=evil_req,
-                                     info=_("The server responded with a 500 HTTP error code"))
-                        self.logO(Anomaly.MSG_500, page)
-                        self.logO(Anomaly.MSG_EVIL_URL, url)
-
-                    # add the url with the url attacked
                 self.attackedGET.append(url)

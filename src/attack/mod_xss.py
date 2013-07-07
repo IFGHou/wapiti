@@ -317,7 +317,8 @@ class mod_xss(Attack):
                                               param_name)
 
                                     self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                                    self.logR(evil_req.http_repr)
+                                    self.logC(evil_req.http_repr)
+                                    print('')
                                     # Stop injecting payloads and move to the next parameter
                                     break
 

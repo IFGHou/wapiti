@@ -227,7 +227,8 @@ class mod_blindsql(Attack):
                                       evil_req.url,
                                       param_name)
                             self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                            self.logR(evil_req.http_repr)
+                            self.logC(evil_req.http_repr)
+                            print('')
                             break
 
                         else:
@@ -240,7 +241,8 @@ class mod_blindsql(Attack):
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
                                 self.logO(Anomaly.MSG_500, evil_req.url)
                                 self.logO(Anomaly.MSG_EVIL_REQUEST)
-                                self.logO(evil_req.http_repr)
+                                self.logC(evil_req.http_repr)
+                                print('')
                 params_list[i][1] = saved_value
 
     def loadRequire(self, obj=[]):

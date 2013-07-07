@@ -274,7 +274,8 @@ class mod_exec(Attack):
                             code = "408"
                             self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
                             self.logO(Anomaly.MSG_EVIL_REQUEST)
-                            self.logO(evil_req.http_repr)
+                            self.logC(evil_req.http_repr)
+                            print('')
                             self.logAnom(category=Anomaly.RES_CONSUMPTION,
                                          level=Anomaly.MEDIUM_LEVEL,
                                          request=evil_req,
@@ -292,7 +293,8 @@ class mod_exec(Attack):
                                          info=_("{0} via injection in the parameter {1}").format(err, param_name))
                             self.logR(Vulnerability.MSG_PARAM_INJECT, err, evil_req.url, param_name)
                             self.logR(Vulnerability.MSG_EVIL_REQUEST)
-                            self.logR(evil_req.http_repr)
+                            self.logC(evil_req.http_repr)
+                            print('')
 
                             if cmd:
                                 # Successful command execution, go to the next field
@@ -308,5 +310,6 @@ class mod_exec(Attack):
                                              info=Anomaly.MSG_PARAM_500.format(param_name))
                                 self.logO(Anomaly.MSG_500, evil_req.url)
                                 self.logO(Vulnerability.MSG_EVIL_REQUEST)
-                                self.logO(evil_req.http_repr)
+                                self.logC(evil_req.http_repr)
+                                print('')
                 params_list[i][1] = saved_value
