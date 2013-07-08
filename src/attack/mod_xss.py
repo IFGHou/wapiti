@@ -418,10 +418,12 @@ class mod_xss(Attack):
                 payload = ""
                 if elem['parent'] == "title":  # Oops we are in the head
                     payload = "</title>"
+                elif elem['parent'] == "script": # Control over the body of a script :)
+                    # Just check if we can use brackets
+                    payloads.insert(0, "String.fromCharCode(0,__XSS__,1)".replace("__XSS__", code))
 
                 for xss in self.independant_payloads:
                     payloads.append(payload + xss.replace("__XSS__", code))
-                return payloads
 
             data = data.replace(code, "none", 1)  # reduire la zone de recherche
         return payloads
