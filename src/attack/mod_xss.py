@@ -49,7 +49,7 @@ class mod_xss(Attack):
     def random_string(self):
         """Create a random unique ID that will be used to test injection."""
         """It doesn't upercase letters as BeautifulSoup make some data lowercase."""
-        return "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0, 10)])
+        return "w" + "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0, 9)])
 
     def _validXSSContentType(self, http_res):
         """Check wether the returned content-type header allow javascript evaluation."""
@@ -325,6 +325,18 @@ class mod_xss(Attack):
                 # restore the saved parameter in the list
                 params_list[i][1] = saved_value
 
+    def closeNoscript(self, tag):
+        """Return a string with each closing parent tags for escaping a noscript"""
+        s = ""
+        if tag.findParent("noscript"):
+            curr = tag.parent
+            while True:
+                s += "</{0}>".format(curr.name)
+                if curr.name == "noscript":
+                    break
+                curr = curr.parent
+        return s
+
     # type/name/tag ex: attrval/img/src
     # TODO: entries is a mutable argument, check this
     def study(self, obj, parent=None, keyword="", entries=[]):
@@ -336,20 +348,25 @@ class mod_xss(Attack):
                     for k, v in obj.attrs:
                         if keyword in v:
                             # print("Found in attribute value {0} of tag {1}".format(k, obj.name))
-                            entries.append({"type": "attrval", "name": k, "tag": obj.name})
+                            noscript = self.closeNoscript(obj)
+                            entries.append({"type": "attrval", "name": k, "tag": obj.name, "noscript": noscript})
                         if keyword in k:
                             # print("Found in attribute name {0} of tag {1}".format(k, obj.name))
-                            entries.append({"type": "attrname", "name": k, "tag": obj.name})
+                            noscript = self.closeNoscript(obj)
+                            entries.append({"type": "attrname", "name": k, "tag": obj.name, "noscript": noscript})
                 elif keyword in obj.name:
                     # print("Found in tag name")
-                    entries.append({"type": "tag", "value": obj.name})
+                    noscript = self.closeNoscript(obj)
+                    entries.append({"type": "tag", "value": obj.name, "noscript": noscript})
                 else:
                     for x in obj.contents:
+                        # recursive search
                         self.study(x, obj, keyword, entries)
             elif isinstance(obj, BeautifulSoup.NavigableString):
                 if keyword in str(obj):
                     # print("Found in text, tag {0}".format(parent.name))
-                    entries.append({"type": "text", "parent": parent.name})
+                    noscript = self.closeNoscript(obj)
+                    entries.append({"type": "text", "parent": parent.name, "noscript": noscript})
 
     # generate a list of payloads based on where in the webpage the js-code will be injected
     def generate_payloads(self, data, code):
@@ -390,6 +407,7 @@ class mod_xss(Attack):
                 else:
                     payload += "></" + elem['tag'] + ">"
 
+                payload += elem['noscript']
                 # ok let's send the requests
                 for xss in self.independant_payloads:
                     payloads.append(payload + xss.replace("__XSS__", code))
@@ -399,7 +417,7 @@ class mod_xss(Attack):
             elif elem['type'] == "attrname":  # name,tag
                 if code == elem['name']:
                     for xss in self.independant_payloads:
-                        payloads.append('>' + xss.replace("__XSS__", code))
+                        payloads.append('>' + elem['noscript'] + xss.replace("__XSS__", code))
 
             # we control the tag name
             # ex: <our_string name="column" />
@@ -407,18 +425,22 @@ class mod_xss(Attack):
                 if elem['value'].startswith(code):
                     # use independant payloads, just remove the first character (<)
                     for xss in self.independant_payloads:
-                        payloads.append(xss.replace("__XSS__", code)[1:])
+                        payload = elem['noscript'] + xss.replace("__XSS__", code)
+                        payloads.append(payload[1:])
                 else:
                     for xss in self.independant_payloads:
-                        payloads.append("/>" + xss.replace("__XSS__", code))
+                        payload = "/>" + elem['noscript'] + xss.replace("__XSS__", code)
+                        payloads.append(payload)
 
             # we control the text of the tag
             # ex: <textarea>our_string</textarea>
             elif elem['type'] == "text":
-                payload = ""
-                if elem['parent'] == "title":  # Oops we are in the head
-                    payload = "</title>"
-                elif elem['parent'] == "script": # Control over the body of a script :)
+                if elem['parent'] in ["title", "textarea"]:  # we can't execute javascript in those tags
+                    if elem['noscript'] != "":
+                        payload = elem['noscript']
+                    else:
+                        payload = "</{0}>".format(elem['parent'])
+                elif elem['parent'] == "script":  # Control over the body of a script :)
                     # Just check if we can use brackets
                     payloads.insert(0, "String.fromCharCode(0,__XSS__,1)".replace("__XSS__", code))
 
