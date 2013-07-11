@@ -427,9 +427,6 @@ class HTTP(object):
         #TODO: bring back auth (htaccess)
         #TODO: check proxy and cookies support again
         self.h = requests.Session()
-        if self.cookiejar:
-            self.h.cookies = self.cookiejar
-        self.h.proxies = self.proxies
         self.server = server
 
     def send(self, target, method="",
@@ -563,6 +560,7 @@ class HTTP(object):
         if protocol in ["http", "https"]:
             if host:
                 self.proxies[protocol] = "%s://%s/" % (protocol, host)
+        self.h.proxies = self.proxies
 
     def setCookieFile(self, cookie):
         "Load session data from a cookie file"
@@ -570,6 +568,7 @@ class HTTP(object):
             jc = jsoncookie.jsoncookie()
             jc.open(cookie)
             self.cookiejar = jc.cookiejar(self.server)
+            self.h.cookies = self.cookiejar
             jc.close()
 
     def setAuthCredentials(self, auth_basic):

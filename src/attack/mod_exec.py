@@ -142,7 +142,7 @@ class mod_exec(Attack):
                             self.logAnom(category=Anomaly.ERROR_500,
                                          level=Anomaly.HIGH_LEVEL,
                                          request=evil_req,
-                                         info=Vulnerability.MSG_QS_500)
+                                         info=Anomaly.MSG_QS_500)
                             self.logO(Anomaly.MSG_500, page)
                             self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
                     if cmd:

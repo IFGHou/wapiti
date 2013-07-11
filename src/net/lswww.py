@@ -139,6 +139,7 @@ class lswww:
     allowed = ['php', 'html', 'htm', 'xml', 'xhtml', 'xht', 'xhtm',
                'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
                'shtml', 'phtm', 'phtml', 'jhtml', 'pl', 'jsp', 'cfm', 'cfml']
+    allowed_types = ['text/', 'application/xml']
     verbose = 0
     auth_basic = []
     bad_params = []
@@ -293,8 +294,11 @@ class lswww:
 
         page_encoding = None
         resp_encoding = resp.getEncoding()
+        content_type = resp.getHeaders().get('content-type', '')
+        mime_type = content_type.split(';')[0].strip()
+
         # Requests says it found an encoding... the content must be some HTML
-        if resp_encoding:
+        if resp_encoding and any(mime_type.startswith(t) for t in self.allowed_types):
             # But Requests doesn't take a deep look at the webpage,
             # so check it with BeautifulSoup
             page_encoding = BeautifulSoup.BeautifulSoup(resp.getRawPage()).originalEncoding
