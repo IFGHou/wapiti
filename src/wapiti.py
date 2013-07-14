@@ -170,7 +170,7 @@ Supported options are:
 
     reportGeneratorType = "html"
     REPORT_DIR = "report"
-    REPORT_FILE = "vulnerabilities.xml"
+    REPORT_FILE = "vulnerabilities"
     HOME_DIR = os.getenv('HOME') or os.getenv('USERPROFILE')
     COPY_REPORT_DIR = os.path.join(HOME_DIR, ".wapiti", "generated_report")
     outputFile = ""
@@ -213,9 +213,9 @@ Supported options are:
         anomXMLParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/anomalies.xml"))
         for anomaly in anomXMLParser.getAnomalies():
             self.reportGen.addAnomalyType(_(anomaly.getName()),
-                                            (anomaly.getDescription()),
-                                            _(anomaly.getSolution()),
-                                            anomaly.getReferences())
+                                          (anomaly.getDescription()),
+                                          _(anomaly.getSolution()),
+                                          anomaly.getReferences())
 
     def __initAttacks(self):
         self.__initReport()
@@ -325,7 +325,10 @@ Supported options are:
             if self.reportGeneratorType == "html":
                 self.outputFile = self.COPY_REPORT_DIR
             else:
-                self.outputFile = self.REPORT_FILE
+                if self.reportGeneratorType == "txt":
+                    self.outputFile = self.REPORT_FILE + ".txt"
+                else:
+                    self.outputFile = self.REPORT_FILE + ".xml"
         self.reportGen.generateReport(self.outputFile)
         print('')
         print(_("Report"))
