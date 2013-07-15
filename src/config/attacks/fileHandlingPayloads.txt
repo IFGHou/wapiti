@@ -1,4 +1,4 @@
-http://www.google.fr/
+http://www.google.fr/?
 /etc/passwd
 /etc/passwd\0
 c:\\boot.ini
