@@ -68,10 +68,19 @@ from file.anomalyxmlparser import AnomalyXMLParser
 from net.crawlerpersister import CrawlerPersister
 
 
-class Wapiti:
-    """Wapiti-SVN - A web application vulnerability scanner
+class InvalidOptionValue(Exception):
+    def __init__(self, opt_name, opt_value):
+        self.opt_name = opt_name
+        self.opt_value = opt_value
 
-Usage: python wapiti.py http://server.com/base/url/ [options]
+    def __str__(self):
+        import traceback
+        #traceback.print_exc()
+        return _("Invalid argument for option {0} : {1}").format(self.opt_name, self.opt_value)
+
+
+class Wapiti:
+    """Usage: python wapiti.py http://server.com/base/url/ [options]
 
 Supported options are:
 -s <url>
@@ -409,6 +418,10 @@ if __name__ == "__main__":
         crawlerPersister = CrawlerPersister()
         crawlerFile = None
         attackFile = None
+
+        print(_("Wapiti-SVN (wapiti.sourceforge.net)"))
+        print(_("WARNING: This is a development version. Some features may be broken."))
+
         if len(sys.argv) < 2:
             print(doc)
             sys.exit(0)
@@ -421,6 +434,7 @@ if __name__ == "__main__":
 
         url = sys.argv[1]
         wap = Wapiti(url)
+
         try:
             opts, args = getopt.getopt(sys.argv[2:],
                                        "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",
@@ -431,58 +445,79 @@ if __name__ == "__main__":
         except getopt.GetoptError, e:
             print(e)
             sys.exit(2)
-        for o, a in opts:
-            if o in ("-h", "--help"):
-                print(doc)
-                sys.exit(0)
-            if o in ("-s", "--start"):
-                if a.startswith("http://") or a.startswith("https://"):
-                    wap.addStartURL(a)
-            if o in ("-x", "--exclude"):
-                if a.startswith("http://") or a.startswith("https://"):
-                    wap.addExcludedURL(a)
-            if o in ("-p", "--proxy"):
-                if a.startswith("http://") or a.startswith("https://"):
-                    wap.setProxy(a)
-            if o in ("-c", "--cookie"):
-                wap.setCookieFile(a)
-            if o in ("-a", "--auth"):
-                if a.find("%") >= 0:
-                    auth = [a.split("%")[0], a.split("%")[1]]
-                    wap.setAuthCredentials(auth)
-            if o in ("-r", "--remove"):
-                wap.addBadParam(a)
-            if o in ("-n", "--nice"):
-                if str.isdigit(a):
-                    wap.setNice(int(a))
-            if o in ("-u", "--underline"):
-                wap.setColor()
-            if o in ("-v", "--verbose"):
-                if str.isdigit(a):
-                    wap.verbosity(int(a))
-            if o in ("-t", "--timeout"):
-                if str.isdigit(a):
-                    wap.setTimeOut(int(a))
-            if o in ("-m", "--module"):
-                wap.setModules(a)
-            if o in ("-o", "--outputfile"):
-                wap.setOutputFile(a)
-            if o in ("-f", "--reportType"):
-                for repGenInfo in wap.xmlRepGenParser.getReportGenerators():
-                    if a == repGenInfo.getKey():
-                        wap.setReportGeneratorType(a)
-                        break
-            if o in ("-b", "--scope"):
-                wap.setScope(a)
-            if o in ("-k", "--attack"):
-                hostname = url.split("://")[1].split("/")[0]
-                attackFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
-            if o in ("-i", "--continue"):
-                hostname = url.split("://")[1].split("/")[0]
-                crawlerFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
-            if o in ("--verify-ssl"):
-                if str.isdigit(a):
-                    wap.setVerifySsl(bool(int(a)))
+
+        try:
+            for o, a in opts:
+                if o in ["-h", "--help"]:
+                    print(doc)
+                    sys.exit(0)
+                if o in ["-s", "--start"]:
+                    if a.startswith("http://") or a.startswith("https://"):
+                        wap.addStartURL(a)
+                    else:
+                        raise InvalidOptionValue(o, a)
+                if o in ["-x", "--exclude"]:
+                    if a.startswith("http://") or a.startswith("https://"):
+                        wap.addExcludedURL(a)
+                    else:
+                        raise InvalidOptionValue(o, a)
+                if o in ["-p", "--proxy"]:
+                    if a.startswith("http://") or a.startswith("https://"):
+                        wap.setProxy(a)
+                    else:
+                        raise InvalidOptionValue(o, a)
+                if o in ["-c", "--cookie"]:
+                    wap.setCookieFile(a)
+                if o in ["-a", "--auth"]:
+                    if a.find("%") >= 0:
+                        auth = [a.split("%")[0], a.split("%")[1]]
+                        wap.setAuthCredentials(auth)
+                if o in ["-r", "--remove"]:
+                    wap.addBadParam(a)
+                if o in ["-n", "--nice"]:
+                    if str.isdigit(a):
+                        wap.setNice(int(a))
+                    else:
+                        raise InvalidOptionValue(o, a)
+                if o in ["-u", "--underline"]:
+                    wap.setColor()
+                if o in ["-v", "--verbose"]:
+                    if str.isdigit(a):
+                        wap.verbosity(int(a))
+                    else:
+                        raise InvalidOptionValue(o, a)
+                if o in ["-t", "--timeout"]:
+                    if str.isdigit(a):
+                        wap.setTimeOut(int(a))
+                    else:
+                        raise InvalidOptionValue(o, a)
+                if o in ["-m", "--module"]:
+                    wap.setModules(a)
+                if o in ["-o", "--outputfile"]:
+                    wap.setOutputFile(a)
+                if o in ["-f", "--reportType"]:
+                    for repGenInfo in wap.xmlRepGenParser.getReportGenerators():
+                        if a == repGenInfo.getKey():
+                            wap.setReportGeneratorType(a)
+                            break
+                if o in ["-b", "--scope"]:
+                    wap.setScope(a)
+                if o in ["-k", "--attack"]:
+                    hostname = url.split("://")[1].split("/")[0]
+                    attackFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
+                if o in ["-i", "--continue"]:
+                    hostname = url.split("://")[1].split("/")[0]
+                    crawlerFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
+                if o in ["--verify-ssl"]:
+                    if str.isdigit(a):
+                        wap.setVerifySsl(bool(int(a)))
+                    else:
+                        raise InvalidOptionValue(o, a)
+
+        except InvalidOptionValue, msg:
+            print(msg)
+            sys.exit(2)
+
         try:
             opts, args = getopt.getopt(sys.argv[2:],
                                        "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:b:",
@@ -492,6 +527,7 @@ if __name__ == "__main__":
                                         "attack=", "continue=", "scope=", "verify-ssl="])
         except getopt.GetoptError, e:
             ""
+
         for o, a in opts:
             if o in ("-k", "--attack"):
                 if a != "" and a[0] != '-':
@@ -500,8 +536,6 @@ if __name__ == "__main__":
                 if a != '' and a[0] != '-':
                     crawlerFile = a
 
-        print(_("Wapiti-SVN (wapiti.sourceforge.net)"))
-        print(_("WARNING: This is a development version. Some features may be broken."))
         if attackFile is not None:
             if crawlerPersister.isDataForUrl(attackFile) == 1:
                 crawlerPersister.loadXML(attackFile)
