@@ -187,6 +187,7 @@ class CrawlerPersister:
         self._parser.StartElementHandler = self.__start_element
         self._parser.EndElementHandler = self.__end_element
         self._parser.CharacterDataHandler = self.__char_data
+        self._parser.returns_unicode = False
 
         f = None
         try:
@@ -228,8 +229,8 @@ class CrawlerPersister:
             self.headers[attrs[self.HEADER_NAME]] = attrs[self.HEADER_VALUE]
 
         elif name == self.INPUT:
-            param_name = unquote(attrs[self.INPUT_NAME].encode("UTF-8"))
-            param_value = unquote(attrs[self.INPUT_VALUE].encode("UTF-8"))
+            param_name = unquote(attrs[self.INPUT_NAME])
+            param_value = unquote(attrs[self.INPUT_VALUE])
 
             if self.tag == self.GET_PARAMS:
                 self.get_params.append([param_name, param_value])

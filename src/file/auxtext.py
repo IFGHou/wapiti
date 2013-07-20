@@ -30,6 +30,7 @@ class AuxText:
         lines = []
         f = None
         try:
+            # Reminder : don't try to read payload files as UTF-8, must give str type
             f = open(fileName)
             for line in f:
                 cleanLine = line.strip(" \n")
