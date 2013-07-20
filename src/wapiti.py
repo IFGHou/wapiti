@@ -503,11 +503,17 @@ if __name__ == "__main__":
                 if o in ["-b", "--scope"]:
                     wap.setScope(a)
                 if o in ["-k", "--attack"]:
-                    hostname = url.split("://")[1].split("/")[0]
-                    attackFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
+                    if a != "" and a[0] != '-':
+                        attackFile = a
+                    else:
+                        hostname = url.split("://")[1].split("/")[0]
+                        attackFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
                 if o in ["-i", "--continue"]:
-                    hostname = url.split("://")[1].split("/")[0]
-                    crawlerFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
+                    if a != '' and a[0] != '-':
+                        crawlerFile = a
+                    else:
+                        hostname = url.split("://")[1].split("/")[0]
+                        crawlerFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
                 if o in ["--verify-ssl"]:
                     if str.isdigit(a):
                         wap.setVerifySsl(bool(int(a)))
@@ -517,24 +523,6 @@ if __name__ == "__main__":
         except InvalidOptionValue, msg:
             print(msg)
             sys.exit(2)
-
-        try:
-            opts, args = getopt.getopt(sys.argv[2:],
-                                       "hup:s:x:c:a:r:v:t:m:o:f:n:k:i:b:",
-                                       ["help", "underline", "proxy=", "start=", "exclude=",
-                                        "cookie=", "auth=", "remove=", "verbose=", "timeout=",
-                                        "module=", "outputfile", "reportType", "nice=",
-                                        "attack=", "continue=", "scope=", "verify-ssl="])
-        except getopt.GetoptError, e:
-            ""
-
-        for o, a in opts:
-            if o in ("-k", "--attack"):
-                if a != "" and a[0] != '-':
-                    attackFile = a
-            if o in ("-i", "--continue"):
-                if a != '' and a[0] != '-':
-                    crawlerFile = a
 
         if attackFile is not None:
             if crawlerPersister.isDataForUrl(attackFile) == 1:
