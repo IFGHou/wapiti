@@ -71,8 +71,15 @@ class HTTPResource(object):
             self._post_params = []
         elif isinstance(post_params, list):
             self._post_params = deepcopy(post_params)
-        else:
-            self._post_params = post_params
+        elif isinstance(post_params, basestring):
+            self._post_params = []
+            if len(post_params):
+                for kv in post_params.split("&"):
+                    if kv.find("=") > 0:
+                        self._post_params.append(kv.split("=", 1))
+                    else:
+                        # ?param without value
+                        self._post_params.append([kv, None])
 
         if file_params is None:
             self._file_params = []
@@ -496,19 +503,22 @@ class HTTP(object):
                     method = "GET"
 
             if method == "GET":
-                resp = self.h.get(target, headers=_headers,
+                resp = self.h.get(target,
+                                  headers=_headers,
                                   timeout=self.timeout,
                                   allow_redirects=False,
                                   verify=self.verify_ssl)
             elif method == "POST":
                 _headers.update({'content-type': 'application/x-www-form-urlencoded'})
-                resp = self.h.post(target, headers=_headers,
+                resp = self.h.post(target,
+                                   headers=_headers,
                                    data=post_data,
                                    timeout=self.timeout,
                                    allow_redirects=False,
                                    verify=self.verify_ssl)
             else:
-                resp = self.h.request(method, target,
+                resp = self.h.request(method,
+                                      target,
                                       timeout=self.timeout,
                                       allow_redirects=False,
                                       verify=self.verify_ssl)

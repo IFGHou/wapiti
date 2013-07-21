@@ -23,6 +23,8 @@ import csv
 import re
 import os
 import socket
+import random
+from net import HTTP
 
 # Nikto databases are csv files with the following fields (in order) :
 #
@@ -87,32 +89,60 @@ class mod_nikto(Attack):
                 print(_("Error downloading Nikto database"))
 
     def attack(self, urls, forms):
+        junk_string = "w" + "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0, 5000)])
         for l in self.nikto_db:
             match = match_or = match_and = False
             fail = fail_or = False
 
-            l[3] = l[3].replace("@CGIDIRS", "/cgi-bin/")
-            l[3] = l[3].replace("@ADMIN", "/admin/")
-            l[3] = l[3].replace("@NUKE", "/modules/")
-            l[3] = l[3].replace("@PHPMYADMIN", "/phpMyAdmin/")
-            l[3] = l[3].replace("@POSTNUKE", "/postnuke/")
-            if l[3][0] == "@":
+            osv_id = l[1]
+            path = l[3]
+            method = l[4]
+            vuln_desc = l[10]
+            post_data = l[11]
+
+            path = path.replace("@CGIDIRS", "/cgi-bin/")
+            path = path.replace("@ADMIN", "/admin/")
+            path = path.replace("@NUKE", "/modules/")
+            path = path.replace("@PHPMYADMIN", "/phpMyAdmin/")
+            path = path.replace("@POSTNUKE", "/postnuke/")
+            path = re.sub("JUNK\((\d+)\)", lambda x: junk_string[:int(x.group(1))], path)
+
+            if path[0] == "@":
                 continue
-            if l[3][0] != "/":
-                l[3] = "/" + l[3]
+            if path[0] != "/":
+                path = "/" + path
 
             url = ""
             try:
-                url = "http://" + self.HTTP.server + l[3]
+                url = "http://" + self.HTTP.server + path
             except UnicodeDecodeError:
                 continue
 
-            if l[4] == "GET":
-                resp = self.HTTP.send(url)
-            elif l[4] == "POST":
-                resp = self.HTTP.send(url, post_params=l[11])
+            evil_req = None
+
+            if method == "GET":
+                evil_req = HTTP.HTTPResource(url)
+            elif method == "POST":
+                evil_req = HTTP.HTTPResource(url, post_params=post_data, method=method)
             else:
-                resp = self.HTTP.send(url, post_params=l[11], method=l[4])
+                evil_req = HTTP.HTTPResource(url, post_params=post_data, method=method)
+
+            if self.verbose == 2:
+                try:
+                    if method == "GET":
+                        print(u"+ {0}".format(evil_req.url))
+                    else:
+                        print(u"+ {0}".format(evil_req.http_repr))
+                except Exception, e:
+                    # TODO: deal with unicode problems when we extract urls from nikto_db
+                    continue
+
+            try:
+                resp = self.HTTP.send(evil_req)
+            except Exception, e:
+                # requests bug
+                print(e)
+                continue
 
             page, code = resp.getPageCode()
             encoding = BeautifulSoup.BeautifulSoup(page).originalEncoding
@@ -169,37 +199,37 @@ class mod_nikto(Attack):
 
             if ((match or match_or) and match_and) and not (fail or fail_or):
                 print(url)
-                print(l[10])
+                print(vuln_desc)
                 refs = []
-                if l[1] != "0":
-                    refs.append("http://osvdb.org/show/osvdb/" + l[1])
+                if osv_id != "0":
+                    refs.append("http://osvdb.org/show/osvdb/" + osv_id)
 
                 # CERT
-                m = re.search("(CA\-[0-9]{4}-[0-9]{2})", l[10])
+                m = re.search("(CA\-[0-9]{4}-[0-9]{2})", vuln_desc)
                 if m is not None:
                     refs.append("http://www.cert.org/advisories/" + m.group(0) + ".html")
 
                 # SecurityFocus
-                m = re.search("BID\-([0-9]{4})", l[10])
+                m = re.search("BID\-([0-9]{4})", vuln_desc)
                 if m is not None:
                     refs.append("http://www.securityfocus.com/bid/" + m.group(1))
 
                 # Mitre.org
-                m = re.search("((CVE|CAN)\-[0-9]{4}-[0-9]{4})", l[10])
+                m = re.search("((CVE|CAN)\-[0-9]{4}-[0-9]{4})", vuln_desc)
                 if m is not None:
                     refs.append("http://cve.mitre.org/cgi-bin/cvename.cgi?name=" + m.group(0))
 
                 # CERT Incidents
-                m = re.search("(IN\-[0-9]{4}\-[0-9]{2})", l[10])
+                m = re.search("(IN\-[0-9]{4}\-[0-9]{2})", vuln_desc)
                 if m is not None:
                     refs.append("http://www.cert.org/incident_notes/" + m.group(0) + ".html")
 
                 # Microsoft Technet
-                m = re.search("(MS[0-9]{2}\-[0-9]{3})", l[10])
+                m = re.search("(MS[0-9]{2}\-[0-9]{3})", vuln_desc)
                 if m is not None:
                     refs.append("http://www.microsoft.com/technet/security/bulletin/" + m.group(0) + ".asp")
 
-                info = l[10]
+                info = vuln_desc
                 if refs != []:
                     print(_("References:"))
                     print(u"  {0}".format(u"\n  ".join(refs)))
@@ -207,18 +237,7 @@ class mod_nikto(Attack):
                     info += "\n".join(['<a href="' + x + '">' + x + '</a>' for x in refs])
                 print('')
 
-                if l[4] == "GET":
-                    self.logVuln(category=Vulnerability.NIKTO,
-                                 level=Vulnerability.HIGH_LEVEL,
-                                 request=url,
-                                 info=info)
-                elif l[4] == "POST":
-                    self.logVuln(category=Vulnerability.NIKTO,
-                                 level=Vulnerability.HIGH_LEVEL,
-                                 request=url,  # l[11],
-                                 info=info)
-                else:
-                    self.logVuln(category=Vulnerability.NIKTO,
-                                 level=Vulnerability.HIGH_LEVEL,
-                                 request=url,  # l[4] + " " + l[11],
-                                 info=info)
+                self.logVuln(category=Vulnerability.NIKTO,
+                             level=Vulnerability.HIGH_LEVEL,
+                             request=evil_req,
+                             info=info)
