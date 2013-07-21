@@ -172,7 +172,7 @@ class mod_exec(Attack):
                         print(u"+ {0}".format(evil_req.url))
 
                     try:
-                        data, code = self.HTTP.send(evil_req.url, headers=headers).getPageCode()
+                        data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
                     except requests.exceptions.Timeout:
                         if timeouted:
                             continue

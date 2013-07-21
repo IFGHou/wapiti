@@ -50,6 +50,7 @@ class mod_permanentxss(Attack):
             if http_resource.method != "GET":
                 continue
             url = http_resource.url
+            target_req = HTTP.HTTPResource(url)
             page = http_resource.path
             referer = http_resource.referer
             headers = {}
@@ -58,7 +59,7 @@ class mod_permanentxss(Attack):
             if self.verbose >= 1:
                 print(u"+ {0}".format(url))
             try:
-                resp = self.HTTP.send(url, headers=headers)
+                resp = self.HTTP.send(target_req, headers=headers)
                 data = resp.getPage()
             except requests.exceptions.Timeout, timeout:
                 data = ""
@@ -106,7 +107,7 @@ class mod_permanentxss(Attack):
                                 evil_req = HTTP.HTTPResource(code_url.replace(code, payload))
                                 try:
                                     self.HTTP.send(evil_req)
-                                    resp = self.HTTP.send(url)
+                                    resp = self.HTTP.send(target_req)
                                     dat = resp.getPage()
                                 except requests.exceptions.Timeout, timeout:
                                     dat = ""
@@ -208,7 +209,7 @@ class mod_permanentxss(Attack):
                                                                              file_params=file_params,
                                                                              referer=referer)
                                                 self.HTTP.send(evil_req)
-                                                resp = self.HTTP.send(url)
+                                                resp = self.HTTP.send(target_req)
                                                 dat = resp.getPage()
                                             except requests.exceptions.Timeout, timeout:
                                                 dat = ""

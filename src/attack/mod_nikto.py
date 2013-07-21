@@ -74,7 +74,8 @@ class mod_nikto(Attack):
             try:
                 print(_("Problem with local nikto database."))
                 print(_("Downloading from the web..."))
-                resp = self.HTTP.send("http://cirt.net/nikto/UPDATES/2.1.5/db_tests")
+                nikto_req = HTTP.HTTPResource("http://cirt.net/nikto/UPDATES/2.1.5/db_tests")
+                resp = self.HTTP.send(nikto_req)
                 page = resp.getRawPage()
 
                 csv.register_dialect("nikto", quoting=csv.QUOTE_ALL, doublequote=False, escapechar="\\")

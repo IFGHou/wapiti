@@ -110,10 +110,10 @@ class mod_xss(Attack):
             if url not in self.attackedGET:
                 self.attackedGET.append(url)
                 code = self.random_string()
-                test_url = HTTP.HTTPResource(page + "?" + code)
-                self.GET_XSS[code] = (test_url, "QUERY_STRING")
+                test_req = HTTP.HTTPResource(page + "?" + code)
+                self.GET_XSS[code] = (test_req, "QUERY_STRING")
                 try:
-                    resp = self.HTTP.send(test_url, headers=headers)
+                    resp = self.HTTP.send(test_req, headers=headers)
                     data = resp.getPage()
                 except requests.exceptions.Timeout:
                     data = ""
@@ -158,10 +158,10 @@ class mod_xss(Attack):
                     self.attackedGET.append(url)
                     code = self.random_string()
                     params_list[i][1] = code
-                    test_url = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
-                    self.GET_XSS[code] = (test_url, param_name)
+                    test_req = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
+                    self.GET_XSS[code] = (test_req, param_name)
                     try:
-                        resp = self.HTTP.send(test_url, headers=headers)
+                        resp = self.HTTP.send(test_req, headers=headers)
                         data = resp.getPage()
                     except requests.exceptions.Timeout, timeout:
                         data = ""
