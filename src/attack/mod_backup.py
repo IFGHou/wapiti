@@ -31,6 +31,7 @@ class mod_backup(Attack):
 
     def __returnErrorByCode(self, code):
         err = ""
+        code = int(code)
         if code == 404:
             err = "Not found"
 
@@ -40,6 +41,9 @@ class mod_backup(Attack):
         return err
 
     def attackGET(self, http_res):
+        if http_res.file_name == "":
+            return
+
         page = http_res.path
         headers = http_res.headers
 
@@ -51,8 +55,9 @@ class mod_backup(Attack):
         elif not "text" in headers["content-type"]:
             return
 
-        for ext in self.payloads:
-            url = page + ext
+        for payload in self.payloads:
+            payload = payload.replace("[FILE_NAME]", http_res.file_name)
+            url = page.replace(http_res.file_name, payload)
 
             if self.verbose == 2:
                 print(u"+ {0}".format(url))

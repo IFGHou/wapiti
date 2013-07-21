@@ -56,14 +56,13 @@ class mod_htaccess(Attack):
         return err
 
     def attackGET(self, http_res):
-        page = http_res.path
+        url = http_res.path
         resp_headers = http_res.headers
         referer = http_res.referer
         headers = {}
         if referer:
             headers["referer"] = referer
 
-        url = page
         if url not in self.attackedGET:
             if self.verbose == 2:
                 print(u"+ {0}".format(url))
@@ -71,7 +70,8 @@ class mod_htaccess(Attack):
             err1 = self.__returnErrorByCode(resp_headers["status_code"])
 
             if err1 != "ok":
-                data1 = self.HTTP.send(url, headers=headers).getPage()
+                test_req = HTTP.HTTPResource(url)
+                data1 = self.HTTP.send(test_req, headers=headers).getPage()
                 # .htaccess protection detected
                 if self.verbose >= 1:
                     self.log(_("HtAccess protection found: {0}"), url)

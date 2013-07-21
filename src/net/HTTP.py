@@ -478,50 +478,31 @@ class HTTP(object):
                     post_data = target.post_params
                 if file_data is None:
                     file_data = target.file_params
-                if target.method == "POST" and not file_data:
-                    _headers.update({'content-type': 'application/x-www-form-urlencoded'})
+                if target.method == "POST":
+                    if not file_data:
+                        _headers.update({'content-type': 'application/x-www-form-urlencoded'})
 
-                # TODO: custom HTTP method for HTTPResource requests
-                # TODO: For POST use the TooManyRedirects exception instead ?
-                resp = self.h.post(target.path,
-                                   params=get_data,
-                                   data=post_data,
-                                   files=file_data,
-                                   headers=_headers,
-                                   timeout=self.timeout,
-                                   allow_redirects=False,
-                                   verify=self.verify_ssl)
+                    # TODO: For POST use the TooManyRedirects exception instead ?
+                    resp = self.h.post(target.path,
+                                       params=get_data,
+                                       data=post_data,
+                                       files=file_data,
+                                       headers=_headers,
+                                       timeout=self.timeout,
+                                       allow_redirects=False,
+                                       verify=self.verify_ssl)
+                else:
+                    resp = self.h.request(target.method,
+                                          target.path,
+                                          params=get_data,
+                                          data=post_data,
+                                          files=file_data,
+                                          headers=_headers,
+                                          timeout=self.timeout,
+                                          allow_redirects=False,
+                                          verify=self.verify_ssl)
             target.setElapsedTime()
             target.setHeaders(resp.headers)
-
-        # Keep it for Nikto module
-        else:
-            if not method:
-                if post_params:
-                    method = "POST"
-                else:
-                    method = "GET"
-
-            if method == "GET":
-                resp = self.h.get(target,
-                                  headers=_headers,
-                                  timeout=self.timeout,
-                                  allow_redirects=False,
-                                  verify=self.verify_ssl)
-            elif method == "POST":
-                _headers.update({'content-type': 'application/x-www-form-urlencoded'})
-                resp = self.h.post(target,
-                                   headers=_headers,
-                                   data=post_data,
-                                   timeout=self.timeout,
-                                   allow_redirects=False,
-                                   verify=self.verify_ssl)
-            else:
-                resp = self.h.request(method,
-                                      target,
-                                      timeout=self.timeout,
-                                      allow_redirects=False,
-                                      verify=self.verify_ssl)
 
         if resp is None:
             return None
