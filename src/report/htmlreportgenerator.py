@@ -59,6 +59,7 @@ class HTMLReportGenerator(JSONReportGenerator):
         JSONReportGenerator.generateReport(self, fileName + "/" + self.REPORT_JSON_FILE)
         fd = open(fileName + "/" + self.REPORT_JSON_FILE)
         json_data = fd.read()
+        json_data = json_data.replace('</', r'<\/')
         fd.close()
 
         fd = open(fileName + "/index.html", "r+")
