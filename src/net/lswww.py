@@ -383,7 +383,10 @@ class lswww:
                 if(self.__inzone(lien) == 0):
                     # Is the document already visited of forbidden ?
                     lien = HTTP.HTTPResource(lien, encoding=page_encoding, referer=url)
-                    if (lien in self.browsed) or (lien in self.tobrowse) or self.isExcluded(lien) or self.__inzone(lien.url) != 0:
+                    if ((lien in self.browsed) or
+                        (lien in self.tobrowse) or
+                        self.isExcluded(lien) or
+                            self.__inzone(lien.url) != 0):
                         pass
                     elif self.nice > 0:
                         if self.__countMatches(lien) >= self.nice:
@@ -536,6 +539,11 @@ class lswww:
                 path = re.sub("/\./", "/", path)
             if path == "":
                 path = '/'
+
+            # Fix for path going back up the root directory (eg: http://srv/../../dir/)
+            path = re.sub(r'^(/?\.\.//*)*', '',  path)
+            if not path.startswith('/'):
+                path = '/' + path
 
             lien = "%s://%s%s" % (parsed.scheme, parsed.netloc, path)
             if args != "":
