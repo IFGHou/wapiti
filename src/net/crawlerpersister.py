@@ -136,7 +136,8 @@ class CrawlerPersister:
             for k, v in http_resource.get_params:
                 inputEl = xml.createElement(self.INPUT)
                 inputEl.setAttribute(self.INPUT_NAME, quote(k))
-                inputEl.setAttribute(self.INPUT_VALUE, quote(v))
+                if v is not None:
+                    inputEl.setAttribute(self.INPUT_VALUE, quote(v))
                 getParamsEl.appendChild(inputEl)
             resEl.appendChild(getParamsEl)
 
@@ -230,7 +231,10 @@ class CrawlerPersister:
 
         elif name == self.INPUT:
             param_name = unquote(attrs[self.INPUT_NAME])
-            param_value = unquote(attrs[self.INPUT_VALUE])
+            if self.INPUT_VALUE in attrs:
+                param_value = unquote(attrs[self.INPUT_VALUE])
+            else:
+                param_value = None
 
             if self.tag == self.GET_PARAMS:
                 self.get_params.append([param_name, param_value])
