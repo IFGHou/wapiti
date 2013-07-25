@@ -155,6 +155,8 @@ class mod_exec(Attack):
             err500 = 0
 
             saved_value = params_list[i][1]
+            if saved_value is None:
+                saved_value = ""
             params_list[i][1] = "__EXEC__"
             url = page + "?" + self.HTTP.encode(params_list)
             param_name = self.HTTP.quote(params_list[i][0])
@@ -229,6 +231,8 @@ class mod_exec(Attack):
         for params_list in [get_params, post_params, file_params]:
             for i in xrange(len(params_list)):
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
                 timeouted = False
                 warned = 0
                 cmd = 0

@@ -112,6 +112,8 @@ class mod_blindsql(Attack):
         else:
             for i in range(len(params_list)):
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
 
                 param_name = self.HTTP.quote(params_list[i][0])
                 params_list[i][1] = "__SQL__"
@@ -174,6 +176,8 @@ class mod_blindsql(Attack):
         for params_list in [get_params, post_params, file_params]:
             for i in xrange(len(params_list)):
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
                 param_name = self.HTTP.quote(params_list[i][0])
 
                 if params_list is file_params:

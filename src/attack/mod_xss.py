@@ -150,6 +150,8 @@ class mod_xss(Attack):
         else:
             for i in xrange(len(params_list)):
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
                 param_name = self.HTTP.quote(params_list[i][0])
                 params_list[i][1] = "__XSS__"
                 url = page + "?" + self.HTTP.encode(params_list)
@@ -243,6 +245,8 @@ class mod_xss(Attack):
             for i in xrange(len(params_list)):
                 param_name = self.HTTP.quote(params_list[i][0])
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
                 if params_list is file_params:
                     params_list[i][1] = ["_XSS__", params_list[i][1][1]]
                 else:

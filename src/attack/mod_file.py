@@ -170,6 +170,8 @@ class mod_file(Attack):
             err500 = 0
             param_name = self.HTTP.quote(params_list[i][0])
             saved_value = params_list[i][1]
+            if saved_value is None:
+                saved_value = ""
 
             for payload in self.payloads:
                 err = ""
@@ -243,6 +245,8 @@ class mod_file(Attack):
                 err500 = 0
 
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
                 param_name = self.HTTP.quote(params_list[i][0])
 
                 if params_list is file_params:

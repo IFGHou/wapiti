@@ -149,6 +149,8 @@ class mod_sql(Attack):
                 err = ""
                 param_name = self.HTTP.quote(params_list[i][0])
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
                 params_list[i][1] = "__SQL__"
                 pattern_url = page + "?" + self.HTTP.encode(params_list)
                 if pattern_url not in self.attackedGET:
@@ -209,6 +211,8 @@ class mod_sql(Attack):
         for params_list in [get_params, post_params, file_params]:
             for i in xrange(len(params_list)):
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
 
                 if params_list is file_params:
                     params_list[i][1] = ["_SQL__", params_list[i][1][1]]

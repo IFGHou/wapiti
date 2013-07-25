@@ -87,6 +87,8 @@ class mod_crlf(Attack):
         else:
             for i in range(len(params_list)):
                 saved_value = params_list[i][1]
+                if saved_value is None:
+                    saved_value = ""
                 # payload is already escaped, see at top
                 params_list[i][1] = payload
                 param_name = self.HTTP.quote(params_list[i][0])
