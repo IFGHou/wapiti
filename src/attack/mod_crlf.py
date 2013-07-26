@@ -34,6 +34,8 @@ class mod_crlf(Attack):
 
     name = "crlf"
     MSG_VULN = _("CRLF injection")
+    doGET = False
+    doPOST = False
 
     def __init__(self, HTTP, xmlRepGenerator):
         Attack.__init__(self, HTTP, xmlRepGenerator)

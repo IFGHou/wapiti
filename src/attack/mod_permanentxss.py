@@ -2,7 +2,7 @@
 import socket
 import requests
 from attack import Attack
-from vulnerability import Vulnerability
+from vulnerability import Vulnerability, Anomaly
 from net import HTTP
 
 
@@ -102,16 +102,30 @@ class mod_permanentxss(Attack):
 
                         # we where able to inject the ID but will we be able to inject javascript?
                         else:
+                            timeouted = False
+                            returned500 = False
+
                             for xss in self.independant_payloads:
                                 payload = xss.replace("__XSS__", code)
                                 evil_req = HTTP.HTTPResource(code_url.replace(code, payload))
                                 try:
-                                    self.HTTP.send(evil_req)
-                                    resp = self.HTTP.send(target_req)
-                                    dat = resp.getPage()
-                                except requests.exceptions.Timeout, timeout:
+                                    http_code = self.HTTP.send(evil_req).getCode()
+                                    dat = resp = self.HTTP.send(target_req).getPage()
+                                except requests.exceptions.Timeout:
                                     dat = ""
-                                    resp = timeout
+                                    if timeouted:
+                                        continue
+                                    self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
+                                    self.logO(Anomaly.MSG_EVIL_REQUEST)
+                                    self.logC(evil_req.http_repr)
+                                    print('')
+                                    self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                                 level=Anomaly.MEDIUM_LEVEL,
+                                                 request=evil_req,
+                                                 parameter=param_name,
+                                                 info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+                                    timeouted = True
+
                                 except Exception, e:
                                     print(_('error: {0} while attacking {1}').format(repr(str(e[0])), url))
                                     continue
@@ -131,6 +145,17 @@ class mod_permanentxss(Attack):
                                                         " with {1}").format(url, self.HTTP.escape(evil_req.url)))
                                     # look for another code in the webpage
                                     break
+                                elif http_code == "500" and not returned500:
+                                    self.logAnom(category=Anomaly.ERROR_500,
+                                                 level=Anomaly.HIGH_LEVEL,
+                                                 request=evil_req,
+                                                 parameter=param_name,
+                                                 info=Anomaly.MSG_PARAM_500.format(param_name))
+                                    self.logO(Anomaly.MSG_500, evil_req.url)
+                                    self.logO(Vulnerability.MSG_EVIL_REQUEST)
+                                    self.logC(evil_req.http_repr)
+                                    print('')
+                                    returned500 = True
 
             if self.doPOST == 1:
                 for code in self.POST_XSS:
@@ -195,6 +220,8 @@ class mod_permanentxss(Attack):
                                     param_name, v = params_list[i]
                                     param_name = self.HTTP.quote(param_name)
                                     if v == code:
+                                        timeouted = False
+                                        returned500 = False
                                         for xss in self.independant_payloads:
                                             payload = xss.replace("__XSS__", code)
                                             if params_list is file_params:
@@ -208,12 +235,22 @@ class mod_permanentxss(Attack):
                                                                              post_params=post_params,
                                                                              file_params=file_params,
                                                                              referer=referer)
-                                                self.HTTP.send(evil_req)
-                                                resp = self.HTTP.send(target_req)
-                                                dat = resp.getPage()
-                                            except requests.exceptions.Timeout, timeout:
+                                                http_code = self.HTTP.send(evil_req).getCode()
+                                                dat = self.HTTP.send(target_req).getPage()
+                                            except requests.exceptions.Timeout:
                                                 dat = ""
-                                                resp = timeout
+                                                if timeouted:
+                                                    continue
+                                                self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
+                                                self.logO(Anomaly.MSG_EVIL_REQUEST)
+                                                self.logC(evil_req.http_repr)
+                                                print('')
+                                                self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                                             level=Anomaly.MEDIUM_LEVEL,
+                                                             request=evil_req,
+                                                             parameter=param_name,
+                                                             info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+                                                timeouted = True
                                             except Exception, e:
                                                 print(_('error: {0} while attacking {1}')
                                                       .format(repr(str(e[0])), url))
@@ -235,6 +272,17 @@ class mod_permanentxss(Attack):
                                                 self.logC(evil_req.http_repr)
                                                 print('')
                                                 break
+                                            elif http_code == "500" and not returned500:
+                                                self.logAnom(category=Anomaly.ERROR_500,
+                                                             level=Anomaly.HIGH_LEVEL,
+                                                             request=evil_req,
+                                                             parameter=param_name,
+                                                             info=Anomaly.MSG_PARAM_500.format(param_name))
+                                                self.logO(Anomaly.MSG_500, evil_req.url)
+                                                self.logO(Vulnerability.MSG_EVIL_REQUEST)
+                                                self.logC(evil_req.http_repr)
+                                                print('')
+                                                returned500 = True
 
     # check weither our JS payload is injected in the webpage
     def validXSS(self, page, code, payload):

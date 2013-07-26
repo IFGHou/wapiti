@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# TODO: add err 500 and res consumption check ?
 import random
 import BeautifulSoup
 import requests
 from attack import Attack
-from vulnerability import Vulnerability
+from vulnerability import Vulnerability, Anomaly
 from net import HTTP
 
 
@@ -73,6 +72,8 @@ class mod_xss(Attack):
         if referer:
             headers["referer"] = referer
 
+        param_name = "PHP_SELF"
+
         # Some PHP scripts doesn't sanitize data coming from $_SERVER['PHP_SELF']
         if page not in self.PHP_SELF:
             evil_req = None
@@ -83,7 +84,20 @@ class mod_xss(Attack):
             if evil_req is not None:
                 if self.verbose == 2:
                     print(u"+ {0}".format(evil_req.url))
-                data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
+                try:
+                    data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
+                except requests.exceptions.Timeout:
+                    data = ""
+                    self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
+                    self.logO(Anomaly.MSG_EVIL_REQUEST)
+                    self.logC(evil_req.http_repr)
+                    print('')
+                    self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                 level=Anomaly.MEDIUM_LEVEL,
+                                 request=evil_req,
+                                 parameter=param_name,
+                                 info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+
                 if self._validXSSContentType(evil_req) and self.php_self_check in data:
                     self.logR(Vulnerability.MSG_PATH_INJECT, self.MSG_VULN, page)
                     self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
@@ -91,9 +105,22 @@ class mod_xss(Attack):
                     self.logVuln(category=Vulnerability.XSS,
                                  level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
-                                 parameter="PHP_SELF",
+                                 parameter=param_name,
                                  info=_("XSS vulnerability found via injection in the resource path"))
+                elif http_code == "500":
+                    self.logAnom(category=Anomaly.ERROR_500,
+                                 level=Anomaly.HIGH_LEVEL,
+                                 request=evil_req,
+                                 parameter=param_name,
+                                 info=Anomaly.MSG_PARAM_500.format(param_name))
+                    self.logO(Anomaly.MSG_500, evil_req.url)
+                    self.logO(Vulnerability.MSG_EVIL_REQUEST)
+                    self.logC(evil_req.http_repr)
+                    print('')
             self.PHP_SELF.append(page)
+
+        timeouted = False
+        returned500 = False
 
         # page is the url of the script
         # params_list is a list of [key, value] lists
@@ -113,23 +140,33 @@ class mod_xss(Attack):
                 test_req = HTTP.HTTPResource(page + "?" + code)
                 self.GET_XSS[code] = (test_req, "QUERY_STRING")
                 try:
-                    resp = self.HTTP.send(test_req, headers=headers)
-                    data = resp.getPage()
+                    data, http_code = self.HTTP.send(test_req, headers=headers).getPageCode()
                 except requests.exceptions.Timeout:
                     data = ""
-                    resp = None
+
                 if code in data:
+                    # Simple text injection worked, let's try with JS code
                     payloads = self.generate_payloads(data, code)
                     for payload in payloads:
                         evil_req = HTTP.HTTPResource(page + "?" + self.HTTP.quote(payload))
                         if self.verbose == 2:
                             print(u"+ {0}".format(evil_req))
                         try:
-                            resp = self.HTTP.send(evil_req, headers=headers)
-                            dat = resp.getPage()
-                        except requests.exceptions.Timeout, timeout:
+                            dat, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
+                        except requests.exceptions.Timeout:
                             dat = ""
-                            resp = timeout
+                            if timeouted:
+                                continue
+                            self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
+                            self.logO(Anomaly.MSG_EVIL_REQUEST)
+                            self.logC(evil_req.http_repr)
+                            print('')
+                            self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                         level=Anomaly.MEDIUM_LEVEL,
+                                         request=evil_req,
+                                         parameter=param_name,
+                                         info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+                            timeouted = True
                         param_name = "QUERY_STRING"
 
                         if self._validXSSContentType(evil_req) and dat is not None and len(dat) > 1:
@@ -145,6 +182,18 @@ class mod_xss(Attack):
                                 self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
                                 # No more payload injection
                                 break
+
+                        elif http_code == "500" and not returned500:
+                            self.logAnom(category=Anomaly.ERROR_500,
+                                         level=Anomaly.HIGH_LEVEL,
+                                         request=evil_req,
+                                         parameter=param_name,
+                                         info=Anomaly.MSG_PARAM_500.format(param_name))
+                            self.logO(Anomaly.MSG_500, evil_req.url)
+                            self.logO(Vulnerability.MSG_EVIL_REQUEST)
+                            self.logC(evil_req.http_repr)
+                            print('')
+                            returned500 = True
 
         # URL contains parameters
         else:
@@ -163,11 +212,9 @@ class mod_xss(Attack):
                     test_req = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
                     self.GET_XSS[code] = (test_req, param_name)
                     try:
-                        resp = self.HTTP.send(test_req, headers=headers)
-                        data = resp.getPage()
-                    except requests.exceptions.Timeout, timeout:
+                        data, http_code = self.HTTP.send(test_req, headers=headers).getPageCode()
+                    except requests.exceptions.Timeout:
                         data = ""
-                        resp = timeout
                     # is the random code on the webpage ?
                     if code in data:
                         # YES! But where exactly ?
@@ -180,11 +227,21 @@ class mod_xss(Attack):
                             if self.verbose == 2:
                                 print(u"+ {0}".format(evil_req))
                             try:
-                                resp = self.HTTP.send(evil_req, headers=headers)
-                                dat = resp.getPage()
-                            except requests.exceptions.Timeout, timeout:
+                                dat, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
+                            except requests.exceptions.Timeout:
                                 dat = ""
-                                resp = timeout
+                                if timeouted:
+                                    continue
+                                self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
+                                self.logO(Anomaly.MSG_EVIL_REQUEST)
+                                self.logC(evil_req.http_repr)
+                                print('')
+                                self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                             level=Anomaly.MEDIUM_LEVEL,
+                                             request=evil_req,
+                                             parameter=param_name,
+                                             info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+                                timeouted = True
 
                             if self._validXSSContentType(evil_req) and dat is not None and len(dat) > 1:
                                 if payload.lower() in dat.lower():
@@ -204,6 +261,18 @@ class mod_xss(Attack):
                                     self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
                                     # stop trying payloads and jum to the next parameter
                                     break
+                            elif http_code == "500" and not returned500:
+                                self.logAnom(category=Anomaly.ERROR_500,
+                                             level=Anomaly.HIGH_LEVEL,
+                                             request=evil_req,
+                                             parameter=param_name,
+                                             info=Anomaly.MSG_PARAM_500.format(param_name))
+                                self.logO(Anomaly.MSG_500, evil_req.url)
+                                self.logO(Vulnerability.MSG_EVIL_REQUEST)
+                                self.logC(evil_req.http_repr)
+                                print('')
+                                returned500 = True
+
                 # Restore the value of this argument before testing the next one
                 params_list[i][1] = saved_value
 
@@ -215,6 +284,8 @@ class mod_xss(Attack):
         if referer:
             headers["referer"] = referer
 
+        param_name = "PHP_SELF"
+
         if page not in self.PHP_SELF:
             evil_req = None
             if page.endswith("/"):
@@ -224,7 +295,20 @@ class mod_xss(Attack):
             if evil_req:
                 if self.verbose == 2:
                     print(u"+ {0}".format(evil_req.url))
-                data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
+                try:
+                    data, http_code = self.HTTP.send(evil_req, headers=headers).getPageCode()
+                except requests.exceptions.Timeout:
+                    data = ""
+                    self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
+                    self.logO(Anomaly.MSG_EVIL_REQUEST)
+                    self.logC(evil_req.http_repr)
+                    print('')
+                    self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                 level=Anomaly.MEDIUM_LEVEL,
+                                 request=evil_req,
+                                 parameter=param_name,
+                                 info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+
                 if self._validXSSContentType(evil_req) and self.php_self_check in data:
                     self.logR(Vulnerability.MSG_PATH_INJECT, self.MSG_VULN, page)
                     self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
@@ -232,9 +316,22 @@ class mod_xss(Attack):
                     self.logVuln(category=Vulnerability.XSS,
                                  level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
-                                 parameter="PHP_SELF",
+                                 parameter=param_name,
                                  info=_("XSS vulnerability found via injection in the resource path"))
+                elif http_code == "500":
+                    self.logAnom(category=Anomaly.ERROR_500,
+                                 level=Anomaly.HIGH_LEVEL,
+                                 request=evil_req,
+                                 parameter=param_name,
+                                 info=Anomaly.MSG_PARAM_500.format(param_name))
+                    self.logO(Anomaly.MSG_500, evil_req.url)
+                    self.logO(Vulnerability.MSG_EVIL_REQUEST)
+                    self.logC(evil_req.http_repr)
+                    print('')
             self.PHP_SELF.append(page)
+
+        timeouted = False
+        returned500 = False
 
         # copies
         get_params = form.get_params
@@ -274,11 +371,9 @@ class mod_xss(Attack):
 
                     self.POST_XSS[code] = (test_payload, param_name)
                     try:
-                        resp = self.HTTP.send(test_payload)
-                        data = resp.getPage()
-                    except requests.exceptions.Timeout, timeout:
+                        data, http_code = self.HTTP.send(test_payload).getPageCode()
+                    except requests.exceptions.Timeout:
                         data = ""
-                        resp = timeout
                     # rapid search on the code to check injection
                     if code in data:
                         # found, now study where the payload is injected and how to exploit it
@@ -299,11 +394,21 @@ class mod_xss(Attack):
                             if self.verbose == 2:
                                 print(u"+ {0}".format(evil_req))
                             try:
-                                resp = self.HTTP.send(evil_req)
-                                dat = resp.getPage()
-                            except requests.exceptions.Timeout, timeout:
+                                dat, http_code = self.HTTP.send(evil_req).getPageCode()
+                            except requests.exceptions.Timeout:
                                 dat = ""
-                                resp = timeout
+                                if timeouted:
+                                    continue
+                                self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
+                                self.logO(Anomaly.MSG_EVIL_REQUEST)
+                                self.logC(evil_req.http_repr)
+                                print('')
+                                self.logAnom(category=Anomaly.RES_CONSUMPTION,
+                                             level=Anomaly.MEDIUM_LEVEL,
+                                             request=evil_req,
+                                             parameter=param_name,
+                                             info=Anomaly.MSG_PARAM_TIMEOUT.format(param_name))
+                                timeouted = True
 
                             if self._validXSSContentType(evil_req) and dat is not None and len(dat) > 1:
                                 if payload.lower() in dat.lower():
@@ -325,6 +430,17 @@ class mod_xss(Attack):
                                     print('')
                                     # Stop injecting payloads and move to the next parameter
                                     break
+                            elif http_code == "500" and not returned500:
+                                self.logAnom(category=Anomaly.ERROR_500,
+                                             level=Anomaly.HIGH_LEVEL,
+                                             request=evil_req,
+                                             parameter=param_name,
+                                             info=Anomaly.MSG_PARAM_500.format(param_name))
+                                self.logO(Anomaly.MSG_500, evil_req.url)
+                                self.logO(Vulnerability.MSG_EVIL_REQUEST)
+                                self.logC(evil_req.http_repr)
+                                print('')
+                                returned500 = True
 
                 # restore the saved parameter in the list
                 params_list[i][1] = saved_value
