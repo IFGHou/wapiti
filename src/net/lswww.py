@@ -806,8 +806,11 @@ class linkParser(HTMLParser.HTMLParser):
     def handle_starttag(self, tag, attrs):
         tmpdict = {}
         val = None
-        for k, v in dict(attrs).items():
-            tmpdict[k.lower()] = v
+        for k, v in attrs:
+            if v is None:
+                continue
+            if not k.lower() in tmpdict:
+                tmpdict[k.lower()] = v
         if tag.lower() in ['a', 'link']:
             if "href" in tmpdict:
                 self.liens.append(tmpdict['href'])
