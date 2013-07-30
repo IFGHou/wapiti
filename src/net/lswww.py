@@ -131,6 +131,7 @@ class lswww:
     root = ""
     server = ""
     tobrowse = []
+    out_of_scope_urls = []
     browsed = []
     proxies = {}
     excluded = []
@@ -206,6 +207,8 @@ class lswww:
             sys.exit(0)
         if(self.__inzone(url) == 0):
             self.tobrowse.append(HTTP.HTTPResource(url))
+        else:
+            self.out_of_scope_urls.append(HTTP.HTTPResource(url))
 
     def addExcludedURL(self, url):
         """Add an url to the list of forbidden urls"""
@@ -659,7 +662,15 @@ class lswww:
         # if the user stop the scan with Ctrl+C, give him all found urls
         # and they are saved in an XML file
         try:
-            while len(self.tobrowse) > 0:
+            while len(self.out_of_scope_urls):
+                lien = self.out_of_scope_urls.pop(0)
+                if self.browse(lien):
+                    if self.verbose == 1:
+                        sys.stderr.write('.')
+                    elif self.verbose == 2:
+                        print(lien)
+
+            while len(self.tobrowse):
                 lien = self.tobrowse.pop(0)
                 if (lien not in self.browsed and lien not in self.excluded):
                     if self.browse(lien):
