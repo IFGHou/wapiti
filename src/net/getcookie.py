@@ -71,9 +71,14 @@ txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 session = requests.Session()
 session.proxies = proxy
 r = session.get(url, headers=txheaders)
+resp_encoding = r.encoding
 
 htmlSource = r.text
 bs = BeautifulSoup.BeautifulSoup(htmlSource)
+page_encoding = bs.originalEncoding
+
+if page_encoding is None:
+    page_encoding = resp_encoding
 
 p = lswww.linkParser(url)
 try:
@@ -100,8 +105,8 @@ if len(p.forms) > 1:
     print(_("Choose the form you want to use :"))
     for form in p.forms:
         print('')
-        print(u"{0}) {1}".format(i, myls.correctlink(form[0], current, currentdir, proto)))
-        for field, value in form[1].items():
+        print(u"{0}) {1}".format(i, myls.correctlink(form[0], current, currentdir, proto, page_encoding)))
+        for field, value in form[1]:
             print(u"\t{0} ({1})".format(field, value))
         i += 1
     ok = False
@@ -114,14 +119,14 @@ if len(p.forms) > 1:
 
 form = p.forms[nchoice]
 print(_("Please enter values for the following form: "))
-print(_("url = {0}").format(myls.correctlink(form[0], current, currentdir, proto)))
+print(_("url = {0}").format(myls.correctlink(form[0], current, currentdir, proto, page_encoding)))
 
 for i in range(len(form[1])):
     field, value = form[1][i]
-    str = raw_input(field + " (" + value + ") : ")
-    form[1][i] = [field, str]
+    new_value = raw_input(field + " (" + value + ") : ")
+    form[1][i] = [field, new_value]
 
-url = myls.correctlink(form[0], current, currentdir, proto)
+url = myls.correctlink(form[0], current, currentdir, proto, page_encoding)
 
 #params = urllib.urlencode(form[1])
 
