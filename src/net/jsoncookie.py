@@ -3,7 +3,7 @@ import cookielib
 import requests
 
 
-class jsoncookie:
+class jsoncookie(object):
 
     cookiedict = None
     fd = None

@@ -28,7 +28,7 @@ import requests
 import sys
 
 
-class Attack:
+class Attack(object):
     """
     This class represents an attack, it must be extended
     for any class which implements a new type of attack
@@ -87,8 +87,8 @@ class Attack:
     # The priority of the module, from 0 (first) to 10 (last). Default is 5
     PRIORITY = 5
 
-    def __init__(self, HTTP, reportGen):
-        self.HTTP = HTTP
+    def __init__(self, http, reportGen):
+        self.HTTP = http
         self.logVuln = reportGen.logVulnerability
         self.logAnom = reportGen.logAnomaly
         self.auxText = AuxText()

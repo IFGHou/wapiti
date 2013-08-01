@@ -23,7 +23,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-class AuxText:
+class AuxText(object):
     """Class for reading and writing in text files"""
     def readLines(self, fileName):
         """returns a array"""

@@ -39,8 +39,8 @@ class mod_permanentxss(Attack):
 
     MSG_VULN = _("Stored XSS vulnerability")
 
-    def __init__(self, HTTP, xmlRepGenerator):
-        Attack.__init__(self, HTTP, xmlRepGenerator)
+    def __init__(self, http, xmlRepGenerator):
+        Attack.__init__(self, http, xmlRepGenerator)
         self.independant_payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
 
     # permanent XSS

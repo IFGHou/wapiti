@@ -36,8 +36,8 @@ class mod_exec(Attack):
 
     name = "exec"
 
-    def __init__(self, HTTP, xmlRepGenerator):
-        Attack.__init__(self, HTTP, xmlRepGenerator)
+    def __init__(self, http, xmlRepGenerator):
+        Attack.__init__(self, http, xmlRepGenerator)
         self.payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
 
     def __findPatternInResponse(self, data, warned):

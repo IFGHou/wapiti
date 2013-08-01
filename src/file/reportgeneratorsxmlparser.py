@@ -25,7 +25,7 @@ from xml.parsers import expat
 from report.reportgeneratorinfo import ReportGeneratorInfo
 
 
-class ReportGeneratorsXMLParser:
+class ReportGeneratorsXMLParser(object):
 
     REPORT_GENERATOR = "reportGenerator"
     REPORT_GENERATOR_KEY = "reportTypeKey"

@@ -29,7 +29,7 @@ import locale
 import gettext
 
 
-class Language:
+class Language(object):
     """
     This class configures the internationalization of Wapiti,
     retrieving the texts from the files where is the translation.

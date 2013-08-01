@@ -57,7 +57,7 @@ from crawlerpersister import CrawlerPersister
 import BeautifulSoup
 
 
-class lswww:
+class lswww(object):
     """
     lswww explore a website and extract links and forms fields.
 
@@ -909,7 +909,7 @@ class linkParser(HTMLParser.HTMLParser):
                     self.liens.append(jstr)
 
 
-class linkParser2:
+class linkParser2(object):
     verbose = 0
 
     """Extract urls in 'a' href HTML tags"""

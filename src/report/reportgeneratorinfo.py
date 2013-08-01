@@ -1,4 +1,4 @@
-class ReportGeneratorInfo:
+class ReportGeneratorInfo(object):
     key = None
     className = None
     classModule = None

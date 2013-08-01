@@ -38,8 +38,8 @@ class mod_htaccess(Attack):
     doGET = False
     doPOST = False
 
-    def __init__(self, HTTP, xmlRepGenerator):
-        Attack.__init__(self, HTTP, xmlRepGenerator)
+    def __init__(self, http, xmlRepGenerator):
+        Attack.__init__(self, http, xmlRepGenerator)
 
     #this function return code signification when htaccess protection enabled
     def __returnErrorByCode(self, code):

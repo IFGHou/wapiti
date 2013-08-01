@@ -79,7 +79,7 @@ class InvalidOptionValue(Exception):
         return _("Invalid argument for option {0} : {1}").format(self.opt_name, self.opt_value)
 
 
-class Wapiti:
+class Wapiti(object):
     """Usage: python wapiti.py http://server.com/base/url/ [options]
 
 Supported options are:

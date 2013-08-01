@@ -70,8 +70,8 @@ class mod_file(Attack):
             ("error '800a0046'",                      "VBScript OpenTextFile", 0)
     ]
 
-    def __init__(self, HTTP, xmlRepGenerator):
-        Attack.__init__(self, HTTP, xmlRepGenerator)
+    def __init__(self, http, xmlRepGenerator):
+        Attack.__init__(self, http, xmlRepGenerator)
         self.payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
 
     def __findPatternInResponse(self, data, warn):

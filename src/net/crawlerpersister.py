@@ -5,7 +5,7 @@ from urllib import quote, unquote
 from net import HTTP
 
 
-class CrawlerPersister:
+class CrawlerPersister(object):
     """
     This class makes the persistence tasks for persisting the crawler parameters
     in other to can continue the process in the future.

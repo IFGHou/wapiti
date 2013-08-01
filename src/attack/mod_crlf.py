@@ -37,8 +37,8 @@ class mod_crlf(Attack):
     doGET = False
     doPOST = False
 
-    def __init__(self, HTTP, xmlRepGenerator):
-        Attack.__init__(self, HTTP, xmlRepGenerator)
+    def __init__(self, http, xmlRepGenerator):
+        Attack.__init__(self, http, xmlRepGenerator)
 
     # Won't work with PHP >= 4.4.2
     def attackGET(self, http_res):

@@ -26,7 +26,7 @@ from xml.parsers import expat
 from vulnerability import Anomaly
 
 
-class AnomalyXMLParser:
+class AnomalyXMLParser(object):
 
     ANOMALY = "anomaly"
     ANOMALY_NAME = "name"

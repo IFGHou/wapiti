@@ -36,8 +36,8 @@ class mod_sql(Attack):
     TIME_TO_SLEEP = 6
     name = "sql"
 
-    def __init__(self, HTTP, xmlRepGenerator):
-        Attack.__init__(self, HTTP, xmlRepGenerator)
+    def __init__(self, http, xmlRepGenerator):
+        Attack.__init__(self, http, xmlRepGenerator)
 
     def __findPatternInResponse(self, data):
         if "You have an error in your SQL syntax" in data:

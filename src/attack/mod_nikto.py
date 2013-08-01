@@ -59,8 +59,8 @@ class mod_nikto(Attack):
     doGET = False
     doPOST = False
 
-    def __init__(self, HTTP, xmlRepGenerator):
-        Attack.__init__(self, HTTP, xmlRepGenerator)
+    def __init__(self, http, xmlRepGenerator):
+        Attack.__init__(self, http, xmlRepGenerator)
         user_config_dir = os.getenv('HOME') or os.getenv('USERPROFILE')
         user_config_dir += "/config"
         if not os.path.isdir(user_config_dir):
