@@ -24,11 +24,7 @@
 
 from xml.dom.minidom import Document
 from reportgenerator import ReportGenerator
-import net.HTTP
 import datetime
-import requests
-
-WAPITI_VERSION = "Wapiti SVN"
 
 
 def isPeerAddrPort(p):
@@ -43,7 +39,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
     """
     This class generates a report with the method printToFile(fileName) which contains
     the information of all the vulnerabilities notified to this object through the
-    method logVulnerability(vulnerabilityTypeName,level,url,parameter,info).
+    method logVulnerability(category,level,url,parameter,info).
     The format of the file is XML and it has the following structure:
     <report type="security">
         <generatedBy id="Wapiti SVN"/>
@@ -73,26 +69,26 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
     def __init__(self):
         self.__ts = datetime.datetime.now()
         self.__xmlDoc = Document()
-        report = self.__addReport()
-        report.setAttribute("generatedBy", WAPITI_VERSION)
+
+    def setReportInfo(self, target, scope=None, date_string="", version=""):
+        report = self.__xmlDoc.createElement("Report")
+
+        report.setAttribute("generatedBy", version)
         report.setAttribute("generationDate", self.__ts.isoformat())
         self.__vulnerabilityTypeList = self.__xmlDoc.createElement("VulnerabilityTypeList")
         report.appendChild(self.__vulnerabilityTypeList)
 
-    def __addReport(self):
-        report = self.__xmlDoc.createElement("Report")
         self.__xmlDoc.appendChild(report)
-        return report
 
     def __addToVulnerabilityTypeList(self, vulnerabilityType):
         self.__vulnerabilityTypeList.appendChild(vulnerabilityType)
 
-    def addVulnerabilityType(self, title, description="", recommendation="", references={}):
+    def addVulnerabilityType(self, name, description="", solution="", references={}):
         """
         This method adds a vulnerability type, it can be invoked to include in the
         report the type.
         The types are not stored previously, they are added when the method
-        logVulnerability(vulnerabilityTypeName,level,url,parameter,info) is invoked
+        logVulnerability(category,level,url,parameter,info) is invoked
         and if there is no vulnerabilty of a type, this type will not be presented
         in the report
         """
@@ -100,7 +96,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         vulnerabilityType.appendChild(self.__xmlDoc.createElement("VulnerabilityList"))
 
         vulTitleNode = self.__xmlDoc.createElement("Title")
-        vulTitleNode.appendChild(self.__xmlDoc.createTextNode(title))
+        vulTitleNode.appendChild(self.__xmlDoc.createTextNode(name))
         vulnerabilityType.appendChild(vulTitleNode)
 
         self.__addToVulnerabilityTypeList(vulnerabilityType)
@@ -108,56 +104,51 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
             descriptionNode = self.__xmlDoc.createElement("Description")
             descriptionNode.appendChild(self.__xmlDoc.createCDATASection(description))
             vulnerabilityType.appendChild(descriptionNode)
-        if recommendation != "":
-            solutionNode = self.__xmlDoc.createElement("Recommendation")
-            solutionNode.appendChild(self.__xmlDoc.createCDATASection(recommendation))
+        if solution != "":
+            solutionNode = self.__xmlDoc.createElement("Solution")
+            solutionNode.appendChild(self.__xmlDoc.createCDATASection(solution))
             vulnerabilityType.appendChild(solutionNode)
         if references != "":
             referencesNode = self.__xmlDoc.createElement("References")
             for ref in references:
                 referenceNode = self.__xmlDoc.createElement("Reference")
-                titleNode = self.__xmlDoc.createElement("title")
+                nameNode = self.__xmlDoc.createElement("name")
                 urlNode = self.__xmlDoc.createElement("url")
-                titleNode.appendChild(self.__xmlDoc.createTextNode(ref))
+                nameNode.appendChild(self.__xmlDoc.createTextNode(ref))
                 urlNode.appendChild(self.__xmlDoc.createTextNode(references[ref]))
-                referenceNode.appendChild(titleNode)
+                referenceNode.appendChild(nameNode)
                 referenceNode.appendChild(urlNode)
                 referencesNode.appendChild(referenceNode)
             vulnerabilityType.appendChild(referencesNode)
         return vulnerabilityType
 
-    def __addToVulnerabilityList(self, vulnerabilityTypeName, vulnerability):
+    def __addToVulnerabilityList(self, category, vulnerability):
         vulnerabilityType = None
         for node in self.__vulnerabilityTypeList.childNodes:
             titleNode = node.getElementsByTagName("Title")
             if (titleNode.length >= 1 and
                 titleNode[0].childNodes.length == 1 and
-                    titleNode[0].childNodes[0].wholeText == vulnerabilityTypeName):
+                    titleNode[0].childNodes[0].wholeText == category):
                 vulnerabilityType = node
                 break
         if vulnerabilityType is None:
-            vulnerabilityType = self.addVulnerabilityType(vulnerabilityTypeName)
+            vulnerabilityType = self.addVulnerabilityType(category)
         vulnerabilityType.childNodes[0].appendChild(vulnerability)
 
-    def logVulnerability(self, vulnerabilityTypeName, level, url, parameter, info, resp=None):
+    def logVulnerability(self,
+                         category=None,
+                         level=0,
+                         request=None,
+                         parameter="",
+                         info=""):
         """
         Store the information about the vulnerability to be printed later.
         The method printToFile(fileName) can be used to save in a file the
         vulnerabilities notified through the current method.
         """
 
-        if resp is None:
-            peer = None
-            ts = self.__ts
-#        TODO: subclass requests.exceptions.Timeout ?
-        elif issubclass(resp.__class__, requests.exceptions.Timeout):
-            peer = None
-            ts = self.__ts
-        elif issubclass(resp.__class__, net.HTTP.HTTPResponse):
-            peer = resp.peer
-            ts = resp.timestamp
-        else:
-            raise TypeError(resp)
+        peer = None
+        ts = ""
 
         vulnerability = self.__xmlDoc.createElement("Vulnerability")
 
@@ -174,7 +165,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         vulnerability.appendChild(levelNode)
 
         tsNode = self.__xmlDoc.createElement("DetectionDate")
-        tsNode.appendChild(self.__xmlDoc.createTextNode(ts.isoformat()))
+        #tsNode.appendChild(self.__xmlDoc.createTextNode(ts.isoformat()))
         vulnerability.appendChild(tsNode)
 
         ##
@@ -182,7 +173,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         vulnerability.appendChild(urlDetailNode)
 
         urlNode = self.__xmlDoc.createElement("URL")
-        urlNode.appendChild(self.__xmlDoc.createTextNode(url))
+        urlNode.appendChild(self.__xmlDoc.createTextNode(request.url))
         urlDetailNode.appendChild(urlNode)
 
         if peer is not None:
@@ -212,12 +203,12 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         infoNode.appendChild(self.__xmlDoc.createTextNode(info))
         urlDetailNode.appendChild(infoNode)
 
-        self.__addToVulnerabilityList(vulnerabilityTypeName, vulnerability)
+        self.__addToVulnerabilityList(category, vulnerability)
 
     def generateReport(self, fileName):
         """
         Create a xml file with a report of the vulnerabilities which have been logged with
-        the method logVulnerability(vulnerabilityTypeName,level,url,parameter,info)
+        the method logVulnerability(category,level,url,parameter,info)
         """
         f = open(fileName, "w")
         try:

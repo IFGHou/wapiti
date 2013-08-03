@@ -22,6 +22,7 @@ def shell_escape(s):
 class HTTPResource(object):
     _method = "GET"
     _encoding = "ISO-8859-1"
+    _hostname = ""
     _resource_path = ""
     _file_path = ""
     _status = 0
@@ -29,6 +30,7 @@ class HTTPResource(object):
     _referer = ""
     _start_time = None
     _elapsed_time = None
+    _port = 80
 
     # Most of the members of a HTTPResource object are immutable so we compute
     # the data only one time (when asked for) and we keep it in memory for less
@@ -114,7 +116,13 @@ class HTTPResource(object):
             self._method = method
         self._encoding = encoding
         self._referer = referer
-        self._file_path = urlparse.urlparse(self._resource_path).path
+        parsed = urlparse.urlparse(self._resource_path)
+        self._file_path = parsed.path
+        self._hostname = parsed.netloc
+        if parsed.port is not None:
+            self._port = parsed.port
+        elif parsed.scheme == "https":
+            self._port = 443
 
     def __hash__(self):
         if self._cached_hash is None:
@@ -208,12 +216,10 @@ class HTTPResource(object):
 
     @property
     def http_repr(self):
-        parsed = urlparse.urlparse(self._resource_path)
-        hostname = parsed.netloc
         rel_url = self.url.split('/', 3)[3]
         http_string = "%s /%s HTTP/1.1\nHost: %s\n" % (self._method,
                                                        rel_url,
-                                                       hostname)
+                                                       self._hostname)
         if self._referer:
             http_string += "Referer: %s\n" % (self._referer)
         if self._file_params:
@@ -277,6 +283,14 @@ class HTTPResource(object):
             else:
                 self._cached_url = self._resource_path
         return self._cached_url
+
+    @property
+    def hostname(self):
+        return self._hostname
+
+    @property
+    def port(self):
+        return self._port
 
     @property
     def path(self):
