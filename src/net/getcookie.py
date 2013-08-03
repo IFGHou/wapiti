@@ -43,7 +43,7 @@ if len(sys.argv) < 3:
 TIMEOUT = 6
 COOKIEFILE = sys.argv[1]
 url = sys.argv[2]
-proxy = None
+proxies = {}
 server = urlparse.urlparse(url).netloc
 
 try:
@@ -53,7 +53,8 @@ except getopt.GetoptError, e:
     sys.exit(2)
 for o, a in opts:
     if o in ("-p", "--proxy"):
-        proxy = a
+        parsed = urlparse.urlparse(a)
+        proxies[parsed.scheme] = a
 
 # Some websites/webapps like Webmin send a first cookie to see if the browser support them
 # so we must collect these test-cookies during authentification.
@@ -69,7 +70,7 @@ proto = url.split("://")[0]
 txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
 session = requests.Session()
-session.proxies = proxy
+session.proxies = proxies
 r = session.get(url, headers=txheaders)
 resp_encoding = r.encoding
 
@@ -127,8 +128,6 @@ for i in range(len(form[1])):
     form[1][i] = [field, new_value]
 
 url = myls.correctlink(form[0], current, currentdir, proto, page_encoding)
-
-#params = urllib.urlencode(form[1])
 
 txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
              'Content-type': 'application/x-www-form-urlencoded'}

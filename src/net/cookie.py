@@ -21,33 +21,57 @@ import sys
 import urllib
 import jsoncookie
 import requests
+import getopt
+import urlparse
 
 if "_" not in dir():
     def _(s):
         return s
 
 if len(sys.argv) < 3:
-    sys.stderr.write("Usage python cookie.py <cookie_file> <url> <arg1=val1> ...\n")
+    sys.stderr.write("Usage python cookie.py [-p proxy_url] <cookie_file> <url> <arg1=val1> ...\n")
     sys.exit(1)
 
-cookiefile = sys.argv[1]
-url = sys.argv[2]
+args = sys.argv[1:]
+proxies = {}
+
+try:
+    opts, args = getopt.getopt(args, "p:", ["proxy="])
+except getopt.GetoptError, e:
+    print(e)
+    sys.exit(2)
+for o, a in opts:
+    if o in ("-p", "--proxy"):
+        parsed = urlparse.urlparse(a)
+        proxies[parsed.scheme] = a
+
+cookiefile = args[0]
+url = args[1]
 liste = []
 
-if len(sys.argv) > 3:
-    data = sys.argv[3:]
+if len(args) > 2:
+    data = args[2:]
     for l in data:
-        liste.append(tuple(l.split("=")))
+        if "=" in l:
+            liste.append(tuple(l.split("=")))
+        else:
+            sys.stderr.write("Usage python cookie.py [-p proxy_url] <cookie_file> <url> <arg1=val1> ...\n")
+            print("Invalid key=value for web form: {0}".format(l))
+            sys.exit(1)
+
 params = urllib.urlencode(liste)
 
 txheaders = {'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
+session = requests.Session()
+session.proxies = proxies
+
 try:
     if params:
         txheaders['content-type'] = 'application/x-www-form-urlencoded'
-        r = requests.post(url, data=params, headers=txheaders)
+        r = session.post(url, data=params, headers=txheaders)
     else:
-        r = requests.get(url, headers=txheaders)
+        r = session.get(url, headers=txheaders)
 except IOError, e:
         print(_("Error getting url {0}").format(url))
         print(e)
