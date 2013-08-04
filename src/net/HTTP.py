@@ -240,18 +240,18 @@ class HTTPResource(object):
 
     @property
     def curl_repr(self):
-        curl_string = "curl {0}".format(shell_escape(self.url))
+        curl_string = "curl \"{0}\"".format(shell_escape(self.url))
         if self._referer:
-            curl_string += " -e {0}".format(shell_escape(self._referer))
+            curl_string += " -e \"{0}\"".format(shell_escape(self._referer))
         if self._file_params:
             for field_name, field_value in self._post_params:
-                curl_string += " -F {0}".format(shell_escape("{0}={1}".format(field_name, field_value)))
+                curl_string += " -F \"{0}\"".format(shell_escape("{0}={1}".format(field_name, field_value)))
             for field_name, field_value in self._file_params:
                 curl_upload_kv = "{0}=@your_local_file;filename={1}".format(field_name, field_value[0])
                 curl_string += " -F \"{0}\"".format(shell_escape(curl_upload_kv))
             pass
         elif self._post_params:
-            curl_string += " -d {0}".format(shell_escape(self.encoded_data))
+            curl_string += " -d \"{0}\"".format(shell_escape(self.encoded_data))
 
         return curl_string
 
