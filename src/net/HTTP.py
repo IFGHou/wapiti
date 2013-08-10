@@ -301,6 +301,10 @@ class HTTPResource(object):
         return self._file_path
 
     @property
+    def file_ext(self):
+        return os.path.splitext(self.file_path)[1]
+
+    @property
     def file_name(self):
         return os.path.basename(self.file_path)
 

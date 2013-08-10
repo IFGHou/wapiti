@@ -27,6 +27,7 @@ import jsoncookie
 import urlparse
 import HTTP
 import urllib
+import swf_parser
 
 from distutils.sysconfig import get_python_lib
 BASE_DIR = None
@@ -299,6 +300,7 @@ class lswww(object):
         resp_encoding = resp.getEncoding()
         content_type = resp.getHeaders().get('content-type', '')
         mime_type = content_type.split(';')[0].strip()
+        swf_links = []
 
         # Requests says it found an encoding... the content must be some HTML
         if resp_encoding and any(mime_type.startswith(t) for t in self.allowed_types):
@@ -312,6 +314,13 @@ class lswww(object):
         else:
             # Can't find an encoding... beware of non-html content
             data = resp.getRawPage()
+            if "application/x-shockwave-flash" in mime_type or web_resource.file_ext == "swf":
+                try:
+                    flash_parser = swf_parser.swf_parser(data)
+                    swf_links = flash_parser.getLinks()
+                except Exception, err_data:
+                    swf_links = err_data[1]
+                data = ""
 
         # Manage redirections
         if "location" in info:
@@ -335,7 +344,8 @@ class lswww(object):
             if bs.head:
                 baseTags = bs.head.findAll("base")
                 for base in baseTags:
-                    if "href" in base:
+                    # BeautifulSoup doesn't work as excepted with the "in" statement, keep this:
+                    if base.has_key("href"):
                         # Found a base url, now set it as the current url
                         current = base["href"].split("#")[0]
                         # We don't need destination anchors
@@ -378,7 +388,8 @@ class lswww(object):
                     p = linkParser2(url, self.verbose)
                     p.feed(htmlSource)
 
-        for lien in p.liens:
+        found_links = p.liens + swf_links
+        for lien in found_links:
             if (lien is not None) and (page_encoding is not None) and isinstance(lien, unicode):
                 lien = lien.encode(page_encoding, "ignore")
             lien = self.correctlink(lien, current, currentdir, proto, page_encoding)
@@ -813,6 +824,10 @@ class linkParser(HTMLParser.HTMLParser):
                            'url':            'http://wapiti.sf.net/',
                            'week':           '2011-W24'
                            }
+        # This is ugly but let's keep it while there is not a js parser
+        self.common_js_strings = ["Msxml2.XMLHTTP", "application/x-www-form-urlencoded", ".php", "text/xml",
+                                  "about:blank", "Microsoft.XMLHTTP", "text/plain", "text/javascript",
+                                  "application/x-shockwave-flash"]
 
     def handle_starttag(self, tag, attrs):
         tmpdict = {}
@@ -871,14 +886,14 @@ class linkParser(HTMLParser.HTMLParser):
 
         if tag.lower() in ["img", "embed", "track", "source"]:
             if "src" in tmpdict:
-                if "?" in tmpdict['src']:
+                if "?" in tmpdict['src'] or tmpdict['src'].endswith(".swf"):
                     self.liens.append(tmpdict['src'])
 
         if tag.lower() == "script":
             self.inscript = 1
             if "src" in tmpdict:
-                if "?" in tmpdict['src']:
-                    self.liens.append(tmpdict['src'])
+                # if "?" in tmpdict['src']:
+                self.liens.append(tmpdict['src'])
 
         if tag.lower() == "meta":
             if "http-equiv" in tmpdict and "content" in tmpdict:
@@ -905,7 +920,7 @@ class linkParser(HTMLParser.HTMLParser):
             candidates = re.findall(r'"([A-Za-z0-9_=#&%\.\+\?/-]*)"', data)
             candidates += re.findall(r"'([A-Za-z0-9_=#&%\.\+\?/-]*)'", data)
             for jstr in candidates:
-                if '/' in jstr or '.' in jstr or '?' in jstr:
+                if ('/' in jstr or '.' in jstr or '?' in jstr) and jstr not in self.common_js_strings:
                     self.liens.append(jstr)
 
 
