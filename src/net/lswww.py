@@ -28,6 +28,7 @@ import urlparse
 import HTTP
 import urllib
 import swf_parser
+import lamejs
 
 from distutils.sysconfig import get_python_lib
 BASE_DIR = None
@@ -301,6 +302,7 @@ class lswww(object):
         content_type = resp.getHeaders().get('content-type', '')
         mime_type = content_type.split(';')[0].strip()
         swf_links = []
+        js_links = []
 
         # Requests says it found an encoding... the content must be some HTML
         if resp_encoding and any(mime_type.startswith(t) for t in self.allowed_types):
@@ -320,6 +322,9 @@ class lswww(object):
                     swf_links = flash_parser.getLinks()
                 except Exception, err_data:
                     swf_links = err_data[1]
+                data = ""
+            elif "/x-javascript" in mime_type or "/x-js" in mime_type or "/javascript" in mime_type:
+                js_links = lamejs.lamejs(data).getLinks()
                 data = ""
 
         # Manage redirections
@@ -388,7 +393,7 @@ class lswww(object):
                     p = linkParser2(url, self.verbose)
                     p.feed(htmlSource)
 
-        found_links = p.liens + swf_links
+        found_links = p.liens + swf_links + js_links
         for lien in found_links:
             if (lien is not None) and (page_encoding is not None) and isinstance(lien, unicode):
                 lien = lien.encode(page_encoding, "ignore")
@@ -839,13 +844,18 @@ class linkParser(HTMLParser.HTMLParser):
                 tmpdict[k.lower()] = v
         if tag.lower() in ['a', 'link']:
             if "href" in tmpdict:
-                self.liens.append(tmpdict['href'])
+                if tmpdict['href'].lower().startswith("javascript:"):
+                    self.liens.extend(lamejs.lamejs(tmpdict["href"].split(':', 1)[1]).getLinks())
+                else:
+                    self.liens.append(tmpdict['href'])
 
         if tag.lower() == 'form':
             self.inform = 1
             self.form_values = []
             self.current_form_url = self.url
             if "action" in tmpdict:
+                if tmpdict['action'].lower().startswith("javascript"):
+                    self.liens.extend(lamejs.lamejs(tmpdict["action"].split(':', 1)[1]).getLinks())
                 self.liens.append(tmpdict['action'])
                 self.current_form_url = tmpdict['action']
 
@@ -917,6 +927,7 @@ class linkParser(HTMLParser.HTMLParser):
 
     def handle_data(self, data):
         if self.inscript:
+            self.liens.extend(lamejs.lamejs(data).getLinks())
             candidates = re.findall(r'"([A-Za-z0-9_=#&%\.\+\?/-]*)"', data)
             candidates += re.findall(r"'([A-Za-z0-9_=#&%\.\+\?/-]*)'", data)
             for jstr in candidates:
