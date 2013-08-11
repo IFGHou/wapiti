@@ -74,8 +74,6 @@ class InvalidOptionValue(Exception):
         self.opt_value = opt_value
 
     def __str__(self):
-        import traceback
-        #traceback.print_exc()
         return _("Invalid argument for option {0} : {1}").format(self.opt_name, self.opt_value)
 
 
@@ -110,7 +108,9 @@ Supported options are:
 -a <login%password>
 --auth <login%password>
     Set credentials for HTTP authentication
-    Doesn't work with Python 2.4
+
+--auth-method <method>
+    Set the authentication method (basic, ntml, digest, kerberos) to use
 
 -r <parameter_name>
 --remove <parameter_name>
@@ -371,8 +371,12 @@ Supported options are:
         self.http_engine.setCookieFile(cookie)
 
     def setAuthCredentials(self, auth_basic):
-        "Set credentials to use if the website require an authentification."
+        "Set credentials to use if the website require an authentication."
         self.http_engine.setAuthCredentials(auth_basic)
+
+    def setAuthMethod(self, auth_method):
+        "Set the authentication method to use."
+        self.http_engine.setAuthMethod(auth_method)
 
     def addBadParam(self, bad_param):
         """Exclude a parameter from an url (urls with this parameter will be
@@ -441,7 +445,7 @@ if __name__ == "__main__":
                                        ["help", "underline", "proxy=", "start=", "exclude=",
                                         "cookie=", "auth=", "remove=", "verbose=", "timeout=",
                                         "module=", "outputfile", "reportType", "nice=",
-                                        "attack", "continue", "scope=", "verify-ssl="])
+                                        "attack", "continue", "scope=", "verify-ssl=", "auth-method="])
         except getopt.GetoptError, e:
             print(e)
             sys.exit(2)
@@ -467,11 +471,21 @@ if __name__ == "__main__":
                     else:
                         raise InvalidOptionValue(o, a)
                 if o in ["-c", "--cookie"]:
-                    wap.setCookieFile(a)
+                    if os.path.isfile(a):
+                        wap.setCookieFile(a)
+                    else:
+                        raise InvalidOptionValue(o, a)
                 if o in ["-a", "--auth"]:
                     if a.find("%") >= 0:
-                        auth = [a.split("%")[0], a.split("%")[1]]
+                        auth = a.split("%")
                         wap.setAuthCredentials(auth)
+                    else:
+                        raise InvalidOptionValue(o, a)
+                if o in ["--auth-method"]:
+                    if a in ["basic", "digest", "kerberos", "ntlm"]:
+                        wap.setAuthMethod(a)
+                    else:
+                        raise InvalidOptionValue(o, a)
                 if o in ["-r", "--remove"]:
                     wap.addBadParam(a)
                 if o in ["-n", "--nice"]:
@@ -496,12 +510,19 @@ if __name__ == "__main__":
                 if o in ["-o", "--outputfile"]:
                     wap.setOutputFile(a)
                 if o in ["-f", "--reportType"]:
+                    found_generator = False
                     for repGenInfo in wap.xmlRepGenParser.getReportGenerators():
                         if a == repGenInfo.getKey():
                             wap.setReportGeneratorType(a)
+                            found_generator = True
                             break
+                    if not found_generator:
+                        raise InvalidOptionValue(o, a)
                 if o in ["-b", "--scope"]:
-                    wap.setScope(a)
+                    if a in ["page", "folder", "domain"]:
+                        wap.setScope(a)
+                    else:
+                        raise InvalidOptionValue(o, a)
                 if o in ["-k", "--attack"]:
                     if a != "" and a[0] != '-':
                         attackFile = a

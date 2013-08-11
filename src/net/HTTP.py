@@ -439,7 +439,8 @@ class HTTPResponse(object):
 
 class HTTP(object):
     proxies = {}
-    auth_basic = []
+    auth_credentials = []
+    auth_method = "basic"
     timeout = 6.0
     h = None
     cookiejar = {}
@@ -449,8 +450,6 @@ class HTTP(object):
     configured = 0
 
     def __init__(self, server):
-        #TODO: bring back auth (htaccess)
-        #TODO: check proxy and cookies support again
         self.h = requests.Session()
         self.server = server
 
@@ -580,9 +579,29 @@ class HTTP(object):
             self.h.cookies = self.cookiejar
             jc.close()
 
-    def setAuthCredentials(self, auth_basic):
-        "Set credentials to use if the website require an authentification."
-        self.auth_basic = auth_basic
+    def setAuthCredentials(self, auth_credentials):
+        "Set credentials to use if the website require an authentication."
+        self.auth_credentials = auth_credentials
+        # Force reload
+        self.setAuthMethod(self.auth_method)
+
+    def setAuthMethod(self, auth_method):
+        "Set the authentication method to use for the requests."
+        self.auth_method = auth_method
+        if len(self.auth_credentials) == 2:
+            username, password = self.auth_credentials
+            if self.auth_method == "basic":
+                from requests.auth import HTTPBasicAuth
+                self.h.auth = HTTPBasicAuth(username, password)
+            elif self.auth_method == "digest":
+                from requests.auth import HTTPDigestAuth
+                self.h.auth = HTTPDigestAuth(username, password)
+            elif self.auth_method == "ntlm":
+                from requests_ntlm import HttpNtlmAuth
+                self.h.auth = HttpNtlmAuth(username, password)
+        elif self.auth_method == "kerberos":
+            from requests_kerberos import HTTPKerberosAuth
+            self.h.auth = HTTPKerberosAuth()
 
 if __name__ == "__main__":
     res1 = HTTPResource("http://httpbin.org/post?var1=a&var2=b",

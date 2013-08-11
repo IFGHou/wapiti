@@ -57,7 +57,7 @@ for o, a in opts:
         proxies[parsed.scheme] = a
 
 # Some websites/webapps like Webmin send a first cookie to see if the browser support them
-# so we must collect these test-cookies during authentification.
+# so we must collect these test-cookies during authentication.
 jc = jsoncookie.jsoncookie()
 jc.open(COOKIEFILE)
 jc.delete(server)
