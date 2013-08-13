@@ -424,7 +424,11 @@ if __name__ == "__main__":
         attackFile = None
 
         print(_("Wapiti-SVN (wapiti.sourceforge.net)"))
-        print(_("WARNING: This is a development version. Some features may be broken."))
+
+        import requests
+        if requests.__version__.startswith("0."):
+            print("Error: You have an outdated version of python-requests. Please upgrade")
+            sys.exit(1)
 
         if len(sys.argv) < 2:
             print(doc)
@@ -548,10 +552,8 @@ if __name__ == "__main__":
         if attackFile is not None:
             if crawlerPersister.isDataForUrl(attackFile) == 1:
                 crawlerPersister.loadXML(attackFile)
-                # TODO: xml structure
                 wap.urls = crawlerPersister.getBrowsed()
                 wap.forms = crawlerPersister.getForms()
-                # wap.uploads = crawlerPersister.getUploads()
                 print(_("File {0} loaded. Wapiti will use it to perform the attack").format(attackFile))
             else:
                 print(_("File {0} not found."
