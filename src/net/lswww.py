@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # lswww v2.3.1 - A web spider library
-# Copyright (C) 2006 Nicolas Surribas
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2006-2013 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
 import sys
 import re
 import socket
@@ -660,7 +660,6 @@ class lswww(object):
             if self.persister.isDataForUrl(crawlerFile) == 1:
                 self.persister.loadXML(crawlerFile)
                 self.tobrowse = self.persister.getToBrose()
-                # TODO: change xml file for browsed urls
                 self.browsed = self.persister.getBrowsed()
                 self.forms = self.persister.getForms()
                 print(_("File {0} loaded, the scan continues:").format(crawlerFile))

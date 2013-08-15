@@ -1,11 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
-
-# Report Generators Parser for Wapiti Project
-# Wapiti Project (http://wapiti.sourceforge.net)
+# -*- coding: utf-8 -*-
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2008-2013 Nicolas Surribas
 #
+# Original author :
 # David del Pozo
-# Copyright (C) 2011 Germinus XXI
+# Alberto Pastor
+# Copyright (C) 2008 Informatica Gesfor
+# ICT Romulus (http://www.ict-romulus.eu)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +22,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
 from xml.parsers import expat
 from report.reportgeneratorinfo import ReportGeneratorInfo
 

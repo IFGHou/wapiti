@@ -1,12 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
-
-# VulneraNET Report Generator Module for Wapiti Project
-# Wapiti Project (http://wapiti.sourceforge.net)
+# -*- coding: utf-8 -*-
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2008-2013 Nicolas Surribas
 #
+# Original authors :
 # David del Pozo
-# Copyright (C) 2011 Informatica Gesfor
-# VulneraNET Project (http://vulneranet.grupogesfor.com)
+# Alberto Pastor
+# Copyright (C) 2008 Informatica Gesfor
+# ICT Romulus (http://www.ict-romulus.eu)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +22,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
 from xml.dom.minidom import Document
 from reportgenerator import ReportGenerator
 import datetime

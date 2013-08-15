@@ -25,7 +25,12 @@ import json
 
 class JSONReportGenerator(ReportGenerator):
     """
-    TODO: MUST BE CHANGED
+    This class allow generating reports in JSON format.
+    The root dictionary contains 4 dictionaries :
+    - classifications : contains the description and references of a vulnerability type.
+    - vulnerabilities : each key is matching a vulnerability class. Value is a list of found vulnerabilities.
+    - anomalies : same as vulnerabilities but used only for error messages and timeouts (items of less importance).
+    - infos : several informations about the scan.
     """
 
     # Use only one dict for vulnerability and anomaly types
@@ -40,6 +45,7 @@ class JSONReportGenerator(ReportGenerator):
         pass
 
     def setReportInfo(self, target, scope=None, date_string="", version=""):
+        "Set the informations about the scan"
         self.__infos["target"] = target
         self.__infos["date"] = date_string
         self.__infos["version"] = version
@@ -48,15 +54,14 @@ class JSONReportGenerator(ReportGenerator):
 
     def generateReport(self, fileName):
         """
-        Create a json file with a report of the vulnerabilities which have
-        been logged with the logVulnerability method
+        Generate a JSON report of the vulnerabilities and anomalies which have
+        been previously logged with the log* methods.
         """
         report_dict = {"classifications": self.__flawTypes,
                        "vulnerabilities": self.__vulns,
                        "anomalies": self.__anomalies,
                        "infos": self.__infos
                        }
-        #TODO: add info on wapiti ?
         f = open(fileName, "w")
         try:
             json.dump(report_dict, f, indent=2)
@@ -68,6 +73,7 @@ class JSONReportGenerator(ReportGenerator):
                              description="",
                              solution="",
                              references={}):
+        "Add informations on a type of vulnerability"
         if name not in self.__flawTypes:
             self.__flawTypes[name] = {'desc': description,
                                       'sol': solution,
@@ -82,9 +88,7 @@ class JSONReportGenerator(ReportGenerator):
                          parameter="",
                          info=""):
         """
-        Store the information about the vulnerability to be printed later.
-        The method printToFile(fileName) can be used to save in a file the
-        vulnerabilities notified through the current method.
+        Store the informations about a found vulnerability.
         """
 
         vuln_dict = {"method": request.method,
@@ -104,6 +108,7 @@ class JSONReportGenerator(ReportGenerator):
                        description="",
                        solution="",
                        references={}):
+        "Register a type of anonomaly"
         if name not in self.__flawTypes:
             self.__flawTypes[name] = {'desc': description,
                                       'sol': solution,
@@ -118,9 +123,7 @@ class JSONReportGenerator(ReportGenerator):
                    parameter="",
                    info=""):
         """
-        Store the information about the vulnerability to be printed later.
-        The method printToFile(fileName) can be used to save in a file the
-        vulnerabilities notified through the current method.
+        Store the informations about an anomaly met during the attack."
         """
 
         anom_dict = {"method": request.method,

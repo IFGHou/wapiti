@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # lamejs - A very basic javascript interpretor in Python
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
 # Copyright (C) 2013 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify

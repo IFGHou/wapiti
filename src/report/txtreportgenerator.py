@@ -1,12 +1,7 @@
 #!/usr/bin/env python
-
-# TXT Report Generator Module for Wapiti Project
-# Wapiti Project (http://wapiti.sourceforge.net)
-#
-# David del Pozo
-# Alberto Pastor
-# Copyright (C) 2008 Informatica Gesfor
-# ICT Romulus (http://www.ict-romulus.eu)
+# -*- coding: utf-8 -*-
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2008-2013 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,15 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
 from reportgenerator import ReportGenerator
 import codecs
 
 NB_COLUMNS = 80
 
-
 # TODO: should use more the python format mini-language
 # http://docs.python.org/2/library/string.html#format-specification-mini-language
+
 
 def center(s):
     if len(s) >= NB_COLUMNS:
@@ -45,7 +39,7 @@ separator = ("*" * NB_COLUMNS) + "\n"
 
 class TXTReportGenerator(ReportGenerator):
     """
-    TODO: MUST BE CHANGED
+    This class generates a Wapiti report in TXT format.
     """
 
     __flawTypes = {}
@@ -66,7 +60,7 @@ class TXTReportGenerator(ReportGenerator):
     def generateReport(self, fileName):
         """
         Create a TXT file encoded as UTF-8 with a report of the vulnerabilities which have been logged with
-        the method logVulnerability
+        the methods logVulnerability and logAnomaly.
         """
         f = codecs.open(fileName, mode="w", encoding="UTF-8")
         try:

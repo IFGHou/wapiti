@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-
-# HTML Report Generator Module for Wapiti Project
-# Wapiti Project (http://wapiti.sourceforge.net)
+# -*- coding: utf-8 -*-
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2008-2013 Nicolas Surribas
 #
-# Nicolas SURRIBAS
+# Original authors :
 # Alberto Pastor
 # David del Pozo
 # Copyright (C) 2008 Informatica Gesfor
@@ -22,7 +22,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
 import os
 from jsonreportgenerator import JSONReportGenerator
 from shutil import copytree, rmtree
@@ -30,18 +29,10 @@ from shutil import copytree, rmtree
 
 class HTMLReportGenerator(JSONReportGenerator):
     """
-    TODO: change description
-    This class generates an XML report calling the method printToFile(fileName) of its Base class (XMLReportGenerator)
-    For more information see XMLReportGenerator class
-    Also, Copy the report structure in the specified directory
-    The structure is as follow:
-        /report
-        index.html (visualization file)
-        vulnerabilities.json (report json file)
-        /includes
-            /js (contains all js files)
-        /css (contains the stylesheet files)
-        /images (contains the required images)
+    This class generates a Wapiti scan report in HTML format.
+    It first generates a JSON report and insert in the HTML template.
+    For more information see JSONReportGenerator class
+    Then it copies the template structure (which js and css files) in the output directory.
     """
     BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '../..'))
     REPORT_DIR = "report_template"

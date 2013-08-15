@@ -1,16 +1,7 @@
-from attack import Attack
-from vulnerability import Vulnerability, Anomaly
-import requests
-from net import HTTP
-
-# Wapiti SVN - A web application vulnerability scanner
-# Wapiti Project (http://wapiti.sourceforge.net)
-# Copyright (C) 2008 Nicolas Surribas
-#
-# David del Pozo
-# Alberto Pastor
-# Informatica Gesfor
-# ICT Romulus (http://www.ict-romulus.eu)
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2008-2013 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +16,10 @@ from net import HTTP
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+from attack import Attack
+from vulnerability import Vulnerability, Anomaly
+import requests
+from net import HTTP
 
 
 class mod_file(Attack):

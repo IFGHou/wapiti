@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# Wapiti SVN - A web application vulnerability scanner
-# Wapiti Project (http://wapiti.sourceforge.net)
-# Copyright (C) 2008 Nicolas Surribas
+# -*- coding: utf-8 -*-
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2009-2013 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

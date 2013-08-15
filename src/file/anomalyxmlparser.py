@@ -1,12 +1,7 @@
 #!/usr/bin/env python
-
-# XML Report Generator Module for Wapiti Project
-# Wapiti Project (http://wapiti.sourceforge.net)
-#
-# David del Pozo
-# Alberto Pastor
-# Copyright (C) 2008 Informatica Gesfor
-# ICT Romulus (http://www.ict-romulus.eu)
+# -*- coding: utf-8 -*-
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2013 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
 from xml.parsers import expat
 from vulnerability import Anomaly
 

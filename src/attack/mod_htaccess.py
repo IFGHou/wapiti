@@ -1,7 +1,12 @@
 #!/usr/bin/env python
-# Wapiti SVN - A web application vulnerability scanner
-# Wapiti Project (http://wapiti.sourceforge.net)
-# Copyright (C) 2008 Nicolas Surribas
+# -*- coding: utf-8 -*-
+# This file is part of the Wapiti project (http://wapiti.sourceforge.net)
+# Copyright (C) 2009-2013 Nicolas Surribas
+#
+# Original authors :
+# Anthony DUBOCAGE
+# Guillaume TRANCHANT
+# Gregory FONTAINE
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,13 +21,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-#
-# Authors:
-# Anthony DUBOCAGE
-# Guillaume TRANCHANT
-# Gregory FONTAINE
-# Nicolas SURRIBAS
-
 from attack import Attack
 from vulnerability import Vulnerability, Anomaly
 from net import HTTP
@@ -90,7 +88,6 @@ class mod_htaccess(Attack):
                         self.logY(_("Source code:"))
                         self.logW(data1)
 
-                    # report xml generator (ROMULUS) not implemented for htaccess
                     self.logVuln(category=Vulnerability.HTACCESS,
                                  level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
