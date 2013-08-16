@@ -475,35 +475,40 @@ class mod_xss(Attack):
         return s
 
     # type/name/tag ex: attrval/img/src
-    # TODO: entries is a mutable argument, check this
-    def study(self, obj, parent=None, keyword="", entries=[]):
+    def study(self, bs_node, parent=None, keyword="", entries=[]):
         #if parent==None:
         #  print("Keyword is: {0}".format(keyword))
-        if keyword in str(obj):
-            if isinstance(obj, BeautifulSoup.Tag):
-                if keyword in str(obj.attrs):
-                    for k, v in obj.attrs:
+        if keyword in str(bs_node):
+            if isinstance(bs_node, BeautifulSoup.Tag):
+                if keyword in str(bs_node.attrs):
+                    for k, v in bs_node.attrs:
                         if keyword in v:
-                            # print("Found in attribute value {0} of tag {1}".format(k, obj.name))
-                            noscript = self.closeNoscript(obj)
-                            entries.append({"type": "attrval", "name": k, "tag": obj.name, "noscript": noscript})
+                            # print("Found in attribute value {0} of tag {1}".format(k, bs_node.name))
+                            noscript = self.closeNoscript(bs_node)
+                            d = {"type": "attrval", "name": k, "tag": bs_node.name, "noscript": noscript}
+                            if d not in entries:
+                                entries.append(d)
                         if keyword in k:
-                            # print("Found in attribute name {0} of tag {1}".format(k, obj.name))
-                            noscript = self.closeNoscript(obj)
-                            entries.append({"type": "attrname", "name": k, "tag": obj.name, "noscript": noscript})
-                elif keyword in obj.name:
+                            # print("Found in attribute name {0} of tag {1}".format(k, bs_node.name))
+                            noscript = self.closeNoscript(bs_node)
+                            d = {"type": "attrname", "name": k, "tag": bs_node.name, "noscript": noscript}
+                            if d not in entries:
+                                entries.append(d)
+                elif keyword in bs_node.name:
                     # print("Found in tag name")
-                    noscript = self.closeNoscript(obj)
-                    entries.append({"type": "tag", "value": obj.name, "noscript": noscript})
-                else:
-                    for x in obj.contents:
-                        # recursive search
-                        self.study(x, obj, keyword, entries)
-            elif isinstance(obj, BeautifulSoup.NavigableString):
-                if keyword in str(obj):
-                    # print("Found in text, tag {0}".format(parent.name))
-                    noscript = self.closeNoscript(obj)
-                    entries.append({"type": "text", "parent": parent.name, "noscript": noscript})
+                    noscript = self.closeNoscript(bs_node)
+                    d = {"type": "tag", "value": bs_node.name, "noscript": noscript}
+                    if d not in entries:
+                        entries.append(d)
+                # recursively search injection points for the same variable
+                for x in bs_node.contents:
+                    self.study(x, parent=bs_node, keyword=keyword, entries=entries)
+            elif isinstance(bs_node, BeautifulSoup.NavigableString):
+                # print("Found in text, tag {0}".format(parent.name))
+                noscript = self.closeNoscript(bs_node)
+                d = {"type": "text", "parent": parent.name, "noscript": noscript}
+                if d not in entries:
+                    entries.append(d)
 
     # generate a list of payloads based on where in the webpage the js-code will be injected
     def generate_payloads(self, data, code):
@@ -548,6 +553,9 @@ class mod_xss(Attack):
                 # ok let's send the requests
                 for xss in self.independant_payloads:
                     payloads.append(payload + xss.replace("__XSS__", code))
+
+                if elem['name'].lower() == "src" and elem['tag'].lower() in ["frame", "iframe"]:
+                    payloads.insert(0, "javascript:String.fromCharCode(0,__XSS__,1);".replace("__XSS__", code))
 
             # we control an attribute name
             # ex: <a our_string="/index.html">
