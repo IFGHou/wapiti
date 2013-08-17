@@ -25,7 +25,7 @@ from net import HTTP
 
 class mod_sql(Attack):
     """
-    This class implements an SQL Injection attack
+    This class implements an error-based SQL Injection attack
     """
 
     TIME_TO_SLEEP = 6
@@ -66,8 +66,9 @@ class mod_sql(Attack):
             return _("Sybase Injection")
         if "Unclosed quotation mark after the character string" in data:
             return _(".NET SQL Injection")
+        if "error '80040e14'" in data and "Incorrect syntax near" in data:
+            return _("MSSQL-Based Injection")
 
-        #TODO: MS can also give some error codes like this: Microsoft SQL Native Client error '80040e14'
         ora_test = re.search("ORA-[0-9]{4,}", data)
         if ora_test is not None:
             return _("Oracle Injection") + " " + ora_test.group(0)
