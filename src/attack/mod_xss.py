@@ -511,8 +511,8 @@ class mod_xss(Attack):
                     entries.append(d)
 
     # generate a list of payloads based on where in the webpage the js-code will be injected
-    def generate_payloads(self, data, code):
-        soup = BeautifulSoup.BeautifulSoup(data)  # il faut garder la page non-retouchee en reserve...
+    def generate_payloads(self, html_code, code):
+        soup = BeautifulSoup.BeautifulSoup(html_code)  # il faut garder la page non-retouchee en reserve...
         e = []
         self.study(soup, keyword=code, entries=e)
 
@@ -528,16 +528,16 @@ class mod_xss(Attack):
             if elem['type'] == "attrval":
                 # print("tag -> {0}".format(elem['tag']))
                 # print(elem['name'])
-                i0 = data.find(code)
-                # i1=data[:i0].rfind("=")
+                i0 = html_code.find(code)
+                # i1=html_code[:i0].rfind("=")
                 try:
                     # find the position of name of the attribute we are in
-                    i1 = data[:i0].rfind(elem['name'])
+                    i1 = html_code[:i0].rfind(elem['name'])
                 # stupid unicode errors, must check later
                 except UnicodeDecodeError:
                     continue
 
-                start = data[i1:i0].replace(" ", "")[len(elem['name']):]
+                start = html_code[i1:i0].replace(" ", "")[len(elem['name']):]
                 # between the tag name and our injected attribute there is an equal sign
                 # and (probably) a quote or a double-quote we need to close before putting our payload
                 if start.startswith("='"):
@@ -552,17 +552,23 @@ class mod_xss(Attack):
                 payload += elem['noscript']
                 # ok let's send the requests
                 for xss in self.independant_payloads:
-                    payloads.append(payload + xss.replace("__XSS__", code))
+                    js_code = payload + xss.replace("__XSS__", code)
+                    if js_code not in payloads:
+                        payloads.append(js_code)
 
                 if elem['name'].lower() == "src" and elem['tag'].lower() in ["frame", "iframe"]:
-                    payloads.insert(0, "javascript:String.fromCharCode(0,__XSS__,1);".replace("__XSS__", code))
+                    js_code = "javascript:String.fromCharCode(0,__XSS__,1);".replace("__XSS__", code)
+                    if js_code not in payloads:
+                        payloads.insert(0, js_code)
 
             # we control an attribute name
             # ex: <a our_string="/index.html">
             elif elem['type'] == "attrname":  # name,tag
                 if code == elem['name']:
                     for xss in self.independant_payloads:
-                        payloads.append('>' + elem['noscript'] + xss.replace("__XSS__", code))
+                        js_code = '>' + elem['noscript'] + xss.replace("__XSS__", code)
+                        if js_code not in payloads:
+                            payloads.append(js_code)
 
             # we control the tag name
             # ex: <our_string name="column" />
@@ -571,11 +577,14 @@ class mod_xss(Attack):
                     # use independant payloads, just remove the first character (<)
                     for xss in self.independant_payloads:
                         payload = elem['noscript'] + xss.replace("__XSS__", code)
-                        payloads.append(payload[1:])
+                        js_code = payload[1:]
+                        if js_code not in payloads:
+                            payloads.append(js_code)
                 else:
                     for xss in self.independant_payloads:
-                        payload = "/>" + elem['noscript'] + xss.replace("__XSS__", code)
-                        payloads.append(payload)
+                        js_code = "/>" + elem['noscript'] + xss.replace("__XSS__", code)
+                        if js_code not in payloads:
+                            payloads.append(js_code)
 
             # we control the text of the tag
             # ex: <textarea>our_string</textarea>
@@ -587,10 +596,14 @@ class mod_xss(Attack):
                         payload = "</{0}>".format(elem['parent'])
                 elif elem['parent'] == "script":  # Control over the body of a script :)
                     # Just check if we can use brackets
-                    payloads.insert(0, "String.fromCharCode(0,__XSS__,1)".replace("__XSS__", code))
+                    js_code = "String.fromCharCode(0,__XSS__,1)".replace("__XSS__", code)
+                    if js_code not in payloads:
+                        payloads.insert(0, js_code)
 
                 for xss in self.independant_payloads:
-                    payloads.append(payload + xss.replace("__XSS__", code))
+                    js_code = payload + xss.replace("__XSS__", code)
+                    if js_code not in payloads:
+                        payloads.append(js_code)
 
-            data = data.replace(code, "none", 1)  # reduire la zone de recherche
+            html_code = html_code.replace(code, "none", 1)  # reduire la zone de recherche
         return payloads
