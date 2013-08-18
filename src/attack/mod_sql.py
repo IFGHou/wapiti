@@ -68,6 +68,8 @@ class mod_sql(Attack):
             return _(".NET SQL Injection")
         if "error '80040e14'" in data and "Incorrect syntax near" in data:
             return _("MSSQL-Based Injection")
+        if "Syntax error in string in query expression " in data:
+            return _("Acess-Based SQL Injection")
 
         ora_test = re.search("ORA-[0-9]{4,}", data)
         if ora_test is not None:
