@@ -91,7 +91,7 @@ except HTMLParser.HTMLParseError, err:
         p = lswww.linkParser2(url)
         p.feed(htmlSource)
 
-jc.addcookies(r.cookies)
+jc.addcookies(session.cookies)
 
 if len(p.forms) == 0:
     print(_("No forms found in this page !"))
@@ -130,8 +130,8 @@ url = myls.correctlink(form[0], current, currentdir, proto, page_encoding)
 txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
              'Content-type': 'application/x-www-form-urlencoded'}
 
-r = session.post(url, data=form[1], headers=txheaders)
+r = session.post(url, data=form[1], headers=txheaders, allow_redirects=True)
 
-jc.addcookies(r.cookies)
+jc.addcookies(session.cookies)
 jc.dump()
 jc.close()

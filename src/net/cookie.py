@@ -68,7 +68,7 @@ session.proxies = proxies
 try:
     if params:
         txheaders['content-type'] = 'application/x-www-form-urlencoded'
-        r = session.post(url, data=params, headers=txheaders)
+        r = session.post(url, data=params, headers=txheaders, allow_redirects=True)
     else:
         r = session.get(url, headers=txheaders)
 except IOError, e:
@@ -78,6 +78,6 @@ except IOError, e:
 
 jc = jsoncookie.jsoncookie()
 jc.open(cookiefile)
-jc.addcookies(r.cookies)
+jc.addcookies(session.cookies)
 jc.dump()
 jc.close()
