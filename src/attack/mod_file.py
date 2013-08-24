@@ -144,7 +144,7 @@ class mod_file(Attack):
                                      level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      info=_("{0} via injection in the query string").format(err))
-                        self.logR(Vulnerability.MSG_QS_INJECT, err)
+                        self.logR(Vulnerability.MSG_QS_INJECT, err, page)
                         self.logR(Vulnerability.MSG_EVIL_URL)
                         if inc:
                             break
