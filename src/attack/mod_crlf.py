@@ -28,7 +28,7 @@ class mod_crlf(Attack):
     """
 
     name = "crlf"
-    MSG_VULN = _("CRLF injection")
+    MSG_VULN = _("CRLF Injection")
     doGET = False
     doPOST = False
 

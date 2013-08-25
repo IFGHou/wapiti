@@ -66,7 +66,7 @@ if __name__ == "__main__":
     SQL_INJECTION = "Sql Injection"
     FILE_HANDLING = "File Handling"
     XSS = "Cross Site Scripting"
-    CRLF = "CRLF"
+    CRLF = "CRLF Injection"
     EXEC = "Commands execution"
 #
 #    try:

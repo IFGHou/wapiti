@@ -61,10 +61,6 @@ msgstr ""
 msgid "Cross Site Scripting"
 msgstr ""
 
-#: ../vulnerability.py:71
-msgid "CRLF"
-msgstr ""
-
 #: ../vulnerability.py:72
 msgid "Commands execution"
 msgstr ""
@@ -224,7 +220,7 @@ msgid "{0} via injection in the parameter {1}"
 msgstr ""
 
 #: ../attack/mod_crlf.py:31
-msgid "CRLF injection"
+msgid "CRLF Injection"
 msgstr ""
 
 #: ../attack/mod_crlf.py:70 ../attack/mod_crlf.py:77

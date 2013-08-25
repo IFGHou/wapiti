@@ -76,7 +76,7 @@
             </reference>
         </references>
     </vulnerability>
-    <vulnerability name="CRLF">
+    <vulnerability name="CRLF Injection">
         <description>CRLF description</description>
         <solution text="CRLF solution"/>
         <references>
