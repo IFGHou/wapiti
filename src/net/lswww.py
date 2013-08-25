@@ -704,7 +704,7 @@ class lswww(object):
                     self.tobrowse = []
             self.saveCrawlerData()
             print('')
-            print(_(" Notice"))
+            print(_(" Note"))
             print("========")
             print(_("This scan has been saved in the file {0}/{1}.xml").format(self.persister.CRAWLER_DATA_DIR,
                                                                                self.server))
@@ -712,7 +712,7 @@ class lswww(object):
         except KeyboardInterrupt:
             self.saveCrawlerData()
             print('')
-            print(_(" Notice"))
+            print(_(" Note"))
             print("========")
             print(_("Scan stopped, the data has been saved"
                     "in the file {0}/{1}.xml").format(self.persister.CRAWLER_DATA_DIR, self.server))

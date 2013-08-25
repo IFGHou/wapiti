@@ -468,6 +468,8 @@ class HTTP(object):
 
     def __init__(self, server):
         self.h = requests.Session()
+        for adapter_protocol in self.h.adapters:
+            self.h.adapters[adapter_protocol].max_retries = 1
         self.server = server
 
     def send(self, target, method="",

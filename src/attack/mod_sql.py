@@ -39,7 +39,8 @@ class mod_sql(Attack):
             return _("MySQL Injection")
         if "supplied argument is not a valid MySQL" in data:
             return _("MySQL Injection")
-        if "[Microsoft][ODBC Microsoft Access Driver]" in data:
+        if ("[Microsoft][ODBC Microsoft Access Driver]" in data or
+                "Syntax error in string in query expression " in data):
             return _("Access-Based SQL Injection")
         if "[Microsoft][ODBC SQL Server Driver]" in data:
             return _("MSSQL-Based Injection")
@@ -68,8 +69,6 @@ class mod_sql(Attack):
             return _(".NET SQL Injection")
         if "error '80040e14'" in data and "Incorrect syntax near" in data:
             return _("MSSQL-Based Injection")
-        if "Syntax error in string in query expression " in data:
-            return _("Acess-Based SQL Injection")
 
         ora_test = re.search("ORA-[0-9]{4,}", data)
         if ora_test is not None:

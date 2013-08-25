@@ -1,78 +1,167 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Wapiti package.
+# Copyright (C) YEAR 2009-2013 Nicolas SURRIBAS
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Wapiti SVN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-03 15:59+0200\n"
+"POT-Creation-Date: 2013-08-25 17:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../wapiti.py:192 ../wapiti.py:196 ../wapiti.py:244 ../wapiti.py:243
-#: ../wapiti.py:246 ../wapiti.py:270
+#: ../vulnerability.py:23
+msgid "  Evil url: {0}"
+msgstr ""
+
+#: ../vulnerability.py:24
+msgid "{0} in {1} via injection in the parameter {2}"
+msgstr "{0} dans {1} via une injection dans le paramètre {2}"
+
+#: ../vulnerability.py:25
+msgid "  coming from {0}"
+msgstr "  en provanance de {0}"
+
+#: ../vulnerability.py:26
+msgid "{0} in {1} via injection in the query string"
+msgstr "{0} dans {1} via une injection dans la query string"
+
+#: ../vulnerability.py:27
+msgid "{0} in {1} via injection in the resource path"
+msgstr "{0} dans {1} via une injection dans le chemin de la ressource"
+
+#: ../vulnerability.py:28
+msgid "Involved parameter: {0}"
+msgstr "Paramètre en cause : {0}"
+
+#: ../vulnerability.py:29
+msgid "Evil request:"
+msgstr ""
+
+#: ../vulnerability.py:67
+msgid "SQL Injection"
+msgstr "Injection SQL"
+
+#: ../vulnerability.py:68
+msgid "Blind SQL Injection"
+msgstr "Injection SQL en aveugle"
+
+#: ../vulnerability.py:69
+msgid "File Handling"
+msgstr "Divulgation de fichier"
+
+#: ../vulnerability.py:70
+msgid "Cross Site Scripting"
+msgstr "Cross Site Scripting"
+
+#: ../vulnerability.py:71
+msgid "CRLF"
+msgstr "CRLF"
+
+#: ../vulnerability.py:72
+msgid "Commands execution"
+msgstr "Exécution de commandes"
+
+#: ../vulnerability.py:73
+msgid "Htaccess Bypass"
+msgstr "Contournement de htaccess"
+
+#: ../vulnerability.py:74
+msgid "Backup file"
+msgstr "Copie de sauvegarde"
+
+#: ../vulnerability.py:75
+msgid "Potentially dangerous file"
+msgstr "Fichier potentiellement dangereux"
+
+#: ../vulnerability.py:80
+msgid "Internal Server Error"
+msgstr "Erreur interne au serveur"
+
+#: ../vulnerability.py:81
+msgid "Resource consumption"
+msgstr "Consommation anormale de ressource"
+
+#: ../vulnerability.py:83
+msgid "Received a HTTP 500 error in {0}"
+msgstr "Une erreur HTTP 500 a été obtenue avec {0}"
+
+#: ../vulnerability.py:84
+msgid "Timeout occured in {0}"
+msgstr "Un délais d'attente dépassé a eu lieu avec {0}"
+
+#: ../vulnerability.py:86
+msgid "The request timed out while attempting to inject a payload in the query string"
+msgstr "La requête n'a pas aboutie (délais dépassé) lors de l'injection d'un payload dans la query string"
+
+#: ../vulnerability.py:87
+msgid "The request timed out while attempting to inject a payload in the resource path"
+msgstr "La requête n'a pas aboutie (délais dépassé) lors de l'injection d'un payload dans le chemin de la ressource"
+
+#: ../vulnerability.py:88
+msgid "The request timed out while attempting to inject a payload in the parameter {0}"
+msgstr "La requête n'a pas aboutie (délais dépassé) lors de l'injection d'un payload dans le paramètre {0}"
+
+#: ../vulnerability.py:90
+msgid "The server responded with a 500 HTTP error code while attempting to inject a payload in the query string"
+msgstr "Le serveur a répondu par une erreur HTTP 500 lors de l'injection d'un payload dans la query string"
+
+#: ../vulnerability.py:92
+msgid "The server responded with a 500 HTTP error code while attempting to inject a payload in the resource path"
+msgstr "Le serveur a répondu par une erreur HTTP 500 lors de l'injection d'un payload dans le chemin de la ressource"
+
+#: ../vulnerability.py:94
+msgid "The server responded with a 500 HTTP error code while attempting to inject a payload in the parameter {0}"
+msgstr "Le serveur a répondu par une erreur HTTP 500 lors de l'injection d'un payload dans le paramètre {0}"
+
+#: ../wapiti.py:69
+msgid "Invalid argument for option {0} : {1}"
+msgstr "Argument invalide pour l'option {0} : {1}"
+
+#: ../wapiti.py:226
+msgid "[*] Loading modules:"
+msgstr "[*] Chargement des modules :"
+
+#: ../wapiti.py:297
 msgid "No links or forms found in this page !"
-msgstr "Aucun liens ni formulaires trouvés dans cette page !"
+msgstr "Aucun lien ni formulaire trouvé dans cette page !"
 
-#: ../wapiti.py:193 ../wapiti.py:197 ../wapiti.py:245 ../wapiti.py:244
-#: ../wapiti.py:247 ../wapiti.py:271
+#: ../wapiti.py:298
 msgid "Make sure the url is correct."
-msgstr "Assurez vous que l'url est valide."
+msgstr "Assurez-vous que l'URL est correcte."
 
-#: ../wapiti.py:199 ../wapiti.py:203
-msgid "Attacking urls (GET)"
-msgstr "Attaque des urls (GET)"
+#: ../wapiti.py:310
+msgid "[!] Missing dependecies for module {0}:"
+msgstr "[!] Dépendances manquantes pour le module {0} :"
 
-#: ../wapiti.py:205 ../wapiti.py:209
-msgid "Attacking forms (POST)"
-msgstr "Attaque des formulaires (POST)"
+#: ../wapiti.py:316
+msgid "[+] Launching module {0}"
+msgstr "[+] Lancement du module {0}"
 
-#: ../wapiti.py:211 ../wapiti.py:215
-msgid "Looking for permanent XSS"
-msgstr "Recherche de XSS permanents"
+#: ../wapiti.py:321
+msgid "Upload scripts found:"
+msgstr "Scripts d'upload trouvés :"
 
-#: ../wapiti.py:216 ../wapiti.py:220 ../wapiti.py:267 ../wapiti.py:266
-#: ../wapiti.py:269 ../wapiti.py:293
-msgid "Upload scripts found"
-msgstr "Scripts d'upload trouvés"
-
-#: ../wapiti.py:226 ../wapiti.py:230 ../wapiti.py:277 ../wapiti.py:276
-#: ../wapiti.py:279 ../wapiti.py:303
+#: ../wapiti.py:335
 msgid "Report"
 msgstr "Rapport"
 
-#: ../wapiti.py:228 ../wapiti.py:232 ../wapiti.py:279 ../wapiti.py:278
-#: ../wapiti.py:281 ../wapiti.py:305
-msgid "A report has been generated in the file"
-msgstr "Un rapport a été généré dans le fichier"
+#: ../wapiti.py:337
+msgid "A report has been generated in the file {0}"
+msgstr "Un rapport a été généré dans le fichier {0}"
 
-#: ../wapiti.py:230 ../wapiti.py:234 ../wapiti.py:281 ../wapiti.py:280
-#: ../wapiti.py:283 ../wapiti.py:307
-msgid "Open"
-msgstr "Ouvrez"
+#: ../wapiti.py:339
+msgid "Open {0}/index.html with a browser to see this report."
+msgstr "Ouvrez {0}/index.html dans un navigateur pour voir ce rapport."
 
-#: ../wapiti.py:231 ../wapiti.py:235 ../wapiti.py:282 ../wapiti.py:281
-#: ../wapiti.py:284 ../wapiti.py:308
-msgid "with a browser to see this report."
-msgstr "avec un navigateur pour voir ce rapport."
-
-#: ../wapiti.py:331 ../wapiti.py:335
-msgid "attackGET"
-msgstr "attackGET"
-
-#: ../wapiti.py:354 ../wapiti.py:358
-msgid "attackPOST"
-msgstr "attackPOST"
-
-#: ../wapiti.py:371 ../wapiti.py:372 ../wapiti.py:344 ../wapiti.py:343
-#: ../wapiti.py:346 ../wapiti.py:370
+#: ../wapiti.py:410
 msgid "wapityDoc"
 msgstr ""
 "Wapiti-SVN - Un scanneur de vulnérabilités pour applications web \n"
@@ -177,1017 +266,409 @@ msgstr ""
 " --help \n"
 " \tAfficher ce message d'aide"
 
-#: ../wapiti.py:452 ../wapiti.py:475 ../wapiti.py:428 ../wapiti.py:427
-#: ../wapiti.py:429 ../wapiti.py:432 ../wapiti.py:465
+#: ../wapiti.py:418
 msgid "Wapiti-SVN (wapiti.sourceforge.net)"
-msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
-
-#: ../net/lswww.py:138 ../net/lswww.py:161 ../net/lswww.py:143
-#: ../net/lswww.py:167 ../net/lswww.py:151 ../net/lswww.py:183
-#: ../net/lswww.py:152 ../net/lswww.py:184 ../net/lswww.py:139
-#: ../net/lswww.py:171 ../net/lswww.py:170 ../net/lswww.py:192
-msgid "Invalid link argument"
-msgstr "Le lien passé en argument est invalide"
-
-#: ../net/lswww.py:471 ../net/lswww.py:519 ../net/lswww.py:509
-#: ../net/lswww.py:556 ../net/lswww.py:565 ../net/lswww.py:524
-#: ../net/lswww.py:532 ../net/lswww.py:534 ../net/lswww.py:546
-#: ../net/lswww.py:568
-msgid "URLs"
-msgstr "URLs"
-
-#: ../net/lswww.py:478 ../net/lswww.py:526 ../net/lswww.py:516
-#: ../net/lswww.py:563 ../net/lswww.py:572 ../net/lswww.py:531
-#: ../net/lswww.py:539 ../net/lswww.py:541 ../net/lswww.py:553
-#: ../net/lswww.py:575
-msgid "Forms Info"
-msgstr "Infos sur les formulaires"
-
-#: ../net/lswww.py:480 ../net/lswww.py:528 ../net/lswww.py:518
-#: ../net/lswww.py:565 ../net/lswww.py:574 ../net/lswww.py:533
-#: ../net/lswww.py:541 ../net/lswww.py:543 ../net/lswww.py:555
-#: ../net/lswww.py:577
-msgid "From"
-msgstr "En provenance de"
-
-#: ../net/lswww.py:481 ../net/lswww.py:529 ../net/lswww.py:519
-#: ../net/lswww.py:566 ../net/lswww.py:575 ../net/lswww.py:534
-#: ../net/lswww.py:542 ../net/lswww.py:544 ../net/lswww.py:556
-#: ../net/lswww.py:578
-msgid "To"
-msgstr "vers"
-
-#: ../net/lswww.py:489 ../net/lswww.py:537 ../net/lswww.py:527
-#: ../net/lswww.py:574 ../net/lswww.py:583 ../net/lswww.py:542
-#: ../net/lswww.py:550 ../net/lswww.py:552 ../net/lswww.py:564
-#: ../net/lswww.py:586
-msgid "Upload Scripts"
-msgstr "Scripts d'upload"
-
-#: ../net/lswww.py:676 ../net/lswww.py:724 ../net/lswww.py:722
-#: ../net/lswww.py:769 ../net/lswww.py:783 ../net/lswww.py:736
-#: ../net/lswww.py:744 ../net/lswww.py:746 ../net/lswww.py:758
-#: ../net/lswww.py:780
-msgid "Forms"
-msgstr "Formulaires"
-
-#: ../net/lswww.py:679 ../net/lswww.py:727 ../net/lswww.py:725
-#: ../net/lswww.py:772 ../net/lswww.py:786 ../net/lswww.py:739
-#: ../net/lswww.py:747 ../net/lswww.py:749 ../net/lswww.py:761
-#: ../net/lswww.py:783
-msgid "Form"
-msgstr "Formulaire"
-
-#: ../net/lswww.py:683 ../net/lswww.py:731 ../net/lswww.py:729
-#: ../net/lswww.py:776 ../net/lswww.py:790 ../net/lswww.py:743
-#: ../net/lswww.py:751 ../net/lswww.py:753 ../net/lswww.py:765
-#: ../net/lswww.py:787
-msgid "Method"
-msgstr "Méthode"
-
-#: ../net/lswww.py:684 ../net/lswww.py:732 ../net/lswww.py:730
-#: ../net/lswww.py:777 ../net/lswww.py:791 ../net/lswww.py:744
-#: ../net/lswww.py:752 ../net/lswww.py:754 ../net/lswww.py:766
-#: ../net/lswww.py:788
-msgid "Intputs"
-msgstr "Inputs"
-
-#: ../net/lswww.py:689 ../net/lswww.py:737 ../net/lswww.py:735
-#: ../net/lswww.py:782 ../net/lswww.py:796 ../net/lswww.py:749
-#: ../net/lswww.py:757 ../net/lswww.py:759 ../net/lswww.py:771
-#: ../net/lswww.py:793
-msgid "Selects"
-msgstr "Selects"
-
-#: ../net/lswww.py:694 ../net/lswww.py:742 ../net/lswww.py:740
-#: ../net/lswww.py:787 ../net/lswww.py:801 ../net/lswww.py:754
-#: ../net/lswww.py:762 ../net/lswww.py:764 ../net/lswww.py:776
-#: ../net/lswww.py:798
-msgid "TextAreas"
-msgstr "TextAreas"
-
-#: ../net/lswww.py:699 ../net/lswww.py:747 ../net/lswww.py:745
-#: ../net/lswww.py:792 ../net/lswww.py:806 ../net/lswww.py:759
-#: ../net/lswww.py:767 ../net/lswww.py:769 ../net/lswww.py:781
-#: ../net/lswww.py:803
-msgid "URLS"
-msgstr "URLS"
-
-#: ../net/lswww.py:783
-msgid "lswwwDoc"
 msgstr ""
-" lswww explore un site web et extrait les liens et formulaires trouvés.\n"
-" \n"
-"  Mode d'emploi : python lswww.py http://server.com/base/url/ [options]\n"
-" \n"
-"  Les options disponibles sont :\n"
-" -s <url>\n"
-" --start <url>\n"
-" \tCommencer le scan par l'url spécifiée\n"
-" \n"
-" -x <url>\n"
-" --exclude <url>\n"
-" \tExclure une url du scan (par exemple les scripts de déconnexion)\n"
-" \tL'utilisation de l'astérisque (*) est autorisée\n"
-" \tExemple : -x http://server/base/?page=*&module=test\n"
-" \tou -x http://server/base/admin/* to exclude a directory\n"
-" \n"
-" -p <url_proxy>\n"
-" --proxy <url_proxy>\n"
-" \tSpécifier un proxy à utiliser\n"
-" \tExemple: -p http://proxy:port/\n"
-" \n"
-" -c <cookie_file>\n"
-" --cookie <cookie_file>\n"
-" \tUtiliser un cookie pour les requêtes\n"
-" \n"
-" -a <login%password>\n"
-" --auth <login%password>\n"
-" \tDéfinir des identifiants pour l'authentication HTTP\n"
-" \n"
-" -r <parameter_name>\n"
-" --remove <parameter_name>\n"
-" \tRetirer un paramêtre de chaque URL\n"
-" \n"
-" -v <level>\n"
-" --verbose <level>\n"
-" \tDéfinir le niveau de verbosité\n"
-" \t  0: afficher uniquement les résultats\n"
-" \t  1: afficher un point pour chaque url trouvée (défaut)\n"
-" \t  2: afficher chaque url au moment de leur découverte\n"
-" \n"
-" -t <timeout>\n"
-" --timeout <timeout>\n"
-" \tDéfinir un temps d'attente (en secondes)\n"
-" \n"
-" -n <limit>\n"
-" --nice <limit>\n"
-" \tDefinir une limite d'urls à traiter formées sur le même modèle (pattern)\n"
-" \tCette option peut empêcher de tomber dans des boucles infinies de scan\n"
-" \tLa valeur doit être supérieure à 0\n"
-" \n"
-" -b <scope>\n"
-" --scope <scope>\n"
-" \tDéfinir le périmêtre du scan :\n"
-" \t\t+ \"page\" : analyser toutes les pages présentes sous l'URL principale\n"
-" \t\t+ \"folder\" : analyser toutes les pages présentes sous la même "
-"arborescence que la page passée en argument principal à Wapiti.\n"
-" \t\t+ \"domain\" : analyser toutes les pages sous le même domaine que l'URL "
-"principale passée à Wapiti.\n"
-" \tSi aucun argument n'est définie, Wapiti scanne chaque page sous l'URL "
-"principale..\n"
-" \n"
-" -i <file>\n"
-" --continue <file>\n"
-" \tReprendre une précédente session de scan là où elle avait été laissée en "
-"chargeant les données depuis le fichier spécifié en paramêtre.\n"
-" \tSi aucun fichier n'est spécifié, Wapiti se sert d'un fichier de "
-"sauvegarde par défaut présent dans le dossier \"scans\".\n"
-" \n"
-" -h\n"
-" --help\n"
-" \tAfficher ce message d'aide"
 
-#: ../attack/crlfattack.py:48 ../attack/crlfattack.py:53
-#: ../attack/execattack.py:80 ../attack/execattack.py:86
-#: ../attack/sqlinjectionattack.py:98 ../attack/mod_crlf.py:53
-#: ../attack/mod_crlf.py:58 ../attack/mod_exec.py:82 ../attack/mod_exec.py:88
-#: ../attack/mod_sql.py:98 ../attack/mod_exec.py:84 ../attack/mod_exec.py:90
-#: ../attack/mod_sql.py:103 ../attack/mod_crlf.py:61 ../attack/mod_crlf.py:66
-#: ../attack/mod_exec.py:91 ../attack/mod_exec.py:97 ../attack/mod_sql.py:111
-msgid "(QUERY_STRING)"
-msgstr "(QUERY_STRING)"
+#: ../wapiti.py:549
+msgid "File {0} loaded. Wapiti will use it to perform the attack"
+msgstr "Fichier {0} chargé. Wapiti va s'en servir pour effectuer l'attaque"
 
-#: ../attack/crlfattack.py:49 ../attack/mod_crlf.py:54
-#: ../attack/mod_crlf.py:62
-msgid "CRLF Injection (QUERY_STRING) in"
-msgstr "Injection CRLF (QUERY_STRING) dans"
-
-#: ../attack/crlfattack.py:50 ../attack/crlfattack.py:73
-#: ../attack/execattack.py:88 ../attack/execattack.py:97
-#: ../attack/execattack.py:131 ../attack/execattack.py:145
-#: ../attack/filehandlingattack.py:111 ../attack/filehandlingattack.py:120
-#: ../attack/filehandlingattack.py:154 ../attack/filehandlingattack.py:168
-#: ../attack/sqlinjectionattack.py:100 ../attack/sqlinjectionattack.py:108
-#: ../attack/sqlinjectionattack.py:138 ../attack/sqlinjectionattack.py:152
-#: ../attack/sqlinjectionattack.py:225 ../attack/sqlinjectionattack.py:234
-#: ../attack/sqlinjectionattack.py:258 ../attack/sqlinjectionattack.py:276
-#: ../attack/xssattack.py:276 ../attack/xssattack.py:331
-#: ../attack/xssattack.py:386 ../attack/xssattack.py:440
-#: ../attack/xssattack.py:497 ../attack/mod_crlf.py:55
-#: ../attack/mod_crlf.py:81 ../attack/mod_exec.py:90 ../attack/mod_exec.py:99
-#: ../attack/mod_exec.py:133 ../attack/mod_exec.py:144
-#: ../attack/mod_file.py:113 ../attack/mod_file.py:122
-#: ../attack/mod_file.py:156 ../attack/mod_file.py:167
-#: ../attack/mod_sql.py:100 ../attack/mod_sql.py:111 ../attack/mod_sql.py:141
-#: ../attack/mod_sql.py:155 ../attack/mod_blindsql.py:75
-#: ../attack/mod_blindsql.py:84 ../attack/mod_blindsql.py:112
-#: ../attack/mod_blindsql.py:126 ../attack/mod_xss.py:279
-#: ../attack/mod_xss.py:337 ../attack/mod_xss.py:395 ../attack/mod_xss.py:452
-#: ../attack/mod_xss.py:512 ../attack/mod_xss.py:229 ../attack/mod_xss.py:287
-#: ../attack/mod_xss.py:345 ../attack/mod_xss.py:402 ../attack/mod_xss.py:462
-#: ../attack/mod_exec.py:92 ../attack/mod_exec.py:101
-#: ../attack/mod_exec.py:135 ../attack/mod_exec.py:146
-#: ../attack/mod_xss.py:283 ../attack/mod_htaccess.py:108
-#: ../attack/mod_sql.py:105 ../attack/mod_sql.py:116 ../attack/mod_sql.py:146
-#: ../attack/mod_sql.py:160 ../attack/mod_xss.py:285 ../attack/mod_xss.py:347
-#: ../attack/mod_blindsql.py:76 ../attack/mod_blindsql.py:86
-#: ../attack/mod_blindsql.py:115 ../attack/mod_blindsql.py:130
-#: ../attack/mod_crlf.py:63 ../attack/mod_crlf.py:89 ../attack/mod_exec.py:108
-#: ../attack/mod_exec.py:142 ../attack/mod_exec.py:153
-#: ../attack/mod_file.py:121 ../attack/mod_file.py:130
-#: ../attack/mod_file.py:165 ../attack/mod_file.py:176
-#: ../attack/mod_sql.py:113 ../attack/mod_sql.py:124 ../attack/mod_sql.py:154
-#: ../attack/mod_sql.py:168 ../attack/mod_blindsql.py:83
-#: ../attack/mod_blindsql.py:93 ../attack/mod_blindsql.py:122
-#: ../attack/mod_blindsql.py:137 ../attack/mod_xss.py:293
-#: ../attack/mod_xss.py:355 ../attack/mod_xss.py:62 ../attack/mod_xss.py:139
-#: ../attack/mod_xss.py:399
-msgid "Evil url"
-msgstr "URL malicieuse"
-
-#: ../attack/crlfattack.py:54 ../attack/filehandlingattack.py:100
-#: ../attack/filehandlingattack.py:101 ../attack/mod_crlf.py:59
-#: ../attack/mod_file.py:102 ../attack/mod_file.py:103
-#: ../attack/mod_crlf.py:67 ../attack/mod_file.py:110
-#: ../attack/mod_file.py:111
-msgid "Timeout (QUERY_STRING) in"
-msgstr "Timeout (QUERY_STRING) dans"
-
-#: ../attack/crlfattack.py:55 ../attack/crlfattack.py:83
-#: ../attack/execattack.py:77 ../attack/execattack.py:119
-#: ../attack/filehandlingattack.py:102 ../attack/filehandlingattack.py:145
-#: ../attack/mod_crlf.py:60 ../attack/mod_crlf.py:88 ../attack/mod_exec.py:79
-#: ../attack/mod_exec.py:121 ../attack/mod_file.py:104
-#: ../attack/mod_file.py:147 ../attack/mod_exec.py:81
-#: ../attack/mod_exec.py:123 ../attack/mod_crlf.py:68 ../attack/mod_crlf.py:96
-#: ../attack/mod_exec.py:88 ../attack/mod_exec.py:130
-#: ../attack/mod_file.py:112 ../attack/mod_file.py:156
-msgid "caused by"
-msgstr "provoqué par"
-
-#: ../attack/crlfattack.py:72 ../attack/crlfattack.py:82
-#: ../attack/execattack.py:118 ../attack/execattack.py:130
-#: ../attack/execattack.py:185 ../attack/filehandlingattack.py:144
-#: ../attack/filehandlingattack.py:153 ../attack/filehandlingattack.py:208
-#: ../attack/sqlinjectionattack.py:137 ../attack/sqlinjectionattack.py:188
-#: ../attack/sqlinjectionattack.py:257 ../attack/xssattack.py:275
-#: ../attack/xssattack.py:330 ../attack/xssattack.py:385
-#: ../attack/mod_crlf.py:80 ../attack/mod_crlf.py:87 ../attack/mod_exec.py:120
-#: ../attack/mod_exec.py:132 ../attack/mod_exec.py:185
-#: ../attack/mod_file.py:146 ../attack/mod_file.py:155
-#: ../attack/mod_file.py:207 ../attack/mod_sql.py:140 ../attack/mod_sql.py:191
-#: ../attack/mod_blindsql.py:111 ../attack/mod_xss.py:278
-#: ../attack/mod_xss.py:336 ../attack/mod_xss.py:394 ../attack/mod_xss.py:228
-#: ../attack/mod_xss.py:286 ../attack/mod_xss.py:344 ../attack/mod_exec.py:122
-#: ../attack/mod_exec.py:134 ../attack/mod_exec.py:187
-#: ../attack/mod_xss.py:282 ../attack/mod_sql.py:193 ../attack/mod_sql.py:145
-#: ../attack/mod_sql.py:198 ../attack/mod_xss.py:284 ../attack/mod_xss.py:346
-#: ../attack/mod_blindsql.py:114 ../attack/mod_crlf.py:88
-#: ../attack/mod_crlf.py:95 ../attack/mod_exec.py:129
-#: ../attack/mod_exec.py:141 ../attack/mod_exec.py:194
-#: ../attack/mod_file.py:164 ../attack/mod_file.py:216
-#: ../attack/mod_sql.py:153 ../attack/mod_sql.py:206
-#: ../attack/mod_blindsql.py:121 ../attack/mod_xss.py:292
-#: ../attack/mod_xss.py:354 ../attack/mod_sql.py:207 ../attack/mod_xss.py:61
-#: ../attack/mod_xss.py:138 ../attack/mod_xss.py:398
-msgid "in"
-msgstr "dans"
-
-#: ../attack/crlfattack.py:82 ../attack/execattack.py:118
-#: ../attack/filehandlingattack.py:144 ../attack/mod_crlf.py:87
-#: ../attack/mod_exec.py:120 ../attack/mod_file.py:146
-#: ../attack/mod_exec.py:122 ../attack/mod_crlf.py:95
-#: ../attack/mod_exec.py:129 ../attack/mod_file.py:155
-msgid "Timeout"
-msgstr "Timeout"
-
-#: ../attack/execattack.py:76 ../attack/execattack.py:171
-#: ../attack/filehandlingattack.py:198 ../attack/mod_exec.py:78
-#: ../attack/mod_exec.py:170 ../attack/mod_file.py:197
-#: ../attack/mod_exec.py:80 ../attack/mod_exec.py:172 ../attack/mod_exec.py:87
-#: ../attack/mod_exec.py:179 ../attack/mod_file.py:206
-msgid "Timeout in"
-msgstr "Timeout dans"
-
-#: ../attack/execattack.py:87 ../attack/filehandlingattack.py:109
-#: ../attack/filehandlingattack.py:110 ../attack/sqlinjectionattack.py:99
-#: ../attack/mod_exec.py:89 ../attack/mod_file.py:111
-#: ../attack/mod_file.py:112 ../attack/mod_sql.py:99 ../attack/mod_exec.py:91
-#: ../attack/mod_sql.py:104 ../attack/mod_exec.py:98 ../attack/mod_file.py:119
-#: ../attack/mod_file.py:120 ../attack/mod_sql.py:112
-msgid "(QUERY_STRING) in"
-msgstr "(QUERY_STRING) dans"
-
-#: ../attack/execattack.py:96 ../attack/execattack.py:144
-#: ../attack/filehandlingattack.py:119 ../attack/filehandlingattack.py:167
-#: ../attack/sqlinjectionattack.py:107 ../attack/sqlinjectionattack.py:151
-#: ../attack/sqlinjectionattack.py:233 ../attack/sqlinjectionattack.py:275
-#: ../attack/mod_exec.py:98 ../attack/mod_exec.py:143
-#: ../attack/mod_file.py:121 ../attack/mod_file.py:166
-#: ../attack/mod_sql.py:110 ../attack/mod_sql.py:154
-#: ../attack/mod_blindsql.py:83 ../attack/mod_blindsql.py:125
-#: ../attack/mod_exec.py:100 ../attack/mod_exec.py:145
-#: ../attack/mod_htaccess.py:107 ../attack/mod_sql.py:115
-#: ../attack/mod_sql.py:159 ../attack/mod_blindsql.py:85
-#: ../attack/mod_blindsql.py:129 ../attack/mod_exec.py:107
-#: ../attack/mod_exec.py:152 ../attack/mod_file.py:129
-#: ../attack/mod_file.py:175 ../attack/mod_sql.py:123 ../attack/mod_sql.py:167
-#: ../attack/mod_blindsql.py:92 ../attack/mod_blindsql.py:136
-msgid "500 HTTP Error code with"
-msgstr "Code d'erreur HTTP 500 avec"
-
-#: ../attack/execattack.py:172 ../attack/execattack.py:186
-#: ../attack/execattack.py:197 ../attack/filehandlingattack.py:199
-#: ../attack/filehandlingattack.py:209 ../attack/filehandlingattack.py:220
-#: ../attack/sqlinjectionattack.py:189 ../attack/sqlinjectionattack.py:199
-#: ../attack/sqlinjectionattack.py:304 ../attack/sqlinjectionattack.py:319
-#: ../attack/xssattack.py:270 ../attack/xssattack.py:325
-#: ../attack/xssattack.py:380 ../attack/xssattack.py:434
-#: ../attack/xssattack.py:491 ../attack/mod_exec.py:171
-#: ../attack/mod_exec.py:187 ../attack/mod_exec.py:190
-#: ../attack/mod_exec.py:202 ../attack/mod_file.py:198
-#: ../attack/mod_file.py:209 ../attack/mod_file.py:212
-#: ../attack/mod_file.py:224 ../attack/mod_sql.py:193 ../attack/mod_sql.py:196
-#: ../attack/mod_sql.py:211 ../attack/mod_blindsql.py:161
-#: ../attack/mod_blindsql.py:164 ../attack/mod_blindsql.py:179
-#: ../attack/mod_xss.py:271 ../attack/mod_xss.py:273 ../attack/mod_xss.py:329
-#: ../attack/mod_xss.py:331 ../attack/mod_xss.py:387 ../attack/mod_xss.py:389
-#: ../attack/mod_xss.py:444 ../attack/mod_xss.py:446 ../attack/mod_xss.py:504
-#: ../attack/mod_xss.py:506 ../attack/mod_xss.py:221 ../attack/mod_xss.py:223
-#: ../attack/mod_xss.py:279 ../attack/mod_xss.py:281 ../attack/mod_xss.py:337
-#: ../attack/mod_xss.py:339 ../attack/mod_xss.py:394 ../attack/mod_xss.py:396
-#: ../attack/mod_xss.py:454 ../attack/mod_xss.py:456 ../attack/mod_exec.py:173
-#: ../attack/mod_exec.py:189 ../attack/mod_exec.py:192
-#: ../attack/mod_exec.py:204 ../attack/mod_xss.py:275 ../attack/mod_xss.py:277
-#: ../attack/mod_sql.py:195 ../attack/mod_sql.py:198 ../attack/mod_sql.py:212
-#: ../attack/mod_sql.py:200 ../attack/mod_sql.py:203 ../attack/mod_sql.py:217
-#: ../attack/mod_xss.py:341 ../attack/mod_blindsql.py:166
-#: ../attack/mod_blindsql.py:169 ../attack/mod_blindsql.py:185
-#: ../attack/mod_exec.py:180 ../attack/mod_exec.py:196
-#: ../attack/mod_exec.py:199 ../attack/mod_exec.py:211
-#: ../attack/mod_file.py:207 ../attack/mod_file.py:218
-#: ../attack/mod_file.py:221 ../attack/mod_file.py:233
-#: ../attack/mod_sql.py:208 ../attack/mod_sql.py:225
-#: ../attack/mod_blindsql.py:173 ../attack/mod_blindsql.py:176
-#: ../attack/mod_blindsql.py:192 ../attack/mod_xss.py:285
-#: ../attack/mod_xss.py:287 ../attack/mod_xss.py:347 ../attack/mod_xss.py:349
-#: ../attack/mod_sql.py:209 ../attack/mod_xss.py:391 ../attack/mod_xss.py:393
-msgid "with params"
-msgstr "avec les paramêtres"
-
-#: ../attack/execattack.py:173 ../attack/execattack.py:184
-#: ../attack/execattack.py:187 ../attack/execattack.py:198
-#: ../attack/filehandlingattack.py:200 ../attack/filehandlingattack.py:207
-#: ../attack/filehandlingattack.py:210 ../attack/filehandlingattack.py:221
-#: ../attack/sqlinjectionattack.py:187 ../attack/sqlinjectionattack.py:190
-#: ../attack/sqlinjectionattack.py:200 ../attack/sqlinjectionattack.py:305
-#: ../attack/sqlinjectionattack.py:320 ../attack/xssattack.py:271
-#: ../attack/xssattack.py:326 ../attack/xssattack.py:381
-#: ../attack/xssattack.py:435 ../attack/xssattack.py:492
-#: ../attack/mod_exec.py:172 ../attack/mod_exec.py:184
-#: ../attack/mod_exec.py:191 ../attack/mod_exec.py:203
-#: ../attack/mod_file.py:199 ../attack/mod_file.py:206
-#: ../attack/mod_file.py:213 ../attack/mod_file.py:225
-#: ../attack/mod_sql.py:190 ../attack/mod_sql.py:197 ../attack/mod_sql.py:212
-#: ../attack/mod_blindsql.py:165 ../attack/mod_blindsql.py:180
-#: ../attack/mod_xss.py:274 ../attack/mod_xss.py:332 ../attack/mod_xss.py:390
-#: ../attack/mod_xss.py:447 ../attack/mod_xss.py:507 ../attack/mod_xss.py:224
-#: ../attack/mod_xss.py:282 ../attack/mod_xss.py:340 ../attack/mod_xss.py:397
-#: ../attack/mod_xss.py:457 ../attack/mod_exec.py:174
-#: ../attack/mod_exec.py:186 ../attack/mod_exec.py:193
-#: ../attack/mod_exec.py:205 ../attack/mod_xss.py:278 ../attack/mod_sql.py:192
-#: ../attack/mod_sql.py:199 ../attack/mod_sql.py:213 ../attack/mod_sql.py:204
-#: ../attack/mod_sql.py:218 ../attack/mod_xss.py:280 ../attack/mod_xss.py:342
-#: ../attack/mod_blindsql.py:170 ../attack/mod_blindsql.py:186
-#: ../attack/mod_exec.py:181 ../attack/mod_exec.py:200
-#: ../attack/mod_exec.py:212 ../attack/mod_file.py:208
-#: ../attack/mod_file.py:215 ../attack/mod_file.py:222
-#: ../attack/mod_file.py:234 ../attack/mod_sql.py:205 ../attack/mod_sql.py:226
-#: ../attack/mod_blindsql.py:177 ../attack/mod_blindsql.py:193
-#: ../attack/mod_xss.py:288 ../attack/mod_xss.py:350 ../attack/mod_sql.py:206
-#: ../attack/mod_xss.py:394
-msgid "coming from"
-msgstr "en provenance de"
-
-#: ../attack/execattack.py:177 ../attack/filehandlingattack.py:197
-#: ../attack/mod_exec.py:176 ../attack/mod_file.py:196
-#: ../attack/mod_exec.py:178 ../attack/mod_exec.py:185
-#: ../attack/mod_file.py:205
-msgid "Timeout coming from"
-msgstr "Timeout en provenance de"
-
-#: ../attack/execattack.py:194 ../attack/filehandlingattack.py:217
-#: ../attack/sqlinjectionattack.py:196 ../attack/sqlinjectionattack.py:316
-#: ../attack/mod_exec.py:199 ../attack/mod_file.py:221
-#: ../attack/mod_sql.py:208 ../attack/mod_blindsql.py:176
-#: ../attack/mod_exec.py:201 ../attack/mod_sql.py:209 ../attack/mod_sql.py:214
-#: ../attack/mod_blindsql.py:182 ../attack/mod_exec.py:208
-#: ../attack/mod_file.py:230 ../attack/mod_sql.py:222
-#: ../attack/mod_blindsql.py:189
-msgid "500 HTTP Error code coming from"
-msgstr "Code d'erreur HTTP 500 en provenance de"
-
-#: ../attack/execattack.py:196 ../attack/filehandlingattack.py:219
-#: ../attack/sqlinjectionattack.py:198 ../attack/sqlinjectionattack.py:318
-#: ../attack/mod_exec.py:201 ../attack/mod_file.py:223
-#: ../attack/mod_sql.py:210 ../attack/mod_blindsql.py:178
-#: ../attack/mod_exec.py:203 ../attack/mod_sql.py:211 ../attack/mod_sql.py:216
-#: ../attack/mod_blindsql.py:184 ../attack/mod_exec.py:210
-#: ../attack/mod_file.py:232 ../attack/mod_sql.py:224
-#: ../attack/mod_blindsql.py:191
-msgid "500 HTTP Error code in"
-msgstr "Erreur HTTP 500 dans"
-
-#: ../attack/sqlinjectionattack.py:223 ../attack/mod_blindsql.py:73
-#: ../attack/mod_blindsql.py:74 ../attack/mod_blindsql.py:81
-msgid "Blind SQL Injection (QUERY_STRING)"
-msgstr "Injection SQL aveugle (QUERY_STRING)"
-
-#: ../attack/sqlinjectionattack.py:224 ../attack/mod_blindsql.py:74
-#: ../attack/mod_blindsql.py:75 ../attack/mod_blindsql.py:82
-msgid "Blind SQL Injection (QUERY_STRING) in"
-msgstr "Injection SQL aveugle (QUERY_STRING) dans"
-
-#: ../attack/sqlinjectionattack.py:256 ../attack/sqlinjectionattack.py:257
-#: ../attack/sqlinjectionattack.py:263 ../attack/sqlinjectionattack.py:264
-#: ../config/vulnerabilities/vulnerabilities.xml:17
-#: ../attack/mod_blindsql.py:109 ../attack/mod_blindsql.py:111
-#: ../attack/mod_blindsql.py:114 ../attack/mod_blindsql.py:112
-#: ../attack/mod_blindsql.py:117 ../attack/mod_blindsql.py:119
-#: ../attack/mod_blindsql.py:121 ../attack/mod_blindsql.py:124
-msgid "Blind SQL Injection"
-msgstr "Injection SQL aveugle"
-
-#: ../attack/sqlinjectionattack.py:302 ../attack/mod_blindsql.py:158
-#: ../attack/mod_blindsql.py:163 ../attack/mod_blindsql.py:170
-msgid "Blind SQL Injection coming from"
-msgstr "Injection SQL aveugle en provenance de"
-
-#: ../attack/sqlinjectionattack.py:303 ../attack/mod_blindsql.py:159
-#: ../attack/mod_blindsql.py:164 ../attack/mod_blindsql.py:171
-msgid "Blind SQL Injection in"
-msgstr "Injection SQL aveugle dans"
-
-#: ../attack/xssattack.py:132 ../attack/xssattack.py:135
-#: ../attack/xssattack.py:155 ../attack/mod_xss.py:133
-#: ../attack/mod_xss.py:136 ../attack/mod_xss.py:156
-#: ../attack/mod_permanentxss.py:69 ../attack/mod_permanentxss.py:76
-#: ../attack/mod_permanentxss.py:81 ../attack/mod_permanentxss.py:103
-#: ../attack/mod_permanentxss.py:105
-msgid "Found permanent XSS in"
-msgstr "XSS permanent trouvé dans"
-
-#: ../attack/xssattack.py:132 ../attack/xssattack.py:135
-#: ../attack/mod_xss.py:133 ../attack/mod_xss.py:136
-#: ../attack/mod_permanentxss.py:69 ../attack/mod_permanentxss.py:77
-#: ../attack/mod_permanentxss.py:81 ../attack/mod_permanentxss.py:83
-msgid "with"
-msgstr "avec"
-
-#: ../attack/xssattack.py:153 ../attack/mod_xss.py:154
-#: ../attack/mod_permanentxss.py:101 ../attack/mod_permanentxss.py:103
-msgid "Found permanent XSS attacked by"
-msgstr "XSS permanent en provenance de"
-
-#: ../attack/xssattack.py:154 ../attack/mod_xss.py:155
-#: ../attack/mod_permanentxss.py:102
-msgid "with field"
-msgstr "avec le champ"
-
-#: ../attack/xssattack.py:156 ../attack/mod_xss.py:157
-#: ../attack/mod_permanentxss.py:105 ../attack/mod_permanentxss.py:108
-#: ../attack/mod_permanentxss.py:107 ../attack/mod_permanentxss.py:110
-msgid "attacked by"
-msgstr "en provenance de"
-
-#: ../attack/xssattack.py:156 ../attack/mod_xss.py:157
-#: ../attack/mod_permanentxss.py:105 ../attack/mod_permanentxss.py:108
-#: ../attack/mod_permanentxss.py:104 ../attack/mod_permanentxss.py:107
-#: ../attack/mod_permanentxss.py:110
-msgid "with fields"
-msgstr "avec les champs"
-
-#: ../attack/xssattack.py:261 ../attack/xssattack.py:266
-#: ../attack/xssattack.py:275 ../attack/xssattack.py:278
-#: ../attack/xssattack.py:316 ../attack/xssattack.py:321
-#: ../attack/xssattack.py:330 ../attack/xssattack.py:333
-#: ../attack/xssattack.py:372 ../attack/xssattack.py:377
-#: ../attack/xssattack.py:385 ../attack/xssattack.py:388
-#: ../attack/xssattack.py:426 ../attack/xssattack.py:431
-#: ../attack/xssattack.py:439 ../attack/xssattack.py:442
-#: ../attack/xssattack.py:482 ../attack/xssattack.py:487
-#: ../attack/xssattack.py:496 ../attack/xssattack.py:499
-#: ../attack/mod_xss.py:261 ../attack/mod_xss.py:266 ../attack/mod_xss.py:278
-#: ../attack/mod_xss.py:281 ../attack/mod_xss.py:319 ../attack/mod_xss.py:324
-#: ../attack/mod_xss.py:336 ../attack/mod_xss.py:339 ../attack/mod_xss.py:378
-#: ../attack/mod_xss.py:383 ../attack/mod_xss.py:394 ../attack/mod_xss.py:397
-#: ../attack/mod_xss.py:435 ../attack/mod_xss.py:440 ../attack/mod_xss.py:451
-#: ../attack/mod_xss.py:454 ../attack/mod_xss.py:494 ../attack/mod_xss.py:499
-#: ../attack/mod_xss.py:511 ../attack/mod_xss.py:514 ../attack/mod_xss.py:211
-#: ../attack/mod_xss.py:216 ../attack/mod_xss.py:228 ../attack/mod_xss.py:231
-#: ../attack/mod_xss.py:269 ../attack/mod_xss.py:274 ../attack/mod_xss.py:286
-#: ../attack/mod_xss.py:289 ../attack/mod_xss.py:328 ../attack/mod_xss.py:333
-#: ../attack/mod_xss.py:344 ../attack/mod_xss.py:347 ../attack/mod_xss.py:385
-#: ../attack/mod_xss.py:390 ../attack/mod_xss.py:401 ../attack/mod_xss.py:404
-#: ../attack/mod_xss.py:444 ../attack/mod_xss.py:449 ../attack/mod_xss.py:461
-#: ../attack/mod_xss.py:464 ../attack/mod_xss.py:265 ../attack/mod_xss.py:270
-#: ../attack/mod_xss.py:282 ../attack/mod_xss.py:285 ../attack/mod_xss.py:327
-#: ../attack/mod_xss.py:332 ../attack/mod_xss.py:267 ../attack/mod_xss.py:272
-#: ../attack/mod_xss.py:284 ../attack/mod_xss.py:287 ../attack/mod_xss.py:329
-#: ../attack/mod_xss.py:334 ../attack/mod_xss.py:346 ../attack/mod_xss.py:349
-#: ../attack/mod_xss.py:275 ../attack/mod_xss.py:280 ../attack/mod_xss.py:292
-#: ../attack/mod_xss.py:295 ../attack/mod_xss.py:61 ../attack/mod_xss.py:66
-#: ../attack/mod_xss.py:138 ../attack/mod_xss.py:143
-msgid "XSS"
-msgstr "XSS"
-
-#: ../attack/xssattack.py:269 ../attack/xssattack.py:324
-#: ../attack/xssattack.py:379 ../attack/xssattack.py:433
-#: ../attack/xssattack.py:490 ../attack/mod_xss.py:269
-#: ../attack/mod_xss.py:327 ../attack/mod_xss.py:385 ../attack/mod_xss.py:442
-#: ../attack/mod_xss.py:502 ../attack/mod_xss.py:219 ../attack/mod_xss.py:277
-#: ../attack/mod_xss.py:335 ../attack/mod_xss.py:392 ../attack/mod_xss.py:452
-#: ../attack/mod_xss.py:273 ../attack/mod_xss.py:275 ../attack/mod_xss.py:337
-#: ../attack/mod_xss.py:283
-msgid "Found XSS in"
-msgstr "XSS trouvé dans"
-
-#: ../attack/vulnerabilitiesdescriptions.py:2
-msgid "500 HTTP Error code"
-msgstr "Code d'erreur HTTP 500"
-
-#: ../attack/vulnerabilitiesdescriptions.py:3
-msgid "500 Error description"
+#: ../attack/attack.py:166
+msgid "+ attackGET {0}"
 msgstr ""
-"Description du code d'erreur 500 :"
-""
-"Erreur interne au serveur. Le serveur a fait face à une situation inattendue "
-"qui l'a empêché de traiter convenablement la requête."
 
-#: ../config/vulnerabilities/vulnerabilities.xml:3
-msgid "SQL Injection"
-msgstr "Injection SQL"
+#: ../attack/attack.py:171 ../attack/attack.py:185
+#: ../attack/mod_permanentxss.py:87 ../attack/mod_permanentxss.py:89
+#: ../attack/mod_permanentxss.py:147 ../attack/mod_permanentxss.py:272
+msgid "error: {0} while attacking {1}"
+msgstr "erreur : {0} lors de l'attaque de {1}"
 
-#: ../config/vulnerabilities/vulnerabilities.xml:4
-msgid "SQL Injection description"
-msgstr ""
-"Les injections SQL sont une technique qui exploite une vulnérabilité qui "
-"s'exécute au sein d'une base de donnée."
+#: ../attack/attack.py:173 ../attack/attack.py:187
+msgid "error: timeout while attacking {0}"
+msgstr "erreur: délais d'attente dépassé lors de l'attaque de {0}"
 
-#: ../config/vulnerabilities/vulnerabilities.xml:5
-msgid "SQL Injection solution"
-msgstr ""
-"Pour se protéger des injections SQL, les données fournies par les "
-"utilisateurs ne doivent pas être utilisées telles-quelles dans les requêtes "
-"SQL mais doivent faire l'objet de vérifications (filtres, échappements) "
-"approfondies."
+#: ../attack/attack.py:180
+msgid "+ attackPOST {0} from {1}"
+msgstr "+ attackPOST {0} en provenance de {1}"
 
-#: ../config/vulnerabilities/vulnerabilities.xml:18
-msgid "Blind SQL Injection description"
-msgstr ""
-"Les techniques d'injections SQL en aveugle exploite des vulnérabilités qui "
-"s'exécutent au sein d'une base de données. Ce type de vulnérabilités est "
-"plus difficile à détecter en raison de l'absence de messages d'erreur "
-"renvoyés par l'application web."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:19
-msgid "Blind SQL Injection solution"
-msgstr ""
-"Pour se protéger des injections SQL, les données fournies par les "
-"utilisateurs ne doivent pas être utilisées telles-quelles dans les requêtes "
-"SQL mais doivent faire l'objet de vérifications (filtres, échappements) "
-"approfondies."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:31
-msgid "File Handling"
-msgstr "Attaques sur la gestion des fichiers"
-
-#: ../config/vulnerabilities/vulnerabilities.xml:32
-msgid "File Handling description"
-msgstr ""
-"Ces techniques permet à l'attaquant d'accèder à des fichiers auxquels il "
-"n'est pas sensé accèder car en dehors de la racine du serveur web. En "
-"utilisant certaines séquences comme '../', il peut remonter dans "
-"l'arborescence pour ainsi lister des répertoires ou obtenir le contenu de "
-"fichiers."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:33
-msgid "File Handling solution"
-msgstr ""
-"Ne laissez pas aux utilisateurs la possibilité de choisir une ou plusieurs "
-"parties du nom d'un fichier ou d'un répertoire. Générez vous même des noms "
-"aléatoire en cas de création ou utilisez des correspondances en cas de "
-"templates (un ID numérique correspondant à une chaine de caractères.<br /"
-">Utilisez des jails chroot et des restrictions d'accès pour limiter le "
-"nombre de fichiers accessibles par le serveur."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:45
-msgid "Cross Site Scripting"
-msgstr "Cross Site Scripting"
-
-#: ../config/vulnerabilities/vulnerabilities.xml:46
-msgid "Cross Site Scripting description"
-msgstr ""
-"Le Cross-site scripting (XSS) est une catégorie de vulnérabilités web qui "
-"permet d'exécuter du code dans le navigateur des visiteurs du site. Leur "
-"exploitation peut par exemple permettre le détournement d'une session qui a "
-"été ouverte sur un site par un utilisateur valide."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:47
-msgid "Cross Site Scripting solution"
-msgstr ""
-"Afin de se protéger des attaques XSS, il faut s'assurer que les données "
-"retournées dans une page ne contiennent pas certains caractères interprétés "
-"par le navigateur."
-""
-"Certains caractères considérés dangereux peuvent "
-"être remplacés par leur code d'entité HTML."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:59
-msgid "CRLF"
-msgstr "Attaques CRLF"
-
-#: ../config/vulnerabilities/vulnerabilities.xml:60
-msgid "CRLF description"
-msgstr ""
-"Le terme CRLF fait référence à Carriage Return (ASCII 13, \\r) Line Feed "
-"(ASCII 10, \\n). Dans le protocole HTTP, ces deux caractères à la suite "
-"permettent entre autres de passer à la ligne d'entête suivante."
-""
-"Un script qui insère directement dans ses entêtes des données fournies par "
-"l'utilisateur peut alors se voir injecter des lignes d'entêtes qui seront "
-"interprétées par le navigateur de la victime."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:61
-msgid "CRLF solution"
-msgstr ""
-"Vérifiez que les couples nom / valeur retournés dans les entêtes HTTP ne "
-"contiennent pas la suite de caractères CRLF."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:73
-msgid "Commands execution"
-msgstr "Exécution de commandes"
-
-#: ../config/vulnerabilities/vulnerabilities.xml:74
-msgid "Commands execution description"
-msgstr ""
-"Ce type d'attaque consiste à faire exécuter des commandes sur le serveur. "
-"L'attaquant tente d'injecter les commandes dans les paramêtres de requêtes "
-"qui lui sont accessibles."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:75
-msgid "Commands execution solution"
-msgstr ""
-"Evitez autant que possible de vous servir de données utilisateur dans vous  "
-"appels de commandes."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:83
-msgid "Resource consumption"
-msgstr "Epuisement de ressources"
-
-#: ../config/vulnerabilities/vulnerabilities.xml:84
-msgid "Resource consumption description"
-msgstr ""
-"Un attaquant peut faire en sorte que le serveur consomme plus de ressources "
-"qu'il en utilise en temps normal. Certains défauts de conception peuvent "
-"rendre une ressource indisponible pendant un laps de temps après son accès. "
-"En répétant certaines requêtes mal gérées par le serveur ce dernier peut "
-"arriver à saturation."
-""
-"Des faux positifs lors du scan peuvent aussi "
-"apparaîtrent sous cette catégorie en raison d'un timeout choisi trop faible."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:85
-msgid "Resource consumption solution"
-msgstr ""
-"Alléger les requêtes effectuées par l'application web pour les rendre moins "
-"gourmandes en utilisation mémoire et CPU."
-
-#: ../wapiti.py:481 ../wapiti.py:483 ../net/lswww.py:463 ../net/lswww.py:465
-#: ../net/lswww.py:472 ../wapiti.py:436 ../wapiti.py:438 ../net/lswww.py:506
-#: ../net/lswww.py:515 ../net/lswww.py:512 ../net/lswww.py:521
-#: ../wapiti.py:435 ../wapiti.py:437 ../wapiti.py:440 ../net/lswww.py:471
-#: ../net/lswww.py:480 ../wapiti.py:443 ../net/lswww.py:479
-#: ../net/lswww.py:488 ../net/lswww.py:481 ../net/lswww.py:490
-#: ../net/lswww.py:493 ../net/lswww.py:502 ../wapiti.py:473 ../wapiti.py:476
-#: ../net/lswww.py:524
-msgid "File"
-msgstr "Fichier"
-
-#: ../wapiti.py:481 ../wapiti.py:436 ../wapiti.py:435 ../wapiti.py:438
-#: ../wapiti.py:441 ../wapiti.py:474
-msgid "loaded, Wapiti will use it to perform the attacks"
-msgstr "chargé, Wapiti l'utilisera pour ses attaques"
-
-#: ../wapiti.py:483 ../net/lswww.py:465 ../net/lswww.py:472 ../wapiti.py:438
-#: ../net/lswww.py:515 ../net/lswww.py:521 ../wapiti.py:437 ../wapiti.py:441
-#: ../net/lswww.py:480 ../wapiti.py:444 ../net/lswww.py:488
-#: ../net/lswww.py:490 ../net/lswww.py:502 ../wapiti.py:477
-#: ../net/lswww.py:524
-msgid "not found, Wapiti will scan again the web site"
-msgstr "non trouvé, Wapiti va lancer un nouveau scan du site web"
-
-#: ../net/lswww.py:463 ../net/lswww.py:506 ../net/lswww.py:512
-#: ../net/lswww.py:471 ../net/lswww.py:479 ../net/lswww.py:481
-#: ../net/lswww.py:493 ../net/lswww.py:515
-msgid "loaded, the scan continues"
-msgstr "chargé, le scan continue"
-
-#: ../net/lswww.py:506 ../net/lswww.py:489 ../net/lswww.py:496
-#: ../net/lswww.py:535 ../net/lswww.py:542 ../net/lswww.py:544
-#: ../net/lswww.py:551 ../net/lswww.py:503 ../net/lswww.py:510
-#: ../net/lswww.py:511 ../net/lswww.py:518 ../net/lswww.py:513
-#: ../net/lswww.py:520 ../net/lswww.py:525 ../net/lswww.py:532
-#: ../net/lswww.py:547 ../net/lswww.py:554
-msgid "Notice"
-msgstr "Note"
-
-#: ../net/lswww.py:508 ../net/lswww.py:498 ../net/lswww.py:544
-#: ../net/lswww.py:553 ../net/lswww.py:512 ../net/lswww.py:520
-#: ../net/lswww.py:522 ../net/lswww.py:534 ../net/lswww.py:556
-msgid "Scan stopped, the data has been saved in the file"
-msgstr "Scan mis en pause, les données ont été sauvées dans le fichier"
-
-#: ../wapiti.py:491 ../wapiti.py:446 ../wapiti.py:445 ../wapiti.py:449
-#: ../wapiti.py:452 ../wapiti.py:485
-msgid ""
-"Attack process interrupted. To perform again the attack, lauch Wapiti with "
-"\"-i\" or \"-k\" parameter."
-msgstr ""
-"Le processus d'attaque a été stoppé. Pour le reprendre plus tard, lancez "
-"Wapiti avec les paramêtres \"-i\" ou \"-k\"."
-
-#: ../net/lswww.py:465 ../net/lswww.py:508 ../net/lswww.py:514
-#: ../net/lswww.py:473 ../net/lswww.py:481 ../net/lswww.py:483
-#: ../net/lswww.py:495 ../net/lswww.py:517
-msgid "URLs to browse"
-msgstr "URLs à traiter"
-
-#: ../net/lswww.py:468 ../net/lswww.py:511 ../net/lswww.py:517
-#: ../net/lswww.py:476 ../net/lswww.py:484 ../net/lswww.py:486
-#: ../net/lswww.py:498 ../net/lswww.py:520
-msgid "URLs browsed"
-msgstr "URLs traitées"
-
-#: ../net/lswww.py:491 ../net/lswww.py:537 ../net/lswww.py:546
-#: ../net/lswww.py:505 ../net/lswww.py:513 ../net/lswww.py:515
-#: ../net/lswww.py:527 ../net/lswww.py:549
-msgid "This scan has been saved in the file"
-msgstr "Cette session de scan a été enregistrée dans le fichier"
-
-#: ../net/lswww.py:492 ../net/lswww.py:538
-msgid ""
-"You can use it to perform attacks without scanning again the web site with"
-msgstr ""
-"Vous pouvez l'utiliser pour lancer directements les attaques sans avoir à "
-"scanner le site à nouveau"
-
-#: ../attack/mod_permanentxss.py:110 ../attack/mod_permanentxss.py:112
-msgid "injected from "
-msgstr "injecté depuis "
-
-#: ../net/lswww.py:538 ../net/lswww.py:547 ../net/lswww.py:506
-#: ../net/lswww.py:514 ../net/lswww.py:516 ../net/lswww.py:528
-#: ../net/lswww.py:550
-msgid ""
-"You can use it to perform attacks without scanning again the web site with "
-"the \"-k\" parameter"
-msgstr ""
-"Vous pouvez l'utiliser pour lancer des attaques sans scanner à nouveau le "
-"siteweb avec le paramêtre \"-k\""
-
-#: ../net/lswww.py:545 ../net/lswww.py:554 ../net/lswww.py:513
-#: ../net/lswww.py:521 ../net/lswww.py:523 ../net/lswww.py:535
-#: ../net/lswww.py:557
-msgid ""
-"To continue this scan, you should launch Wapiti with the \"-i\" parameter"
-msgstr ""
-"Si vous souhaitez reprendre ce scan, relancez Wapiti avec le paramêtre \"-i\""
-
-#: ../wapiti.py:176 ../wapiti.py:175 ../wapiti.py:178 ../wapiti.py:202
-msgid "Loading modules"
-msgstr "Chargement des modules"
-
-#: ../attack/mod_backup.py:56 ../attack/mod_backup.py:59
-#: ../attack/mod_backup.py:65 ../attack/mod_backup.py:68
+#: ../attack/mod_backup.py:89
 msgid "Found backup file !"
-msgstr "Fichier de sauvegarde trouvé !"
+msgstr "Copie de sauvegarde trouvée !"
 
-#: ../attack/mod_backup.py:63 ../attack/mod_backup.py:72
-msgid "Backup file found for"
-msgstr "Fichier de sauvegarde trouvé pour"
+#: ../attack/mod_backup.py:94
+msgid "Backup file {0} found for {1}"
+msgstr "Copie de sauvegarde {0} trouvée pour {1}"
 
-#: ../config/vulnerabilities/vulnerabilities.xml:103
-msgid "Backup file"
-msgstr "Copie de sauvegarde"
+#: ../attack/mod_blindsql.py:40
+msgid "Blind SQL vulnerability"
+msgstr "Faille d'injection SQL en aveugle"
 
-#: ../config/vulnerabilities/vulnerabilities.xml:104
-msgid "Backup file description"
-msgstr ""
-"Il se peut que des copies de sauvegarde de scripts soient accessibles sur le "
-"serveur. L'administrateur web a du placer volontairement une sauvegarde dans "
-"l'idée de revenir à une précédente version ou involontairement en utilisant "
-"un éditeur configuré pour sauver automatiquement une copie après une "
-"certaine durée.Ces fichiers peuvent révéler des informations intéressantes "
-"comme du code source ou encore des identifiants (accès à la base de données)."
+#: ../attack/mod_blindsql.py:93 ../attack/mod_file.py:146
+#: ../attack/mod_sql.py:131
+msgid "{0} via injection in the query string"
+msgstr "{0} via une injection dans la query string"
 
-#: ../config/vulnerabilities/vulnerabilities.xml:105
-msgid "Backup file solution"
-msgstr ""
-"L'administrateur web doit supprimer manuellement les sauvegardes présentes "
-"sous la racine web et reconfigurer l'éditeur qu'il utilise pour désactiver "
-"les sauvegardes automatiques."
+#: ../attack/mod_blindsql.py:141 ../attack/mod_blindsql.py:222
+#: ../attack/mod_exec.py:195 ../attack/mod_exec.py:292
+#: ../attack/mod_file.py:211 ../attack/mod_file.py:301
+#: ../attack/mod_sql.py:258
+msgid "{0} via injection in the parameter {1}"
+msgstr "{0} via une injection dans le paramètre {1}"
 
-#: ../attack/mod_nikto.py:31 ../attack/mod_nikto.py:32
-#: ../attack/mod_nikto.py:36
-msgid "Problem with local nikto database."
-msgstr ""
-"Un problème a été rencontré lors de la lecture de la base de données Nikto."
-
-#: ../attack/mod_nikto.py:32 ../attack/mod_nikto.py:33
-#: ../attack/mod_nikto.py:37
-msgid "Downloading from the web..."
-msgstr "Téléchargement depuis le web..."
-
-#: ../attack/mod_nikto.py:44 ../attack/mod_nikto.py:45
-#: ../attack/mod_nikto.py:49
-msgid "Error downloading Nikto database"
-msgstr "Erreur lors du téléchargement de la base de données Nikto"
-
-#: ../attack/mod_nikto.py:151 ../attack/mod_nikto.py:154
-#: ../attack/mod_nikto.py:152 ../attack/mod_nikto.py:153
-#: ../attack/mod_nikto.py:155 ../attack/mod_nikto.py:156
-#: ../attack/mod_nikto.py:159 ../attack/mod_nikto.py:160
-msgid "References:"
-msgstr "Références :"
-
-#: ../config/vulnerabilities/vulnerabilities.xml:113
-msgid "Potentially dangerous file"
-msgstr "Fichiers potentiellement dangereux"
-
-#: ../config/vulnerabilities/vulnerabilities.xml:114
-msgid "Potentially dangerous file description"
-msgstr ""
-"Certains scripts sont connus pour être potentiellement vulnérables et "
-"dangereux. Des listes de tels fichiers existent et sont fréquemment "
-"utilisées par des attaquants pour scanner des sites Internet à la recherche "
-"de ces vulnarébilitées."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:115
-msgid "Potentially dangerous file solution"
-msgstr ""
-"L'administrateur devrait vérifier régulièrement si des mises à jour sont "
-"disponibles pour les scripts et logiciels utilisés sur le serveur. Il est "
-"aussi conseillé de se tenir informé sur les nouvelles vulnérabilités "
-"trouvées en s'abonnant à des listes de sécurité ou en suivant des flux RSS "
-"spécialisés."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:93
-msgid "Htaccess Bypass"
-msgstr "Contournement de protection par htaccess"
-
-#: ../config/vulnerabilities/vulnerabilities.xml:94
-msgid "Htaccess bypass description"
-msgstr ""
-"Les fichiers htaccess permettent de restreindre l'accès a des fichiers ou "
-"répertoires en fonction d'identifiants ou méthode HTTP utilisés. Si la "
-"configuration a été mal faite il peut être possible de contourner la "
-"restriction."
-
-#: ../config/vulnerabilities/vulnerabilities.xml:95
-msgid "Htaccess bypass solution"
-msgstr ""
-"La configuration du htaccess doit être minutieusement vérifiée pour ne pas "
-"laisser une porte d'entrée à un éventuel attaquant."
-
-#: ../wapiti.py:256 ../wapiti.py:259 ../wapiti.py:283
-msgid "Missing dependecies for module"
-msgstr "Dépendances manquantes pour le module"
-
-#: ../wapiti.py:262 ../wapiti.py:265 ../wapiti.py:289
-msgid "Launching module"
-msgstr "Lancement du module"
-
-#: ../attack/mod_htaccess.py:54
-msgid "HtAccess protection found:"
-msgstr "Protection htaccess trouvée :"
-
-#: ../attack/mod_htaccess.py:73 ../attack/mod_htaccess.py:76
-#: ../attack/mod_htaccess.py:96 ../attack/mod_htaccess.py:99
-msgid "Source code:"
-msgstr "Code source :"
-
-#: ../attack/mod_htaccess.py:83 ../attack/mod_htaccess.py:85
-msgid ".htaccess bypass vulnerability:"
-msgstr "Vulnérabilité de contournement de htaccess :"
-
-#: ../attack/mod_crlf.py:76 ../attack/mod_crlf.py:84
-msgid "CRLF Injection"
+#: ../attack/mod_crlf.py:31
+msgid "CRLF injection"
 msgstr "Injection CRLF"
 
-#: ../attack/mod_file.py:70
-msgid "Remote include"
-msgstr "Inclusion distante"
+#: ../attack/mod_crlf.py:70 ../attack/mod_crlf.py:77
+msgid "(QUERY_STRING)"
+msgstr ""
 
-#: ../attack/mod_sql.py:42 ../attack/mod_sql.py:44 ../attack/mod_sql.py:43
-#: ../attack/mod_sql.py:45
-msgid "MySQL Injection"
-msgstr "Injection MySQL"
-
-#: ../attack/mod_sql.py:46 ../attack/mod_sql.py:47
-msgid "Access-Based SQL Injection"
-msgstr "Injection sur base Access"
-
-#: ../attack/mod_sql.py:48 ../attack/mod_sql.py:50 ../attack/mod_sql.py:52
-#: ../attack/mod_sql.py:49 ../attack/mod_sql.py:51 ../attack/mod_sql.py:53
-msgid "MSSQL-Based Injection"
-msgstr "Injection MSSQL"
-
-#: ../attack/mod_sql.py:54 ../attack/mod_sql.py:55
-msgid "Java.SQL Injection"
-msgstr "Injection Java.SQL"
-
-#: ../attack/mod_sql.py:56 ../attack/mod_sql.py:57
-msgid "PostgreSQL Injection"
-msgstr "Injection PostgreSQL"
-
-#: ../attack/mod_sql.py:58 ../attack/mod_sql.py:59
-msgid "XPath Injection"
-msgstr "Injection XPath"
-
-#: ../attack/mod_sql.py:60 ../attack/mod_sql.py:61
-msgid "LDAP Injection"
-msgstr "Injection LDAP"
-
-#: ../attack/mod_sql.py:62 ../attack/mod_sql.py:63
-msgid "DB2 Injection"
-msgstr "Injection DB2"
-
-#: ../attack/mod_sql.py:64 ../attack/mod_sql.py:65
-msgid "Interbase Injection"
-msgstr "Injection Interbase"
-
-#: ../attack/mod_sql.py:66 ../attack/mod_sql.py:67
-msgid "Sybase Injection"
-msgstr "Injection Sybase"
-
-#: ../attack/mod_exec.py:48
-msgid "Command execution"
-msgstr "Exécution de commande"
-
-#: ../attack/mod_exec.py:54
-msgid "preg_replace injection"
-msgstr "Injection par preg_replace"
-
-#: ../attack/mod_sql.py:70
-msgid "Oracle Injection"
-msgstr "Injection Oracle"
-
-#: ../net/getcookie.py:53 ../net/getcookie.py:125 ../net/cookie.py:42
-#: ../net/getcookie.py:57 ../net/getcookie.py:130 ../net/cookie.py:46
-msgid "Error getting url"
-msgstr "Erreur lors de l'ouverture de l'url"
-
-#: ../net/getcookie.py:61 ../net/getcookie.py:63
-msgid "Error fetching page"
-msgstr "Erreur lors de la lecture de la page"
-
-#: ../net/getcookie.py:75 ../net/getcookie.py:80
-msgid "No forms found in this page !"
-msgstr "Aucun formulaire trouvé dans cette page !"
-
-#: ../net/getcookie.py:82 ../net/getcookie.py:87
-msgid "Choose the form you want to use :"
-msgstr "Choisissez le formulaire à utiliser :"
-
-#: ../net/getcookie.py:91 ../net/getcookie.py:96
-msgid "Enter a number : "
-msgstr "Entrez un numéro : "
-
-#: ../net/getcookie.py:98 ../net/getcookie.py:103
-msgid "Please enter values for the folling form :"
-msgstr "Veuillez entrez les valeurs pour le formulaire :"
-
-#: ../attack/mod_crlf.py:90 ../attack/mod_crlf.py:98
+#: ../attack/mod_crlf.py:121
 msgid "Error: The server did not understand this request"
 msgstr "Erreur : Le serveur n'a pas compris la requête"
 
-#: ../attack/mod_xss.py:329 ../attack/mod_xss.py:334 ../attack/mod_xss.py:346
-#: ../attack/mod_xss.py:349 ../attack/mod_xss.py:337 ../attack/mod_xss.py:342
-#: ../attack/mod_xss.py:354 ../attack/mod_xss.py:357 ../attack/mod_xss.py:381
-#: ../attack/mod_xss.py:386 ../attack/mod_xss.py:398 ../attack/mod_xss.py:401
-msgid "Raw XSS"
-msgstr "XSS brut"
+#: ../attack/mod_exec.py:45
+msgid "Command execution"
+msgstr "Exécution de commande"
 
-#: ../attack/mod_xss.py:337 ../attack/mod_xss.py:345 ../attack/mod_xss.py:389
-msgid "Found raw XSS in"
-msgstr "XSS brut trouvé dans"
+#: ../attack/mod_exec.py:48
+msgid "PHP evaluation"
+msgstr "Interprétation de code PHP"
 
-#: ../wapiti.py:391
-msgid "Invalid protocol:"
-msgstr "Protocole invalide :"
+#: ../attack/mod_exec.py:51 ../attack/mod_exec.py:54
+msgid "Warning exec"
+msgstr "Avertissement exec"
 
-#: ../net/lswww.py:156
+#: ../attack/mod_exec.py:57 ../attack/mod_exec.py:63
+msgid "preg_replace injection"
+msgstr "Injection via preg_replace"
+
+#: ../attack/mod_exec.py:60
+msgid "Warning usort()"
+msgstr "Avertissement usort()"
+
+#: ../attack/mod_exec.py:66
+msgid "Warning assert"
+msgstr "Avertissement assert"
+
+#: ../attack/mod_exec.py:69
+msgid "Evalutation warning"
+msgstr "Avertissement d'une évaluation"
+
+#: ../attack/mod_file.py:40
+msgid "Remote inclusion vulnerability"
+msgstr "Faille d'inclusion distante"
+
+#: ../attack/mod_file.py:41
+msgid "Linux local file disclosure vulnerability"
+msgstr "Divulgation de fichiers sur un système Linux"
+
+#: ../attack/mod_file.py:42
+msgid "BSD local file disclosure vulnerability"
+msgstr "Divulgation de fichiers sur un système BSD"
+
+#: ../attack/mod_file.py:43
+msgid "Windows local file disclosure vulnerability"
+msgstr "Divulgation de fichiers sur un système Window"
+
+#: ../attack/mod_file.py:44 ../attack/mod_file.py:45
+msgid "File disclosure vulnerability in include_path"
+msgstr "Divulgation de fichier présent dans le include_path"
+
+#: ../attack/mod_file.py:46
+msgid "highlight_file() vulnerability in basedir"
+msgstr "Divulgation de fichier présent dans basedur vie highlight_file()"
+
+#: ../attack/mod_file.py:47
+msgid "include() of file in include_path"
+msgstr "Inclusion d'un fichier présent dans le include_path"
+
+#: ../attack/mod_file.py:84
+msgid "Possible {0} vulnerability"
+msgstr "Eventuelle faille de type {0}"
+
+#: ../attack/mod_htaccess.py:75
+msgid "HtAccess protection found: {0}"
+msgstr "Protection par htaccess trouvée : {0}"
+
+#: ../attack/mod_htaccess.py:85
+msgid "|HTTP Code: {0} : {1}"
+msgstr "| Code HTTP : {0} : {1}"
+
+#: ../attack/mod_htaccess.py:88 ../attack/mod_htaccess.py:102
+msgid "Source code:"
+msgstr "Code source :"
+
+#: ../attack/mod_htaccess.py:94
+msgid "{0} HtAccess"
+msgstr ""
+
+#: ../attack/mod_htaccess.py:95
+msgid "  .htaccess bypass vulnerability: {0}"
+msgstr "Disfonctionnement dans la protection .htaccess : {0}"
+
+#: ../attack/mod_htaccess.py:99
+msgid "|HTTP Code: {0}"
+msgstr "| Code HTTP : {0}"
+
+#: ../attack/mod_nikto.py:75
+msgid "Problem with local nikto database."
+msgstr "Un problème est survenu avec la base de données nikto locale"
+
+#: ../attack/mod_nikto.py:76
+msgid "Downloading from the web..."
+msgstr "Téléchargement depuis le web..."
+
+#: ../attack/mod_nikto.py:90
+msgid "Error downloading Nikto database"
+msgstr "Erreur de téléchargement de la base Nikto"
+
+#: ../attack/mod_nikto.py:235 ../attack/mod_nikto.py:237
+msgid "References:"
+msgstr "Références"
+
+#: ../attack/mod_permanentxss.py:57
+msgid "Stored XSS vulnerability"
+msgstr "Faille XSS permanent"
+
+#: ../attack/mod_permanentxss.py:115 ../attack/mod_permanentxss.py:161
+msgid "Found permanent XSS in {0} with {1}"
+msgstr "Un XSS permanent a été trouvé dans {0} avec {1}"
+
+#: ../attack/mod_permanentxss.py:213 ../attack/mod_permanentxss.py:280
+msgid "Found permanent XSS attacked by {0} with fields {1}"
+msgstr "Un XSS permanent a été trouvé en envoyant les champs {1} depuis {0}"
+
+#: ../attack/mod_sql.py:39 ../attack/mod_sql.py:41
+msgid "MySQL Injection"
+msgstr "Injection MySQL"
+
+#: ../attack/mod_sql.py:43
+msgid "Access-Based SQL Injection"
+msgstr "Injection SQL sur système MS-Access"
+
+#: ../attack/mod_sql.py:45 ../attack/mod_sql.py:47 ../attack/mod_sql.py:49
+#: ../attack/mod_sql.py:70
+msgid "MSSQL-Based Injection"
+msgstr "Injection MSSQL"
+
+#: ../attack/mod_sql.py:52
+msgid "Java.SQL Injection"
+msgstr "Injection SQL Java"
+
+#: ../attack/mod_sql.py:54
+msgid "PostgreSQL Injection"
+msgstr "Injection PostgreSQL"
+
+#: ../attack/mod_sql.py:56 ../attack/mod_sql.py:58
+msgid "XPath Injection"
+msgstr "Injection XPath"
+
+#: ../attack/mod_sql.py:60
+msgid "LDAP Injection"
+msgstr "Injection LDAP"
+
+#: ../attack/mod_sql.py:62
+msgid "DB2 Injection"
+msgstr "Injection SQL DB2"
+
+#: ../attack/mod_sql.py:64
+msgid "Interbase Injection"
+msgstr "Injection SQL Interbase"
+
+#: ../attack/mod_sql.py:66
+msgid "Sybase Injection"
+msgstr "Injection SQL Sybase"
+
+#: ../attack/mod_sql.py:68
+msgid ".NET SQL Injection"
+msgstr "Injection SQL .NET"
+
+#: ../attack/mod_sql.py:76
+msgid "Oracle Injection"
+msgstr "Injection SQL Oracle"
+
+#: ../attack/mod_xss.py:59
+msgid "XSS vulnerability"
+msgstr "Faille XSS"
+
+#: ../attack/mod_xss.py:126 ../attack/mod_xss.py:337
+msgid "XSS vulnerability found via injection in the resource path"
+msgstr "Faille XSS trouvée via l'injection dans le chemin de la ressource"
+
+#: ../attack/mod_xss.py:196
+msgid "XSS vulnerability found via injection in the query string"
+msgstr "Faille XSS trouvée via l'injection dans la query string"
+
+#: ../attack/mod_xss.py:270 ../attack/mod_xss.py:437
+msgid "XSS vulnerability found via injection in the parameter {0}"
+msgstr "Faille XSS trouvée via l'injection dans le paramètre {0}"
+
+#: ../net/getcookie.py:97
+msgid "No forms found in this page !"
+msgstr "Aucun formulaire n'a été trouvé dans cette page !"
+
+#: ../net/getcookie.py:104
+msgid "Choose the form you want to use :"
+msgstr "Sélectionnez le formulaire que vous souhaitez utiliser :"
+
+#: ../net/getcookie.py:113
+msgid "Enter a number : "
+msgstr "Entrez un numéro : "
+
+#: ../net/getcookie.py:120
+msgid "Please enter values for the following form: "
+msgstr "Veuillez renseignr les champs pour le formulaire suivant : "
+
+#: ../net/getcookie.py:121
+msgid "url = {0}"
+msgstr ""
+
+#: ../net/cookie.py:75
+msgid "Error getting url {0}"
+msgstr "Impossible d'atteindre l'URL {0}"
+
+#: ../net/lswww.py:164
 msgid "First argument must be the root url !"
-msgstr "Le premier argument doit être l'url racine !"
+msgstr "Le premier argument doit être l'URL racine !"
+
+#: ../net/lswww.py:169
+msgid "Invalid protocol: {0}"
+msgstr "Protocole invalide : {0}"
+
+#: ../net/lswww.py:208
+msgid "Invalid link argument: {0}"
+msgstr "Cet argument n'est pas un lien valide : {0}"
+
+#: ../net/lswww.py:266
+msgid "Connection refused!"
+msgstr "Connexion refusée !"
+
+#: ../net/lswww.py:270
+msgid "Exception in lswww.browse: {0}"
+msgstr "Exception reçue dans lswww.browse : {0}"
+
+#: ../net/lswww.py:665
+msgid "File {0} loaded, the scan continues:"
+msgstr "Fichier {0} chargé, le scan continue :"
+
+#: ../net/lswww.py:667
+msgid " * URLs to browse"
+msgstr " * URLs à explorer"
+
+#: ../net/lswww.py:670
+msgid " * URLs browsed"
+msgstr " * URLs explorées"
+
+#: ../net/lswww.py:674
+msgid "File {0} not found, Wapiti will scan again the web site"
+msgstr "Le Fichier {0} n'a pas été trouvé, Wapiti va recommencer le scan du site"
+
+#: ../net/lswww.py:707 ../net/lswww.py:715
+msgid " Note"
+msgstr " Note"
+
+#: ../net/lswww.py:709
+msgid "This scan has been saved in the file {0}/{1}.xml"
+msgstr "Le scan a été sauvegardé dans le fichier {0}/{1}.xml"
+
+#: ../net/lswww.py:711
+msgid "You can use it to perform attacks without scanning again the web site with the \"-k\" parameter"
+msgstr "Vous pouvez l'utiliser pour lancer de futures attaques sans avoir à relancer le scan via le paramètre \"-k\""
+
+#: ../net/lswww.py:717
+msgid "Scan stopped, the data has been saved in the file {0}/{1}.xml"
+msgstr "Scan interrompu, les données ont été sauvegardées dans le fichier {0}/{1}.xml"
+
+#: ../net/lswww.py:719
+msgid "To continue this scan, you should launch Wapiti with the \"-i\" parameter"
+msgstr "Pour reprendre ce scan, vous pouvez lancer wapiti avec l'option \"-i\""
+
+#: ../net/lswww.py:729
+msgid "URLs"
+msgstr ""
+
+#: ../net/lswww.py:736
+msgid "Forms Info"
+msgstr "Formulaires"
+
+#: ../net/lswww.py:738
+msgid "From: {0}"
+msgstr "Depuis: {0}"
+
+#: ../net/lswww.py:739
+msgid "To: {0}"
+msgstr "Vers: {0}"
+
+#: ../net/lswww.py:747
+msgid "Upload Scripts"
+msgstr "Scripts d'upload"
+
+#: ../net/lswww.py:1008
+msgid "Forms"
+msgstr "Formulaires"
+
+#: ../net/lswww.py:1011
+msgid "Form {0}"
+msgstr "Formulaire {0}"
+
+#: ../net/lswww.py:1015
+msgid " * Method:  {0}"
+msgstr " * Méthode : {0}"
+
+#: ../net/lswww.py:1016
+msgid " * Intputs:"
+msgstr ""
+
+#: ../net/lswww.py:1021
+msgid " * Selects:"
+msgstr ""
+
+#: ../net/lswww.py:1026
+msgid " * TextAreas:"
+msgstr ""
+
+#: ../net/lswww.py:1032
+msgid "URLS"
+msgstr ""
+
+#: ../report/txtreportgenerator.py:69
+msgid "Report for {0}\n"
+msgstr "Rapport pour {0}\n"
+
+#: ../report/txtreportgenerator.py:70
+msgid "Date of the scan : {0}\n"
+msgstr "Date du scan : {0}\n"
+
+#: ../report/txtreportgenerator.py:72
+msgid "Scope of the scan : {0}\n"
+msgstr "Portée de ce scan : {0}\n"
+
+#: ../report/txtreportgenerator.py:75
+msgid "Summary of vulnerabilities :"
+msgstr "Résumé des vulnérabilités :"
+
+#: ../report/txtreportgenerator.py:78
+msgid "{0} : {1:>3}\n"
+msgstr ""
+
+#: ../report/txtreportgenerator.py:88 ../report/txtreportgenerator.py:105
+msgid "Evil request:\n"
+msgstr ""
+
+#: ../report/txtreportgenerator.py:91
+msgid "cURL command PoC : \"{0}\""
+msgstr "PoC en commande cURL : \"{0}\""
+
+#: ../report/txtreportgenerator.py:97
+msgid "Anomalies found:"
+msgstr "nomalies rencontrées :"
+
+#: ../wapiti.py:560 ../wapiti.py:559
+msgid "Attack process interrupted. To perform again the attack, lauch Wapiti with \"-i\" or \"-k\" parameter."
+msgstr "Le processus d'attaqye a été interrompu. Pour relancer l'attaque, lancez Wapiti avec les options \"-i\" ou \"-k\""
+
+#: ../wapiti.py:551
+msgid "File {0} not found. Wapiti will scan the web site again"
+msgstr "Le fichier {0} n'a pas été trouvé. Wapiti va scanner le site à nouveau"

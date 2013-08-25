@@ -548,8 +548,7 @@ if __name__ == "__main__":
                 wap.forms = crawlerPersister.getForms()
                 print(_("File {0} loaded. Wapiti will use it to perform the attack").format(attackFile))
             else:
-                print(_("File {0} not found."
-                        "Wapiti will scan the web site again").format(attackFile))
+                print(_("File {0} not found. Wapiti will scan the web site again").format(attackFile))
                 wap.browse(crawlerFile)
         else:
             wap.browse(crawlerFile)
@@ -557,8 +556,7 @@ if __name__ == "__main__":
             wap.attack()
         except KeyboardInterrupt:
             print('')
-            print(_("Attack process interrupted."
-                    "To perform again the attack,"
+            print(_("Attack process interrupted. To perform again the attack, "
                     "lauch Wapiti with \"-i\" or \"-k\" parameter."))
             print('')
             pass
