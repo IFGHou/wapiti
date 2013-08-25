@@ -145,7 +145,7 @@ class mod_file(Attack):
                                      request=evil_req,
                                      info=_("{0} via injection in the query string").format(err))
                         self.logR(Vulnerability.MSG_QS_INJECT, err, page)
-                        self.logR(Vulnerability.MSG_EVIL_URL)
+                        self.logR(Vulnerability.MSG_EVIL_URL, evil_req.url)
                         if inc:
                             break
                     else:
@@ -167,20 +167,23 @@ class mod_file(Attack):
             saved_value = params_list[i][1]
             if saved_value is None:
                 saved_value = ""
+            params_list[i][1] = "__FILE__"
+            url = page + "?" + self.HTTP.encode(params_list)
 
-            for payload in self.payloads:
-                err = ""
+            if url not in self.attackedGET:
+                self.attackedGET.append(url)
+                for payload in self.payloads:
+                    err = ""
 
-                payload = payload.replace('[VALUE]', saved_value)
-                payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/', 1)[0])
-                payload = payload.replace('[FILE_NAME]', http_res.file_name)
+                    payload = payload.replace('[VALUE]', saved_value)
+                    payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/', 1)[0])
+                    payload = payload.replace('[FILE_NAME]', http_res.file_name)
 
-                params_list[i][1] = self.HTTP.quote(payload)
-                url = page + "?" + self.HTTP.encode(params_list)
-                if url not in self.attackedGET:
+                    params_list[i][1] = self.HTTP.quote(payload)
+                    url = page + "?" + self.HTTP.encode(params_list)
+
                     if self.verbose == 2:
                         print(u"+ {0}".format(url))
-                    self.attackedGET.append(url)
                     evil_req = HTTP.HTTPResource(url)
                     try:
                         data, code = self.HTTP.send(evil_req, headers=headers).getPageCode()
