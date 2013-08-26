@@ -206,7 +206,7 @@ Supported options are:
         vulnXMLParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/vulnerabilities.xml"))
         for vul in vulnXMLParser.getVulnerabilities():
             self.reportGen.addVulnerabilityType(_(vul.getName()),
-                                                (vul.getDescription()),
+                                                _(vul.getDescription()),
                                                 _(vul.getSolution()),
                                                 vul.getReferences())
 
@@ -259,12 +259,16 @@ Supported options are:
                             if method == "post" or method == "":
                                 x.doPOST = False
                     else:
+                        found = False
                         for x in self.attacks:
                             if x.name == module:
+                                found = True
                                 if method == "get" or method == "":
                                     x.doGET = False
                                 if method == "post" or method == "":
                                     x.doPOST = False
+                        if not found:
+                            print(_("[!] Unable to find a module named {0}").format(module))
 
                 # activate some module options
                 else:
@@ -277,12 +281,16 @@ Supported options are:
                             if method == "post" or method == "":
                                 x.doPOST = True
                     else:
+                        found = False
                         for x in self.attacks:
                             if x.name == module:
+                                found = True
                                 if method == "get" or method == "":
                                     x.doGET = True
                                 if method == "post" or method == "":
                                     x.doPOST = True
+                        if not found:
+                            print(_("[!] Unable to find a module named {0}").format(module))
 
     def browse(self, crawlerFile):
         "Extract hyperlinks and forms from the webpages found on the website"
