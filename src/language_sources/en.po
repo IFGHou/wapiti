@@ -158,7 +158,7 @@ msgid "Open {0}/index.html with a browser to see this report."
 msgstr ""
 
 #: ../wapiti.py:410
-msgid "wapityDoc"
+msgid "wapitiDoc"
 msgstr ""
 
 #: ../wapiti.py:418
