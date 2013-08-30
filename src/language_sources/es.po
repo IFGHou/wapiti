@@ -1,7 +1,5 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR 2009-2013 Nicolas SURRIBAS
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# This file is distributed under the same license as the Wapiti package.
 #
 #, fuzzy
 msgid ""

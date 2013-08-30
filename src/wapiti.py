@@ -358,9 +358,9 @@ if __name__ == "__main__":
         try:
             opts, args = getopt.getopt(sys.argv[2:],
                                        "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",
-                                       ["help", "underline", "proxy=", "start=", "exclude=",
+                                       ["help", "color", "proxy=", "start=", "exclude=",
                                         "cookie=", "auth=", "remove=", "verbose=", "timeout=",
-                                        "module=", "outputfile", "reportType", "nice=",
+                                        "module=", "output=", "format=", "nice=",
                                         "attack", "continue", "scope=", "verify-ssl=", "auth-method="])
         except getopt.GetoptError, e:
             print(e)
@@ -409,7 +409,7 @@ if __name__ == "__main__":
                         wap.setNice(int(a))
                     else:
                         raise InvalidOptionValue(o, a)
-                if o in ["-u", "--underline"]:
+                if o in ["-u", "--color"]:
                     wap.setColor()
                 if o in ["-v", "--verbose"]:
                     if str.isdigit(a):
@@ -423,9 +423,9 @@ if __name__ == "__main__":
                         raise InvalidOptionValue(o, a)
                 if o in ["-m", "--module"]:
                     wap.setModules(a)
-                if o in ["-o", "--outputfile"]:
+                if o in ["-o", "--output"]:
                     wap.setOutputFile(a)
-                if o in ["-f", "--reportType"]:
+                if o in ["-f", "--format"]:
                     found_generator = False
                     for repGenInfo in wap.xmlRepGenParser.getReportGenerators():
                         if a == repGenInfo.getKey():
