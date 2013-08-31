@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# lswww v2.3.1 - A web spider library
+# lswww v2.4.0 - A web spider library
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
 # Copyright (C) 2006-2013 Nicolas Surribas
 #

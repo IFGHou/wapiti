@@ -59,12 +59,14 @@ if a script is vulnerable.""",
     license="GPLv2",
     platforms=["Linux"],
     package_dir={"wapiti": "src"},
-    packages=["wapiti",
-              "wapiti.attack",
-              "wapiti.file",
-              "wapiti.language",
-              "wapiti.net",
-              "wapiti.report"],
+    packages=[
+        "wapiti",
+        "wapiti.attack",
+        "wapiti.file",
+        "wapiti.language",
+        "wapiti.net",
+        "wapiti.report"
+    ],
     data_files=doc_and_conf_files,
     scripts=["src/wapiti.py"],
     cmdclass={
@@ -85,5 +87,10 @@ if a script is vulnerable.""",
         'Programming Language :: Python',
         'Topic :: Security',
         'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
-        'Topic :: Software Development :: Testing']
+        'Topic :: Software Development :: Testing'
+    ],
+    dependency_links=[
+        "http://docs.python-requests.org/en/latest/",
+        "http://www.crummy.com/software/BeautifulSoup/"
+    ]
 )

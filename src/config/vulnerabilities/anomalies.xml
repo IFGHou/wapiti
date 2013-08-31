@@ -5,12 +5,8 @@
         <solution text="Internal server error solution"/>
         <references>
             <reference>
-                <title>http://www.owasp.org/index.php/TO_CHANGE</title>
-                <url>http://www.owasp.org/index.php/TO_CHANGE</url>
-            </reference>
-            <reference>
-                <title>http://en.wikipedia.org/wiki/TO_CHANGE</title>
-                <url>http://en.wikipedia.org/wiki/SQL_injection</url>
+                <title>Wikipedia article for 5xx HTTP error codes</title>
+                <url>https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_Error</url>
             </reference>
         </references>
     </anomaly>
