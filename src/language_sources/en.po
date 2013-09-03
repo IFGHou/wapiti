@@ -771,7 +771,7 @@ msgstr ""
 "language files (eg: value 5 from the user submission = Czechoslovakian, "
 "rather than expecting the user to return 'Czechoslovakian'). Ensure the "
 "user cannot supply all parts of the path - surround it with your path code. "
-"Validate the user’s input by only accepting known good - do not sanitize "
+"Validate the user's input by only accepting known good - do not sanitize "
 "the data. Use chrooted jails and code access policies to restrict where "
 "the files can be obtained or saved to."
 
