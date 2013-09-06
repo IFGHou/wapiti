@@ -22,7 +22,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 from attack import Attack
-from vulnerability import Vulnerability
+from language.vulnerability import Vulnerability
 import socket
 from net import HTTP
 

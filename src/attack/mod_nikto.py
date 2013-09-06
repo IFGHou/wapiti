@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import BeautifulSoup
 from attack import Attack
-from vulnerability import Vulnerability
+from language.vulnerability import Vulnerability
 import csv
 import re
 import os

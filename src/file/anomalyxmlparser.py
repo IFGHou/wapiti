@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 from xml.parsers import expat
-from vulnerability import Anomaly
+from language.vulnerability import Anomaly
 
 
 class AnomalyXMLParser(object):

@@ -20,7 +20,7 @@ import random
 import BeautifulSoup
 import requests
 from attack import Attack
-from vulnerability import Vulnerability, Anomaly
+from language.vulnerability import Vulnerability, Anomaly
 from net import HTTP
 
 

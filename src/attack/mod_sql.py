@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import re
 from attack import Attack
-from vulnerability import Vulnerability, Anomaly
+from language.vulnerability import Vulnerability, Anomaly
 import requests
 from net import HTTP
 
