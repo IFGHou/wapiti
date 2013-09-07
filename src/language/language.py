@@ -25,6 +25,7 @@
 import os
 import locale
 import gettext
+from pkg_resources import resource_filename
 
 
 class Language(object):
@@ -38,8 +39,7 @@ class Language(object):
     LANG_DIR = 'config/language/'
     AVAILABLE_LANGS = ["es", "en", "fr"]
 
-    BASE_DIR = os.path.join(os.path.abspath(__file__), '../..')
-    BASE_DIR = os.path.normpath(BASE_DIR)
+    BASE_DIR = resource_filename('wapiti', '')
 
     if os.path.isfile("/usr/local/share/locale/en/LC_MESSAGES/wapiti.mo"):
         LANG_PATH = "/usr/local/share/locale/"

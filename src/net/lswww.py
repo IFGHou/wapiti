@@ -29,29 +29,6 @@ import HTTP
 import urllib
 import swf_parser
 import lamejs
-
-from distutils.sysconfig import get_python_lib
-BASE_DIR = None
-if '' in sys.path:
-    sys.path.remove('')
-for python_dir in sys.path:
-    if os.path.isdir(os.path.join(python_dir, "wapiti")):
-        BASE_DIR = os.path.join(python_dir, "wapiti")
-        break
-if not BASE_DIR:
-    for lib_dir in [get_python_lib(prefix="/usr/local"), get_python_lib()]:
-        if os.path.isdir(os.path.join(lib_dir, "wapiti")):
-            BASE_DIR = os.path.join(lib_dir, "wapiti")
-            sys.path.append(BASE_DIR)
-            break
-if not BASE_DIR:
-    sys.path.append("")
-    if "__file__" in dir():
-        BASE_DIR = os.path.join(os.path.abspath(__file__), '..')
-        BASE_DIR = os.path.normpath(BASE_DIR)
-    else:
-        BASE_DIR = os.getcwd()
-
 import requests
 from htmlentitydefs import name2codepoint as n2cp
 from xml.dom import minidom

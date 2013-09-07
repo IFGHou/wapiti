@@ -16,10 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-__all__ = ["Attack", "mod_crlf", "mod_exec", "mod_file", "mod_sql",
-           "mod_xss", "mod_backup", "mod_htaccess", "mod_blindsql",
-           "mod_permanentxss", "mod_nikto"]
-
-modules = ["mod_crlf", "mod_exec", "mod_file", "mod_sql", "mod_xss",
-           "mod_backup", "mod_htaccess", "mod_blindsql",
-           "mod_permanentxss", "mod_nikto"]
+# __all__ = ["Attack", "mod_crlf", "mod_exec", "mod_file", "mod_sql",
+#            "mod_xss", "mod_backup", "mod_htaccess", "mod_blindsql",
+#            "mod_permanentxss", "mod_nikto"]
+# 
+# modules = ["mod_crlf", "mod_exec", "mod_file", "mod_sql", "mod_xss",
+#            "mod_backup", "mod_htaccess", "mod_blindsql",
+#            "mod_permanentxss", "mod_nikto"]
+__import__('pkg_resources').declare_namespace(__name__)

@@ -21,34 +21,11 @@ import getopt
 import os
 import urlparse
 import time
-
-from distutils.sysconfig import get_python_lib
+from pkg_resources import resource_filename
 
 BASE_DIR = None
 WAPITI_VERSION = "Wapiti SVN"
-if '' in sys.path:
-    sys.path.remove('')
-for python_dir in sys.path:
-    if os.path.isdir(os.path.join(python_dir, "wapiti")):
-        BASE_DIR = os.path.join(python_dir, "wapiti")
-        break
-if not BASE_DIR:
-    for lib_dir in [get_python_lib(prefix="/usr/local"), get_python_lib()]:
-        if os.path.isdir(os.path.join(lib_dir, "wapiti")):
-            BASE_DIR = os.path.join(lib_dir, "wapiti")
-            sys.path.append(BASE_DIR)
-            break
-if not BASE_DIR:
-    sys.path.append("")
-    if "__file__" in dir():
-        BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__), '..'))
-    else:
-        BASE_DIR = os.getcwd()
-
-CONF_DIR = BASE_DIR
-if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
-    CONF_DIR = "/usr/local/share/doc/packages/wapiti"
-
+CONF_DIR = resource_filename('wapiti', '')
 
 from language.language import Language
 lan = Language()
@@ -133,7 +110,7 @@ class Wapiti(object):
     def __initAttacks(self):
         self.__initReport()
 
-        attack = __import__("attack")
+        from attack import attack
 
         print(_("[*] Loading modules:"))
         print(u"\t {0}".format(u", ".join(attack.modules)))
@@ -146,10 +123,10 @@ class Wapiti(object):
 
             self.attacks.sort(lambda a, b: a.PRIORITY - b.PRIORITY)
 
-        for attack in self.attacks:
-            attack.setVerbose(self.verbose)
+        for attack_module in self.attacks:
+            attack_module.setVerbose(self.verbose)
             if self.color == 1:
-                attack.setColor()
+                attack_module.setColor()
 
         if self.options != "":
             opts = self.options.split(",")
@@ -165,20 +142,20 @@ class Wapiti(object):
                 if module.startswith("-"):
                     module = module[1:]
                     if module == "all":
-                        for x in self.attacks:
+                        for attack_module in self.attacks:
                             if method == "get" or method == "":
-                                x.doGET = False
+                                attack_module.doGET = False
                             if method == "post" or method == "":
-                                x.doPOST = False
+                                attack_module.doPOST = False
                     else:
                         found = False
-                        for x in self.attacks:
-                            if x.name == module:
+                        for attack_module in self.attacks:
+                            if attack_module.name == module:
                                 found = True
                                 if method == "get" or method == "":
-                                    x.doGET = False
+                                    attack_module.doGET = False
                                 if method == "post" or method == "":
-                                    x.doPOST = False
+                                    attack_module.doPOST = False
                         if not found:
                             print(_("[!] Unable to find a module named {0}").format(module))
 
@@ -187,20 +164,20 @@ class Wapiti(object):
                     if module.startswith("+"):
                         module = module[1:]
                     if module == "all":
-                        for x in self.attacks:
+                        for attack_module in self.attacks:
                             if method == "get" or method == "":
-                                x.doGET = True
+                                attack_module.doGET = True
                             if method == "post" or method == "":
-                                x.doPOST = True
+                                attack_module.doPOST = True
                     else:
                         found = False
-                        for x in self.attacks:
-                            if x.name == module:
+                        for attack_module in self.attacks:
+                            if attack_module.name == module:
                                 found = True
                                 if method == "get" or method == "":
-                                    x.doGET = True
+                                    attack_module.doGET = True
                                 if method == "post" or method == "":
-                                    x.doPOST = True
+                                    attack_module.doPOST = True
                         if not found:
                             print(_("[!] Unable to find a module named {0}").format(module))
 

@@ -21,7 +21,11 @@ import socket  # for trapping socket.error
 from file.auxtext import AuxText
 import requests
 import sys
+from pkg_resources import resource_filename
 
+modules = ["mod_crlf", "mod_exec", "mod_file", "mod_sql", "mod_xss",
+           "mod_backup", "mod_htaccess", "mod_blindsql",
+           "mod_permanentxss", "mod_nikto"]
 
 class Attack(object):
     """
@@ -59,8 +63,7 @@ class Attack(object):
     if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
         CONFIG_DIR = "/usr/local/share/doc/packages/wapiti/config/attacks"
     else:
-        BASE_DIR = os.path.normpath(os.path.join(os.path.abspath(__file__),
-                                                 '../..'))
+        BASE_DIR = resource_filename('wapiti', '')
         CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
 
     # Color codes

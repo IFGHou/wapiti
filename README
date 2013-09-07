@@ -173,6 +173,7 @@ Source code structure (src directory)
 |
 |-- language  # Manage internationalization
 |   |-- __init__.py
+|   |-- vulnerability.py  # Common strings used by Wapiti
 |   `-- language.py
 |
 |-- language_sources
@@ -222,6 +223,5 @@ Source code structure (src directory)
 |       `-- kube.tabs.js
 |
 |-- scans  # Scan sessions are saved in XML format in this directory
-|-- vulnerability.py  # Common strings used by Wapiti
 `-- wapiti.py  # Program entry point :)
 

@@ -1,25 +1,23 @@
 #!/usr/bin/python
-from distutils.core import setup
-from distutils.command.install_lib import install_lib
-from distutils.command.install_scripts import install_scripts
+from setuptools import setup, find_packages
 import os
 
 VERSION = "SVN"
 DOC_DIR = "/usr/local/share/doc/packages/wapiti"
 
 
-class wapiti_install_lib(install_lib):
-    def run(self):
-        # Remove useless files
-        os.remove(os.path.join(self.build_dir, 'wapiti', 'wapiti.py'))
-        install_lib.run(self)
-
-
-class wapiti_install_scripts(install_scripts):
-    def run(self):
-        install_scripts.run(self)
-        # Rename wapiti.py to wapiti
-        os.rename(os.path.join(self.install_dir, 'wapiti.py'), os.path.join(self.install_dir, 'wapiti'))
+#class wapiti_install_lib(install_lib):
+#    def run(self):
+#        # Remove useless files
+#        os.remove(os.path.join(self.build_dir, 'wapiti', 'wapiti.py'))
+#        install_lib.run(self)
+#
+#
+#class wapiti_install_scripts(install_scripts):
+#    def run(self):
+#        install_scripts.run(self)
+#        # Rename wapiti.py to wapiti
+#        os.rename(os.path.join(self.install_dir, 'wapiti.py'), os.path.join(self.install_dir, 'wapiti'))
 
 
 # Build file lists
@@ -39,7 +37,13 @@ build_file_list(doc_and_conf_files, DOC_DIR, "config", src="src")
 build_file_list(doc_and_conf_files, DOC_DIR, "report_template", src="src")
 build_file_list(doc_and_conf_files, "/usr/local/share/locale/", ".", src="src/config/language")
 doc_and_conf_files.append((DOC_DIR,
-                           ["AUTHORS", "ChangeLog_Wapiti", "ChangeLog_lswww", "README", "TODO", "example.txt"]))
+                           ["AUTHORS",
+                            "ChangeLog_Wapiti",
+                            "ChangeLog_lswww",
+                            "INSTALL",
+                            "README",
+                            "TODO",
+                            "example.txt"]))
 doc_and_conf_files.append(("/usr/local/share/man/man1", ["doc/wapiti.1.gz"]))
 
 # Main
@@ -56,23 +60,18 @@ Once it gets this list, Wapiti acts like a fuzzer, injecting payloads to see
 if a script is vulnerable.""",
     url="http://wapiti.sourceforge.net/",
     author="Nicolas Surribas",
+    author_email="nicolad.surribas@gmail.com",
     license="GPLv2",
-    platforms=["Linux"],
+    platforms=["Any"],
     package_dir={"wapiti": "src"},
-    packages=[
-        "wapiti",
-        "wapiti.attack",
-        "wapiti.file",
-        "wapiti.language",
-        "wapiti.net",
-        "wapiti.report"
-    ],
+    packages=find_packages(),
     data_files=doc_and_conf_files,
+    include_package_data=True,
     scripts=["src/wapiti.py"],
-    cmdclass={
-        "install_lib": wapiti_install_lib,
-        "install_scripts": wapiti_install_scripts
-    },
+#    cmdclass={
+#        "install_lib": wapiti_install_lib,
+#        "install_scripts": wapiti_install_scripts
+#    },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
@@ -89,8 +88,8 @@ if a script is vulnerable.""",
         'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
         'Topic :: Software Development :: Testing'
     ],
-    dependency_links=[
-        "http://docs.python-requests.org/en/latest/",
-        "http://www.crummy.com/software/BeautifulSoup/"
+    install_requires=[
+        'requests>=1.2.3',
+        'BeautifulSoup'
     ]
 )
