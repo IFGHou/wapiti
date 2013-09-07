@@ -1,9 +1,9 @@
 include README
 include INSTALL
 include TODO
+include src/scans
 
 recursive-include src/config *
 recursive-include src/language_sources *
 recursive-include src/report_template *
-revursive-include src/scans *
 recursive-include doc *

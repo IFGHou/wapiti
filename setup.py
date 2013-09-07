@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from setuptools import setup, find_packages
 import os
+import sys
 
 VERSION = "SVN"
 DOC_DIR = "/usr/local/share/doc/packages/wapiti"
@@ -63,8 +64,8 @@ if a script is vulnerable.""",
     author_email="nicolad.surribas@gmail.com",
     license="GPLv2",
     platforms=["Any"],
-    package_dir={"wapiti": "src"},
-    packages=find_packages(),
+    package_dir={"": "src"},
+    packages=find_packages("src"),
     data_files=doc_and_conf_files,
     include_package_data=True,
     scripts=["src/wapiti.py"],
