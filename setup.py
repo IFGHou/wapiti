@@ -38,13 +38,13 @@ build_file_list(doc_and_conf_files, DOC_DIR, "config", src="src")
 build_file_list(doc_and_conf_files, DOC_DIR, "report_template", src="src")
 build_file_list(doc_and_conf_files, "/usr/local/share/locale/", ".", src="src/config/language")
 doc_and_conf_files.append((DOC_DIR,
-                           ["AUTHORS",
-                            "ChangeLog_Wapiti",
-                            "ChangeLog_lswww",
+                           ["doc/AUTHORS",
+                            "doc/ChangeLog_Wapiti",
+                            "doc/ChangeLog_lswww",
                             "INSTALL",
                             "README",
                             "TODO",
-                            "example.txt"]))
+                            "doc/example.txt"]))
 doc_and_conf_files.append(("/usr/local/share/man/man1", ["doc/wapiti.1.gz"]))
 
 # Main
@@ -66,6 +66,7 @@ if a script is vulnerable.""",
     platforms=["Any"],
     package_dir={"": "src"},
     packages=find_packages("src"),
+    namespace_packages=['wapiti'],
     data_files=doc_and_conf_files,
     include_package_data=True,
     scripts=["src/wapiti.py"],
