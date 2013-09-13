@@ -1,50 +1,19 @@
 #!/usr/bin/python
 from setuptools import setup, find_packages
-import os
-import sys
 
 VERSION = "SVN"
-DOC_DIR = "/usr/local/share/doc/packages/wapiti"
-
-
-#class wapiti_install_lib(install_lib):
-#    def run(self):
-#        # Remove useless files
-#        os.remove(os.path.join(self.build_dir, 'wapiti', 'wapiti.py'))
-#        install_lib.run(self)
-#
-#
-#class wapiti_install_scripts(install_scripts):
-#    def run(self):
-#        install_scripts.run(self)
-#        # Rename wapiti.py to wapiti
-#        os.rename(os.path.join(self.install_dir, 'wapiti.py'), os.path.join(self.install_dir, 'wapiti'))
-
-
-# Build file lists
-def build_file_list(results, dest, root, src=""):
-    cwd = os.getcwd()
-    if src != "":
-        os.chdir(src)
-    for root, dirs, files in os.walk(root):
-        if ".svn" in dirs:
-            dirs.remove(".svn")
-        if files != []:
-            results.append((os.path.join(dest, root), [os.path.join(src, root, x) for x in files]))
-    os.chdir(cwd)
+DOC_DIR = "wapiti"
 
 doc_and_conf_files = []
-build_file_list(doc_and_conf_files, DOC_DIR, "config", src="src")
-build_file_list(doc_and_conf_files, DOC_DIR, "report_template", src="src")
-build_file_list(doc_and_conf_files, "/usr/local/share/locale/", ".", src="src/config/language")
 doc_and_conf_files.append((DOC_DIR,
                            ["doc/AUTHORS",
                             "doc/ChangeLog_Wapiti",
                             "doc/ChangeLog_lswww",
+                            "doc/example.txt",
                             "INSTALL",
                             "README",
                             "TODO",
-                            "doc/example.txt"]))
+                            "VERSION"]))
 doc_and_conf_files.append(("/usr/local/share/man/man1", ["doc/wapiti.1.gz"]))
 
 # Main
@@ -64,16 +33,10 @@ if a script is vulnerable.""",
     author_email="nicolad.surribas@gmail.com",
     license="GPLv2",
     platforms=["Any"],
-    package_dir={"": "src"},
-    packages=find_packages("src"),
-    namespace_packages=['wapiti'],
+    packages=find_packages(),
     data_files=doc_and_conf_files,
     include_package_data=True,
-    scripts=["src/wapiti.py"],
-#    cmdclass={
-#        "install_lib": wapiti_install_lib,
-#        "install_scripts": wapiti_install_scripts
-#    },
+    scripts=["bin/wapiti.py"],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
@@ -92,6 +55,7 @@ if a script is vulnerable.""",
     ],
     install_requires=[
         'requests>=1.2.3',
-        'BeautifulSoup'
+        'BeautifulSoup',
+        'xml'
     ]
 )

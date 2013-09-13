@@ -60,11 +60,8 @@ class Attack(object):
     vulnerablePOST = []
 
     CONFIG_DIR = ""
-    if os.path.isdir("/usr/local/share/doc/packages/wapiti"):
-        CONFIG_DIR = "/usr/local/share/doc/packages/wapiti/config/attacks"
-    else:
-        BASE_DIR = resource_filename('wapitiCore', '')
-        CONFIG_DIR = BASE_DIR + "/" + "config/attacks"
+    BASE_DIR = resource_filename('wapitiCore', '')
+    CONFIG_DIR = os.path.join(BASE_DIR, "config", "attacks")
 
     # Color codes
     STD = "\033[0;0m"

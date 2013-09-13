@@ -1,9 +1,9 @@
 include README
 include INSTALL
 include TODO
-include src/scans
+include VERSION
 
-recursive-include src/config *
-recursive-include src/language_sources *
-recursive-include src/report_template *
+recursive-include wapitiCore/config *
+recursive-include wapitiCore/language_sources *
+recursive-include wapitiCore/report_template *
 recursive-include doc *

@@ -66,7 +66,7 @@ class mod_nikto(Attack):
         if not os.path.isdir(user_config_dir):
             os.makedirs(user_config_dir)
         try:
-            fd = open(user_config_dir + "/" + self.CONFIG_FILE)
+            fd = open(os.path.join(user_config_dir, self.CONFIG_FILE))
             reader = csv.reader(fd)
             self.nikto_db = [l for l in reader if l != [] and l[0].isdigit()]
             fd.close()
@@ -82,7 +82,7 @@ class mod_nikto(Attack):
                 reader = csv.reader(page.split("\n"), "nikto")
                 self.nikto_db = [l for l in reader if l != [] and l[0].isdigit()]
 
-                fd = open(user_config_dir + "/" + self.CONFIG_FILE, "w")
+                fd = open(os.path.join(user_config_dir, self.CONFIG_FILE), "w")
                 writer = csv.writer(fd)
                 writer.writerows(self.nikto_db)
                 fd.close()

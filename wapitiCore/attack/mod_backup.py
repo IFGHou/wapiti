@@ -24,6 +24,7 @@
 from wapitiCore.attack.attack import Attack
 from wapitiCore.language.vulnerability import Vulnerability
 import socket
+import os
 from wapitiCore.net import HTTP
 
 
@@ -42,7 +43,7 @@ class mod_backup(Attack):
 
     def __init__(self, http, xmlRepGenerator):
         Attack.__init__(self, http, xmlRepGenerator)
-        self.payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
+        self.payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
 
     def __returnErrorByCode(self, code):
         err = ""

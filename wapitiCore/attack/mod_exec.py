@@ -19,6 +19,7 @@
 from wapitiCore.attack.attack import Attack
 from wapitiCore.language.vulnerability import Vulnerability, Anomaly
 import requests
+import os
 from wapitiCore.net import HTTP
 
 
@@ -33,7 +34,7 @@ class mod_exec(Attack):
 
     def __init__(self, http, xmlRepGenerator):
         Attack.__init__(self, http, xmlRepGenerator)
-        self.payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
+        self.payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
 
     def __findPatternInResponse(self, data, warned):
         err = ""

@@ -18,6 +18,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import socket
 import requests
+import os
 from wapitiCore.attack.attack import Attack
 from wapitiCore.language.vulnerability import Vulnerability, Anomaly
 from wapitiCore.net import HTTP
@@ -58,7 +59,7 @@ class mod_permanentxss(Attack):
 
     def __init__(self, http, xmlRepGenerator):
         Attack.__init__(self, http, xmlRepGenerator)
-        self.independant_payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
+        self.independant_payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
 
     # permanent XSS
     def attack(self, get_resources, forms):

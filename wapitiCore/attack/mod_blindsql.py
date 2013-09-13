@@ -19,6 +19,7 @@
 from wapitiCore.attack.attack import Attack
 from wapitiCore.language.vulnerability import Vulnerability, Anomaly
 import requests
+import os
 from wapitiCore.net import HTTP
 
 
@@ -41,7 +42,7 @@ class mod_blindsql(Attack):
 
     def __init__(self, http, xmlRepGenerator):
         Attack.__init__(self, http, xmlRepGenerator)
-        self.blind_sql_payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
+        self.blind_sql_payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
 
     def setTimeout(self, timeout):
         self.TIME_TO_SLEEP = str(1 + int(timeout))

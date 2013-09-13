@@ -19,6 +19,7 @@
 import random
 import BeautifulSoup
 import requests
+import os
 from wapitiCore.attack.attack import Attack
 from wapitiCore.language.vulnerability import Vulnerability, Anomaly
 from wapitiCore.net import HTTP
@@ -60,7 +61,7 @@ class mod_xss(Attack):
 
     def __init__(self, http, xmlRepGenerator):
         Attack.__init__(self, http, xmlRepGenerator)
-        self.independant_payloads = self.loadPayloads(self.CONFIG_DIR + "/" + self.CONFIG_FILE)
+        self.independant_payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
 
     def random_string(self):
         """Create a random unique ID that will be used to test injection."""
