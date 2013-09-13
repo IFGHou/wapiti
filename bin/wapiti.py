@@ -25,7 +25,7 @@ from pkg_resources import resource_filename
 
 BASE_DIR = None
 WAPITI_VERSION = "Wapiti SVN"
-parent_dir =  os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 if os.path.exists(os.path.join(parent_dir, "wapitiCore")):
     sys.path.append(parent_dir)
 
@@ -317,6 +317,11 @@ if __name__ == "__main__":
         attackFile = None
 
         print(_("Wapiti-SVN (wapiti.sourceforge.net)"))
+
+        # Fix bor bug #31
+        if sys.getdefaultencoding() != "utf-8":
+            reload(sys)
+            sys.setdefaultencoding("utf-8")
 
         import requests
         if requests.__version__.startswith("0."):
