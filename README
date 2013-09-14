@@ -10,6 +10,7 @@ In order to work correctly, Wapiti needs :
 + Python 2.x where x is >= 6 (2.6, 2.7...)
 + python-requests v1.2.3 or more ( http://docs.python-requests.org/en/latest/ )
 + BeautifulSoup ( http://www.crummy.com/software/BeautifulSoup/ )
++ python-xml
 
 
 How it works
@@ -121,7 +122,7 @@ Wapiti comes with :
   for HTML report generation.
 
 
-Source code structure (src directory)
+Source code structure (wapitiCore directory)
 =====================================
 .
 |-- attack  # attack modules used for the vulnerabilities Wapiti can detect
@@ -188,9 +189,7 @@ Source code structure (src directory)
 |   |-- HTTP.py    # Wrapper around python-requests, contains HTTP,
 |   |              # HTTPResource and HTTPResponse classes.
 |   |-- __init__.py
-|   |-- cookie.py   # Utility to fetch cookies, gets form data from the command line
 |   |-- crawlerpersister.py  # Class used to store and load scan status
-|   |-- getcookie.py  # Utility to fetch cookies, parse forms and ask you for values
 |   |-- jsoncookie.py  # Library to load and save cookies to JSON files
 |   |-- jsparser
 |   |   |-- __init__.py
@@ -212,16 +211,13 @@ Source code structure (src directory)
 |   `-- xmlreportgenerator.py
 |
 |-- report_template  # Template used for HTML reports
-|   |-- css
-|   |   |-- kube.css
-|   |   |-- kube.min.css
-|   |   `-- master.css
-|   |-- index.html
-|   `-- js
-|       |-- jquery-1.9.1.min.js
-|       |-- kube.buttons.js
-|       `-- kube.tabs.js
-|
-|-- scans  # Scan sessions are saved in XML format in this directory
-`-- wapiti.py  # Program entry point :)
-
+    |-- css
+    |   |-- kube.css
+    |   |-- kube.min.css
+    |   `-- master.css
+    |-- index.html
+    `-- js
+        |-- jquery-1.9.1.min.js
+        |-- kube.buttons.js
+        `-- kube.tabs.js
+ 
