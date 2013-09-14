@@ -769,7 +769,7 @@ class lswww(object):
         self.persister.setBrowsed(self.browsed)
         self.persister.setForms(self.forms)
         self.persister.setUploads(self.uploads)
-        self.persister.saveXML(self.persister.CRAWLER_DATA_DIR + '/' + self.server + '.xml')
+        self.persister.saveXML(os.path.join(self.persister.CRAWLER_DATA_DIR, self.server + '.xml'))
 
 
 class linkParser(HTMLParser.HTMLParser):
@@ -1162,7 +1162,7 @@ if __name__ == "__main__":
                 myls.setScope(a)
             if o in ("-i", "--continue"):
                 crawlerPersister = CrawlerPersister()
-                crawlerFile = crawlerPersister.CRAWLER_DATA_DIR + '/' + sys.argv[1].split("://")[1] + '.xml'
+                crawlerFile = os.path.join(crawlerPersister.CRAWLER_DATA_DIR, sys.argv[1].split("://")[1] + '.xml')
         try:
             opts, args = getopt.getopt(sys.argv[2:],
                                        "hp:s:x:c:a:r:v:t:n:e:i:b:",

@@ -38,7 +38,7 @@ class CrawlerPersister(object):
     CRAWLER_DATA_DIR_NAME = "scans"
     HOME_DIR = os.getenv('HOME') or os.getenv('USERPROFILE')
     BASE_DIR = os.path.join(HOME_DIR, ".wapiti")
-    CRAWLER_DATA_DIR = BASE_DIR + "/" + CRAWLER_DATA_DIR_NAME
+    CRAWLER_DATA_DIR = os.path.join(BASE_DIR, CRAWLER_DATA_DIR_NAME)
 
     ROOT_URL = "rootURL"
     TO_BROWSE = "toBrowse"

@@ -36,15 +36,10 @@ class Language(object):
     To do it, the method "configure" should be invoked.
     """
 
-    LANG_DIR = 'config/language/'
     AVAILABLE_LANGS = ["es", "en", "fr"]
 
     BASE_DIR = resource_filename('wapitiCore', '')
-
-    if os.path.isfile("/usr/local/share/locale/en/LC_MESSAGES/wapiti.mo"):
-        LANG_PATH = "/usr/local/share/locale/"
-    else:
-        LANG_PATH = BASE_DIR + "/" + LANG_DIR
+    LANG_PATH = os.path.join(BASE_DIR, "config", "language")
 
     def configure(self, lang=None):
         """
@@ -54,12 +49,15 @@ class Language(object):
         of the operating system.
         """
         if lang is None:
-            # if lang is not specified, default language is got
+            # if lang is not specified, default language is used
             defLocale = locale.getdefaultlocale()
             langCounty = defLocale[0]   # en_UK
             lang = langCounty[:2]  # en
         if lang not in self.AVAILABLE_LANGS:
             # if lang is not between the lang translated, english by default
+            print("Oups! No translations found for your language... Using english.")
+            print("Please send your translations for improvements.")
+            print("===============================================================")
             lang = 'en'
         lan = gettext.translation('wapiti',
                                   self.LANG_PATH,
