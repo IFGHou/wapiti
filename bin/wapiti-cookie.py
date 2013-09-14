@@ -18,18 +18,24 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import sys
 import urllib
-import wapitiCore.net.jsoncookie
 import requests
 import getopt
 import urlparse
+import os
 
 if "_" not in dir():
     def _(s):
         return s
 
 if len(sys.argv) < 3:
-    sys.stderr.write("Usage python cookie.py [-p proxy_url] <cookie_file> <url> <arg1=val1> ...\n")
+    sys.stderr.write("Usage python cookie.py [-p proxy_url] <cookie_file.json> <url> <arg1=val1> ...\n")
     sys.exit(1)
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+if os.path.exists(os.path.join(parent_dir, "wapitiCore")):
+    sys.path.append(parent_dir)
+
+from wapitiCore.net import jsoncookie
 
 args = sys.argv[1:]
 proxies = {}

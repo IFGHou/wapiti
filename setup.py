@@ -36,7 +36,11 @@ if a script is vulnerable.""",
     packages=find_packages(),
     data_files=doc_and_conf_files,
     include_package_data=True,
-    scripts=["bin/wapiti.py"],
+    scripts=[
+        "bin/wapiti",
+        "bin/wapiti-cookie.py",
+        "bin/wapiti-getcookie.py"
+    ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

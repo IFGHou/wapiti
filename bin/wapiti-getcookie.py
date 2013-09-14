@@ -18,19 +18,18 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import urlparse
 import sys
-import wapitiCore.net.lswww
 import HTMLParser
 import BeautifulSoup
 import getopt
 import requests
-import wapitiCore.net.jsoncookie
+import os
 
 if "_" not in dir():
     def _(s):
         return s
 
 if len(sys.argv) < 3:
-    sys.stderr.write("Usage: python getcookie.py <cookie_file> <url_with_form> [options]\n\n" +
+    sys.stderr.write("Usage: python getcookie.py <cookie_file.json> <url_with_form> [options]\n\n" +
                      "Supported options are:\n" +
                      "-p <url_proxy>\n" +
                      "--proxy <url_proxy>\n" +
@@ -43,6 +42,13 @@ COOKIEFILE = sys.argv[1]
 url = sys.argv[2]
 proxies = {}
 server = urlparse.urlparse(url).netloc
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+if os.path.exists(os.path.join(parent_dir, "wapitiCore")):
+    sys.path.append(parent_dir)
+
+from wapitiCore.net import jsoncookie
+from wapitiCore.net import lswww
 
 try:
     opts, args = getopt.getopt(sys.argv[3:], "p:", ["proxy="])
