@@ -59,7 +59,6 @@ if a script is vulnerable.""",
     ],
     install_requires=[
         'requests>=1.2.3',
-        'BeautifulSoup',
-        'xml'
+        'BeautifulSoup'
     ]
 )
