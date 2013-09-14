@@ -1,6 +1,6 @@
-First, I use getcookie.py to login in the restricted area and get the cookie in cookies.json :
+First, I use wapiti-getcookie.py to login in the restricted area and get the cookie in cookies.json :
 
-bash-4.2$ python net/getcookie.py /tmp/cookies.json http://127.0.0.1/vuln/login.php
+bash-4.2$ python bin/wapiti-getcookie.py /tmp/cookies.json http://127.0.0.1/vuln/login.php
 <Cookie PHPSESSID=OLPNLIEBPEFELBIFGMKJEKOD for 127.0.0.1/>
 Please enter values for the following form: 
 url = http://127.0.0.1/vuln/login.php
@@ -8,12 +8,12 @@ username (default) : admin
 password (letmein) : secret
 <Cookie PHPSESSID=OLPNLIEBPEFELBIFGMKJEKOD for 127.0.0.1/>
 
-It can also be done with cookie.py this way :
-python net/cookie.py /tmp/cookies.json http://127.0.0.1/vuln/login.php username=admin password=secret
+It can also be done with wapiti-cookie.py this way :
+python bin/wapiti-cookie.py /tmp/cookies.json http://127.0.0.1/vuln/login.php username=admin password=secret
 
 Then, I scan the vulnerable website using the cookie and excluding the logout script :
 
-bash-4.2$ python wapiti.py http://127.0.0.1/vuln/ -c cookies.json -x http://127.0.0.1/vuln/logout.php
+bash-4.2$ wapiti http://127.0.0.1/vuln/ -c cookies.json -x http://127.0.0.1/vuln/logout.php
 
 Wapiti-SVN (wapiti.sourceforge.net)
 
