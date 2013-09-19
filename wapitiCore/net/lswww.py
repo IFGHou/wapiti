@@ -185,7 +185,7 @@ class lswww(object):
         if(self.__checklink(url)):
             print(_("Invalid link argument: {0}").format(url))
             sys.exit(0)
-        if(self.__inzone(url) == 0):
+        if self.__inzone(url) == 0:
             self.tobrowse.append(HTTP.HTTPResource(url))
         else:
             self.out_of_scope_urls.append(HTTP.HTTPResource(url))
@@ -214,9 +214,9 @@ class lswww(object):
         url = web_resource.url
 
         # We don't need destination anchors
-        current = url.split("#")[0]
+        current_full_url = url.split("#")[0]
         # Url without query string
-        current = current.split("?")[0]
+        current = current_full_url.split("?")[0]
         # Get the dirname of the file
         currentdir = "/".join(current.split("/")[:-1]) + "/"
 
@@ -228,11 +228,7 @@ class lswww(object):
         headers = {}
         headers["user-agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         try:
-            if isinstance(web_resource, HTTP.HTTPResource):
-                resp = self.h.send(web_resource, headers=headers)
-            else:
-                print(u"non HTTPResource: {0}".format(url))
-                sys.exit()
+            resp = self.h.send(web_resource, headers=headers)
         except socket.timeout:
             self.excluded.append(url)
             return False
@@ -307,9 +303,9 @@ class lswww(object):
 
         # Manage redirections
         if "location" in info:
-            redir = self.correctlink(info["location"], current, currentdir, proto, None)
+            redir = self.correctlink(info["location"], current, current_full_url, currentdir, proto, None)
             if redir is not None:
-                if(self.__inzone(redir) == 0):
+                if self.__inzone(redir) == 0:
                     self.link_encoding[redir] = self.link_encoding[url]
                     redir = HTTP.HTTPResource(redir)
                     # Is the document already visited of forbidden ?
@@ -375,9 +371,9 @@ class lswww(object):
         for lien in found_links:
             if (lien is not None) and (page_encoding is not None) and isinstance(lien, unicode):
                 lien = lien.encode(page_encoding, "ignore")
-            lien = self.correctlink(lien, current, currentdir, proto, page_encoding)
+            lien = self.correctlink(lien, current, current_full_url, currentdir, proto, page_encoding)
             if lien is not None:
-                if(self.__inzone(lien) == 0):
+                if self.__inzone(lien) == 0:
                     # Is the document already visited of forbidden ?
                     lien = HTTP.HTTPResource(lien, encoding=page_encoding, referer=url)
                     if ((lien in self.browsed) or
@@ -401,7 +397,7 @@ class lswww(object):
                     self.link_encoding[lien] = page_encoding
 
         for form in p.forms:
-            action = self.correctlink(form[0], current, currentdir, proto, page_encoding)
+            action = self.correctlink(form[0], current, current_full_url, currentdir, proto, page_encoding)
             if action is None:
                 action = current
             if self.__inzone(action) != 0:
@@ -445,17 +441,21 @@ class lswww(object):
 
         return True
 
-    def correctlink(self, lien, current_url, current_directory, protocol, encoding):
+    def correctlink(self, lien, current_url, current_full_url, current_directory, protocol, encoding):
         """Transform relatives urls in absolutes ones"""
 
         if lien is None:
-            return current_url
+            return current_full_url
+
+        # No destination anchor
+        if "#" in lien:
+            lien = lien.split("#")[0]
 
         # No leading or trailing whitespaces
         lien = lien.strip()
 
         if lien == "":
-            return current_url
+            return current_full_url
 
         if lien == "..":
             lien = "../"
@@ -489,9 +489,6 @@ class lswww(object):
                     # current_url directory related link
                     else:
                         lien = current_directory + lien
-            # No destination anchor
-            if "#" in lien:
-                lien = lien.split("#")[0]
 
             args = ""
             if "?" in lien:
@@ -557,6 +554,12 @@ class lswww(object):
 
     def __inzone(self, url):
         """Make sure the url is under the root url"""
+        # Returns 0 if the URL is in zone
+        if self.scope == self.SCOPE_PAGE:
+            if url == self.scopeURL:
+                return 0
+            else:
+                return 1
         if url.startswith(self.scopeURL):
             return 0
         else:
@@ -678,8 +681,6 @@ class lswww(object):
 #                lien.headers["link_encoding"] = self.link_encoding[lien]
 #            self.browsed[lien] = lien.headers
 
-                if(self.scope == self.SCOPE_PAGE):
-                    self.tobrowse = []
             self.saveCrawlerData()
             print('')
             print(_(" Note"))
@@ -980,7 +981,7 @@ class linkParser2(object):
             for textArea in textAreasInForms[i]:
                 textAreasAttributes[i].append(self.__findTagAttributes(textArea))
 
-        if(self.verbose == 3):
+        if self.verbose == 3:
             print('')
             print('')
             print(_("Forms"))

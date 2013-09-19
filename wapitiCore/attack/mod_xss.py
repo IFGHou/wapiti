@@ -87,6 +87,7 @@ class mod_xss(Attack):
         resp_headers = http_res.headers
         referer = http_res.referer
         headers = {}
+        http_code = ""
         if referer:
             headers["referer"] = referer
 

@@ -66,8 +66,8 @@ jc = jsoncookie.jsoncookie()
 jc.open(COOKIEFILE)
 jc.delete(server)
 
-current = url.split("#")[0]
-current = current.split("?")[0]
+current_full_url = url.split("#")[0]
+current = current_full_url.split("?")[0]
 currentdir = "/".join(current.split("/")[:-1]) + "/"
 proto = url.split("://")[0]
 
@@ -110,7 +110,13 @@ if len(p.forms) > 1:
     print(_("Choose the form you want to use :"))
     for form in p.forms:
         print('')
-        print(u"{0}) {1}".format(i, myls.correctlink(form[0], current, currentdir, proto, page_encoding)))
+        print(u"{0}) {1}".format(i,
+                                 myls.correctlink(form[0],
+                                                  current,
+                                                  current_full_url,
+                                                  currentdir,
+                                                  proto,
+                                                  page_encoding)))
         for field, value in form[1]:
             print(u"\t{0} ({1})".format(field, value))
         i += 1
@@ -124,14 +130,14 @@ if len(p.forms) > 1:
 
 form = p.forms[nchoice]
 print(_("Please enter values for the following form: "))
-print(_("url = {0}").format(myls.correctlink(form[0], current, currentdir, proto, page_encoding)))
+print(_("url = {0}").format(myls.correctlink(form[0], current, current_full_url, currentdir, proto, page_encoding)))
 
 for i in range(len(form[1])):
     field, value = form[1][i]
     new_value = raw_input(field + " (" + value + ") : ")
     form[1][i] = [field, new_value]
 
-url = myls.correctlink(form[0], current, currentdir, proto, page_encoding)
+url = myls.correctlink(form[0], current, current_full_url, currentdir, proto, page_encoding)
 
 txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)',
              'Content-type': 'application/x-www-form-urlencoded'}
