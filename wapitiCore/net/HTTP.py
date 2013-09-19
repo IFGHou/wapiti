@@ -23,7 +23,7 @@ import os
 import cgi
 import requests
 import datetime
-import wapitiCore.net.jsoncookie
+from wapitiCore.net import jsoncookie
 from copy import deepcopy
 
 
