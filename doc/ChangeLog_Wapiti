@@ -1,5 +1,41 @@
+XX/XX/2013
+	Version X.X.X
+	Fixed a colosseum of bugs, especially related to unicode.
+	Software is much more stable.
+	New report template for HTML (using Kube CSS).
+	Using v2.1.5 of Nikto database for mod_nikto.
+	Replaced httplib2 with (python-)requests for everything related to HTTP.
+	Remove BeautifulSoup from package. It is still required however.
+	Core rewrite (PEP8 + more Pythonic)
+	New payloads for the backup, XSS, blind SQL, exec and file modules + more
+	detection rules.
+	So many improvements on lswww (crawler) that I can't make a list here. But
+	Wapiti reached 48% on Wivet.
+	Wapiti cookie format is now based on JSON.
+	Removed SOCKS proxy support (you will have to use a HTTP to SOCKS proxy).
+	Added a HTTPResource class for easier module creation.
+	Code restructuration for better setup.
+	Attack of parameters in query string even for HTTP POST requests.
+	Attack on file uploads (injection in file names).
+	Simpler (and less buggy) colored output with -c.
+	A CURL PoC is given for each vulnerability/anomaly found + raw HTTP
+	request representation in reports.
+	No more parameter reordering + can handle parameters repetition.
+	Added a JSON report generator + fixed the HTML report generator.
+	Added an option to not check SSL certificates.
+	mod_xss : noscipt tag escaping.
+	Can work on parameters that don't have a value in query string.
+	mod_crlf is not activated by default anymore (must call it with -m).
+	Startings URLs (-s) will be fetched even if out of scope.
+	Proxy support for wapiti-getcookie.py. and wapiti-cookie.py.
+	Attempt to bring an OpenVAS report generator.
+	Added an home-made SWF parser to extract URLs from flash files.
+	Added an home-made (and more than basic) JS interpreter based on the
+	pynarcissus parser. Lot of work still needs to be done on this.
+	New logo and webpage at wapiti.sf.net.
+
 29/12/2009
-  Version 2.2.1 (already)
+    Version 2.2.1 (already)
 	Bugfixes only
 	Fixed a bug in lswww if root url is not given complete.
 	Fixed a bug in lswww with a call to BeautifulSoup made on non text files.
