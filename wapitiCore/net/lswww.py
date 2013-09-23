@@ -668,7 +668,7 @@ class lswww(object):
 
             while len(self.tobrowse):
                 lien = self.tobrowse.pop(0)
-                if (lien not in self.browsed and lien not in self.excluded):
+                if (lien not in self.browsed and lien.url not in self.excluded):
                     if self.browse(lien):
                         if self.verbose == 1:
                             sys.stderr.write('.')
