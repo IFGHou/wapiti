@@ -36,7 +36,7 @@ class Language(object):
     To do it, the method "configure" should be invoked.
     """
 
-    AVAILABLE_LANGS = ["es", "en", "fr"]
+    AVAILABLE_LANGS = ["es", "en", "fr", "ms"]
 
     BASE_DIR = resource_filename('wapitiCore', '')
     LANG_PATH = os.path.join(BASE_DIR, "config", "language")
