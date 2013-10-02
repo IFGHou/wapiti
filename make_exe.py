@@ -1,0 +1,113 @@
+#!/usr/bin/python
+# Don't use this script unless you know exactly what you are doing !
+from distutils.core import setup
+import py2exe
+import os
+import sys
+
+# dirty hack so we don't have to give any argument
+if "py2exe" not in sys.argv:
+    sys.argv.append("py2exe")
+
+VERSION = "SVN"
+
+
+# Build file lists
+def build_file_list(results, dest, root, src=""):
+    cwd = os.getcwd()
+    if src != "":
+        os.chdir(src)
+    for root, dirs, files in os.walk(root):
+        if ".svn" in dirs:
+            dirs.remove(".svn")
+        if files != []:
+            results.append((os.path.join(dest, root), [os.path.join(src, root, x) for x in files]))
+    os.chdir(cwd)
+
+data_files = []
+data_files.append(("data",
+                  ["INSTALL",
+                   "README",
+                   "TODO",
+                   "VERSION"]))
+build_file_list(data_files, "data", "doc", src="")
+build_file_list(data_files, "data", "config", src="wapitiCore")
+build_file_list(data_files, "data", "report_template", src="wapitiCore")
+build_file_list(data_files, "data", "language_sources", src="wapitiCore")
+
+
+# Main
+setup(
+    name="wapiti",
+    version=VERSION,
+    description="A web application vulnerability scanner",
+    long_description="""\
+Wapiti allows you to audit the security of your web applications.
+It performs "black-box" scans, i.e. it does not study the source code of the
+application but will scans the webpages of the deployed webapp, looking for
+scripts and forms where it can inject data.
+Once it gets this list, Wapiti acts like a fuzzer, injecting payloads to see
+if a script is vulnerable.""",
+    url="http://wapiti.sourceforge.net/",
+    author="Nicolas SURRIBAS",
+    author_email="nicolas.surribas@gmail.com",
+    license="GPLv2",
+    platforms=["Any"],
+    packages=[
+        'wapitiCore',
+        'wapitiCore.attack',
+        'wapitiCore.language',
+        'wapitiCore.report',
+        'wapitiCore.net',
+        'wapitiCore.file',
+        'wapitiCore.net.jsparser'
+    ],
+    data_files=data_files,
+    console=[
+        {
+            "script": "bin/wapiti",
+            "icon_resources": [(1, "wapiti.ico")]
+        },
+        "bin/wapiti-cookie",
+        "bin/wapiti-getcookie"
+    ],
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Programming Language :: Python',
+        'Topic :: Security',
+        'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
+        'Topic :: Software Development :: Testing'
+    ],
+    options={
+        "py2exe": {
+            "includes": [
+                "wapitiCore.attack.mod_backup",
+                "wapitiCore.attack.mod_blindsql",
+                "wapitiCore.attack.mod_crlf",
+                "wapitiCore.attack.mod_exec",
+                "wapitiCore.attack.mod_file",
+                "wapitiCore.attack.mod_htaccess",
+                "wapitiCore.attack.mod_nikto",
+                "wapitiCore.attack.mod_permanentxss",
+                "wapitiCore.attack.mod_sql",
+                "wapitiCore.attack.mod_xss",
+                "wapitiCore.report.reportgenerator",
+                "wapitiCore.report.htmlreportgenerator",
+                "wapitiCore.report.jsonreportgenerator",
+                "wapitiCore.report.openvasreportgenerator",
+                "wapitiCore.report.txtreportgenerator",
+                "wapitiCore.report.vulneranetxmlreportgenerator",
+                "wapitiCore.report.xmlreportgenerator"
+            ]
+        }
+    }
+)

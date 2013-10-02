@@ -25,7 +25,7 @@
 import os
 from wapitiCore.report.jsonreportgenerator import JSONReportGenerator
 from shutil import copytree, rmtree
-from pkg_resources import resource_filename
+import sys
 
 
 class HTMLReportGenerator(JSONReportGenerator):
@@ -35,7 +35,10 @@ class HTMLReportGenerator(JSONReportGenerator):
     For more information see JSONReportGenerator class
     Then it copies the template structure (which js and css files) in the output directory.
     """
-    BASE_DIR = resource_filename('wapitiCore', '')
+    if hasattr(sys, "frozen"):
+        BASE_DIR = os.path.join(os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding())), "data")
+    else:
+        BASE_DIR = os.path.dirname(sys.modules['wapitiCore'].__file__)
     REPORT_DIR = "report_template"
     REPORT_JSON_FILE = "vulnerabilities.json"
 

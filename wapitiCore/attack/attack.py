@@ -21,11 +21,11 @@ import socket  # for trapping socket.error
 from wapitiCore.file.auxtext import AuxText
 import requests
 import sys
-from pkg_resources import resource_filename
 
 modules = ["mod_crlf", "mod_exec", "mod_file", "mod_sql", "mod_xss",
            "mod_backup", "mod_htaccess", "mod_blindsql",
            "mod_permanentxss", "mod_nikto"]
+
 
 class Attack(object):
     """
@@ -60,7 +60,10 @@ class Attack(object):
     vulnerablePOST = []
 
     CONFIG_DIR = ""
-    BASE_DIR = resource_filename('wapitiCore', '')
+    if hasattr(sys, "frozen"):
+        BASE_DIR = os.path.join(os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding())), "data")
+    else:
+        BASE_DIR = os.path.dirname(sys.modules['wapitiCore'].__file__)
     CONFIG_DIR = os.path.join(BASE_DIR, "config", "attacks")
 
     # Color codes

@@ -25,7 +25,7 @@
 import os
 import locale
 import gettext
-from pkg_resources import resource_filename
+import sys
 
 
 class Language(object):
@@ -36,9 +36,12 @@ class Language(object):
     To do it, the method "configure" should be invoked.
     """
 
-    AVAILABLE_LANGS = ["es", "en", "fr", "ms"]
+    AVAILABLE_LANGS = ["de", "en", "es", "fr", "ms"]
 
-    BASE_DIR = resource_filename('wapitiCore', '')
+    if hasattr(sys, "frozen"):
+        BASE_DIR = os.path.join(os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding())), "data")
+    else:
+        BASE_DIR = os.path.dirname(sys.modules['wapitiCore'].__file__)
     LANG_PATH = os.path.join(BASE_DIR, "config", "language")
 
     def configure(self, lang=None):
@@ -54,7 +57,7 @@ class Language(object):
             langCounty = defLocale[0]   # en_UK
             lang = langCounty[:2]  # en
         if lang not in self.AVAILABLE_LANGS:
-            # if lang is not between the lang translated, english by default
+            # if lang is not one of the supported languages, we use english
             print("Oups! No translations found for your language... Using english.")
             print("Please send your translations for improvements.")
             print("===============================================================")

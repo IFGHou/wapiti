@@ -38,8 +38,8 @@ if a script is vulnerable.""",
     include_package_data=True,
     scripts=[
         "bin/wapiti",
-        "bin/wapiti-cookie.py",
-        "bin/wapiti-getcookie.py"
+        "bin/wapiti-cookie",
+        "bin/wapiti-getcookie"
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',

@@ -163,7 +163,7 @@ msgstr "Abrir {0}/index.html con el navegador para ver el informe"
 msgid "wapitiDoc"
 msgstr ""
 "Wapiti-SVN - Web application vulnerability scanner \n"
-" \n" prox
+" \n"
 " Uso: python wapiti.py http://server.com/base/url/ [options] \n"
 " \n"
 " Las opciones soportadas son: \n"

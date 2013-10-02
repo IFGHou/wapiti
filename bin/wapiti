@@ -21,17 +21,22 @@ import getopt
 import os
 import urlparse
 import time
-from pkg_resources import resource_filename
 
 BASE_DIR = None
 WAPITI_VERSION = "Wapiti SVN"
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
-if os.path.exists(os.path.join(parent_dir, "wapitiCore")):
-    sys.path.append(parent_dir)
 
-CONF_DIR = resource_filename('wapitiCore', '')
+if hasattr(sys, "frozen"):
+    # For py2exe
+    CONF_DIR = os.path.join(os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding())), "data")
+    from wapitiCore.language.language import Language
+else:
+    parent_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+    if os.path.exists(os.path.join(parent_dir, "wapitiCore")):
+        sys.path.append(parent_dir)
+    from wapitiCore.language.language import Language
+    CONF_DIR = os.path.dirname(sys.modules['wapitiCore'].__file__)
 
-from wapitiCore.language.language import Language
+
 lan = Language()
 lan.configure()
 from wapitiCore.net import HTTP, lswww
@@ -83,7 +88,7 @@ class Wapiti(object):
         self.http_engine = HTTP.HTTP(server)
         self.myls = lswww.lswww(root_url, http_engine=self.http_engine)
         self.xmlRepGenParser = ReportGeneratorsXMLParser()
-        self.xmlRepGenParser.parse(os.path.join(CONF_DIR, "config/reports/generators.xml"))
+        self.xmlRepGenParser.parse(os.path.join(CONF_DIR, "config", "reports", "generators.xml"))
 
     def __initReport(self):
         for repGenInfo in self.xmlRepGenParser.getReportGenerators():
@@ -96,7 +101,7 @@ class Wapiti(object):
                 break
 
         vulnXMLParser = VulnerabilityXMLParser()
-        vulnXMLParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/vulnerabilities.xml"))
+        vulnXMLParser.parse(os.path.join(CONF_DIR, "config", "vulnerabilities", "vulnerabilities.xml"))
         for vul in vulnXMLParser.getVulnerabilities():
             self.reportGen.addVulnerabilityType(_(vul.getName()),
                                                 _(vul.getDescription()),
@@ -104,7 +109,7 @@ class Wapiti(object):
                                                 vul.getReferences())
 
         anomXMLParser = AnomalyXMLParser()
-        anomXMLParser.parse(os.path.join(CONF_DIR, "config/vulnerabilities/anomalies.xml"))
+        anomXMLParser.parse(os.path.join(CONF_DIR, "config", "vulnerabilities", "anomalies.xml"))
         for anomaly in anomXMLParser.getAnomalies():
             self.reportGen.addAnomalyType(_(anomaly.getName()),
                                           (anomaly.getDescription()),
@@ -430,13 +435,17 @@ if __name__ == "__main__":
                         attackFile = a
                     else:
                         hostname = url.split("://")[1].split("/")[0]
-                        attackFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
+                        attackFile = u"{0}{1}{2}.xml".format(crawlerPersister.CRAWLER_DATA_DIR,
+                                                             os.path.sep,
+                                                             hostname)
                 if o in ["-i", "--continue"]:
                     if a != '' and a[0] != '-':
                         crawlerFile = a
                     else:
                         hostname = url.split("://")[1].split("/")[0]
-                        crawlerFile = u"{0}/{1}.xml".format(crawlerPersister.CRAWLER_DATA_DIR, hostname)
+                        crawlerFile = u"{0}{1}{2}.xml".format(crawlerPersister.CRAWLER_DATA_DIR,
+                                                              os.path.sep,
+                                                              hostname)
                 if o in ["--verify-ssl"]:
                     if str.isdigit(a):
                         wap.setVerifySsl(bool(int(a)))
