@@ -66,10 +66,16 @@ if a script is vulnerable.""",
     console=[
         {
             "script": "bin/wapiti",
-            "icon_resources": [(1, "wapiti.ico")]
+            "icon_resources": [(1, "doc/wapiti.ico")]
         },
-        "bin/wapiti-cookie",
-        "bin/wapiti-getcookie"
+        {
+            "script": "bin/wapiti-cookie",
+            "icon_resources": [(1, "doc/cookie.ico")]
+        },
+        {
+            "script": "bin/wapiti-getcookie",
+            "icon_resources": [(1, "doc/cookie.ico")]
+        }
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',

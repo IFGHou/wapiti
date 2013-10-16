@@ -44,7 +44,7 @@ Browsing features
 + Safeguards against scan endless-loops (max number of values for a parameter)
 + Possibility to set the first URLs to explore (even if not in scope)
 + Can exclude some URLs of the scan and attacks (eg: logout URL)
-+ Import of cookies (get them with the cookie.py and getcookie.py tools)
++ Import of cookies (get them with the wapiti-cookie and wapiti-getcookie tools)
 + Can activate / deactivate SSL certificates verification
 + Extract URLs from Flash SWF files
 + Try to extract URLs from javascript (very basic JS interpreter)
@@ -178,12 +178,14 @@ Source code structure (wapitiCore directory)
 |   `-- language.py
 |
 |-- language_sources
+|   |-- de.po
 |   |-- en.po
 |   |-- es.po
 |   |-- file_list.txt
 |   |-- fr.po
 |   |-- generateSources.sh  # Script to generate .po files from source code
-|   `-- generateTranslations.sh  # Script to compile .po files to .mo files
+|   |-- generateTranslations.sh  # Script to compile .po files to .mo files
+|   `-- ms.po
 |
 |-- net
 |   |-- HTTP.py    # Wrapper around python-requests, contains HTTP,
@@ -221,3 +223,10 @@ Source code structure (wapitiCore directory)
         |-- kube.buttons.js
         `-- kube.tabs.js
  
+
+Licensing
+=========
+
+Wapiti is released under the GNU General Public License version 2 (the GPL).
+Source code is available on SourceForge :
+https://sourceforge.net/projects/wapiti/
