@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 VERSION = "SVN"
-DOC_DIR = "wapiti"
+DOC_DIR = "share/doc/wapiti"
 
 doc_and_conf_files = []
 doc_and_conf_files.append((DOC_DIR,
@@ -14,7 +14,7 @@ doc_and_conf_files.append((DOC_DIR,
                             "README",
                             "TODO",
                             "VERSION"]))
-doc_and_conf_files.append(("/usr/local/share/man/man1", ["doc/wapiti.1.gz"]))
+doc_and_conf_files.append(("share/man/man1", ["doc/wapiti.1.gz"]))
 
 # Main
 setup(
