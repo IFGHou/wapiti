@@ -17,7 +17,7 @@ msgstr ""
 
 #: ../vulnerability.py:23
 msgid "  Evil url: {0}"
-msgstr ""
+msgstr "  Evil url: {0}"
 
 #: ../vulnerability.py:24
 msgid "{0} in {1} via injection in the parameter {2}"
@@ -41,7 +41,7 @@ msgstr "Paramètre en cause : {0}"
 
 #: ../vulnerability.py:29
 msgid "Evil request:"
-msgstr ""
+msgstr "Evil request:"
 
 #: ../vulnerability.py:67
 msgid "SQL Injection"
@@ -158,7 +158,7 @@ msgstr "Ouvrez {0}/index.html dans un navigateur pour voir ce rapport."
 #: ../wapiti.py:410
 msgid "wapitiDoc"
 msgstr ""
-"Wapiti-SVN - Un scanneur de vulnérabilités pour applications web \n"
+"Wapiti-2.3.0 - Un scanneur de vulnérabilités pour applications web \n"
 " \n"
 " Mode d'emploi : python wapiti.py http://server.com/base/url/ [options] \n"
 " \n"
@@ -273,8 +273,8 @@ msgstr ""
 " "
 
 #: ../wapiti.py:418
-msgid "Wapiti-SVN (wapiti.sourceforge.net)"
-msgstr ""
+msgid "Wapiti-2.3.0 (wapiti.sourceforge.net)"
+msgstr "Wapiti-2.3.0 (wapiti.sourceforge.net)"
 
 #: ../wapiti.py:549
 msgid "File {0} loaded. Wapiti will use it to perform the attack"
@@ -282,7 +282,7 @@ msgstr "Fichier {0} chargé. Wapiti va s'en servir pour effectuer l'attaque"
 
 #: ../attack/attack.py:166
 msgid "+ attackGET {0}"
-msgstr ""
+msgstr "+ attackGET {0}"
 
 #: ../attack/attack.py:171 ../attack/attack.py:185
 #: ../attack/mod_permanentxss.py:87 ../attack/mod_permanentxss.py:89
@@ -328,7 +328,7 @@ msgstr "Injection CRLF"
 
 #: ../attack/mod_crlf.py:70 ../attack/mod_crlf.py:77
 msgid "(QUERY_STRING)"
-msgstr ""
+msgstr "(QUERY_STRING)"
 
 #: ../attack/mod_crlf.py:121
 msgid "Error: The server did not understand this request"
@@ -408,7 +408,7 @@ msgstr "Code source :"
 
 #: ../attack/mod_htaccess.py:94
 msgid "{0} HtAccess"
-msgstr ""
+msgstr "{0} HtAccess"
 
 #: ../attack/mod_htaccess.py:95
 msgid "  .htaccess bypass vulnerability: {0}"
@@ -529,7 +529,7 @@ msgstr "Veuillez renseignr les champs pour le formulaire suivant : "
 
 #: ../net/getcookie.py:121
 msgid "url = {0}"
-msgstr ""
+msgstr "url = {0}"
 
 #: ../net/cookie.py:75
 msgid "Error getting url {0}"
@@ -593,7 +593,7 @@ msgstr "Pour reprendre ce scan, vous pouvez lancer wapiti avec l'option \"-i\""
 
 #: ../net/lswww.py:729
 msgid "URLs"
-msgstr ""
+msgstr "URLs"
 
 #: ../net/lswww.py:736
 msgid "Forms Info"
@@ -625,19 +625,19 @@ msgstr " * Méthode : {0}"
 
 #: ../net/lswww.py:1016
 msgid " * Intputs:"
-msgstr ""
+msgstr " * Intputs:"
 
 #: ../net/lswww.py:1021
 msgid " * Selects:"
-msgstr ""
+msgstr " * Selects:"
 
 #: ../net/lswww.py:1026
 msgid " * TextAreas:"
-msgstr ""
+msgstr " * TextAreas:"
 
 #: ../net/lswww.py:1032
 msgid "URLS"
-msgstr ""
+msgstr "URLS"
 
 #: ../report/txtreportgenerator.py:69
 msgid "Report for {0}\n"
@@ -657,11 +657,11 @@ msgstr "Résumé des vulnérabilités :"
 
 #: ../report/txtreportgenerator.py:78
 msgid "{0} : {1:>3}\n"
-msgstr ""
+msgstr "{0} : {1:>3}\n"
 
 #: ../report/txtreportgenerator.py:88 ../report/txtreportgenerator.py:105
 msgid "Evil request:\n"
-msgstr ""
+msgstr "Evil request:\n"
 
 #: ../report/txtreportgenerator.py:91
 msgid "cURL command PoC : \"{0}\""

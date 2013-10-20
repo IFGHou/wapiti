@@ -1,5 +1,5 @@
-XX/XX/2013
-	Version X.X.X
+20/10/2013
+	Version 2.3.0
 	Fixed a colosseum of bugs, especially related to unicode.
 	Software is much more stable.
 	New report template for HTML (using Kube CSS).
@@ -27,12 +27,14 @@ XX/XX/2013
 	Can work on parameters that don't have a value in query string.
 	mod_crlf is not activated by default anymore (must call it with -m).
 	Startings URLs (-s) will be fetched even if out of scope.
-	Proxy support for wapiti-getcookie.py. and wapiti-cookie.py.
+	Proxy support for wapiti-getcookie. and wapiti-cookie.
 	Attempt to bring an OpenVAS report generator.
 	Added an home-made SWF parser to extract URLs from flash files.
 	Added an home-made (and more than basic) JS interpreter based on the
 	pynarcissus parser. Lot of work still needs to be done on this.
 	New logo and webpage at wapiti.sf.net.
+	Added german and malaysian translations.
+	Added a script to create standalone archive for Windows (with py2exe).
 
 29/12/2009
     Version 2.2.1 (already)

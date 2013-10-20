@@ -158,7 +158,7 @@ msgstr "Öffnen Sie {0}/index.html in einem Browser um diesen Bericht zu sehen."
 #: ../wapiti.py:410
 msgid "wapitiDoc"
 msgstr ""
-"Wapiti-SVN - Sicherheitsscanner für Webanwendungen \n"
+"Wapiti-2.3.0 - Sicherheitsscanner für Webanwendungen \n"
 " \n"
 " Befehlszeile: python wapiti.py http://server.com/base/url/ [Optionen] \n"
 " \n"
@@ -274,8 +274,8 @@ msgstr ""
 " "
 
 #: ../wapiti.py:418
-msgid "Wapiti-SVN (wapiti.sourceforge.net)"
-msgstr "Wapiti-SVN (wapiti.sourceforge.net)"
+msgid "Wapiti-2.3.0 (wapiti.sourceforge.net)"
+msgstr "Wapiti-2.3.0 (wapiti.sourceforge.net)"
 
 #: ../wapiti.py:549
 msgid "File {0} loaded. Wapiti will use it to perform the attack"

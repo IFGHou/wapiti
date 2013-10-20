@@ -46,7 +46,7 @@ class mod_crlf(Attack):
         if referer:
             headers["referer"] = referer
 
-        payload = self.HTTP.quote("http://www.google.fr\r\nwapiti: SVN version")
+        payload = self.HTTP.quote("http://www.google.fr\r\nwapiti: 2.3.0 version")
         if not params_list:
             # Do not attack application-type files
             if not "content-type" in resp_headers:

@@ -65,7 +65,6 @@ class CrawlerPersister(object):
     browsed = []
     # forms contains only POST resources
     forms = []
-    #TODO? Keep it for the moment
     uploads = []
     headers = {}
     rootURL = ""

@@ -23,7 +23,7 @@ import urlparse
 import time
 
 BASE_DIR = None
-WAPITI_VERSION = "Wapiti SVN"
+WAPITI_VERSION = "Wapiti 2.3.0"
 
 if hasattr(sys, "frozen"):
     # For py2exe
@@ -321,7 +321,7 @@ if __name__ == "__main__":
         crawlerFile = None
         attackFile = None
 
-        print(_("Wapiti-SVN (wapiti.sourceforge.net)"))
+        print(_("Wapiti-2.3.0 (wapiti.sourceforge.net)"))
 
         # Fix bor bug #31
         if sys.getdefaultencoding() != "utf-8":

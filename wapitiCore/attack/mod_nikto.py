@@ -135,7 +135,6 @@ class mod_nikto(Attack):
                     else:
                         print(u"+ {0}".format(evil_req.http_repr))
                 except Exception, e:
-                    # TODO: deal with unicode problems when we extract urls from nikto_db
                     continue
 
             try:

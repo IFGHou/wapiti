@@ -147,7 +147,6 @@ class HTTPResource(object):
             post_kv = tuple([tuple(param) for param in self._post_params])
             file_kv = tuple([tuple([param[0], param[1][0]]) for param in self._file_params])
 
-            # TODO: should the referer be in the hash ?
             self._cached_hash = hash((self._method, self._resource_path,
                                       get_kv, post_kv, file_kv))
         return self._cached_hash
@@ -518,7 +517,6 @@ class HTTP(object):
                     if not file_data:
                         _headers.update({'content-type': 'application/x-www-form-urlencoded'})
 
-                    # TODO: For POST use the TooManyRedirects exception instead ?
                     resp = self.h.post(target.path,
                                        params=get_data,
                                        data=post_data,

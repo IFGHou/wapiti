@@ -92,7 +92,7 @@ class JSONReportGenerator(ReportGenerator):
         """
 
         vuln_dict = {"method": request.method,
-                     "path": request.file_path,  # TODO: path or file_path according to the scope ?
+                     "path": request.file_path,
                      "info": info,
                      "level": level,
                      "parameter": parameter,
@@ -127,7 +127,7 @@ class JSONReportGenerator(ReportGenerator):
         """
 
         anom_dict = {"method": request.method,
-                     "path": request.file_path,  # TODO: path or file_path according to the scope ?
+                     "path": request.file_path,
                      "info": info,
                      "level": level,
                      "parameter": parameter,

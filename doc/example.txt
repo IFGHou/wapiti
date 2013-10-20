@@ -15,7 +15,7 @@ Then, I scan the vulnerable website using the cookie and excluding the logout sc
 
 bash-4.2$ wapiti http://127.0.0.1/vuln/ -c cookies.json -x http://127.0.0.1/vuln/logout.php
 
-Wapiti-SVN (wapiti.sourceforge.net)
+Wapiti-2.3.0 (wapiti.sourceforge.net)
 
  Note
 ========

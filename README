@@ -1,4 +1,4 @@
-                                WAPITI - VERSION SVN
+                                WAPITI - VERSION 2.3.0
                     Wapiti is a web application security auditor.
                            http://wapiti.sourceforge.net/
                       http://www.ict-romulus.eu/web/wapiti/home
@@ -109,6 +109,7 @@ You can :
 + Create some tools to convert cookies from browsers to Wapiti JSON format
 + Improve the Flash SWF parser (write a basic ABC interpreter ?)
 + Create a tool to convert PCAP files to Wapiti XML status files
++ Translate Wapiti in your language
 + Talk about Wapiti around you
 
 
@@ -154,7 +155,13 @@ Source code structure (wapitiCore directory)
 |   |   |-- es
 |   |   |   `-- LC_MESSAGES
 |   |   |       `-- wapiti.mo
-|   |   `-- fr
+|   |   |-- de
+|   |   |   `-- LC_MESSAGES
+|   |   |       `-- wapiti.mo
+|   |   |-- fr
+|   |   |   `-- LC_MESSAGES
+|   |   |       `-- wapiti.mo
+|   |   `-- ms
 |   |       `-- LC_MESSAGES
 |   |           `-- wapiti.mo
 |   |
@@ -212,17 +219,17 @@ Source code structure (wapitiCore directory)
 |   |-- vulneranetxmlreportgenerator.py
 |   `-- xmlreportgenerator.py
 |
-|-- report_template  # Template used for HTML reports
+`-- report_template  # Template used for HTML reports
     |-- css
     |   |-- kube.css
     |   |-- kube.min.css
     |   `-- master.css
     |-- index.html
-    `-- js
-        |-- jquery-1.9.1.min.js
-        |-- kube.buttons.js
-        `-- kube.tabs.js
- 
+    |-- js
+    |   |-- jquery-1.9.1.min.js
+    |   |-- kube.buttons.js
+    |    `-- kube.tabs.js
+    `-- logo_clear.png
 
 Licensing
 =========

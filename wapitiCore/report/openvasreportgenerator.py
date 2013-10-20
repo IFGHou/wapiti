@@ -28,7 +28,7 @@ class OpenVASReportGenerator(ReportGenerator):
     method logVulnerability(vulnerabilityTypeName,level,url,parameter,info).
     The format of the file is XML and it has the following structure:
     <report type="security">
-        <generatedBy id="Wapiti SVN"/>
+        <generatedBy id="Wapiti 2.3.0"/>
         <vulnerabilityTypeList>
             <vulnerabilityType name="SQL Injection">
 
@@ -95,7 +95,7 @@ class OpenVASReportGenerator(ReportGenerator):
         vuln_dict = {"method": request.method,
                      "hostname": request.hostname,
                      "port": request.port,
-                     "path": request.file_path,  # TODO: path or file_path according to the scope ?
+                     "path": request.file_path,
                      "info": info,
                      "level": level,
                      "parameter": parameter,
@@ -134,7 +134,7 @@ class OpenVASReportGenerator(ReportGenerator):
         anom_dict = {"method": request.method,
                      "hostname": request.hostname,
                      "port": request.port,
-                     "path": request.file_path,  # TODO: path or file_path according to the scope ?
+                     "path": request.file_path,
                      "info": info,
                      "level": level,
                      "parameter": parameter,

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from setuptools import setup, find_packages
 
-VERSION = "SVN"
+VERSION = "2.3.0"
 DOC_DIR = "share/doc/wapiti"
 
 doc_and_conf_files = []
