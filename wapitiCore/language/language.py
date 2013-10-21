@@ -55,7 +55,9 @@ class Language(object):
             # if lang is not specified, default language is used
             defLocale = locale.getdefaultlocale()
             langCounty = defLocale[0]   # en_UK
-            lang = langCounty[:2]  # en
+            if not langCounty is None:
+                lang = langCounty[:2]  # en
+
         if lang not in self.AVAILABLE_LANGS:
             # if lang is not one of the supported languages, we use english
             print("Oups! No translations found for your language... Using english.")
