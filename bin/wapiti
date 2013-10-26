@@ -365,6 +365,18 @@ if __name__ == "__main__":
                 if o in ["-s", "--start"]:
                     if a.startswith("http://") or a.startswith("https://"):
                         wap.addStartURL(a)
+                    elif os.path.isfile(a):
+                        import codecs
+                        try:
+                            urlfd = codecs.open(a, encoding="UTF-8")
+                            for urlline in urlfd:
+                                urlline = urlline.strip()
+                                if urlline.startswith("http://") or urlline.startswith("https://"):
+                                    wap.addStartURL(urlline)
+                            urlfd.close()
+                        except UnicodeDecodeError:
+                            print(_("Error: File given with the -s option must be UTF-8 encoded !"))
+                            raise InvalidOptionValue(o, a)
                     else:
                         raise InvalidOptionValue(o, a)
                 if o in ["-x", "--exclude"]:
