@@ -28,7 +28,7 @@ if "_" not in dir():
         return s
 
 if len(sys.argv) < 3:
-    sys.stderr.write("Usage python cookie.py [-p proxy_url] <cookie_file.json> <url> <arg1=val1> ...\n")
+    sys.stderr.write("Usage: python wapiti-cookie [-p proxy_url] <cookie_file.json> <url> <arg1=val1> ...\n")
     sys.exit(1)
 
 if not hasattr(sys, "frozen"):
@@ -61,7 +61,7 @@ if len(args) > 2:
         if "=" in l:
             liste.append(tuple(l.split("=")))
         else:
-            sys.stderr.write("Usage python cookie.py [-p proxy_url] <cookie_file> <url> <arg1=val1> ...\n")
+            sys.stderr.write("Usage: python wapiti-cookie [-p proxy_url] <cookie_file> <url> <arg1=val1> ...\n")
             print("Invalid key=value for web form: {0}".format(l))
             sys.exit(1)
 

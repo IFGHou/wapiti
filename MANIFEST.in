@@ -7,3 +7,5 @@ recursive-include wapitiCore/config *
 recursive-include wapitiCore/language_sources *
 recursive-include wapitiCore/report_template *
 recursive-include doc *
+exclude wapitiCore/language_sources/*.sh
+exclude wapitiCore/language_sources/file_list.txt

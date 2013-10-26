@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 from setuptools import setup, find_packages
 
 VERSION = "2.3.0"
@@ -14,7 +14,10 @@ doc_and_conf_files.append((DOC_DIR,
                             "README",
                             "TODO",
                             "VERSION"]))
-doc_and_conf_files.append(("share/man/man1", ["doc/wapiti.1.gz"]))
+doc_and_conf_files.append(("share/man/man1",
+                           ["doc/wapiti.1.gz",
+                            "doc/wapiti-cookie.1.gz",
+                            "doc/wapiti-getcookie.1.gz"]))
 
 # Main
 setup(

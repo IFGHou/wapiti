@@ -120,7 +120,7 @@ class swf_parser(object):
 
             elif action_tag == 0x9b:
                 eos = data[i:i + action_size].find("\0")
-                func_name = data[i:i+eos]
+                # func_name = data[i:i+eos]
                 nb_params, = struct.unpack("H", data[i + eos + 1: i + eos + 3])
                 code_size, = struct.unpack("H", data[i + action_size - 2: i + action_size])
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # This file is a modification of jsparser.py from pynarcissus ( https://code.google.com/p/pynarcissus/ )
 #

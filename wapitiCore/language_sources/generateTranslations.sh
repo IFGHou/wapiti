@@ -1,3 +1,4 @@
+#!/bin/sh
 rm ../config/language/de/LC_MESSAGES/wapiti.mo 2> /dev/null
 rm ../config/language/fr/LC_MESSAGES/wapiti.mo 2> /dev/null
 rm ../config/language/en/LC_MESSAGES/wapiti.mo 2> /dev/null
