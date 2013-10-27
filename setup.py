@@ -33,7 +33,7 @@ Once it gets this list, Wapiti acts like a fuzzer, injecting payloads to see
 if a script is vulnerable.""",
     url="http://wapiti.sourceforge.net/",
     author="Nicolas Surribas",
-    author_email="nicolad.surribas@gmail.com",
+    author_email="nicolas.surribas@gmail.com",
     license="GPLv2",
     platforms=["Any"],
     packages=find_packages(),
