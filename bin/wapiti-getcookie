@@ -51,6 +51,10 @@ if not hasattr(sys, "frozen"):
 from wapitiCore.net import jsoncookie
 from wapitiCore.net import lswww
 
+if sys.getdefaultencoding() != "utf-8":
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+
 try:
     opts, args = getopt.getopt(sys.argv[3:], "p:", ["proxy="])
 except getopt.GetoptError, e:
@@ -77,14 +81,15 @@ txheaders = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 session = requests.Session()
 session.proxies = proxies
 r = session.get(url, headers=txheaders)
-resp_encoding = r.encoding
 
-htmlSource = r.text
+page_encoding = r.apparent_encoding
+if page_encoding is not None:
+    htmlSource = r.content.decode(page_encoding, "ignore")
+else:
+    htmlSource = r.text
+    page_encoding = r.encoding
+
 bs = BeautifulSoup.BeautifulSoup(htmlSource)
-page_encoding = bs.originalEncoding
-
-if page_encoding is None:
-    page_encoding = resp_encoding
 
 p = lswww.linkParser(url)
 try:
