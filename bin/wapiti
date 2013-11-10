@@ -243,6 +243,9 @@ class Wapiti(object):
         print(_("A report has been generated in the file {0}").format(self.outputFile))
         if self.reportGeneratorType == "html":
             print(_("Open {0}/index.html with a browser to see this report.").format(self.outputFile))
+        if self.http_engine.sslErrorOccured:
+            print('')
+            print(_("Warning: Wapiti came across some SSL errors during the scan, it maybe missed some webpages."))
 
     def setTimeOut(self, timeout=6.0):
         "Set the timeout for the time waiting for a HTTP response"

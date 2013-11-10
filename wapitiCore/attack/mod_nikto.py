@@ -21,7 +21,7 @@ import re
 import os
 import socket
 import random
-import BeautifulSoup
+from bs4 import BeautifulSoup
 from wapitiCore.attack.attack import Attack
 from wapitiCore.language.vulnerability import Vulnerability
 from wapitiCore.net import HTTP
@@ -145,7 +145,7 @@ class mod_nikto(Attack):
                 continue
 
             page, code = resp.getPageCode()
-            encoding = BeautifulSoup.BeautifulSoup(page).originalEncoding
+            encoding = BeautifulSoup(page).originalEncoding
             if encoding:
                 page = unicode(page, encoding, "ignore")
             raw = " ".join([x + ": " + y for x, y in resp.getHeaders().items()])

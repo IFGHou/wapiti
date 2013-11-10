@@ -435,7 +435,15 @@ class HTTPResponse(object):
 
     def getEncoding(self):
         "Return the detected encoding for the page."
-        return self.resp.encoding
+        if self.resp.encoding:
+            return self.resp.encoding.upper()
+        return None
+
+    def getApparentEncoding(self):
+        "Return the detected encoding for the page."
+        if self.resp.apparent_encoding:
+            return self.resp.apparent_encoding.upper()
+        return None
 
     def setEncoding(self, new_encoding):
         "Change the encoding (for getPage())"
@@ -462,6 +470,7 @@ class HTTP(object):
     cookiejar = {}
     server = ""
     verify_ssl = True
+    sslErrorOccured = False
 
     configured = 0
 
@@ -495,17 +504,17 @@ class HTTP(object):
         if isinstance(file_params, tuple) or isinstance(file_params, list):
             file_data = file_params
 
-        if isinstance(target, HTTPResource):
-            if get_data is None:
-                get_data = target.get_params
+        if get_data is None:
+            get_data = target.get_params
 
+        try:
             target.setStartTime()
             if target.method == "GET":
-                resp = self.h.get(target.url,
-                                  headers=_headers,
-                                  timeout=self.timeout,
-                                  allow_redirects=False,
-                                  verify=self.verify_ssl)
+                    resp = self.h.get(target.url,
+                                      headers=_headers,
+                                      timeout=self.timeout,
+                                      allow_redirects=False,
+                                      verify=self.verify_ssl)
             else:
                 if target.referer:
                     _headers.update({'referer': target.referer})
@@ -537,6 +546,10 @@ class HTTP(object):
                                           verify=self.verify_ssl)
             target.setElapsedTime()
             target.setHeaders(resp.headers)
+        except requests.exceptions.SSLError, msg:
+            if not self.sslErrorOccured:
+                self.sslErrorOccured = True
+                print(_("A SSL error occured during the scan: {0}").format(msg))
 
         if resp is None:
             return None

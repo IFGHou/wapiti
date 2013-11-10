@@ -28,7 +28,7 @@ import urlparse
 import requests
 from htmlentitydefs import name2codepoint as n2cp
 from xml.dom import minidom
-import BeautifulSoup
+from bs4 import BeautifulSoup
 
 from wapitiCore.net import jsoncookie
 from wapitiCore.net import HTTP
@@ -245,6 +245,9 @@ class lswww(object):
             self.excluded.append(url)
             return False
 
+        if resp is None:
+            return False
+
         info = resp.getHeaders()
         code = resp.getCode()
         info["status_code"] = code
@@ -280,12 +283,15 @@ class lswww(object):
 
         # Requests says it found an encoding... the content must be some HTML
         if resp_encoding and any(mime_type.startswith(t) for t in self.allowed_types):
-            # But Requests doesn't take a deep look at the webpage,
-            # so check it with BeautifulSoup
-            page_encoding = BeautifulSoup.BeautifulSoup(resp.getRawPage()).originalEncoding
-            if page_encoding and page_encoding.upper() != resp_encoding:
-                # Mismatch ! Convert the response text to the encoding detected by BeautifulSoup
-                resp.setEncoding(page_encoding)
+            # use charade (included in requests) to detect the real encoding
+            page_encoding = resp.getApparentEncoding()
+            if page_encoding:
+                if page_encoding != resp_encoding:
+                    # Mismatch ! Convert the response text to the encoding detected by BeautifulSoup
+                    "passage a l'encodage", page_encoding, "au lieu de", resp_encoding
+                    resp.setEncoding(page_encoding)
+            else:
+                page_encoding = resp_encoding
             data = resp.getPage()
         else:
             # Can't find an encoding... beware of non-html content
@@ -296,10 +302,9 @@ class lswww(object):
                     swf_links = flash_parser.getLinks()
                 except Exception, err_data:
                     swf_links = err_data[1]
-                data = ""
             elif "/x-javascript" in mime_type or "/x-js" in mime_type or "/javascript" in mime_type:
                 js_links = lamejs.lamejs(data).getLinks()
-                data = ""
+            data = ""
 
         # Manage redirections
         if "location" in info:
@@ -317,32 +322,26 @@ class lswww(object):
                         self.tobrowse.append(redir)
 
         htmlSource = data
-        if page_encoding:
-            bs = BeautifulSoup.BeautifulSoup(htmlSource)
-            # Look for a base tag with an href attribute
-            if bs.head:
-                baseTags = bs.head.findAll("base")
-                for base in baseTags:
-                    # BeautifulSoup doesn't work as excepted with the "in" statement, keep this:
-                    if base.has_key("href"):
-                        # Found a base url, now set it as the current url
-                        current = base["href"].split("#")[0]
-                        # We don't need destination anchors
-                        current = current.split("?")[0]
-                        # Get the dirname of the file
-                        currentdir = "/".join(current.split("/")[:-1]) + "/"
-                        break
-
-        #if page_encoding != None:
-        #  htmlSource = unicode(data, page_encoding, "ignore")
-        #else:
-        #  htmlSource = data
+        bs = BeautifulSoup(htmlSource)
+        # Look for a base tag with an href attribute
+        if bs.head:
+            baseTags = bs.head.findAll("base")
+            for base in baseTags:
+                # BeautifulSoup doesn't work as excepted with the "in" statement, keep this:
+                if "href" in base.attrs:
+                    # Found a base url, now set it as the current url
+                    current = base["href"].split("#")[0]
+                    # We don't need destination anchors
+                    current = current.split("?")[0]
+                    # Get the dirname of the file
+                    currentdir = "/".join(current.split("/")[:-1]) + "/"
+                    break
 
         p = linkParser(url)
         try:
             p.feed(htmlSource)
         except HTMLParser.HTMLParseError:
-            htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify()
+            htmlSource = BeautifulSoup(htmlSource).prettify()
             if not isinstance(htmlSource, unicode) and page_encoding is not None:
                 htmlSource = unicode(htmlSource, page_encoding, "ignore")
             try:
@@ -357,7 +356,7 @@ class lswww(object):
         if len(p.liens) == 0:
             if page_encoding is not None:
                 try:
-                    htmlSource = BeautifulSoup.BeautifulSoup(htmlSource).prettify(page_encoding)
+                    htmlSource = BeautifulSoup(htmlSource).prettify(page_encoding)
                     p.reset()
                     p.feed(htmlSource)
                 except UnicodeEncodeError:
@@ -675,11 +674,6 @@ class lswww(object):
                         elif self.verbose == 2:
                             print(lien)
                         self.browsed.append(lien)
-
-#            if not "link_encoding" in lien.headers:
-#              if lien in self.link_encoding:
-#                lien.headers["link_encoding"] = self.link_encoding[lien]
-#            self.browsed[lien] = lien.headers
 
             self.saveCrawlerData()
             print('')

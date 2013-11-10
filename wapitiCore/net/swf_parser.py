@@ -20,7 +20,7 @@
 from zlib import decompress
 import sys
 import struct
-import BeautifulSoup
+from bs4 import BeautifulSoup
 
 # tag  7 = DefineButton
 # tag 12 = DoAction
@@ -216,7 +216,7 @@ class swf_parser(object):
                 if flags2 & 16:  # HasLayout
                     string_index += 9
                 text = data[string_index: pos + decal + length].split("\0")[1]
-                soup = BeautifulSoup.BeautifulSoup(text)
+                soup = BeautifulSoup(text)
                 for link in soup.findAll("a"):
                     # BeautifullSoup doesn't work as expected with the "in" statement
                     if link.has_key("href"):

@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import random
-import BeautifulSoup
+from bs4 import BeautifulSoup, element
 import requests
 import os
 from wapitiCore.attack.attack import Attack
@@ -481,9 +481,9 @@ class mod_xss(Attack):
         #if parent==None:
         #  print("Keyword is: {0}".format(keyword))
         if keyword in str(bs_node):
-            if isinstance(bs_node, BeautifulSoup.Tag):
+            if isinstance(bs_node, element.Tag):
                 if keyword in str(bs_node.attrs):
-                    for k, v in bs_node.attrs:
+                    for k, v in bs_node.attrs.items():
                         if keyword in v:
                             # print("Found in attribute value {0} of tag {1}".format(k, bs_node.name))
                             noscript = self.closeNoscript(bs_node)
@@ -505,7 +505,7 @@ class mod_xss(Attack):
                 # recursively search injection points for the same variable
                 for x in bs_node.contents:
                     self.study(x, parent=bs_node, keyword=keyword, entries=entries)
-            elif isinstance(bs_node, BeautifulSoup.NavigableString):
+            elif isinstance(bs_node, element.NavigableString):
                 # print("Found in text, tag {0}".format(parent.name))
                 noscript = self.closeNoscript(bs_node)
                 d = {"type": "text", "parent": parent.name, "noscript": noscript}
@@ -514,7 +514,7 @@ class mod_xss(Attack):
 
     # generate a list of payloads based on where in the webpage the js-code will be injected
     def generate_payloads(self, html_code, code):
-        soup = BeautifulSoup.BeautifulSoup(html_code)  # il faut garder la page non-retouchee en reserve...
+        soup = BeautifulSoup(html_code)  # il faut garder la page non-retouchee en reserve...
         e = []
         self.study(soup, keyword=code, entries=e)
 
