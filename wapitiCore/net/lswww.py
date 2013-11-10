@@ -288,7 +288,6 @@ class lswww(object):
             if page_encoding:
                 if page_encoding != resp_encoding:
                     # Mismatch ! Convert the response text to the encoding detected by BeautifulSoup
-                    "passage a l'encodage", page_encoding, "au lieu de", resp_encoding
                     resp.setEncoding(page_encoding)
             else:
                 page_encoding = resp_encoding
