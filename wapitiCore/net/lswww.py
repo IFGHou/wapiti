@@ -136,14 +136,14 @@ class lswww(object):
     # 0 means no limits
     nice = 0
 
-    def __init__(self, root, http_engine=None, crawlerFile=None):
+    def __init__(self, root, http_engine=None):
         self.h = http_engine
         if root.startswith("-"):
             print(_("First argument must be the root url !"))
             sys.exit(0)
         if not "://" in root:
             root = "http://" + root
-        if(self.__checklink(root)):
+        if self.__checklink(root):
             print(_("Invalid protocol: {0}").format(root.split("://")[0]))
             sys.exit(0)
         if root[-1] != "/" and not "/" in root.split("://")[1]:
@@ -182,7 +182,7 @@ class lswww(object):
             self.scopeURL = self.root.url.split("/")[0] + "//" + self.server
 
     def addStartURL(self, url):
-        if(self.__checklink(url)):
+        if self.__checklink(url):
             print(_("Invalid link argument: {0}").format(url))
             sys.exit(0)
         if self.__inzone(url) == 0:
@@ -225,8 +225,7 @@ class lswww(object):
         # and not too short to give good results
         socket.setdefaulttimeout(self.timeout)
 
-        headers = {}
-        headers["user-agent"] = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
+        headers = {"user-agent": 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
         try:
             resp = self.h.send(web_resource, headers=headers)
         except socket.timeout:
