@@ -191,14 +191,14 @@ class Wapiti(object):
                             print(_("[!] Unable to find a module named {0}").format(module))
 
     def browse(self, crawlerFile):
-        "Extract hyperlinks and forms from the webpages found on the website"
+        """Extract hyperlinks and forms from the webpages found on the website"""
         #self.urls, self.forms = self.myls.go(crawlerFile)
         self.myls.go(crawlerFile)
         self.urls = self.myls.getLinks()
         self.forms = self.myls.getForms()
 
     def attack(self):
-        "Launch the attacks based on the preferences set by the command line"
+        """Launch the attacks based on the preferences set by the command line"""
         if self.urls == {} and self.forms == []:
             print(_("No links or forms found in this page !"))
             print(_("Make sure the url is correct."))
@@ -210,10 +210,10 @@ class Wapiti(object):
             if x.doGET is False and x.doPOST is False:
                 continue
             print('')
-            if x.require != []:
+            if x.require:
                 t = [y.name for y in self.attacks if y.name in x.require and (y.doGET or y.doPOST)]
                 if x.require != t:
-                    print(_("[!] Missing dependecies for module {0}:").format(x.name))
+                    print(_("[!] Missing dependencies for module {0}:").format(x.name))
                     print(u"  {0}".format(",".join([y for y in x.require if y not in t])))
                     continue
                 else:
@@ -222,7 +222,7 @@ class Wapiti(object):
             x.logG(_("[+] Launching module {0}"), x.name)
             x.attack(self.urls, self.forms)
 
-        if self.myls.getUploads() != []:
+        if self.myls.getUploads():
             print('')
             print(_("Upload scripts found:"))
             print("----------------------")
@@ -248,35 +248,35 @@ class Wapiti(object):
             print(_("Warning: Wapiti came across some SSL errors during the scan, it maybe missed some webpages."))
 
     def setTimeOut(self, timeout=6.0):
-        "Set the timeout for the time waiting for a HTTP response"
+        """Set the timeout for the time waiting for a HTTP response"""
         self.http_engine.setTimeOut(timeout)
 
     def setVerifySsl(self, verify=True):
-        "Set whether SSL must be verified."
+        """Set whether SSL must be verified."""
         self.http_engine.setVerifySsl(verify)
 
     def setProxy(self, proxy=""):
-        "Set a proxy to use for HTTP requests."
+        """Set a proxy to use for HTTP requests."""
         self.http_engine.setProxy(proxy)
 
     def addStartURL(self, url):
-        "Specify an URL to start the scan with. Can be called several times."
+        """Specify an URL to start the scan with. Can be called several times."""
         self.myls.addStartURL(url)
 
     def addExcludedURL(self, url):
-        "Specify an URL to exclude from the scan. Can be called several times."
+        """Specify an URL to exclude from the scan. Can be called several times."""
         self.myls.addExcludedURL(url)
 
     def setCookieFile(self, cookie):
-        "Load session data from a cookie file"
+        """Load session data from a cookie file"""
         self.http_engine.setCookieFile(cookie)
 
     def setAuthCredentials(self, auth_basic):
-        "Set credentials to use if the website require an authentication."
+        """Set credentials to use if the website require an authentication."""
         self.http_engine.setAuthCredentials(auth_basic)
 
     def setAuthMethod(self, auth_method):
-        "Set the authentication method to use."
+        """Set the authentication method to use."""
         self.http_engine.setAuthMethod(auth_method)
 
     def addBadParam(self, bad_param):
@@ -295,24 +295,24 @@ class Wapiti(object):
         self.myls.setScope(scope)
 
     def setColor(self):
-        "Put colors in the console output (terminal must support colors)"
+        """Put colors in the console output (terminal must support colors)"""
         self.color = 1
 
     def verbosity(self, vb):
-        "Define the level of verbosity of the output."
+        """Define the level of verbosity of the output."""
         self.verbose = vb
         self.myls.verbosity(vb)
 
     def setModules(self, options=""):
-        """Activate or desactivate (default) all attacks"""
+        """Activate or deactivate (default) all attacks"""
         self.options = options
 
     def setReportGeneratorType(self, repGentype="xml"):
-        "Set the format of the generated report. Can be xml, html of txt"
+        """Set the format of the generated report. Can be xml, html of txt"""
         self.reportGeneratorType = repGentype
 
     def setOutputFile(self, outputFile):
-        "Set the filename where the report will be written"
+        """Set the filename where the report will be written"""
         self.outputFile = outputFile
 
 if __name__ == "__main__":

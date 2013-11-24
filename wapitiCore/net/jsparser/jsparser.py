@@ -169,13 +169,13 @@ keywords = {'false': 71, 'debugger': 65, 'in': 76, 'null': 79, 'if': 75, 'const'
 assignOps = {0: '|', 1: '^', 2: '&', 3: '<<', 4: '>>', 5: '>>>', '>>': 22, 7: '-', 8: '*', 9: '/', '<<': 21,
              '%': 28, 6: '+', '&': 12, '+': 24, '*': 26, '-': 25, '/': 27, '>>>': 23, 10: '%', '^': 11, '|': 10}
 
-opRegExp = re.compile(r"^;|^,|^\?|^:|^\|\||^\&\&|^\||^\^|^\&|^===|^==|^=|^!==|^!=|^<<|^<=|^<|^>>>|^>>|^>=|^>|^\+\+|^\-\-|^\+|^\-|^\*|^\/|^%|^!|^~|^\.|^\[|^\]|^\{|^\}|^\(|^\)")
+opRegExp = re.compile(r"^;|^,|^\?|^:|^\|\||^&&|^\||^\^|^&|^===|^==|^=|^!==|^!=|^<<|^<=|^<|^>>>|^>>|^>=|^>|^\+\+|^\-\-|^\+|^\-|^\*|^/|^%|^!|^~|^\.|^\[|^\]|^\{|^\}|^\(|^\)")
 
 # A regexp to match floating point literals (but not integer literals).
 fpRegExp = re.compile(r'^\d+\.\d*(?:[eE][-+]?\d+)?|^\d+(?:\.\d*)?[eE][-+]?\d+|^\.\d+(?:[eE][-+]?\d+)?')
 
 # A regexp to match regexp literals.
-reRegExp = re.compile(r'^\/((?:\\.|\[(?:\\.|[^\]])*\]|[^\/])+)\/([gimy]*)')
+reRegExp = re.compile(r'^/((?:\\.|\[(?:\\.|[^\]])*\]|[^/])+)/([gimy]*)')
 
 
 class SyntaxError_(ParseError):
@@ -247,7 +247,7 @@ class Tokenizer(object):
                     self.lineno += len(newlines)
                 input__ = self.input_
 
-            match = re.match(r'^\/(?:\*(?:.|\n)*?\*\/|\/.*)', input__)
+            match = re.match(r'^/(?:\*(?:.|\n)*?\*/|/.*)', input__)
             if not match:
                 break
             comment = match.group(0)
@@ -332,7 +332,7 @@ class Tokenizer(object):
     def unget(self):
         self.lookahead += 1
         if self.lookahead == 4:
-            raise "PANIC: too much lookahead!"
+            raise Exception("PANIC: too much lookahead!")
         self.tokenIndex = (self.tokenIndex - 1) & 3
 
     def newSyntaxError(self, m):
@@ -546,7 +546,7 @@ def Statement(t, x):
             n2.statements = Node(t, GLOBALS['BLOCK'])
             while True:
                 tt = t.peek()
-                if(tt == GLOBALS['CASE'] or tt == GLOBALS['DEFAULT'] or tt == GLOBALS['RIGHT_CURLY']):
+                if tt == GLOBALS['CASE'] or tt == GLOBALS['DEFAULT'] or tt == GLOBALS['RIGHT_CURLY']:
                     break
                 n2.statements.append(Statement(t, x))
             n.cases.append(n2)
@@ -642,7 +642,7 @@ def Statement(t, x):
                         raise t.newSyntaxError("Invalid break")
                     else:
                         raise t.newSyntaxError("Invalid continue")
-                if (getattr(ss[i], "isLoop", None) or (tt == GLOBALS['BREAK'] and ss[i].type_ == GLOBALS['SWITCH'])):
+                if getattr(ss[i], "isLoop", None) or (tt == GLOBALS['BREAK'] and ss[i].type_ == GLOBALS['SWITCH']):
                     break
         n.target = ss[i]
 
@@ -658,7 +658,7 @@ def Statement(t, x):
                 if x.ecmaStrictMode:
                     raise t.newSyntaxError("Illegal catch guard")
                 if n.catchClauses and not n.catchClauses[-1].guard:
-                    raise t.newSyntaxError("Gaurded catch after unguarded")
+                    raise t.newSyntaxError("Guarded catch after unguarded")
                 n2.guard = Expression(t, x)
             else:
                 n2.guard = None
@@ -960,12 +960,12 @@ def Expression(t, x, stop=None):
                     operators.append(Node(t))  # prefix increment or decrement
                 else:
                     # Don't cross a line boundary for postfix {in,de}crement.
-                    if (t.tokens.get((t.tokenIndex + t.lookahead - 1) & 3).lineno != t.lineno):
+                    if t.tokens.get((t.tokenIndex + t.lookahead - 1) & 3).lineno != t.lineno:
                         raise BreakOutOfLoops
 
                     # Use >, not >=, so postfix has higher precedence than
                     # prefix.
-                    while (operators and opPrecedence.get(operators[-1].type_, None) > opPrecedence.get(tt)):
+                    while operators and opPrecedence.get(operators[-1].type_, None) > opPrecedence.get(tt):
                         reduce_()
                     n = Node(t, tt, [operands.pop()])
                     n.postfix = True
@@ -987,7 +987,7 @@ def Expression(t, x, stop=None):
             elif tt == GLOBALS['LEFT_BRACKET']:
                 if t.scanOperand:
                     # Array initializer. Parse using recursive descent, as the
-                    # sub-grammer here is not an operator grammar.
+                    # sub-grammar here is not an operator grammar.
                     n = Node(t, GLOBALS['ARRAY_INIT'])
                     while True:
                         tt = t.peek()

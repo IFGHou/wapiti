@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# lamejs - A very basic javascript interpretor in Python
+# lamejs - A very basic javascript interpreter in Python
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
 # Copyright (C) 2013 Nicolas Surribas
 #
@@ -57,7 +57,7 @@ class lamejs(object):
             if hasattr(node, 'initializer'):
                 value = self.read_node(node.initializer)
                 self.js_vars[node.value] = value
-                return (node.value, value)
+                return node.value, value
             return node.value
         elif node.type == "NUMBER":
             self.print_d("# NUMBER")

@@ -45,7 +45,7 @@ class JSONReportGenerator(ReportGenerator):
         pass
 
     def setReportInfo(self, target, scope=None, date_string="", version=""):
-        "Set the informations about the scan"
+        """Set the informations about the scan"""
         self.__infos["target"] = target
         self.__infos["date"] = date_string
         self.__infos["version"] = version
@@ -73,7 +73,7 @@ class JSONReportGenerator(ReportGenerator):
                              description="",
                              solution="",
                              references={}):
-        "Add informations on a type of vulnerability"
+        """Add informations on a type of vulnerability"""
         if name not in self.__flawTypes:
             self.__flawTypes[name] = {'desc': description,
                                       'sol': solution,
@@ -108,7 +108,7 @@ class JSONReportGenerator(ReportGenerator):
                        description="",
                        solution="",
                        references={}):
-        "Register a type of anonomaly"
+        """Register a type of anonomaly"""
         if name not in self.__flawTypes:
             self.__flawTypes[name] = {'desc': description,
                                       'sol': solution,

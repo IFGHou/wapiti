@@ -52,14 +52,13 @@ class Attack(object):
     # Must be left empty in the code
     deps = []
 
-    # List of attack's url already launched in the current module
+    # List of attack urls already launched in the current module
     attackedGET = []
     attackedPOST = []
 
     vulnerableGET = []
     vulnerablePOST = []
 
-    CONFIG_DIR = ""
     if hasattr(sys, "frozen"):
         BASE_DIR = os.path.join(os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding())), "data")
     else:
@@ -103,7 +102,7 @@ class Attack(object):
         """Load the payloads from the specified file"""
         return self.auxText.readLines(fileName)
 
-    def attackGET(self, page, params_list, headers={}):
+    def attackGET(self, http_res):
         return
 
     def attackPOST(self, form):

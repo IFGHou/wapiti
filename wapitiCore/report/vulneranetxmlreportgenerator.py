@@ -57,7 +57,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
                         <info>SQL Injection</info>
                     </vulnerability>
                 </vulnerabilityList>
-            </vulnerablityType>
+            </vulnerabilityType>
         </vulnerabilityTypeList>
     </report>
     """
@@ -89,7 +89,7 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         report the type.
         The types are not stored previously, they are added when the method
         logVulnerability(category,level,url,parameter,info) is invoked
-        and if there is no vulnerabilty of a type, this type will not be presented
+        and if there is no vulnerability of a type, this type will not be presented
         in the report
         """
         vulnerabilityType = self.__xmlDoc.createElement("VulnerabilityType")
@@ -215,30 +215,3 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
             f.write(self.__xmlDoc.toxml(encoding="UTF-8"))
         finally:
             f.close()
-
-if __name__ == "__main__":
-    SQL_INJECTION = "Sql Injection"
-    FILE_HANDLING = "File Handling"
-    XSS = "Cross Site Scripting"
-    CRLF = "CRLF"
-    EXEC = "Commands execution"
-
-    try:
-        xmlGen = VulneraNetXMLReportGenerator()
-        xmlGen.addVulnerabilityType(SQL_INJECTION, "desc", "recomm")
-        xmlGen.addVulnerabilityType(FILE_HANDLING, "desc", "recomm")
-        xmlGen.addVulnerabilityType(XSS,           "desc", "recomm")
-        xmlGen.addVulnerabilityType(CRLF,          "desc", "recomm")
-        xmlGen.addVulnerabilityType(EXEC,          "desc", "recomm")
-        xmlGen.logVulnerability(SQL_INJECTION, "1", "url1", "parameter1", "info1")
-        xmlGen.logVulnerability(SQL_INJECTION, "2", "url2", "parameter2", "info2")
-        xmlGen.logVulnerability(SQL_INJECTION, "2", "url3", "parameter3", "info3")
-        xmlGen.logVulnerability(SQL_INJECTION, "3", "url4", "parameter4", "info4")
-        xmlGen.logVulnerability(XSS, "3", "url5", "parameter5", "info5")
-        xmlGen.logVulnerability(XSS, "3", "url6", "parameter6", "info6")
-        xmlGen.logVulnerability(XSS, "2", "url7", "parameter7", "info7")
-        xmlGen.logVulnerability(XSS, "1", "url8", "parameter8", "info8")
-        xmlGen.logVulnerability(EXEC, "2", "url9", "parameter9", "info9")
-        xmlGen.generateReport("sampleReport.xml")
-    except SystemExit:
-        pass

@@ -30,12 +30,12 @@ class mod_permanentxss(Attack):
     """
 
     # magic strings we must see to be sure script is vulnerable to XSS
-    # payloads must be created on those paterns
+    # payloads must be created on those patterns
     script_ok = ["alert('__XSS__')", "alert(\"__XSS__\")", "String.fromCharCode(0,__XSS__,1)"]
 
     # simple payloads that doesn't rely on their position in the DOM structure
-    # payloads injected after closing a tag aatibute value (attrval) or in the
-    # content of a tag (text node like beetween <p> and </p>)
+    # payloads injected after closing a tag attribute value (attrval) or in the
+    # content of a tag (text node like between <p> and </p>)
     # only trick here must be on character encoding, filter bypassing, stuff like that
     # form the simplest to the most complex, Wapiti will stop on the first working
     independant_payloads = []
@@ -50,7 +50,7 @@ class mod_permanentxss(Attack):
     GET_XSS = {}
     POST_XSS = {}
 
-    # key = xss code, valud = payload
+    # key = xss code, valid = payload
     SUCCESSFUL_XSS = {}
 
     CONFIG_FILE = "xssPayloads.txt"
@@ -302,7 +302,7 @@ class mod_permanentxss(Attack):
                                                 print('')
                                                 returned500 = True
 
-    # check weither our JS payload is injected in the webpage
+    # check whether our JS payload is injected in the webpage
     def validXSS(self, page, code, payload):
         if page is None or page == "":
             return False
@@ -311,7 +311,7 @@ class mod_permanentxss(Attack):
         return False
 
     def validContentType(self, http_res):
-        """Check wether the returned content-type header allow javascript evaluation."""
+        """Check whether the returned content-type header allow javascript evaluation."""
         if not "content-type" in http_res.headers:
             return True
         if "text/html" in http_res.headers["content-type"]:

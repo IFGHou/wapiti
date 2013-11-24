@@ -32,7 +32,7 @@ class Language(object):
     """
     This class configures the internationalization of Wapiti,
     retrieving the texts from the files where is the translation.
-    It establishes the funcion "_" for translating.
+    It establishes the function "_" for translating.
     To do it, the method "configure" should be invoked.
     """
 
@@ -46,7 +46,7 @@ class Language(object):
 
     def configure(self, lang=None):
         """
-        Configures the funcion "_" for translating the texts of Wapiti,
+        Configures the function "_" for translating the texts of Wapiti,
         this method loads the language indicated as parameter or if the
         parameter is not specified, it will take the default language
         of the operating system.

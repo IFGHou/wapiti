@@ -155,10 +155,10 @@ class HTTPResource(object):
         if not isinstance(other, HTTPResource):
             return NotImplemented
 
-        if self._method != other._method:
+        if self._method != other.method:
             return False
 
-        if self._resource_path != other._resource_path:
+        if self._resource_path != other.path:
             return False
 
         return hash(self) == hash(other)
@@ -189,7 +189,7 @@ class HTTPResource(object):
         if self.method != other.method:
             return True
 
-        if self._resource_path != other._resource_path:
+        if self._resource_path != other.path:
             return True
 
         return hash(self) != hash(other)
@@ -225,9 +225,9 @@ class HTTPResource(object):
         else:
             buff = "%s %s" % (self._method, self._resource_path)
         if self._post_params:
-            buff += "\n\tdata = %s" % (self.encoded_data)
+            buff += "\n\tdata = %s" % self.encoded_data
         if self._file_params:
-            buff += "\n\tfiles = %s" % (self.encoded_files)
+            buff += "\n\tfiles = %s" % self.encoded_files
         return buff
 
     @property
@@ -237,10 +237,10 @@ class HTTPResource(object):
                                                        rel_url,
                                                        self._hostname)
         if self._referer:
-            http_string += "Referer: %s\n" % (self._referer)
+            http_string += "Referer: %s\n" % self._referer
         if self._file_params:
             boundary = "------------------------boundarystring"
-            http_string += "Content-Type: multipart/form-data; boundary=%s\n\n" % (boundary)
+            http_string += "Content-Type: multipart/form-data; boundary=%s\n\n" % boundary
             for field_name, field_value in self._post_params:
                 http_string += ("{0}\nContent-Disposition: form-data; "
                                 "name=\"{1}\"\n\n{2}\n").format(boundary, field_name, field_value)
@@ -250,7 +250,7 @@ class HTTPResource(object):
             http_string += "{0}--\n".format(boundary)
         elif self._post_params:
             http_string += "Content-Type: application/x-www-form-urlencoded\n"
-            http_string += "\n%s" % (self.encoded_data)
+            http_string += "\n%s" % self.encoded_data
 
         return http_string
 
@@ -279,7 +279,7 @@ class HTTPResource(object):
         self._start_time = datetime.datetime.utcnow()
 
     def setElapsedTime(self):
-        """Store the time taken for obtaining a responde to the request."""
+        """Store the time taken for obtaining a response to the request."""
         self._elapsed_time = datetime.datetime.utcnow() - self._start_time
 
     @property
@@ -411,42 +411,42 @@ class HTTPResponse(object):
         self.timestamp = timestamp
 
     def getPage(self):
-        "Return the content of the page in unicode."
+        """Return the content of the page in unicode."""
         if self.resp.encoding:
             return self.resp.text
         else:
             return self.resp.content
 
     def getRawPage(self):
-        "Return the content of the page in raw bytes."
+        """Return the content of the page in raw bytes."""
         return self.resp.content
 
     def getCode(self):
-        "Return the HTTP Response code ."
+        """Return the HTTP Response code ."""
         return str(self.resp.status_code)
 
     def getHeaders(self):
-        "Return the HTTP headers of the Response."
+        """Return the HTTP headers of the Response."""
         return self.resp.headers
 
     def getPageCode(self):
-        "Return a tuple of the content and the HTTP Response code."
-        return (self.getPage(), self.getCode())
+        """Return a tuple of the content and the HTTP Response code."""
+        return self.getPage(), self.getCode()
 
     def getEncoding(self):
-        "Return the detected encoding for the page."
+        """Return the detected encoding for the page."""
         if self.resp.encoding:
             return self.resp.encoding.upper()
         return None
 
     def getApparentEncoding(self):
-        "Return the detected encoding for the page."
+        """Return the detected encoding for the page."""
         if self.resp.apparent_encoding:
             return self.resp.apparent_encoding.upper()
         return None
 
     def setEncoding(self, new_encoding):
-        "Change the encoding (for getPage())"
+        """Change the encoding (for getPage())"""
         self.resp.encoding = new_encoding
 
     def getPeer(self):
@@ -483,7 +483,7 @@ class HTTP(object):
     def send(self, target, method="",
              get_params=None, post_params=None, file_params=None,
              headers={}):
-        "Send a HTTP Request. GET or POST (if post_params is set)."
+        """Send a HTTP Request. GET or POST (if post_params is set)."""
         resp = None
         _headers = {}
         _headers.update(headers)
@@ -549,18 +549,18 @@ class HTTP(object):
         except requests.exceptions.SSLError, msg:
             if not self.sslErrorOccured:
                 self.sslErrorOccured = True
-                print(_("A SSL error occured during the scan: {0}").format(msg))
+                print(_("A SSL error occurred during the scan: {0}").format(msg))
 
         if resp is None:
             return None
         return HTTPResponse(resp, "", datetime.datetime.now())
 
     def quote(self, url):
-        "Encode a string with hex representation (%XX) for special characters."
+        """Encode a string with hex representation (%XX) for special characters."""
         return urllib.quote(url)
 
     def encode(self, params_list):
-        "Encode a sequence of two-element lists or dictionary into a URL query string."
+        """Encode a sequence of two-element lists or dictionary into a URL query string."""
         encoded_params = []
         for k, v in params_list:
             # not safe: '&=#' with of course quotes...
@@ -570,28 +570,28 @@ class HTTP(object):
         return "&".join(encoded_params)
 
     def uqe(self, params_list):  # , encoding = None):
-        "urlencode a string then interpret the hex characters (%41 will give 'A')."
+        """urlencode a string then interpret the hex characters (%41 will give 'A')."""
         return urllib.unquote(self.encode(params_list))  # , encoding))
 
     def escape(self, url):
-        "Change special characters in their html entities representation."
+        """Change special characters in their html entities representation."""
         return cgi.escape(url, quote=True).replace("'", "%27")
 
     def setTimeOut(self, timeout=6.0):
-        "Set the time to wait for a response from the server."
+        """Set the time to wait for a response from the server."""
         self.timeout = timeout
         socket.setdefaulttimeout(self.timeout)
 
     def getTimeOut(self):
-        "Return the timeout used for HTTP requests."
+        """Return the timeout used for HTTP requests."""
         return self.timeout
 
     def setVerifySsl(self, verify=True):
-        "Set whether SSL must be verified."
+        """Set whether SSL must be verified."""
         self.verify_ssl = verify
 
     def setProxy(self, proxy=""):
-        "Set a proxy to use for HTTP requests."
+        """Set a proxy to use for HTTP requests."""
         url_parts = urlparse.urlparse(proxy)
         protocol = url_parts.scheme
         host = url_parts.netloc
@@ -601,7 +601,7 @@ class HTTP(object):
         self.h.proxies = self.proxies
 
     def setCookieFile(self, cookie):
-        "Load session data from a cookie file"
+        """Load session data from a cookie file"""
         if os.path.isfile(cookie):
             jc = jsoncookie.jsoncookie()
             jc.open(cookie)
@@ -610,13 +610,13 @@ class HTTP(object):
             jc.close()
 
     def setAuthCredentials(self, auth_credentials):
-        "Set credentials to use if the website require an authentication."
+        """Set credentials to use if the website require an authentication."""
         self.auth_credentials = auth_credentials
         # Force reload
         self.setAuthMethod(self.auth_method)
 
     def setAuthMethod(self, auth_method):
-        "Set the authentication method to use for the requests."
+        """Set the authentication method to use for the requests."""
         self.auth_method = auth_method
         if len(self.auth_credentials) == 2:
             username, password = self.auth_credentials

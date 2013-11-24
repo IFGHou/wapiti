@@ -33,8 +33,8 @@ class mod_xss(Attack):
     script_ok = ["alert('__XSS__')", "alert(\"__XSS__\")", "String.fromCharCode(0,__XSS__,1)"]
 
     # simple payloads that doesn't rely on their position in the DOM structure
-    # payloads injected after closing a tag attibute value (attrval) or in the
-    # content of a tag (text node like beetween <p> and </p>)
+    # payloads injected after closing a tag attribute value (attrval) or in the
+    # content of a tag (text node like between <p> and </p>)
     # only trick here must be on character encoding, filter bypassing, stuff like that
     # form the simplest to the most complex, Wapiti will stop on the first working
     independant_payloads = []
@@ -65,11 +65,11 @@ class mod_xss(Attack):
 
     def random_string(self):
         """Create a random unique ID that will be used to test injection."""
-        """It doesn't upercase letters as BeautifulSoup make some data lowercase."""
+        # doesn't uppercase letters as BeautifulSoup make some data lowercase
         return "w" + "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0, 9)])
 
     def _validXSSContentType(self, http_res):
-        """Check wether the returned content-type header allow javascript evaluation."""
+        """Check whether the returned content-type header allow javascript evaluation."""
         # When no content-type is returned, browsers try to display the HTML
         if not "content-type" in http_res.headers:
             return True
@@ -576,7 +576,7 @@ class mod_xss(Attack):
             # ex: <our_string name="column" />
             elif elem['type'] == "tag":
                 if elem['value'].startswith(code):
-                    # use independant payloads, just remove the first character (<)
+                    # use independent payloads, just remove the first character (<)
                     for xss in self.independant_payloads:
                         payload = elem['noscript'] + xss.replace("__XSS__", code)
                         js_code = payload[1:]

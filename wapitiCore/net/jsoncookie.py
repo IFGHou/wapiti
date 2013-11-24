@@ -51,12 +51,9 @@ class jsoncookie(object):
                 for key, cookieobj in keydict.items():
                     if isinstance(cookieobj, cookielib.Cookie):
                         print cookieobj
-                        cookie_attrs = {}
-                        cookie_attrs["value"] = cookieobj.value
-                        cookie_attrs["expires"] = cookieobj.expires
-                        cookie_attrs["secure"] = cookieobj.secure
-                        cookie_attrs["port"] = cookieobj.port
-                        cookie_attrs["version"] = cookieobj.version
+                        cookie_attrs = {"value": cookieobj.value, "expires": cookieobj.expires,
+                                        "secure": cookieobj.secure, "port": cookieobj.port,
+                                        "version": cookieobj.version}
                         self.cookiedict[dotdomain][path][key] = cookie_attrs
 
     def cookiejar(self, domain):

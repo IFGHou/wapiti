@@ -4,20 +4,18 @@ from setuptools import setup, find_packages
 VERSION = "2.3.0"
 DOC_DIR = "share/doc/wapiti"
 
-doc_and_conf_files = []
-doc_and_conf_files.append((DOC_DIR,
-                           ["doc/AUTHORS",
-                            "doc/ChangeLog_Wapiti",
-                            "doc/ChangeLog_lswww",
-                            "doc/example.txt",
-                            "INSTALL",
-                            "README",
-                            "TODO",
-                            "VERSION"]))
-doc_and_conf_files.append(("share/man/man1",
-                           ["doc/wapiti.1.gz",
-                            "doc/wapiti-cookie.1.gz",
-                            "doc/wapiti-getcookie.1.gz"]))
+doc_and_conf_files = [(DOC_DIR,
+                       ["doc/AUTHORS",
+                        "doc/ChangeLog_Wapiti",
+                        "doc/ChangeLog_lswww",
+                        "doc/example.txt",
+                        "INSTALL",
+                        "README",
+                        "TODO",
+                        "VERSION"]), ("share/man/man1",
+                                      ["doc/wapiti.1.gz",
+                                       "doc/wapiti-cookie.1.gz",
+                                       "doc/wapiti-getcookie.1.gz"])]
 
 # Main
 setup(

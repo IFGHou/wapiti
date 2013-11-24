@@ -40,7 +40,7 @@ class mod_exec(Attack):
         err = ""
         cmd = 0
         if "eval()'d code</b> on line <b>" in data and not warned:
-            err = ("Warning eval()")
+            err = _("Warning eval()")
             warned = 1
         if "PATH=" in data and "PWD=" in data:
             err = _("Command execution")
@@ -67,7 +67,7 @@ class mod_exec(Attack):
             err = _("Warning assert")
             warned = 1
         if "Failure evaluating code:" in data and not warned:
-            err = _("Evalutation warning")
+            err = _("Evaluation warning")
             warned = 1
         return err, cmd, warned
 

@@ -121,7 +121,7 @@ class TXTReportGenerator(ReportGenerator):
         report the type.
         The types are not stored previously, they are added when the method
         logVulnerability(category,level,url,parameter,info) is invoked
-        and if there is no vulnerabilty of a type, this type will not be presented
+        and if there is no vulnerability of a type, this type will not be presented
         in the report
         """
 

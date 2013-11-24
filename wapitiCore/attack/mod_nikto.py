@@ -28,7 +28,7 @@ from wapitiCore.net import HTTP
 
 # Nikto databases are csv files with the following fields (in order) :
 #
-# 1 - A unique indenfier (number)
+# 1 - A unique identifier (number)
 # 2 - The OSVDB reference number of the vulnerability
 # 3 - Unknown (not used by Wapiti)
 # 4 - The URL to check for. May contain a pattern to replace (eg: @CGIDIRS)
@@ -147,7 +147,7 @@ class mod_nikto(Attack):
             page, code = resp.getPageCode()
             encoding = BeautifulSoup(page).originalEncoding
             if encoding:
-                page = unicode(page, encoding, "ignore")
+                page = unicode(page, encoding, errors='ignore')
             raw = " ".join([x + ": " + y for x, y in resp.getHeaders().items()])
             raw += page
 
@@ -230,7 +230,7 @@ class mod_nikto(Attack):
                     refs.append("http://www.microsoft.com/technet/security/bulletin/" + m.group(0) + ".asp")
 
                 info = vuln_desc
-                if refs != []:
+                if refs:
                     print(_("References:"))
                     print(u"  {0}".format(u"\n  ".join(refs)))
                     info += "\n" + _("References:") + "\n"

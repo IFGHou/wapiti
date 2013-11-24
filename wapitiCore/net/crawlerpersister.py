@@ -43,7 +43,7 @@ class CrawlerPersister(object):
     ROOT_URL = "rootURL"
     TO_BROWSE = "toBrowse"
     BROWSED = "browsed"
-    RESOURCE = "resouce"
+    RESOURCE = "resource"
     METHOD = "method"
     PATH = "path"
     INPUT = "input"

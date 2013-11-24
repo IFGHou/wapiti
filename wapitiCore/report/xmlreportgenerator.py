@@ -46,7 +46,7 @@ class XMLReportGenerator(ReportGenerator):
                         <info>SQL Injection</info>
                     </vulnerability>
                 </vulnerabilityList>
-            </vulnerablityType>
+            </vulnerabilityType>
         </vulnerabilityTypeList>
     </report>
     """
@@ -57,8 +57,6 @@ class XMLReportGenerator(ReportGenerator):
 
     __vulns = {}
     __anomalies = {}
-
-    __infos = {}
 
     def __init__(self):
         self.__xmlDoc = Document()
@@ -251,32 +249,3 @@ class XMLReportGenerator(ReportGenerator):
             f.write(self.__xmlDoc.toprettyxml(indent="    ", encoding="UTF-8"))
         finally:
             f.close()
-
-
-if __name__ == "__main__":
-
-    SQL_INJECTION = "Sql Injection"
-    FILE_HANDLING = "File Handling"
-    XSS = "Cross Site Scripting"
-    CRLF = "CRLF Injection"
-    EXEC = "Commands execution"
-
-    try:
-        xmlGen = XMLReportGenerator()
-        xmlGen.addVulnerabilityType(SQL_INJECTION)
-        xmlGen.addVulnerabilityType(FILE_HANDLING)
-        xmlGen.addVulnerabilityType(XSS)
-        xmlGen.addVulnerabilityType(CRLF)
-        xmlGen.addVulnerabilityType(EXEC)
-        xmlGen.logVulnerability("SQL Inyection", "1", "url1", "parameter1", "info1")
-        xmlGen.logVulnerability("SQL Inyection", "2", "url2", "parameter2", "info2")
-        xmlGen.logVulnerability("SQL Inyection", "2", "url3", "parameter3", "info3")
-        xmlGen.logVulnerability("SQL Inyection", "3", "url4", "parameter4", "info4")
-        xmlGen.logVulnerability("Cross Site Scripting", "3", "url5", "parameter5", "info5")
-        xmlGen.logVulnerability("Cross Site Scripting", "3", "url6", "parameter6", "info6")
-        xmlGen.logVulnerability("Cross Site Scripting", "2", "url7", "parameter7", "info7")
-        xmlGen.logVulnerability("Cross Site Scripting", "1", "url8", "parameter8", "info8")
-        xmlGen.logVulnerability("Google Hacking", "2", "url9", "parameter9", "info9")
-        xmlGen.printToFile("sampleReport.xml")
-    except SystemExit:
-        pass

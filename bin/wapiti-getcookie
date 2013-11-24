@@ -19,7 +19,7 @@
 import urlparse
 import sys
 import HTMLParser
-import BeautifulSoup
+from bs4 import BeautifulSoup
 import getopt
 import requests
 import os
@@ -89,7 +89,7 @@ else:
     htmlSource = r.text
     page_encoding = r.encoding
 
-bs = BeautifulSoup.BeautifulSoup(htmlSource)
+bs = BeautifulSoup(htmlSource)
 
 p = lswww.linkParser(url)
 try:
@@ -131,7 +131,7 @@ if len(p.forms) > 1:
         choice = raw_input(_("Enter a number : "))
         if choice.isdigit():
             nchoice = int(choice)
-            if nchoice < i and nchoice >= 0:
+            if i > nchoice >= 0:
                 ok = True
 
 form = p.forms[nchoice]

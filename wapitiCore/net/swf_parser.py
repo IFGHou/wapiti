@@ -152,7 +152,7 @@ class swf_parser(object):
             bytePos += 7
             if not x & 128:
                 break
-        return (nb, i)
+        return nb, i
 
     def read_tag(self, data, pos):
         tag, = struct.unpack('H', data[pos:pos+2])
@@ -218,7 +218,7 @@ class swf_parser(object):
                 text = data[string_index: pos + decal + length].split("\0")[1]
                 soup = BeautifulSoup(text)
                 for link in soup.findAll("a"):
-                    # BeautifullSoup doesn't work as expected with the "in" statement
+                    # BeautifulSoup doesn't work as expected with the "in" statement
                     if link.has_key("href"):
                         self.__strings.append(link["href"])
 

@@ -20,16 +20,15 @@ def build_file_list(results, dest, root, src=""):
     for root, dirs, files in os.walk(root):
         if ".svn" in dirs:
             dirs.remove(".svn")
-        if files != []:
+        if files:
             results.append((os.path.join(dest, root), [os.path.join(src, root, x) for x in files]))
     os.chdir(cwd)
 
-data_files = []
-data_files.append(("data",
-                  ["INSTALL",
-                   "README",
-                   "TODO",
-                   "VERSION"]))
+data_files = [("data",
+               ["INSTALL",
+                "README",
+                "TODO",
+                "VERSION"])]
 build_file_list(data_files, "data", "doc", src="")
 build_file_list(data_files, "data", "config", src="wapitiCore")
 build_file_list(data_files, "data", "report_template", src="wapitiCore")

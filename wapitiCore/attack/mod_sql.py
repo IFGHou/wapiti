@@ -175,7 +175,7 @@ class mod_sql(Attack):
                                      level=Vulnerability.HIGH_LEVEL,
                                      request=evil_req,
                                      parameter=param_name,
-                                     info=("{0} via injection in the parameter {1}").format(err, param_name))
+                                     info=_("{0} via injection in the parameter {1}").format(err, param_name))
                         self.logR(Vulnerability.MSG_PARAM_INJECT,
                                   err,
                                   page,

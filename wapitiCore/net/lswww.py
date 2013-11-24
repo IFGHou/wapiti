@@ -52,13 +52,13 @@ class lswww(object):
         --exclude <url>
             To exclude an url from the scan (for example logout scripts)
             You can also use a wildcard (*)
-            Exemple : -x "http://server/base/?page=*&module=test"
+            Example : -x "http://server/base/?page=*&module=test"
             or -x http://server/base/admin/* to exclude a directory
 
         -p <url_proxy>
         --proxy <url_proxy>
             To specify a proxy
-            Exemple: -p http://proxy:port/
+            Example: -p http://proxy:port/
 
         -c <cookie_file>
         --cookie <cookie_file>
@@ -221,7 +221,7 @@ class lswww(object):
         currentdir = "/".join(current.split("/")[:-1]) + "/"
 
         # Timeout must not be too long to block big documents
-        # (for exemple a download script)
+        # (for example a download script)
         # and not too short to give good results
         socket.setdefaulttimeout(self.timeout)
 
@@ -341,7 +341,7 @@ class lswww(object):
         except HTMLParser.HTMLParseError:
             htmlSource = BeautifulSoup(htmlSource).prettify()
             if not isinstance(htmlSource, unicode) and page_encoding is not None:
-                htmlSource = unicode(htmlSource, page_encoding, "ignore")
+                htmlSource = unicode(htmlSource, page_encoding, errors='ignore')
             try:
                 p.reset()
                 p.feed(htmlSource)
@@ -431,7 +431,7 @@ class lswww(object):
             if files:
                 if form_rsrc not in self.uploads:
                     self.uploads.append(form_rsrc)
-        # We automaticaly exclude 404 urls
+        # We automatically exclude 404 urls
         if code == "404":
             self.excluded.append(url)
             #return {} # exclude from scan but can be useful for some modules maybe
@@ -574,7 +574,7 @@ class lswww(object):
         """Return the number of known urls matching the pattern of the given url"""
         matches = 0
         for b in self.browsed:
-            if (http_resource.path == b.path and http_resource.method == b.method == "GET"):
+            if http_resource.path == b.path and http_resource.method == b.method == "GET":
                 qs = http_resource.encoded_params
                 u = b.encoded_params
                 if http_resource.encoded_get_keys == b.encoded_get_keys:
@@ -623,7 +623,7 @@ class lswww(object):
             else:
                 return False
         blocks = [block for block in blocks if block != ""]
-        if blocks == []:
+        if not blocks:
             return match
         for block in blocks:
             i = string.find(block)
@@ -665,7 +665,7 @@ class lswww(object):
 
             while len(self.tobrowse):
                 lien = self.tobrowse.pop(0)
-                if (lien not in self.browsed and lien.url not in self.excluded):
+                if lien not in self.browsed and lien.url not in self.excluded:
                     if self.browse(lien):
                         if self.verbose == 1:
                             sys.stderr.write('.')
@@ -703,7 +703,7 @@ class lswww(object):
 
     def printForms(self):
         """Print found forms on standard output"""
-        if self.forms != []:
+        if self.forms:
             sys.stderr.write("\n+ "+_("Forms Info") + ":\n")
             for form in self.forms:
                 print(_("From: {0}").format(form[2]))
@@ -720,7 +720,7 @@ class lswww(object):
                 print(up)
 
     def exportXML(self, filename, encoding="UTF-8"):
-        "Export the urls and the forms found in an XML file."
+        """Export the urls and the forms found in an XML file."""
         xml = minidom.Document()
         items = xml.createElement("items")
         xml.appendChild(items)
@@ -789,7 +789,7 @@ class linkParser(HTMLParser.HTMLParser):
                            'month':          '2011-06',
                            'number':         '1337',
                            'password':       'letmein',
-                           'radio':          'beton',
+                           'radio':          'beton', # priv8 j0k3
                            'range':          '37',
                            'search':         'default',
                            'submit':         'submit',
@@ -1009,7 +1009,7 @@ class linkParser2(object):
                 tmpdict[k.lower()] = v
             if "href" in tmpdict:
                 self.liens.append(self.__decode_htmlentities(tmpdict['href']))
-                if(self.verbose == 3):
+                if self.verbose == 3:
                     print(self.__decode_htmlentities(tmpdict['href']))
 
         for i in xrange(len(forms)):
@@ -1163,7 +1163,7 @@ if __name__ == "__main__":
                                         "auth=", "remove=", "verbose=", "timeout=", "nice=",
                                         "export=", "continue=", "scope="])
         except getopt.GetoptError, e:
-            ""
+            print("GetOpt error: {0}".format(e))
         for o, a in opts:
             if o in ("-i", "--continue"):
                 if a != '' and a[0] != '-':
