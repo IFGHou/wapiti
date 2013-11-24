@@ -714,7 +714,7 @@ class lswww(object):
 
     def printUploads(self):
         """Print urls accepting uploads"""
-        if self.uploads != []:
+        if self.uploads:
             sys.stderr.write("\n+ " + _("Upload Scripts") + ":\n")
             for up in self.uploads:
                 print(up)
