@@ -215,7 +215,7 @@ class mod_nikto(Attack):
                     refs.append("http://www.securityfocus.com/bid/" + m.group(1))
 
                 # Mitre.org
-                m = re.search("((CVE|CAN)\-[0-9]{4}-[0-9]{4})", vuln_desc)
+                m = re.search("((CVE|CAN)\-[0-9]{4}-[0-9]{4,})", vuln_desc)
                 if m is not None:
                     refs.append("http://cve.mitre.org/cgi-bin/cvename.cgi?name=" + m.group(0))
 
