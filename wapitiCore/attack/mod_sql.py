@@ -34,7 +34,8 @@ class mod_sql(Attack):
     def __init__(self, http, xmlRepGenerator):
         Attack.__init__(self, http, xmlRepGenerator)
 
-    def __findPatternInResponse(self, data):
+    @staticmethod
+    def __findPatternInResponse(data):
         if "You have an error in your SQL syntax" in data:
             return _("MySQL Injection")
         if "supplied argument is not a valid MySQL" in data:

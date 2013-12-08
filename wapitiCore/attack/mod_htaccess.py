@@ -40,7 +40,8 @@ class mod_htaccess(Attack):
         Attack.__init__(self, http, xmlRepGenerator)
 
     #this function return code signification when htaccess protection enabled
-    def __returnErrorByCode(self, code):
+    @staticmethod
+    def __returnErrorByCode(code):
         err = ""
         code = int(code)
         if code == 401:

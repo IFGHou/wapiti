@@ -43,10 +43,10 @@ class ReportGeneratorsXMLParser(object):
         self._parser.EndElementHandler = self.end_element
         self._parser.CharacterDataHandler = self.char_data
 
-    def parse(self, fileName):
+    def parse(self, filename):
         f = None
         try:
-            f = open(fileName)
+            f = open(filename)
             content = f.read()
             self.feed(content)
         finally:

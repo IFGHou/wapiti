@@ -140,7 +140,7 @@ class XMLReportGenerator(ReportGenerator):
             self.__anomalies[category] = []
         self.__anomalies[category].append(anom_dict)
 
-    def generateReport(self, fileName):
+    def generateReport(self, filename):
         """
         Create a xml file with a report of the vulnerabilities which have been logged with
         the method logVulnerability(vulnerabilityTypeName,level,url,parameter,info)
@@ -244,7 +244,7 @@ class XMLReportGenerator(ReportGenerator):
         report.appendChild(vulnerabilities)
         report.appendChild(anomalies)
 
-        f = open(fileName, "w")
+        f = open(filename, "w")
         try:
             f.write(self.__xmlDoc.toprettyxml(indent="    ", encoding="UTF-8"))
         finally:

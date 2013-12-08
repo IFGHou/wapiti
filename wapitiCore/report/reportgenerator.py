@@ -23,7 +23,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 class ReportGenerator(object):
-    def generateReport(self, fileName):
+    def generateReport(self, filename):
         pass
 
     def setReportInfo(self, target, scope=None, date_string="", version=""):

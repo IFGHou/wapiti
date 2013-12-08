@@ -48,6 +48,7 @@ class HTTPResource(object):
     _start_time = None
     _elapsed_time = None
     _port = 80
+    _size = 0
 
     # Most of the members of a HTTPResource object are immutable so we compute
     # the data only one time (when asked for) and we keep it in memory for less
@@ -212,7 +213,8 @@ class HTTPResource(object):
             return self.encoded_data >= other.encoded_data
         return False
 
-    def _encoded_keys(self, params):
+    @staticmethod
+    def _encoded_keys(params):
         quoted_keys = []
         for k, __ in params:
             quoted_keys.append(urllib.quote(k, safe='%'))
@@ -281,6 +283,9 @@ class HTTPResource(object):
     def setElapsedTime(self):
         """Store the time taken for obtaining a response to the request."""
         self._elapsed_time = datetime.datetime.utcnow() - self._start_time
+
+    def setSize(self, size):
+        self._size = size
 
     @property
     def start_time(self):
@@ -353,7 +358,8 @@ class HTTPResource(object):
     def file_params(self):
         return deepcopy(self._file_params)
 
-    def _encode_params(self, params):
+    @staticmethod
+    def _encode_params(params):
         if not params:
             return ""
 
@@ -401,6 +407,9 @@ class HTTPResource(object):
             self._cached_file_keys = self._encoded_keys(self._file_params)
         return self._cached_file_keys
 
+    @property
+    def size(self):
+        return self._size
 
 class HTTPResponse(object):
     resp = None
@@ -546,6 +555,7 @@ class HTTP(object):
                                           verify=self.verify_ssl)
             target.setElapsedTime()
             target.setHeaders(resp.headers)
+            target.setSize(len(resp.content))
         except requests.exceptions.SSLError, msg:
             if not self.sslErrorOccured:
                 self.sslErrorOccured = True
@@ -555,11 +565,13 @@ class HTTP(object):
             return None
         return HTTPResponse(resp, "", datetime.datetime.now())
 
-    def quote(self, url):
+    @staticmethod
+    def quote(url):
         """Encode a string with hex representation (%XX) for special characters."""
         return urllib.quote(url)
 
-    def encode(self, params_list):
+    @staticmethod
+    def encode(params_list):
         """Encode a sequence of two-element lists or dictionary into a URL query string."""
         encoded_params = []
         for k, v in params_list:
@@ -573,7 +585,8 @@ class HTTP(object):
         """urlencode a string then interpret the hex characters (%41 will give 'A')."""
         return urllib.unquote(self.encode(params_list))  # , encoding))
 
-    def escape(self, url):
+    @staticmethod
+    def escape(url):
         """Change special characters in their html entities representation."""
         return cgi.escape(url, quote=True).replace("'", "%27")
 

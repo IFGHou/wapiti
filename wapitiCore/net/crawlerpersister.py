@@ -60,14 +60,14 @@ class CrawlerPersister(object):
     FILE_PARAMS = "file_params"
 
     # toBrowse can contain GET and POST resources
-    toBrowse = []
+    to_browse = []
     # browsed contains only GET resources
-    browsed = []
+    browsed_links = []
     # forms contains only POST resources
-    forms = []
+    browsed_forms = []
     uploads = []
     headers = {}
-    rootURL = ""
+    root_url = ""
 
     tag = ""
     array = None
@@ -83,26 +83,27 @@ class CrawlerPersister(object):
     def __init__(self):
         pass
 
-    def isDataForUrl(self, fileName):
-        return os.path.exists(fileName)
+    @staticmethod
+    def isDataForUrl(filename):
+        return os.path.exists(filename)
 
-    def saveXML(self, fileName):
+    def saveXML(self, filename):
         """
         Exports the crawler parameters to an XML file.
-        @param fileName The file where is loaded the crawler data
+        @param filename The file where is loaded the crawler data
         """
         xml = Document()
         root = xml.createElement("root")
         xml.appendChild(root)
 
         rootUrlEl = xml.createElement(self.ROOT_URL)
-        rootUrlEl.appendChild(xml.createTextNode(self.rootURL.url))
+        rootUrlEl.appendChild(xml.createTextNode(self.root_url.url))
         root.appendChild(rootUrlEl)
 
         # 1 - URLs and FORMs not yet browsed
         # we don't know several informations yet like the response headers
         toBrowseEl = xml.createElement(self.TO_BROWSE)
-        for http_resource in self.toBrowse:
+        for http_resource in self.to_browse:
             # <resource method="" path="" encoding ="">
             resEl = xml.createElement(self.RESOURCE)
             resEl.setAttribute(self.METHOD, http_resource.method)
@@ -145,7 +146,7 @@ class CrawlerPersister(object):
 
         # 2 - URLs and FORMs already browsed
         browsedEl = xml.createElement(self.BROWSED)
-        for http_resource in self.browsed:
+        for http_resource in self.browsed_links:
             # <resource method="" path="" encoding ="">
             resEl = xml.createElement(self.RESOURCE)
             resEl.setAttribute(self.METHOD, http_resource.method)
@@ -197,16 +198,16 @@ class CrawlerPersister(object):
             browsedEl.appendChild(resEl)
         root.appendChild(browsedEl)
 
-        f = open(fileName, "w")
+        f = open(filename, "w")
         try:
                 xml.writexml(f, "    ", "    ", "\n", "UTF-8")
         finally:
                 f.close()
 
-    def loadXML(self, fileName):
+    def loadXML(self, filename):
         """
         Loads the crawler parameters from an XML file.
-        @param fileName The file from where is loaded the crawler data
+        @param filename The file from where is loaded the crawler data
         """
         self._parser = expat.ParserCreate("UTF-8")
         self._parser.StartElementHandler = self.__start_element
@@ -216,7 +217,7 @@ class CrawlerPersister(object):
 
         f = None
         try:
-            f = open(fileName)
+            f = open(filename)
             content = f.read()
             self.__feed(content.replace("\n", ""))
         finally:
@@ -232,10 +233,10 @@ class CrawlerPersister(object):
 
     def __start_element(self, name, attrs):
         if name == self.TO_BROWSE:
-            self.array = self.toBrowse
+            self.array = self.to_browse
 
         elif name == self.BROWSED:
-            self.array = self.browsed
+            self.array = self.browsed_links
 
         elif name == self.RESOURCE:
             self.method = attrs[self.METHOD]
@@ -278,43 +279,43 @@ class CrawlerPersister(object):
                                          file_params=self.file_params)
             http_res.setHeaders(self.headers)
 
-            if self.array is self.toBrowse:
-                self.toBrowse.append(http_res)
+            if self.array is self.to_browse:
+                self.to_browse.append(http_res)
             else:
                 if self.method == "GET":
-                    self.browsed.append(http_res)
+                    self.browsed_links.append(http_res)
                 elif self.method == "POST":
-                    self.forms.append(http_res)
+                    self.browsed_forms.append(http_res)
 
     def __char_data(self, data):
         if self.tag == self.ROOT_URL:
-            self.rootURL = data.strip(" ")
+            self.root_url = data.strip(" ")
         elif self.tag == self.REFERER:
             self.referer = data.strip(" ")
 
-    def setRootURL(self, rootURL):
-        self.rootURL = rootURL
+    def setRootURL(self, root_url):
+        self.root_url = root_url
 
     def getRootURL(self):
-        return self.rootURL
+        return self.root_url
 
-    def setToBrose(self, toBrowse):
-        self.toBrowse = toBrowse
+    def setToBrose(self, to_browse):
+        self.to_browse = to_browse
 
     def getToBrose(self):
-        return self.toBrowse
+        return self.to_browse
 
-    def setBrowsed(self, browsed):
-        self.browsed = browsed
+    def setLinks(self, links):
+        self.browsed_links = links
 
-    def getBrowsed(self):
-        return self.browsed
+    def getLinks(self):
+        return self.browsed_links
 
     def setForms(self, forms):
-        self.forms = forms
+        self.browsed_forms = forms
 
     def getForms(self):
-        return self.forms
+        return self.browsed_forms
 
     def setUploads(self, uploads):
         self.uploads = uploads

@@ -52,7 +52,7 @@ class JSONReportGenerator(ReportGenerator):
         if scope:
             self.__infos["scope"] = scope
 
-    def generateReport(self, fileName):
+    def generateReport(self, filename):
         """
         Generate a JSON report of the vulnerabilities and anomalies which have
         been previously logged with the log* methods.
@@ -62,7 +62,7 @@ class JSONReportGenerator(ReportGenerator):
                        "anomalies": self.__anomalies,
                        "infos": self.__infos
                        }
-        f = open(fileName, "w")
+        f = open(filename, "w")
         try:
             json.dump(report_dict, f, indent=2)
         finally:

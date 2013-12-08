@@ -24,7 +24,7 @@ import sys
 
 modules = ["mod_crlf", "mod_exec", "mod_file", "mod_sql", "mod_xss",
            "mod_backup", "mod_htaccess", "mod_blindsql",
-           "mod_permanentxss", "mod_nikto"]
+           "mod_permanentxss", "mod_nikto", "mod_delay"]
 
 
 class Attack(object):
@@ -84,10 +84,10 @@ class Attack(object):
     # The priority of the module, from 0 (first) to 10 (last). Default is 5
     PRIORITY = 5
 
-    def __init__(self, http, reportGen):
+    def __init__(self, http, report_gen):
         self.HTTP = http
-        self.logVuln = reportGen.logVulnerability
-        self.logAnom = reportGen.logAnomaly
+        self.logVuln = report_gen.logVulnerability
+        self.logAnom = report_gen.logAnomaly
         self.auxText = AuxText()
         self.attackedGET = []
         self.attackedPOST = []
@@ -98,9 +98,9 @@ class Attack(object):
     def setColor(self):
         self.color = 1
 
-    def loadPayloads(self, fileName):
+    def loadPayloads(self, filename):
         """Load the payloads from the specified file"""
-        return self.auxText.readLines(fileName)
+        return self.auxText.readLines(filename)
 
     def attackGET(self, http_res):
         return

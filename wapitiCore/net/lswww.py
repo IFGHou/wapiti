@@ -112,10 +112,10 @@ class lswww(object):
     server = ""
     tobrowse = []
     out_of_scope_urls = []
-    browsed = []
+    browsed_links = []
     proxies = {}
     excluded = []
-    forms = []
+    browsed_forms = []
     uploads = []
     allowed = ['php', 'html', 'htm', 'xml', 'xhtml', 'xht', 'xhtm',
                'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
@@ -152,7 +152,7 @@ class lswww(object):
         server = (root.split("://")[1]).split("/")[0]
         self.root = HTTP.HTTPResource(root)   # Initial URL
         self.server = server  # Domain
-        self.scopeURL = root  # Scope of the analysis
+        self.scope_url = root  # Scope of the analysis
 
         self.tobrowse.append(self.root)
         self.persister = CrawlerPersister()
@@ -177,9 +177,9 @@ class lswww(object):
     def setScope(self, scope):
         self.scope = scope
         if scope == self.SCOPE_FOLDER:
-            self.scopeURL = "/".join(self.root.url.split("/")[:-1]) + "/"
+            self.scope_url = "/".join(self.root.url.split("/")[:-1]) + "/"
         elif scope == self.SCOPE_DOMAIN:
-            self.scopeURL = self.root.url.split("/")[0] + "//" + self.server
+            self.scope_url = self.root.url.split("/")[0] + "//" + self.server
 
     def addStartURL(self, url):
         if self.__checklink(url):
@@ -311,20 +311,17 @@ class lswww(object):
                 if self.__inzone(redir) == 0:
                     self.link_encoding[redir] = self.link_encoding[url]
                     redir = HTTP.HTTPResource(redir)
-                    # Is the document already visited of forbidden ?
-                    if (redir in self.browsed) or (redir in self.tobrowse) or \
-                            self.isExcluded(redir):
-                        pass
-                    else:
-                        # No -> Will browse it soon
+                    # Is the document not visited yet and not forbidden ?
+                    if (redir not in self.browsed_links and
+                        redir not in self.tobrowse and
+                            not self.isExcluded(redir)):
                         self.tobrowse.append(redir)
 
-        htmlSource = data
-        bs = BeautifulSoup(htmlSource)
+        html_source = data
+        bs = BeautifulSoup(html_source)
         # Look for a base tag with an href attribute
         if bs.head:
-            baseTags = bs.head.findAll("base")
-            for base in baseTags:
+            for base in bs.head.findAll("base"):
                 # BeautifulSoup doesn't work as excepted with the "in" statement, keep this:
                 if "href" in base.attrs:
                     # Found a base url, now set it as the current url
@@ -335,49 +332,49 @@ class lswww(object):
                     currentdir = "/".join(current.split("/")[:-1]) + "/"
                     break
 
-        p = linkParser(url)
+        p = LinkParser(url)
         try:
-            p.feed(htmlSource)
+            p.feed(html_source)
         except HTMLParser.HTMLParseError:
-            htmlSource = BeautifulSoup(htmlSource).prettify()
-            if not isinstance(htmlSource, unicode) and page_encoding is not None:
-                htmlSource = unicode(htmlSource, page_encoding, errors='ignore')
+            html_source = BeautifulSoup(html_source).prettify()
+            if not isinstance(html_source, unicode) and page_encoding is not None:
+                html_source = unicode(html_source, page_encoding, errors='ignore')
             try:
                 p.reset()
-                p.feed(htmlSource)
+                p.feed(html_source)
             except HTMLParser.HTMLParseError:
-                p = linkParser2(url, self.verbose)
-                p.feed(htmlSource)
+                p = LinkParser2(url, self.verbose)
+                p.feed(html_source)
 
         # Sometimes the page is badcoded but the parser doesn't see the error
         # So if we got no links we can force a correction of the page
         if len(p.liens) == 0:
             if page_encoding is not None:
                 try:
-                    htmlSource = BeautifulSoup(htmlSource).prettify(page_encoding)
+                    html_source = BeautifulSoup(html_source).prettify(page_encoding)
                     p.reset()
-                    p.feed(htmlSource)
+                    p.feed(html_source)
                 except UnicodeEncodeError:
                     # The resource is not a valid webpage (for example an image)
-                    htmlSource = ""
+                    html_source = ""
                 except HTMLParser.HTMLParseError:
-                    p = linkParser2(url, self.verbose)
-                    p.feed(htmlSource)
+                    p = LinkParser2(url, self.verbose)
+                    p.feed(html_source)
 
         found_links = p.liens + swf_links + js_links
         for lien in found_links:
-            if (lien is not None) and (page_encoding is not None) and isinstance(lien, unicode):
+            if lien is not None and page_encoding is not None and isinstance(lien, unicode):
                 lien = lien.encode(page_encoding, "ignore")
             lien = self.correctlink(lien, current, current_full_url, currentdir, proto, page_encoding)
             if lien is not None:
                 if self.__inzone(lien) == 0:
                     # Is the document already visited of forbidden ?
                     lien = HTTP.HTTPResource(lien, encoding=page_encoding, referer=url)
-                    if ((lien in self.browsed) or
-                        (lien in self.tobrowse) or
-                        self.isExcluded(lien) or
-                            self.__inzone(lien.url) != 0):
+                    if (lien in self.browsed_links or
+                        lien in self.tobrowse or
+                            self.isExcluded(lien)):
                         pass
+                    # TODO : check this
                     elif self.nice > 0:
                         if self.__countMatches(lien) >= self.nice:
                             # don't waste time next time we found it
@@ -424,9 +421,9 @@ class lswww(object):
                                           file_params=files,
                                           encoding=page_encoding,
                                           referer=url)
-            if form_rsrc not in self.forms:
-                self.forms.append(form_rsrc)
-            if not (form_rsrc in self.browsed or form_rsrc in self.tobrowse):
+            if (form_rsrc not in self.browsed_forms and
+                form_rsrc not in self.tobrowse and
+                    not self.isExcluded(form_rsrc)):
                 self.tobrowse.append(form_rsrc)
             if files:
                 if form_rsrc not in self.uploads:
@@ -542,7 +539,8 @@ class lswww(object):
                 lien = "%s?%s" % (lien, args)
             return lien
 
-    def __checklink(self, url):
+    @staticmethod
+    def __checklink(url):
         """Verify the protocol"""
         if url.startswith("http://") or url.startswith("https://"):
             return 0
@@ -553,11 +551,11 @@ class lswww(object):
         """Make sure the url is under the root url"""
         # Returns 0 if the URL is in zone
         if self.scope == self.SCOPE_PAGE:
-            if url == self.scopeURL:
+            if url == self.scope_url:
                 return 0
             else:
                 return 1
-        if url.startswith(self.scopeURL):
+        if url.startswith(self.scope_url):
             return 0
         else:
             return 1
@@ -573,7 +571,7 @@ class lswww(object):
     def __countMatches(self, http_resource):
         """Return the number of known urls matching the pattern of the given url"""
         matches = 0
-        for b in self.browsed:
+        for b in self.browsed_links:
             if http_resource.path == b.path and http_resource.method == b.method == "GET":
                 qs = http_resource.encoded_params
                 u = b.encoded_params
@@ -596,7 +594,8 @@ class lswww(object):
                         matches += 1
         return matches
 
-    def __reWildcard(self, regexp, string):
+    @staticmethod
+    def __reWildcard(regexp, string):
         """Wildcard-based regular expression system"""
         regexp = re.sub("\*+", "*", regexp)
         match = True
@@ -632,46 +631,52 @@ class lswww(object):
             string = string[i + len(block):]
         return match
 
-    def go(self, crawlerFile):
+    def go(self, crawler_file):
         # load of the crawler status if a file is passed to it.
-        if crawlerFile is not None:
-            if self.persister.isDataForUrl(crawlerFile) == 1:
-                self.persister.loadXML(crawlerFile)
+        if crawler_file is not None:
+            if self.persister.isDataForUrl(crawler_file) == 1:
+                self.persister.loadXML(crawler_file)
                 self.tobrowse = self.persister.getToBrose()
-                self.browsed = self.persister.getBrowsed()
-                self.forms = self.persister.getForms()
-                print(_("File {0} loaded, the scan continues:").format(crawlerFile))
+                self.browsed_links = self.persister.getLinks()
+                self.browsed_forms = self.persister.getForms()
+                print(_("File {0} loaded, the scan continues:").format(crawler_file))
                 if self.verbose == 2:
                     print(_(" * URLs to browse"))
                     for x in self.tobrowse:
                         print(u"    + {0}".format(x))
                     print(_(" * URLs browsed"))
-                    for x in self.browsed:
+                    for x in self.browsed_links:
                         print(u"    + {0}".format(x))
             else:
-                print(_("File {0} not found, Wapiti will scan again the web site").format(crawlerFile))
+                print(_("File {0} not found, Wapiti will scan again the web site").format(crawler_file))
 
         # while url list isn't empty, continue browsing
         # if the user stop the scan with Ctrl+C, give him all found urls
         # and they are saved in an XML file
         try:
             while len(self.out_of_scope_urls):
-                lien = self.out_of_scope_urls.pop(0)
-                if self.browse(lien):
+                http_res = self.out_of_scope_urls.pop(0)
+                if self.browse(http_res):
                     if self.verbose == 1:
                         sys.stderr.write('.')
                     elif self.verbose == 2:
-                        print(lien)
+                        print(http_res)
 
             while len(self.tobrowse):
-                lien = self.tobrowse.pop(0)
-                if lien not in self.browsed and lien.url not in self.excluded:
-                    if self.browse(lien):
+                http_res = self.tobrowse.pop(0)
+                if (http_res not in self.browsed_links and
+                    http_res not in self.browsed_forms and
+                        http_res.url not in self.excluded):
+                    if self.browse(http_res):
                         if self.verbose == 1:
                             sys.stderr.write('.')
                         elif self.verbose == 2:
-                            print(lien)
-                        self.browsed.append(lien)
+                            print(http_res)
+
+                        if http_res.method == "POST":
+                            self.browsed_forms.append(http_res)
+                        elif http_res.method == "GET":
+                            self.browsed_links.append(http_res)
 
             self.saveCrawlerData()
             print('')
@@ -696,20 +701,18 @@ class lswww(object):
 
     def printLinks(self):
         """Print found URLs on standard output"""
-        self.browsed.sort()
+        self.browsed_links.sort()
         sys.stderr.write("\n+ " + _("URLs") + ":\n")
-        for lien in self.browsed:
-            print(lien)
+        for link in self.browsed_links:
+            print(link)
 
     def printForms(self):
         """Print found forms on standard output"""
-        if self.forms:
+        if self.browsed_forms:
             sys.stderr.write("\n+ "+_("Forms Info") + ":\n")
-            for form in self.forms:
-                print(_("From: {0}").format(form[2]))
-                print(_("To: {0}").format(form[0]))
-                for k, v in form[1].items():
-                    print(u"\t{0} : {1}".format(k, v))
+            for form in self.browsed_forms:
+                print(_("From: {0}").format(form.referer))
+                print(_("To: {0}").format(form))
                 print('')
 
     def printUploads(self):
@@ -725,12 +728,12 @@ class lswww(object):
         items = xml.createElement("items")
         xml.appendChild(items)
 
-        for lien in self.browsed:
+        for lien in self.browsed_links:
             get = xml.createElement("get")
             get.setAttribute("url", lien.url)
             items.appendChild(get)
 
-        for form in self.forms:
+        for form in self.browsed_forms:
             post = xml.createElement("post")
             post.setAttribute("url", form[0])
             post.setAttribute("referer", form[2])
@@ -747,10 +750,10 @@ class lswww(object):
         fd.close()
 
     def getLinks(self):
-        return self.browsed
+        return self.browsed_links
 
     def getForms(self):
-        return self.forms
+        return self.browsed_forms
 
     def getUploads(self):
         self.uploads.sort()
@@ -759,13 +762,13 @@ class lswww(object):
     def saveCrawlerData(self):
         self.persister.setRootURL(self.root)
         self.persister.setToBrose(self.tobrowse)
-        self.persister.setBrowsed(self.browsed)
-        self.persister.setForms(self.forms)
+        self.persister.setLinks(self.browsed_links)
+        self.persister.setForms(self.browsed_forms)
         self.persister.setUploads(self.uploads)
         self.persister.saveXML(os.path.join(self.persister.CRAWLER_DATA_DIR, self.server + '.xml'))
 
 
-class linkParser(HTMLParser.HTMLParser):
+class LinkParser(HTMLParser.HTMLParser):
     """Extract urls in 'a' href HTML tags"""
     def __init__(self, url=""):
         HTMLParser.HTMLParser.__init__(self)
@@ -905,7 +908,7 @@ class linkParser(HTMLParser.HTMLParser):
                     self.liens.append(jstr)
 
 
-class linkParser2(object):
+class LinkParser2(object):
     verbose = 0
 
     """Extract urls in 'a' href HTML tags"""
@@ -919,59 +922,60 @@ class linkParser2(object):
         self.current_form_method = "get"
         self.verbose = verb
 
-    def __findTagAttributes(self, tag):
-        attDouble = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*"(.*?)"[ +|>]', tag)
-        attSingle = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*\'(.*?)\'[ +|>]', tag)
-        attNone = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*["|\']?(.*?)["|\']?[ +|>]', tag)
-        attNone.extend(attSingle)
-        attNone.extend(attDouble)
-        return attNone
+    @staticmethod
+    def __findTagAttributes(tag):
+        att_double = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*"(.*?)"[ +|>]', tag)
+        att_single = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*\'(.*?)\'[ +|>]', tag)
+        att_none = re.findall('<\w*[ ]| *(.*?)[ ]*=[ ]*["|\']?(.*?)["|\']?[ +|>]', tag)
+        att_none.extend(att_single)
+        att_none.extend(att_double)
+        return att_none
 
-    def feed(self, htmlSource):
-        htmlSource = htmlSource.replace("\n", "")
-        htmlSource = htmlSource.replace("\r", "")
-        htmlSource = htmlSource.replace("\t", "")
+    def feed(self, html_source):
+        html_source = html_source.replace("\n", "")
+        html_source = html_source.replace("\r", "")
+        html_source = html_source.replace("\t", "")
 
-        links = re.findall('<a.*?>', htmlSource)
-        linkAttributes = []
+        links = re.findall('<a.*?>', html_source)
+        link_attributes = []
         for link in links:
-            linkAttributes.append(self.__findTagAttributes(link))
+            link_attributes.append(self.__findTagAttributes(link))
 
         #Finding all the forms: getting the text from "<form..." to "...</form>"
         #the array forms will contain all the forms of the page
-        forms = re.findall('<form.*?>.*?</form>', htmlSource)
-        formsAttributes = []
+        forms = re.findall('<form.*?>.*?</form>', html_source)
+        forms_attributes = []
         for form in forms:
-            formsAttributes.append(self.__findTagAttributes(form))
+            forms_attributes.append(self.__findTagAttributes(form))
 
         #Processing the forms, obtaining the method and all the inputs
         #Also finding the method of the forms
-        inputsInForms = []
-        textAreasInForms = []
-        selectsInForms = []
+        inputs_in_forms = []
+        text_areas_in_forms = []
+        selects_in_forms = []
         for form in forms:
-            inputsInForms.append(re.findall('<input.*?>', form))
-            textAreasInForms.append(re.findall('<textarea.*?>', form))
-            selectsInForms.append(re.findall('<select.*?>', form))
+            inputs_in_forms.append(re.findall('<input.*?>', form))
+            text_areas_in_forms.append(re.findall('<textarea.*?>', form))
+            selects_in_forms.append(re.findall('<select.*?>', form))
 
         #Extracting the attributes of the <input> tag as XML parser
-        inputsAttributes = []
-        for i in xrange(len(inputsInForms)):
-            inputsAttributes.append([])
-            for inputt in inputsInForms[i]:
-                inputsAttributes[i].append(self.__findTagAttributes(inputt))
+        inputs_attributes = []
+        for i in xrange(len(inputs_in_forms)):
+            inputs_attributes.append([])
+            for inputt in inputs_in_forms[i]:
+                inputs_attributes[i].append(self.__findTagAttributes(inputt))
 
-        selectsAttributes = []
-        for i in xrange(len(selectsInForms)):
-            selectsAttributes.append([])
-            for select in selectsInForms[i]:
-                selectsAttributes[i].append(self.__findTagAttributes(select))
+        selects_attributes = []
+        for i in xrange(len(selects_in_forms)):
+            selects_attributes.append([])
+            for select in selects_in_forms[i]:
+                selects_attributes[i].append(self.__findTagAttributes(select))
 
-        textAreasAttributes = []
-        for i in xrange(len(textAreasInForms)):
-            textAreasAttributes.append([])
-            for textArea in textAreasInForms[i]:
-                textAreasAttributes[i].append(self.__findTagAttributes(textArea))
+        textareas_attributes = []
+        for i in xrange(len(text_areas_in_forms)):
+            textareas_attributes.append([])
+            for textArea in text_areas_in_forms[i]:
+                textareas_attributes[i].append(self.__findTagAttributes(textArea))
 
         if self.verbose == 3:
             print('')
@@ -981,23 +985,23 @@ class linkParser2(object):
             for i in xrange(len(forms)):
                 print(_("Form {0}").format(str(i)))
                 tmpdict = {}
-                for k, v in dict(formsAttributes[i]).items():
+                for k, v in dict(forms_attributes[i]).items():
                     tmpdict[k.lower()] = v
                 print(_(" * Method:  {0}").format(self.__decode_htmlentities(tmpdict['action'])))
                 print(_(" * Intputs:"))
-                for j in xrange(len(inputsInForms[i])):
-                    print(u"    + " + inputsInForms[i][j])
-                    for att in inputsAttributes[i][j]:
+                for j in xrange(len(inputs_in_forms[i])):
+                    print(u"    + " + inputs_in_forms[i][j])
+                    for att in inputs_attributes[i][j]:
                         print(u"       - " + str(att))
                 print(_(" * Selects:"))
-                for j in xrange(len(selectsInForms[i])):
-                    print(u"    + " + selectsInForms[i][j])
-                    for att in selectsAttributes[i][j]:
+                for j in xrange(len(selects_in_forms[i])):
+                    print(u"    + " + selects_in_forms[i][j])
+                    for att in selects_attributes[i][j]:
                         print(u"       - " + str(att))
                 print(_(" * TextAreas:"))
-                for j in xrange(len(textAreasInForms[i])):
-                    print(u"    + " + textAreasInForms[i][j])
-                    for att in textAreasAttributes[i][j]:
+                for j in xrange(len(text_areas_in_forms[i])):
+                    print(u"    + " + text_areas_in_forms[i][j])
+                    for att in textareas_attributes[i][j]:
                         print(u"       - " + str(att))
             print('')
             print(_("URLS"))
@@ -1005,7 +1009,7 @@ class linkParser2(object):
 
         for i in xrange(len(links)):
             tmpdict = {}
-            for k, v in dict(linkAttributes[i]).items():
+            for k, v in dict(link_attributes[i]).items():
                 tmpdict[k.lower()] = v
             if "href" in tmpdict:
                 self.liens.append(self.__decode_htmlentities(tmpdict['href']))
@@ -1014,7 +1018,7 @@ class linkParser2(object):
 
         for i in xrange(len(forms)):
             tmpdict = {}
-            for k, v in dict(formsAttributes[i]).items():
+            for k, v in dict(forms_attributes[i]).items():
                 tmpdict[k.lower()] = v
             self.form_values = []
             if "action" in tmpdict:
@@ -1027,9 +1031,9 @@ class linkParser2(object):
                 if tmpdict["method"].lower() == "post":
                     self.current_form_method = "post"
 
-            for j in xrange(len(inputsAttributes[i])):
+            for j in xrange(len(inputs_attributes[i])):
                 tmpdict = {}
-                for k, v in dict(inputsAttributes[i][j]).items():
+                for k, v in dict(inputs_attributes[i][j]).items():
                     tmpdict[k.lower()] = v
                     if "type" not in tmpdict:
                         tmpdict["type"] = "text"
@@ -1049,16 +1053,16 @@ class linkParser2(object):
                         if tmpdict['type'].lower() == "file":
                             self.uploads.append(self.current_form_url)
 
-            for j in xrange(len(textAreasAttributes[i])):
+            for j in xrange(len(textareas_attributes[i])):
                 tmpdict = {}
-                for k, v in dict(textAreasAttributes[i][j]).items():
+                for k, v in dict(textareas_attributes[i][j]).items():
                     tmpdict[k.lower()] = v
                 if "name" in tmpdict:
                     self.form_values.append([tmpdict['name'], u'on'])
 
-            for j in xrange(len(selectsAttributes[i])):
+            for j in xrange(len(selects_attributes[i])):
                 tmpdict = {}
-                for k, v in dict(selectsAttributes[i][j]).items():
+                for k, v in dict(selects_attributes[i][j]).items():
                     tmpdict[k.lower()] = v
                 if "name" in tmpdict:
                     self.form_values.append([tmpdict['name'], u'on'])
@@ -1070,7 +1074,8 @@ class linkParser2(object):
                 l.sort()
                 self.liens.append(self.current_form_url.split("?")[0] + "?" + "&".join(l))
 
-    def __substitute_entity(self, match):
+    @staticmethod
+    def __substitute_entity(match):
         ent = match.group(2)
         if match.group(1) == "#":
             return unichr(int(ent))

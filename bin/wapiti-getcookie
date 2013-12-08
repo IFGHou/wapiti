@@ -91,7 +91,7 @@ else:
 
 bs = BeautifulSoup(htmlSource)
 
-p = lswww.linkParser(url)
+p = lswww.LinkParser(url)
 try:
     p.feed(htmlSource)
 except HTMLParser.HTMLParseError, err:
@@ -100,7 +100,7 @@ except HTMLParser.HTMLParseError, err:
         p.reset()
         p.feed(htmlSource)
     except HTMLParser.HTMLParseError, err:
-        p = lswww.linkParser2(url)
+        p = lswww.LinkParser2(url)
         p.feed(htmlSource)
 
 jc.addcookies(session.cookies)

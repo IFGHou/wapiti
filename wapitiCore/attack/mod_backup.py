@@ -45,7 +45,8 @@ class mod_backup(Attack):
         Attack.__init__(self, http, xmlRepGenerator)
         self.payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
 
-    def __returnErrorByCode(self, code):
+    @staticmethod
+    def __returnErrorByCode(code):
         err = ""
         code = int(code)
         if code == 404:

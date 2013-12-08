@@ -42,22 +42,22 @@ class HTMLReportGenerator(JSONReportGenerator):
     REPORT_DIR = "report_template"
     REPORT_JSON_FILE = "vulnerabilities.json"
 
-    def generateReport(self, fileName):
+    def generateReport(self, filename):
         """
         Copy the report structure in the specified 'fileName' directory
         If these path exists, it will be overwritten
         """
-        if os.path.exists(fileName):
-            rmtree(fileName)
-        copytree(os.path.join(self.BASE_DIR, self.REPORT_DIR), fileName)
+        if os.path.exists(filename):
+            rmtree(filename)
+        copytree(os.path.join(self.BASE_DIR, self.REPORT_DIR), filename)
 
-        JSONReportGenerator.generateReport(self, os.path.join(fileName, self.REPORT_JSON_FILE))
-        fd = open(os.path.join(fileName, self.REPORT_JSON_FILE))
+        JSONReportGenerator.generateReport(self, os.path.join(filename, self.REPORT_JSON_FILE))
+        fd = open(os.path.join(filename, self.REPORT_JSON_FILE))
         json_data = fd.read()
         json_data = json_data.replace('</', r'<\/')
         fd.close()
 
-        fd = open(os.path.join(fileName, "index.html"), "r+")
+        fd = open(os.path.join(filename, "index.html"), "r+")
         html_data = fd.read()
         html_data = html_data.replace('__JSON_DATA__', json_data)
         fd.seek(0)

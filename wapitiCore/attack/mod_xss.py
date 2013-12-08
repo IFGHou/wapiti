@@ -63,12 +63,14 @@ class mod_xss(Attack):
         Attack.__init__(self, http, xmlRepGenerator)
         self.independant_payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
 
-    def random_string(self):
+    @staticmethod
+    def random_string():
         """Create a random unique ID that will be used to test injection."""
         # doesn't uppercase letters as BeautifulSoup make some data lowercase
         return "w" + "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0, 9)])
 
-    def _validXSSContentType(self, http_res):
+    @staticmethod
+    def _validXSSContentType(http_res):
         """Check whether the returned content-type header allow javascript evaluation."""
         # When no content-type is returned, browsers try to display the HTML
         if not "content-type" in http_res.headers:
@@ -464,7 +466,8 @@ class mod_xss(Attack):
                 # restore the saved parameter in the list
                 params_list[i][1] = saved_value
 
-    def closeNoscript(self, tag):
+    @staticmethod
+    def closeNoscript(tag):
         """Return a string with each closing parent tags for escaping a noscript"""
         s = ""
         if tag.findParent("noscript"):

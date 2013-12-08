@@ -205,12 +205,12 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
 
         self.__addToVulnerabilityList(category, vulnerability)
 
-    def generateReport(self, fileName):
+    def generateReport(self, filename):
         """
         Create a xml file with a report of the vulnerabilities which have been logged with
         the method logVulnerability(category,level,url,parameter,info)
         """
-        f = open(fileName, "w")
+        f = open(filename, "w")
         try:
             f.write(self.__xmlDoc.toxml(encoding="UTF-8"))
         finally:

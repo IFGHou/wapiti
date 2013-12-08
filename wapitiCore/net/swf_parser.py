@@ -266,7 +266,8 @@ class swf_parser(object):
         decal += length
         return pos + decal
 
-    def looksLikeAnURL(self, string):
+    @staticmethod
+    def looksLikeAnURL(string):
         if string == "":
             return False
         if " " in string:

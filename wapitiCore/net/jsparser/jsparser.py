@@ -49,7 +49,7 @@ import re
 import sys
 
 
-class Object:
+class Object(object):
     pass
 
 
@@ -209,11 +209,11 @@ class Tokenizer(object):
 
     def peek(self):
         if self.lookahead:
-            next = self.tokens.get((self.tokenIndex + self.lookahead) & 3)
-            if self.scanNewlines and (getattr(next, "lineno", None) != getattr(self, "lineno", None)):
+            next_token = self.tokens.get((self.tokenIndex + self.lookahead) & 3)
+            if self.scanNewlines and (getattr(next_token, "lineno", None) != getattr(self, "lineno", None)):
                 tt = GLOBALS['NEWLINE']
             else:
-                tt = getattr(next, "type_", None)
+                tt = getattr(next_token, "type_", None)
         else:
             tt = self.get()
             self.unget()

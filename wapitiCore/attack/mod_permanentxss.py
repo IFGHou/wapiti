@@ -303,14 +303,16 @@ class mod_permanentxss(Attack):
                                                 returned500 = True
 
     # check whether our JS payload is injected in the webpage
-    def validXSS(self, page, code, payload):
+    @staticmethod
+    def validXSS(page, code, payload):
         if page is None or page == "":
             return False
         if payload.lower() in page.lower():
             return True
         return False
 
-    def validContentType(self, http_res):
+    @staticmethod
+    def validContentType(http_res):
         """Check whether the returned content-type header allow javascript evaluation."""
         if not "content-type" in http_res.headers:
             return True

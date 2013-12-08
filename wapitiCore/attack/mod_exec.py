@@ -36,7 +36,8 @@ class mod_exec(Attack):
         Attack.__init__(self, http, xmlRepGenerator)
         self.payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
 
-    def __findPatternInResponse(self, data, warned):
+    @staticmethod
+    def __findPatternInResponse(data, warned):
         err = ""
         cmd = 0
         if "eval()'d code</b> on line <b>" in data and not warned:

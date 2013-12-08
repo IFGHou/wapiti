@@ -57,12 +57,12 @@ class TXTReportGenerator(ReportGenerator):
         if scope:
             self.__infos["scope"] = scope
 
-    def generateReport(self, fileName):
+    def generateReport(self, filename):
         """
         Create a TXT file encoded as UTF-8 with a report of the vulnerabilities which have been logged with
         the methods logVulnerability and logAnomaly.
         """
-        f = codecs.open(fileName, mode="w", encoding="UTF-8")
+        f = codecs.open(filename, mode="w", encoding="UTF-8")
         try:
             f.write(separator)
             f.write(center("{0} - wapiti.sourceforge.net\n".format(self.__infos["version"])))

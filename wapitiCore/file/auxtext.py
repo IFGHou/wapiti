@@ -24,7 +24,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 class AuxText(object):
     """Class for reading and writing in text files"""
-    def readLines(self, fileName):
+    @staticmethod
+    def readLines(fileName):
         """returns a array"""
         lines = []
         f = None
@@ -32,11 +33,11 @@ class AuxText(object):
             # Reminder : don't try to read payload files as UTF-8, must give str type
             f = open(fileName)
             for line in f:
-                cleanLine = line.strip(" \n")
-                cleanLine = cleanLine.replace("[TAB]", "\t")
-                cleanLine = cleanLine.replace("[LF]", "\n")
-                if cleanLine != "":
-                    lines.append(cleanLine.replace("\\0", "\0"))
+                clean_line = line.strip(" \n")
+                clean_line = clean_line.replace("[TAB]", "\t")
+                clean_line = clean_line.replace("[LF]", "\n")
+                if clean_line != "":
+                    lines.append(clean_line.replace("\\0", "\0"))
         except IOError, e:
             print(e)
         #finally clause do not work with jyton

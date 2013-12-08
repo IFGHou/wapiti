@@ -190,10 +190,10 @@ class Wapiti(object):
                         if not found:
                             print(_("[!] Unable to find a module named {0}").format(module))
 
-    def browse(self, crawlerFile):
+    def browse(self, crawler_file):
         """Extract hyperlinks and forms from the webpages found on the website"""
         #self.urls, self.forms = self.myls.go(crawlerFile)
-        self.myls.go(crawlerFile)
+        self.myls.go(crawler_file)
         self.urls = self.myls.getLinks()
         self.forms = self.myls.getForms()
 
@@ -474,7 +474,7 @@ if __name__ == "__main__":
         if attackFile is not None:
             if crawlerPersister.isDataForUrl(attackFile) == 1:
                 crawlerPersister.loadXML(attackFile)
-                wap.urls = crawlerPersister.getBrowsed()
+                wap.urls = crawlerPersister.getLinks()
                 wap.forms = crawlerPersister.getForms()
                 print(_("File {0} loaded. Wapiti will use it to perform the attack").format(attackFile))
             else:
