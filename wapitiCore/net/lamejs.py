@@ -21,11 +21,11 @@ from wapitiCore.net.jsparser import jsparser
 
 
 class lamejs(object):
-    js_vars = {}
-    links = []
-    DEBUG = False
 
     def __init__(self, data):
+        self.js_vars = {}
+        self.links = []
+        self.debug = False
         try:
             self.js_vars = {}
             self.links = []
@@ -35,7 +35,7 @@ class lamejs(object):
             pass
 
     def print_d(self, s):
-        if self.DEBUG:
+        if self.debug:
             print(s)
 
     def getVars(self):

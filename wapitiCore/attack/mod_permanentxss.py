@@ -44,8 +44,6 @@ class mod_permanentxss(Attack):
     require = ["xss"]
     PRIORITY = 6
 
-    HTTP = None
-
     # two dict for permanent XSS scanning
     GET_XSS = {}
     POST_XSS = {}
@@ -69,7 +67,6 @@ class mod_permanentxss(Attack):
                 continue
             url = http_resource.url
             target_req = HTTP.HTTPResource(url)
-            page = http_resource.path
             referer = http_resource.referer
             headers = {}
             if referer:
@@ -81,10 +78,8 @@ class mod_permanentxss(Attack):
                 data = resp.getPage()
             except requests.exceptions.Timeout, timeout:
                 data = ""
-                resp = timeout
             except socket.error, se:
                 data = ""
-                resp = None
                 print(_('error: {0} while attacking {1}').format(repr(str(se[1])), url))
             except Exception, e:
                 print(_('error: {0} while attacking {1}').format(repr(str(e[0])), url))
@@ -128,7 +123,7 @@ class mod_permanentxss(Attack):
                                 evil_req = HTTP.HTTPResource(code_url.replace(code, payload))
                                 try:
                                     http_code = self.HTTP.send(evil_req).getCode()
-                                    dat = resp = self.HTTP.send(target_req).getPage()
+                                    dat = self.HTTP.send(target_req).getPage()
                                 except requests.exceptions.Timeout:
                                     dat = ""
                                     if timeouted:

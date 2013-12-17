@@ -23,8 +23,9 @@ import requests
 
 class jsoncookie(object):
 
-    cookiedict = None
-    fd = None
+    def __init__(self):
+        self.cookiedict = None
+        self.fd = None
 
     # return a dictionary on success, None on failure
     def open(self, filename):

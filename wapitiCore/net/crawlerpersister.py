@@ -59,29 +59,29 @@ class CrawlerPersister(object):
     POST_PARAMS = "post_params"
     FILE_PARAMS = "file_params"
 
-    # toBrowse can contain GET and POST resources
-    to_browse = []
-    # browsed contains only GET resources
-    browsed_links = []
-    # forms contains only POST resources
-    browsed_forms = []
-    uploads = []
-    headers = {}
-    root_url = ""
 
-    tag = ""
-    array = None
-
-    method = ""
-    path = ""
-    encoding = ""
-    referer = ""
-    get_params = []
-    post_params = []
-    file_params = []
 
     def __init__(self):
-        pass
+        # toBrowse can contain GET and POST resources
+        self.to_browse = []
+        # browsed contains only GET resources
+        self.browsed_links = []
+        # forms contains only POST resources
+        self.browsed_forms = []
+        self.uploads = []
+        self.headers = {}
+        self.root_url = ""
+
+        self.tag = ""
+        self.array = None
+
+        self.method = ""
+        self.path = ""
+        self.encoding = ""
+        self.referer = ""
+        self.get_params = []
+        self.post_params = []
+        self.file_params = []
 
     @staticmethod
     def isDataForUrl(filename):

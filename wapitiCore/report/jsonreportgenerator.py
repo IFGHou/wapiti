@@ -33,16 +33,14 @@ class JSONReportGenerator(ReportGenerator):
     - infos : several informations about the scan.
     """
 
-    # Use only one dict for vulnerability and anomaly types
-    __flawTypes = {}
-
-    __vulns = {}
-    __anomalies = {}
-
-    __infos = {}
-
     def __init__(self):
-        pass
+        # Use only one dict for vulnerability and anomaly types
+        self.__flawTypes = {}
+
+        self.__vulns = {}
+        self.__anomalies = {}
+
+        self.__infos = {}
 
     def setReportInfo(self, target, scope=None, date_string="", version=""):
         """Set the informations about the scan"""

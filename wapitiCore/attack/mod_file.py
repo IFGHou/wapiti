@@ -114,7 +114,6 @@ class mod_file(Attack):
             for payload in self.payloads:
                 if "[VALUE]" in payload or "[DIRVALUE]" in payload or "[FILE_NAME]" in payload:
                     continue
-                err = ""
                 url = page + "?" + self.HTTP.quote(payload)
                 if url not in self.attackedGET:
                     if self.verbose == 2:
@@ -127,7 +126,6 @@ class mod_file(Attack):
                         # Display a warning about timeout only once for a parameter
                         if timeouted:
                             continue
-                        data = ""
                         code = "408"
                         err = ""
                         self.logAnom(category=Anomaly.RES_CONSUMPTION,
@@ -174,8 +172,6 @@ class mod_file(Attack):
             if url not in self.attackedGET:
                 self.attackedGET.append(url)
                 for payload in self.payloads:
-                    err = ""
-
                     payload = payload.replace('[VALUE]', saved_value)
                     payload = payload.replace('[DIRVALUE]', saved_value.rsplit('/', 1)[0])
                     payload = payload.replace('[FILE_NAME]', http_res.file_name)
@@ -191,7 +187,6 @@ class mod_file(Attack):
                     except requests.exceptions.Timeout:
                         if timeouted:
                             continue
-                        data = ""
                         code = "408"
                         err = ""
                         self.logAnom(category=Anomaly.RES_CONSUMPTION,
@@ -284,7 +279,6 @@ class mod_file(Attack):
                         except requests.exceptions.Timeout:
                             if timeouted:
                                 continue
-                            data = ""
                             code = "408"
                             self.logAnom(category=Anomaly.RES_CONSUMPTION,
                                          level=Anomaly.MEDIUM_LEVEL,

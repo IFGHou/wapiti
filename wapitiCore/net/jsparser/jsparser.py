@@ -353,8 +353,8 @@ class CompilerContext(object):
         self.inForLoopInit = False
 
 
-def Script(t, x):
-    n = Statements(t, x)
+def script(t, x):
+    n = statements(t, x)
     n.type_ = GLOBALS['SCRIPT']
     n.funDecls = x.funDecls
     n.varDecls = x.varDecls
@@ -469,18 +469,18 @@ def tokenstr(tt):
     return t.upper()
 
 
-def Statements(t, x):
+def statements(t, x):
     n = Node(t, GLOBALS['BLOCK'])
     x.stmtStack.append(n)
     while not t.done and t.peek() != GLOBALS['RIGHT_CURLY']:
-        n.append(Statement(t, x))
+        n.append(statement(t, x))
     x.stmtStack.pop()
     return n
 
 
-def Block(t, x):
+def block(t, x):
     t.mustMatch(GLOBALS['LEFT_CURLY'])
-    n = Statements(t, x)
+    n = statements(t, x)
     t.mustMatch(GLOBALS['RIGHT_CURLY'])
     return n
 
@@ -489,7 +489,7 @@ EXPRESSED_FORM = 1
 STATEMENT_FORM = 2
 
 
-def Statement(t, x):
+def statement(t, x):
     tt = t.get()
 
     # Cases for statements ending in a right curly return early, avoiding the
@@ -499,20 +499,20 @@ def Statement(t, x):
             type_ = STATEMENT_FORM
         else:
             type_ = DECLARED_FORM
-        return FunctionDefinition(t, x, True, type_)
+        return function_definition(t, x, True, type_)
 
     elif tt == GLOBALS['LEFT_CURLY']:
-        n = Statements(t, x)
+        n = statements(t, x)
         t.mustMatch(GLOBALS['RIGHT_CURLY'])
         return n
 
     elif tt == GLOBALS['IF']:
         n = Node(t)
-        n.condition = ParenExpression(t, x)
+        n.condition = paren_expression(t, x)
         x.stmtStack.append(n)
-        n.thenPart = Statement(t, x)
+        n.thenPart = statement(t, x)
         if t.match(GLOBALS['ELSE']):
-            n.elsePart = Statement(t, x)
+            n.elsePart = statement(t, x)
         else:
             n.elsePart = None
         x.stmtStack.pop()
@@ -521,7 +521,7 @@ def Statement(t, x):
     elif tt == GLOBALS['SWITCH']:
         n = Node(t)
         t.mustMatch(GLOBALS['LEFT_PAREN'])
-        n.discriminant = Expression(t, x)
+        n.discriminant = expression(t, x)
         t.mustMatch(GLOBALS['RIGHT_PAREN'])
         n.cases = []
         n.defaultIndex = -1
@@ -539,7 +539,7 @@ def Statement(t, x):
                 if tt == GLOBALS['DEFAULT']:
                     n.defaultIndex = len(n.cases)
                 else:
-                    n2.caseLabel = Expression(t, x, GLOBALS['COLON'])
+                    n2.caseLabel = expression(t, x, GLOBALS['COLON'])
             else:
                 raise t.newSyntaxError("Invalid switch case")
             t.mustMatch(GLOBALS['COLON'])
@@ -548,7 +548,7 @@ def Statement(t, x):
                 tt = t.peek()
                 if tt == GLOBALS['CASE'] or tt == GLOBALS['DEFAULT'] or tt == GLOBALS['RIGHT_CURLY']:
                     break
-                n2.statements.append(Statement(t, x))
+                n2.statements.append(statement(t, x))
             n.cases.append(n2)
         x.stmtStack.pop()
         return n
@@ -563,9 +563,9 @@ def Statement(t, x):
             x.inForLoopInit = True
             if tt == GLOBALS['VAR'] or tt == GLOBALS['CONST']:
                 t.get()
-                n2 = Variables(t, x)
+                n2 = variables(t, x)
             else:
-                n2 = Expression(t, x)
+                n2 = expression(t, x)
             x.inForLoopInit = False
 
         if n2 and t.match(GLOBALS['IN']):
@@ -580,7 +580,7 @@ def Statement(t, x):
             else:
                 n.iterator = n2
                 n.varDecl = None
-            n.object = Expression(t, x)
+            n.object = expression(t, x)
         else:
             if n2:
                 n.setup = n2
@@ -590,28 +590,28 @@ def Statement(t, x):
             if t.peek() == GLOBALS['SEMICOLON']:
                 n.condition = None
             else:
-                n.condition = Expression(t, x)
+                n.condition = expression(t, x)
             t.mustMatch(GLOBALS['SEMICOLON'])
             if t.peek() == GLOBALS['RIGHT_PAREN']:
                 n.update = None
             else:
-                n.update = Expression(t, x)
+                n.update = expression(t, x)
         t.mustMatch(GLOBALS['RIGHT_PAREN'])
-        n.body = nest(t, x, n, Statement)
+        n.body = nest(t, x, n, statement)
         return n
 
     elif tt == GLOBALS['WHILE']:
         n = Node(t)
         n.isLoop = True
-        n.condition = ParenExpression(t, x)
-        n.body = nest(t, x, n, Statement)
+        n.condition = paren_expression(t, x)
+        n.body = nest(t, x, n, statement)
         return n
 
     elif tt == GLOBALS['DO']:
         n = Node(t)
         n.isLoop = True
-        n.body = nest(t, x, n, Statement, GLOBALS['WHILE'])
-        n.condition = ParenExpression(t, x)
+        n.body = nest(t, x, n, statement, GLOBALS['WHILE'])
+        n.condition = paren_expression(t, x)
         if not x.ecmaStrictMode:
             # <script language="JavaScript"> (without version hints) may need
             # automatic semicolon insertion without a newline after do-while.
@@ -648,7 +648,7 @@ def Statement(t, x):
 
     elif tt == GLOBALS['TRY']:
         n = Node(t)
-        n.tryBlock = Block(t, x)
+        n.tryBlock = block(t, x)
         n.catchClauses = []
         while t.match(GLOBALS['CATCH']):
             n2 = Node(t)
@@ -659,14 +659,14 @@ def Statement(t, x):
                     raise t.newSyntaxError("Illegal catch guard")
                 if n.catchClauses and not n.catchClauses[-1].guard:
                     raise t.newSyntaxError("Guarded catch after unguarded")
-                n2.guard = Expression(t, x)
+                n2.guard = expression(t, x)
             else:
                 n2.guard = None
             t.mustMatch(GLOBALS['RIGHT_PAREN'])
-            n2.block = Block(t, x)
+            n2.block = block(t, x)
             n.catchClauses.append(n2)
         if t.match(GLOBALS['FINALLY']):
-            n.finallyBlock = Block(t, x)
+            n.finallyBlock = block(t, x)
         if not n.catchClauses and not getattr(n, "finallyBlock", None):
             raise t.newSyntaxError("Invalid try statement")
         return n
@@ -676,7 +676,7 @@ def Statement(t, x):
 
     elif tt == GLOBALS['THROW']:
         n = Node(t)
-        n.exception = Expression(t, x)
+        n.exception = expression(t, x)
 
     elif tt == GLOBALS['RETURN']:
         if not x.inFunction:
@@ -684,16 +684,16 @@ def Statement(t, x):
         n = Node(t)
         tt = t.peekOnSameLine()
         if tt not in (GLOBALS['END'], GLOBALS['NEWLINE'], GLOBALS['SEMICOLON'], GLOBALS['RIGHT_CURLY']):
-            n.value = Expression(t, x)
+            n.value = expression(t, x)
 
     elif tt == GLOBALS['WITH']:
         n = Node(t)
-        n.object = ParenExpression(t, x)
-        n.body = nest(t, x, n, Statement)
+        n.object = paren_expression(t, x)
+        n.body = nest(t, x, n, statement)
         return n
 
     elif tt in (GLOBALS['VAR'], GLOBALS['CONST']):
-        n = Variables(t, x)
+        n = variables(t, x)
 
     elif tt == GLOBALS['DEBUGGER']:
         n = Node(t)
@@ -719,12 +719,12 @@ def Statement(t, x):
                 t.get()
                 n = Node(t, GLOBALS['LABEL'])
                 n.label = label
-                n.statement = nest(t, x, n, Statement)
+                n.statement = nest(t, x, n, statement)
                 return n
 
         n = Node(t, GLOBALS['SEMICOLON'])
         t.unget()
-        n.expression = Expression(t, x)
+        n.expression = expression(t, x)
         n.end = n.expression.end
 
     if t.lineno == t.token.lineno:
@@ -735,7 +735,7 @@ def Statement(t, x):
     return n
 
 
-def FunctionDefinition(t, x, requireName, functionForm):
+def function_definition(t, x, requireName, functionForm):
     f = Node(t)
     if f.type_ != GLOBALS['FUNCTION']:
         if f.value == "get":
@@ -761,7 +761,7 @@ def FunctionDefinition(t, x, requireName, functionForm):
 
     t.mustMatch(GLOBALS['LEFT_CURLY'])
     x2 = CompilerContext(True)
-    f.body = Script(t, x2)
+    f.body = script(t, x2)
     t.mustMatch(GLOBALS['RIGHT_CURLY'])
     f.end = t.token.end
 
@@ -771,7 +771,7 @@ def FunctionDefinition(t, x, requireName, functionForm):
     return f
 
 
-def Variables(t, x):
+def variables(t, x):
     n = Node(t)
     while True:
         t.mustMatch(GLOBALS['IDENTIFIER'])
@@ -780,7 +780,7 @@ def Variables(t, x):
         if t.match(GLOBALS['ASSIGN']):
             if t.token.assignOp:
                 raise t.newSyntaxError("Invalid variable initialization")
-            n2.initializer = Expression(t, x, GLOBALS['COMMA'])
+            n2.initializer = expression(t, x, GLOBALS['COMMA'])
         n2.readOnly = not not (n.type_ == GLOBALS['CONST'])
         n.append(n2)
         x.varDecls.append(n2)
@@ -789,9 +789,9 @@ def Variables(t, x):
     return n
 
 
-def ParenExpression(t, x):
+def paren_expression(t, x):
     t.mustMatch(GLOBALS['LEFT_PAREN'])
-    n = Expression(t, x)
+    n = expression(t, x)
     t.mustMatch(GLOBALS['RIGHT_PAREN'])
     return n
 
@@ -849,7 +849,7 @@ for i in opArity.copy():
     opArity[GLOBALS[i]] = opArity[i]
 
 
-def Expression(t, x, stop=None):
+def expression(t, x, stop=None):
     operators = []
     operands = []
     bl = x.bracketLevel
@@ -974,7 +974,7 @@ def Expression(t, x, stop=None):
             elif tt == GLOBALS['FUNCTION']:
                 if not t.scanOperand:
                     raise BreakOutOfLoops
-                operands.append(FunctionDefinition(t, x, False, EXPRESSED_FORM))
+                operands.append(function_definition(t, x, False, EXPRESSED_FORM))
                 t.scanOperand = False
 
             elif tt in (GLOBALS['NULL'], GLOBALS['THIS'], GLOBALS['TRUE'], GLOBALS['FALSE'], GLOBALS['IDENTIFIER'],
@@ -997,7 +997,7 @@ def Expression(t, x, stop=None):
                             t.get()
                             n.append(None)
                             continue
-                        n.append(Expression(t, x, GLOBALS['COMMA']))
+                        n.append(expression(t, x, GLOBALS['COMMA']))
                         if not t.match(GLOBALS['COMMA']):
                             break
                     t.mustMatch(GLOBALS['RIGHT_BRACKET'])
@@ -1034,7 +1034,7 @@ def Expression(t, x, stop=None):
                                     t.peek == GLOBALS['IDENTIFIER']):
                                 if x.ecmaStrictMode:
                                     raise t.newSyntaxError("Illegal property accessor")
-                                n.append(FunctionDefinition(t, x, True, EXPRESSED_FORM))
+                                n.append(function_definition(t, x, True, EXPRESSED_FORM))
                             else:
                                 if tt in (GLOBALS['IDENTIFIER'], GLOBALS['NUMBER'], GLOBALS['STRING']):
                                     id_ = Node(t)
@@ -1045,7 +1045,7 @@ def Expression(t, x, stop=None):
                                 else:
                                     raise t.newSyntaxError("Invalid property name")
                                 t.mustMatch(GLOBALS['COLON'])
-                                n.append(Node(t, GLOBALS['PROPERTY_INIT'], [id_, Expression(t, x, GLOBALS['COMMA'])]))
+                                n.append(Node(t, GLOBALS['PROPERTY_INIT'], [id_, expression(t, x, GLOBALS['COMMA'])]))
                             if not t.match(GLOBALS['COMMA']):
                                 break
                         t.mustMatch(GLOBALS['RIGHT_CURLY'])
@@ -1151,7 +1151,7 @@ def parse(source, filename=None, starting_line_number=1):
     """
     t = Tokenizer(source, filename, starting_line_number)
     x = CompilerContext(False)
-    n = Script(t, x)
+    n = script(t, x)
     if not t.done:
         raise t.newSyntaxError("Syntax error")
     return n

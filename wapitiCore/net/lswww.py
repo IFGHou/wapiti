@@ -108,33 +108,10 @@ class lswww(object):
     SCOPE_PAGE = "page"
     SCOPE_DEFAULT = "default"
 
-    root = ""
-    server = ""
-    tobrowse = []
-    out_of_scope_urls = []
-    browsed_links = []
-    proxies = {}
-    excluded = []
-    browsed_forms = []
-    uploads = []
     allowed = ['php', 'html', 'htm', 'xml', 'xhtml', 'xht', 'xhtm',
                'asp', 'aspx', 'php3', 'php4', 'php5', 'txt', 'shtm',
                'shtml', 'phtm', 'phtml', 'jhtml', 'pl', 'jsp', 'cfm', 'cfml']
     allowed_types = ['text/', 'application/xml']
-    verbose = 0
-    auth_basic = []
-    bad_params = []
-    timeout = 6.0
-    h = None
-    global_headers = {}
-    cookiejar = None
-    scope = None
-    link_encoding = {}
-
-    persister = None
-
-    # 0 means no limits
-    nice = 0
 
     def __init__(self, root, http_engine=None):
         self.h = http_engine
@@ -149,12 +126,31 @@ class lswww(object):
         if root[-1] != "/" and not "/" in root.split("://")[1]:
             root += "/"
 
+        self.out_of_scope_urls = []
+        self.browsed_links = []
+        self.proxies = {}
+        self.excluded = []
+        self.browsed_forms = []
+        self.uploads = []
+
+        self.verbose = 0
+        self.auth_basic = []
+        self.bad_params = []
+        self.timeout = 6.0
+        self.global_headers = {}
+        self.cookiejar = None
+        self.scope = None
+        self.link_encoding = {}
+
+        # 0 means no limits
+        self.nice = 0
+
         server = (root.split("://")[1]).split("/")[0]
         self.root = HTTP.HTTPResource(root)   # Initial URL
         self.server = server  # Domain
         self.scope_url = root  # Scope of the analysis
 
-        self.tobrowse.append(self.root)
+        self.tobrowse = [self.root]
         self.persister = CrawlerPersister()
 
     def setTimeOut(self, timeout=6.0):
@@ -356,7 +352,7 @@ class lswww(object):
                     p.feed(html_source)
                 except UnicodeEncodeError:
                     # The resource is not a valid webpage (for example an image)
-                    html_source = ""
+                    pass
                 except HTMLParser.HTMLParseError:
                     p = LinkParser2(url, self.verbose)
                     p.feed(html_source)
@@ -809,7 +805,6 @@ class LinkParser(HTMLParser.HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         tmpdict = {}
-        val = None
         for k, v in attrs:
             if v is None:
                 continue

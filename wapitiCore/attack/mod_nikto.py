@@ -90,7 +90,7 @@ class mod_nikto(Attack):
                 print(_("Error downloading Nikto database"))
 
     def attack(self, urls, forms):
-        junk_string = "w" + "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in range(0, 5000)])
+        junk_string = "w" + "".join([random.choice("0123456789abcdefghjijklmnopqrstuvwxyz") for __ in xrange(0, 5000)])
         for l in self.nikto_db:
             match = match_or = match_and = False
             fail = fail_or = False
@@ -113,13 +113,10 @@ class mod_nikto(Attack):
             if path[0] != "/":
                 path = "/" + path
 
-            url = ""
             try:
                 url = "http://" + self.HTTP.server + path
             except UnicodeDecodeError:
                 continue
-
-            evil_req = None
 
             if method == "GET":
                 evil_req = HTTP.HTTPResource(url)
@@ -134,7 +131,7 @@ class mod_nikto(Attack):
                         print(u"+ {0}".format(evil_req.url))
                     else:
                         print(u"+ {0}".format(evil_req.http_repr))
-                except Exception, e:
+                except Exception:
                     continue
 
             try:

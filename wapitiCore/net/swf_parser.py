@@ -34,9 +34,8 @@ from bs4 import BeautifulSoup
 
 class swf_parser(object):
 
-    __strings = []
-
     def __init__(self, data):
+        self.__strings = []
         c = data[:8]
         signature, version, file_length = struct.unpack('3scI', c)
         version = ord(version)
@@ -172,7 +171,7 @@ class swf_parser(object):
             pass
 
         if tag == 7:
-            # The way is tag is formated just look damn stupid and I could not find a SWF file using it
+            # The way is tag is formatted just look damn stupid and I could not find a SWF file using it
             pass
 
         elif tag == 12:

@@ -42,18 +42,14 @@ class TXTReportGenerator(ReportGenerator):
     This class generates a Wapiti report in TXT format.
     """
 
-    __flawTypes = {}
-    __vulns = {}
-    __anomalies = {}
-    __infos = {}
-
     def __init__(self):
-        pass
+        self.__infos = {}
+        self.__flawTypes = {}
+        self.__vulns = {}
+        self.__anomalies = {}
 
     def setReportInfo(self, target, scope=None, date_string="", version=""):
-        self.__infos["target"] = target
-        self.__infos["date"] = date_string
-        self.__infos["version"] = version
+        self.__infos = {"target": target, "date": date_string, "version": version}
         if scope:
             self.__infos["scope"] = scope
 

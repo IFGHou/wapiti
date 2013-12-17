@@ -33,15 +33,14 @@ class ReportGeneratorsXMLParser(object):
     REPORT_GENERATOR_CLASS_MODULE = "classModule"
     REPORT_GENERATOR_CLASSNAME = "className"
 
-    reportGenerators = []
-    repGen = None
-    tag = ""
-
     def __init__(self):
         self._parser = expat.ParserCreate()
         self._parser.StartElementHandler = self.start_element
         self._parser.EndElementHandler = self.end_element
         self._parser.CharacterDataHandler = self.char_data
+        self.reportGenerators = []
+        self.repGen = None
+        self.tag = ""
 
     def parse(self, filename):
         f = None

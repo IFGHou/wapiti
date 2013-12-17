@@ -51,15 +51,16 @@ class XMLReportGenerator(ReportGenerator):
     </report>
     """
 
-    __xmlDoc = None
-    __infos = {}
-    __flawTypes = {}
 
-    __vulns = {}
-    __anomalies = {}
+
 
     def __init__(self):
+        self.__infos = {}
         self.__xmlDoc = Document()
+        self.__flawTypes = {}
+
+        self.__vulns = {}
+        self.__anomalies = {}
 
     def setReportInfo(self, target, scope=None, date_string="", version=""):
         self.__infos["target"] = target

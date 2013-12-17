@@ -46,18 +46,16 @@ class OpenVASReportGenerator(ReportGenerator):
     </report>
     """
 
-    __xmlDoc = None
-    __infos = {}
-    __flawTypes = {}
-
-    __vulns = {}
-    __anomalies = {}
-
-    __vulnCount = 0
-    __anomCount = 0
-
     def __init__(self):
         self.__xmlDoc = Document()
+        self.__infos = {}
+        self.__flawTypes = {}
+
+        self.__vulns = {}
+        self.__anomalies = {}
+
+        self.__vulnCount = 0
+        self.__anomCount = 0
 
     def setReportInfo(self, target, scope=None, date_string="", version=""):
         self.__infos["target"] = target

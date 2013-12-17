@@ -28,7 +28,6 @@ class AuxText(object):
     def readLines(fileName):
         """returns a array"""
         lines = []
-        f = None
         try:
             # Reminder : don't try to read payload files as UTF-8, must give str type
             f = open(fileName)

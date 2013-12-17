@@ -62,13 +62,10 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
     </report>
     """
 
-    __xmlDoc = None
-    __vulnerabilityTypeList = None
-    __ts = None
-
     def __init__(self):
         self.__ts = datetime.datetime.now()
         self.__xmlDoc = Document()
+        self.__vulnerabilityTypeList = None
 
     def setReportInfo(self, target, scope=None, date_string="", version=""):
         report = self.__xmlDoc.createElement("Report")
@@ -148,11 +145,9 @@ class VulneraNetXMLReportGenerator(ReportGenerator):
         """
 
         peer = None
-        ts = ""
 
         vulnerability = self.__xmlDoc.createElement("Vulnerability")
 
-        stLevel = None
         if level == 1:
             stLevel = "Low"
         elif level == 2:

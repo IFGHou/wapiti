@@ -23,9 +23,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 class ReportGeneratorInfo(object):
-    key = None
-    className = None
-    classModule = None
+
+    def __init__(self):
+        self.name = None
+        self.className = None
+        self.classModule = None
 
     def getKey(self):
         return self.name

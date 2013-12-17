@@ -42,7 +42,6 @@ class mod_htaccess(Attack):
     #this function return code signification when htaccess protection enabled
     @staticmethod
     def __returnErrorByCode(code):
-        err = ""
         code = int(code)
         if code == 401:
             err = "Authorization Required"

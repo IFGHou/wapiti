@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
-# Copyright (C) 2008-2013 Nicolas Surribas
+# Copyright (C) 2008-2013 Nicolas SURRIBAS
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,36 +59,31 @@ class Wapiti(object):
     """This class parse the options from the command line and set the modules and the HTTP engine accordingly.
     Launch wapiti without arguments or with the "-h" option for more informations."""
 
-    target_url = None
-    target_scope = "folder"
-    urls = {}
-    forms = []
-
-    color = 0
-    verbose = 0
-
-    reportGeneratorType = "html"
     REPORT_DIR = "report"
     REPORT_FILE = "vulnerabilities"
     HOME_DIR = os.getenv('HOME') or os.getenv('USERPROFILE')
     COPY_REPORT_DIR = os.path.join(HOME_DIR, ".wapiti", "generated_report")
-    outputFile = ""
-
-    options = ""
-
-    http_engine = None
-    myls = None
-    reportGen = None
-
-    attacks = []
 
     def __init__(self, root_url):
         self.target_url = root_url
+        self.target_scope = "folder"
         server = urlparse.urlparse(root_url).netloc
         self.http_engine = HTTP.HTTP(server)
         self.myls = lswww.lswww(root_url, http_engine=self.http_engine)
+
+        self.reportGen = None
+        self.reportGeneratorType = "html"
         self.xmlRepGenParser = ReportGeneratorsXMLParser()
         self.xmlRepGenParser.parse(os.path.join(CONF_DIR, "config", "reports", "generators.xml"))
+        self.output_file = ""
+
+        self.urls = {}
+        self.forms = []
+        self.attacks = []
+
+        self.color = 0
+        self.verbose = 0
+        self.options = ""
 
     def __initReport(self):
         for repGenInfo in self.xmlRepGenParser.getReportGenerators():
@@ -228,21 +223,21 @@ class Wapiti(object):
             print("----------------------")
             for upload_form in self.myls.getUploads():
                 print(upload_form)
-        if not self.outputFile:
+        if not self.output_file:
             if self.reportGeneratorType == "html":
-                self.outputFile = self.COPY_REPORT_DIR
+                self.output_file = self.COPY_REPORT_DIR
             else:
                 if self.reportGeneratorType == "txt":
-                    self.outputFile = self.REPORT_FILE + ".txt"
+                    self.output_file = self.REPORT_FILE + ".txt"
                 else:
-                    self.outputFile = self.REPORT_FILE + ".xml"
-        self.reportGen.generateReport(self.outputFile)
+                    self.output_file = self.REPORT_FILE + ".xml"
+        self.reportGen.generateReport(self.output_file)
         print('')
         print(_("Report"))
         print("------")
-        print(_("A report has been generated in the file {0}").format(self.outputFile))
+        print(_("A report has been generated in the file {0}").format(self.output_file))
         if self.reportGeneratorType == "html":
-            print(_("Open {0}/index.html with a browser to see this report.").format(self.outputFile))
+            print(_("Open {0}/index.html with a browser to see this report.").format(self.output_file))
         if self.http_engine.sslErrorOccured:
             print('')
             print(_("Warning: Wapiti came across some SSL errors during the scan, it maybe missed some webpages."))
@@ -313,7 +308,7 @@ class Wapiti(object):
 
     def setOutputFile(self, outputFile):
         """Set the filename where the report will be written"""
-        self.outputFile = outputFile
+        self.output_file = outputFile
 
 if __name__ == "__main__":
     doc = _("wapitiDoc")

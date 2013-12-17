@@ -32,32 +32,15 @@ class Attack(object):
     This class represents an attack, it must be extended
     for any class which implements a new type of attack
     """
-    verbose = 0
-    color = 0
 
     name = "attack"
-
-    logVuln = None
-    logAnom = None
-    HTTP = None
-    auxText = None
 
     doGET = True
     doPOST = True
 
-    # List of modules (strs) that must be launched before the current module
+    # List of modules (strings) that must be launched before the current module
     # Must be defined in the code of the module
     require = []
-    # List of modules (objects) that must be launched before the current module
-    # Must be left empty in the code
-    deps = []
-
-    # List of attack urls already launched in the current module
-    attackedGET = []
-    attackedPOST = []
-
-    vulnerableGET = []
-    vulnerablePOST = []
 
     if hasattr(sys, "frozen"):
         BASE_DIR = os.path.join(os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding())), "data")
@@ -89,8 +72,20 @@ class Attack(object):
         self.logVuln = report_gen.logVulnerability
         self.logAnom = report_gen.logAnomaly
         self.auxText = AuxText()
+
+        # List of attack urls already launched in the current module
         self.attackedGET = []
         self.attackedPOST = []
+
+        self.vulnerableGET = []
+        self.vulnerablePOST = []
+
+        self.verbose = 0
+        self.color = 0
+
+        # List of modules (objects) that must be launched before the current module
+        # Must be left empty in the code
+        self.deps = []
 
     def setVerbose(self, verbose):
         self.verbose = verbose

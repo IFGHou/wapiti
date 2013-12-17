@@ -31,18 +31,17 @@ class AnomalyXMLParser(object):
     ANOMALY_REFERENCE_TITLE = "title"
     ANOMALY_REFERENCE_URL = "url"
 
-    anomalies = []
-    anom = None
-    references = {}
-    title = ""
-    url = ""
-    tag = ""
-
     def __init__(self):
         self._parser = expat.ParserCreate()
         self._parser.StartElementHandler = self.start_element
         self._parser.EndElementHandler = self.end_element
         self._parser.CharacterDataHandler = self.char_data
+        self.anomalies = []
+        self.anom = None
+        self.references = {}
+        self.title = ""
+        self.url = ""
+        self.tag = ""
 
     def parse(self, filename):
         f = None

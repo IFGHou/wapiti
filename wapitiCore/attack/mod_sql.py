@@ -92,7 +92,6 @@ class mod_sql(Attack):
 
         # about this payload : http://shiflett.org/blog/2006/jan/addslashes-versus-mysql-real-escape-string
         payload = "\xBF'\"("
-        vuln_found = 0
 
         if not params_list:
             # Do not attack application-type files
@@ -103,7 +102,6 @@ class mod_sql(Attack):
             elif not "text" in resp_headers["content-type"]:
                 return
 
-            err = ""
             payload = self.HTTP.quote(payload)
             url = page + "?" + payload
             if url not in self.attackedGET:
@@ -115,16 +113,13 @@ class mod_sql(Attack):
                 try:
                     resp = self.HTTP.send(evil_req, headers=headers)
                     data, code = resp.getPageCode()
-                except requests.exceptions.Timeout, timeout:
+                except requests.exceptions.Timeout:
                     # No timeout report here... launch blind sql detection later
-                    data = ""
                     code = "408"
                     err = ""
-                    resp = timeout
                 else:
                     err = self.__findPatternInResponse(data)
                 if err != "":
-                    vuln_found += 1
                     self.logVuln(category=Vulnerability.SQL_INJECTION,
                                  level=Vulnerability.HIGH_LEVEL,
                                  request=evil_req,
@@ -144,7 +139,6 @@ class mod_sql(Attack):
                         self.logO(Anomaly.MSG_EVIL_URL, evil_req.url)
         else:
             for i in range(len(params_list)):
-                err = ""
                 param_name = self.HTTP.quote(params_list[i][0])
                 saved_value = params_list[i][1]
                 if saved_value is None:
@@ -163,12 +157,10 @@ class mod_sql(Attack):
                     try:
                         resp = self.HTTP.send(evil_req, headers=headers)
                         data, code = resp.getPageCode()
-                    except requests.exceptions.Timeout, timeout:
+                    except requests.exceptions.Timeout:
                         # No timeout report here... launch blind sql detection later
-                        data = ""
                         code = "408"
                         err = ""
-                        resp = timeout
                     else:
                         err = self.__findPatternInResponse(data)
                     if err != "":
@@ -245,9 +237,7 @@ class mod_sql(Attack):
                         data, code = resp.getPageCode()
                     except requests.exceptions.Timeout, timeout:
                         # No timeout report here... launch blind sql detection later
-                        data = ""
                         code = "408"
-                        resp = timeout
                     else:
                         err = self.__findPatternInResponse(data)
                     if err != "":

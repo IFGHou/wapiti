@@ -35,14 +35,13 @@ class mod_blindsql(Attack):
     require = ["sql"]
     PRIORITY = 6
 
-    excludedGET = []
-    excludedPOST = []
-
     MSG_VULN = _("Blind SQL vulnerability")
 
     def __init__(self, http, xmlRepGenerator):
         Attack.__init__(self, http, xmlRepGenerator)
         self.blind_sql_payloads = self.loadPayloads(os.path.join(self.CONFIG_DIR, self.CONFIG_FILE))
+        self.excludedGET = []
+        self.excludedPOST = []
 
     def setTimeout(self, timeout):
         self.TIME_TO_SLEEP = str(1 + int(timeout))

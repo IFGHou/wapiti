@@ -101,7 +101,6 @@ class mod_exec(Attack):
                 if "[VALUE]" in payload:
                     continue
 
-                err = ""
                 url = page + "?" + self.HTTP.quote(payload)
 
                 if url not in self.attackedGET:
@@ -114,7 +113,6 @@ class mod_exec(Attack):
                     except requests.exceptions.Timeout:
                         if timeouted:
                             continue
-                        data = ""
                         code = "408"
                         err = ""
                         self.logO(Anomaly.MSG_TIMEOUT, page)
@@ -162,7 +160,6 @@ class mod_exec(Attack):
                 self.attackedGET.append(url)
 
                 for payload in self.payloads:
-                    err = ""
                     payload = payload.replace("[VALUE]", saved_value)
                     params_list[i][1] = self.HTTP.quote(payload)
                     evil_req = HTTP.HTTPResource(page + "?" + self.HTTP.encode(params_list))
@@ -175,7 +172,6 @@ class mod_exec(Attack):
                     except requests.exceptions.Timeout:
                         if timeouted:
                             continue
-                        data = ""
                         code = "408"
                         err = ""
                         self.logO(Anomaly.MSG_TIMEOUT, page)
@@ -271,7 +267,6 @@ class mod_exec(Attack):
                         except requests.exceptions.Timeout:
                             if timeouted:
                                 continue
-                            data = ""
                             code = "408"
                             self.logO(Anomaly.MSG_TIMEOUT, evil_req.url)
                             self.logO(Anomaly.MSG_EVIL_REQUEST)

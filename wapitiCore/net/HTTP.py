@@ -37,11 +37,6 @@ def shell_escape(s):
 
 
 class HTTPResource(object):
-    _method = "GET"
-    _encoding = "ISO-8859-1"
-    _hostname = ""
-    _resource_path = ""
-    _file_path = ""
     _status = 0
     _headers = {}
     _referer = ""
@@ -221,7 +216,6 @@ class HTTPResource(object):
         return "&".join(quoted_keys)
 
     def __repr__(self):
-        buff = ""
         if self._get_params:
             buff = "%s %s" % (self._method, self.url)
         else:
@@ -471,23 +465,22 @@ class HTTPResponse(object):
 
 
 class HTTP(object):
-    proxies = {}
-    auth_credentials = []
-    auth_method = "basic"
-    timeout = 6.0
-    h = None
-    cookiejar = {}
-    server = ""
-    verify_ssl = True
-    sslErrorOccured = False
-
-    configured = 0
 
     def __init__(self, server):
         self.h = requests.Session()
         for adapter_protocol in self.h.adapters:
             self.h.adapters[adapter_protocol].max_retries = 1
         self.server = server
+
+        self.proxies = {}
+        self.auth_credentials = []
+        self.auth_method = "basic"
+        self.timeout = 6.0
+        self.cookiejar = {}
+        self.verify_ssl = True
+        self.sslErrorOccured = False
+
+        self.configured = 0
 
     def send(self, target, method="",
              get_params=None, post_params=None, file_params=None,
