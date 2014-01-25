@@ -71,10 +71,10 @@ class Wapiti(object):
         self.http_engine = HTTP.HTTP(server)
         self.myls = lswww.lswww(root_url, http_engine=self.http_engine)
 
-        self.reportGen = None
-        self.reportGeneratorType = "html"
-        self.xmlRepGenParser = ReportGeneratorsXMLParser()
-        self.xmlRepGenParser.parse(os.path.join(CONF_DIR, "config", "reports", "generators.xml"))
+        self.report_gen = None
+        self.report_generator_type = "html"
+        self.xml_rep_gen_parser = ReportGeneratorsXMLParser()
+        self.xml_rep_gen_parser.parse(os.path.join(CONF_DIR, "config", "reports", "generators.xml"))
         self.output_file = ""
 
         self.urls = {}
@@ -86,27 +86,27 @@ class Wapiti(object):
         self.options = ""
 
     def __initReport(self):
-        for repGenInfo in self.xmlRepGenParser.getReportGenerators():
-            if self.reportGeneratorType.lower() == repGenInfo.getKey():
-                self.reportGen = repGenInfo.createInstance()
-                self.reportGen.setReportInfo(target=self.target_url,
+        for rep_gen_info in self.xml_rep_gen_parser.getReportGenerators():
+            if self.report_generator_type.lower() == rep_gen_info.getKey():
+                self.report_gen = rep_gen_info.createInstance()
+                self.report_gen.setReportInfo(target=self.target_url,
                                              scope=self.target_scope,
                                              date_string=time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()),
                                              version=WAPITI_VERSION)
                 break
 
-        vulnXMLParser = VulnerabilityXMLParser()
-        vulnXMLParser.parse(os.path.join(CONF_DIR, "config", "vulnerabilities", "vulnerabilities.xml"))
-        for vul in vulnXMLParser.getVulnerabilities():
-            self.reportGen.addVulnerabilityType(_(vul.getName()),
+        vuln_xml_parser = VulnerabilityXMLParser()
+        vuln_xml_parser.parse(os.path.join(CONF_DIR, "config", "vulnerabilities", "vulnerabilities.xml"))
+        for vul in vuln_xml_parser.getVulnerabilities():
+            self.report_gen.addVulnerabilityType(_(vul.getName()),
                                                 _(vul.getDescription()),
                                                 _(vul.getSolution()),
                                                 vul.getReferences())
 
-        anomXMLParser = AnomalyXMLParser()
-        anomXMLParser.parse(os.path.join(CONF_DIR, "config", "vulnerabilities", "anomalies.xml"))
-        for anomaly in anomXMLParser.getAnomalies():
-            self.reportGen.addAnomalyType(_(anomaly.getName()),
+        anom_xml_parser = AnomalyXMLParser()
+        anom_xml_parser.parse(os.path.join(CONF_DIR, "config", "vulnerabilities", "anomalies.xml"))
+        for anomaly in anom_xml_parser.getAnomalies():
+            self.report_gen.addAnomalyType(_(anomaly.getName()),
                                           (anomaly.getDescription()),
                                           _(anomaly.getSolution()),
                                           anomaly.getReferences())
@@ -120,7 +120,7 @@ class Wapiti(object):
         print(u"\t {0}".format(u", ".join(attack.modules)))
         for mod_name in attack.modules:
             mod = __import__("wapitiCore.attack." + mod_name, fromlist=attack.modules)
-            mod_instance = getattr(mod, mod_name)(self.http_engine, self.reportGen)
+            mod_instance = getattr(mod, mod_name)(self.http_engine, self.report_gen)
             if hasattr(mod_instance, "setTimeout"):
                 mod_instance.setTimeout(self.http_engine.getTimeOut())
             self.attacks.append(mod_instance)
@@ -142,7 +142,7 @@ class Wapiti(object):
                 else:
                     module = opt
 
-                # desactivate some module options
+                # deactivate some module options
                 if module.startswith("-"):
                     module = module[1:]
                     if module == "all":
@@ -224,19 +224,19 @@ class Wapiti(object):
             for upload_form in self.myls.getUploads():
                 print(upload_form)
         if not self.output_file:
-            if self.reportGeneratorType == "html":
+            if self.report_generator_type == "html":
                 self.output_file = self.COPY_REPORT_DIR
             else:
-                if self.reportGeneratorType == "txt":
+                if self.report_generator_type == "txt":
                     self.output_file = self.REPORT_FILE + ".txt"
                 else:
                     self.output_file = self.REPORT_FILE + ".xml"
-        self.reportGen.generateReport(self.output_file)
+        self.report_gen.generateReport(self.output_file)
         print('')
         print(_("Report"))
         print("------")
         print(_("A report has been generated in the file {0}").format(self.output_file))
-        if self.reportGeneratorType == "html":
+        if self.report_generator_type == "html":
             print(_("Open {0}/index.html with a browser to see this report.").format(self.output_file))
         if self.http_engine.sslErrorOccured:
             print('')
@@ -284,6 +284,10 @@ class Wapiti(object):
         given URL. Use it to prevent infinite loops."""
         self.myls.setNice(nice)
 
+    def setMaxDepth(self, depth):
+        """Set how deep the scanner should explore the website"""
+        self.myls.setMaxLinkDepth(depth)
+
     def setScope(self, scope):
         """Set the scope of the crawler for the analysis of the web pages"""
         self.target_scope = scope
@@ -304,7 +308,7 @@ class Wapiti(object):
 
     def setReportGeneratorType(self, repGentype="xml"):
         """Set the format of the generated report. Can be xml, html of txt"""
-        self.reportGeneratorType = repGentype
+        self.report_generator_type = repGentype
 
     def setOutputFile(self, outputFile):
         """Set the filename where the report will be written"""
@@ -346,10 +350,10 @@ if __name__ == "__main__":
 
         try:
             opts, args = getopt.getopt(sys.argv[2:],
-                                       "hup:s:x:c:a:r:v:t:m:o:f:n:kib:",
+                                       "hup:s:x:c:a:r:v:t:m:o:f:n:d:kib:",
                                        ["help", "color", "proxy=", "start=", "exclude=",
                                         "cookie=", "auth=", "remove=", "verbose=", "timeout=",
-                                        "module=", "output=", "format=", "nice=",
+                                        "module=", "output=", "format=", "nice=", "depth=",
                                         "attack", "continue", "scope=", "verify-ssl=", "auth-method="])
         except getopt.GetoptError, e:
             print(e)
@@ -410,6 +414,11 @@ if __name__ == "__main__":
                         wap.setNice(int(a))
                     else:
                         raise InvalidOptionValue(o, a)
+                if o in ["-d", "--depth"]:
+                    if str.isdigit(a) and int(a) > 0:
+                        wap.setMaxDepth(int(a))
+                    else:
+                        raise InvalidOptionValue(o, a)
                 if o in ["-u", "--color"]:
                     wap.setColor()
                 if o in ["-v", "--verbose"]:
@@ -428,7 +437,7 @@ if __name__ == "__main__":
                     wap.setOutputFile(a)
                 if o in ["-f", "--format"]:
                     found_generator = False
-                    for repGenInfo in wap.xmlRepGenParser.getReportGenerators():
+                    for repGenInfo in wap.xml_rep_gen_parser.getReportGenerators():
                         if a == repGenInfo.getKey():
                             wap.setReportGeneratorType(a)
                             found_generator = True

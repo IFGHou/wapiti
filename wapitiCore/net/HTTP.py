@@ -37,37 +37,10 @@ def shell_escape(s):
 
 
 class HTTPResource(object):
-    _status = 0
-    _headers = {}
-    _referer = ""
-    _start_time = None
-    _elapsed_time = None
-    _port = 80
-    _size = 0
 
-    # Most of the members of a HTTPResource object are immutable so we compute
-    # the data only one time (when asked for) and we keep it in memory for less
-    # calculations in those "cached" vars.
-    _cached_url = None
-    _cached_get_keys = None
-    _cached_post_keys = None
-    _cached_file_keys = None
-    _cached_encoded_params = None
-    _cached_encoded_data = None
-    _cached_encoded_files = None
-    _cached_hash = None
-
-    # eg: get = [['id', '25'], ['color', 'green']]
-    _get_params = []
-
-    # same structure as _get_params
-    _post_params = []
-
-    # eg: files = [['file_field', ('file_name', 'file_content')]]
-    _file_params = []
-
-    def __init__(self, path, method="", get_params=None, post_params=None,
-                 encoding="UTF-8", referer="", file_params=None):
+    def __init__(self, path, method="",
+                 get_params=None, post_params=None, file_params=None,
+                 encoding="UTF-8", referer="", link_depth=0):
         """Create a new HTTPResource object.
 
         Takes the following arguments:
@@ -82,6 +55,19 @@ class HTTPResource(object):
         """
         self._resource_path = path
 
+        # Most of the members of a HTTPResource object are immutable so we compute
+        # the data only one time (when asked for) and we keep it in memory for less
+        # calculations in those "cached" vars.
+        self._cached_url = None
+        self._cached_get_keys = None
+        self._cached_post_keys = None
+        self._cached_file_keys = None
+        self._cached_encoded_params = None
+        self._cached_encoded_data = None
+        self._cached_encoded_files = None
+        self._cached_hash = None
+
+        # same structure as _get_params, see below
         if post_params is None:
             self._post_params = []
         elif isinstance(post_params, list):
@@ -96,6 +82,7 @@ class HTTPResource(object):
                         # ?param without value
                         self._post_params.append([kv, None])
 
+        # eg: files = [['file_field', ('file_name', 'file_content')]]
         if file_params is None:
             self._file_params = []
         elif isinstance(file_params, list):
@@ -103,6 +90,7 @@ class HTTPResource(object):
         else:
             self._file_params = file_params
 
+        # eg: get = [['id', '25'], ['color', 'green']]
         if get_params is None:
             self._get_params = []
             if "?" in self._resource_path:
@@ -129,13 +117,19 @@ class HTTPResource(object):
             self._method = method
         self._encoding = encoding
         self._referer = referer
+        self._link_depth = link_depth
         parsed = urlparse.urlparse(self._resource_path)
         self._file_path = parsed.path
         self._hostname = parsed.netloc
+        self._port = 80
         if parsed.port is not None:
             self._port = parsed.port
         elif parsed.scheme == "https":
             self._port = 443
+        self._headers = {}
+        self._start_time = None
+        self._elapsed_time = None
+        self._size = 0
 
     def __hash__(self):
         if self._cached_hash is None:
@@ -338,6 +332,10 @@ class HTTPResource(object):
     @property
     def referer(self):
         return self._referer
+
+    @property
+    def link_depth(self):
+        return self._link_depth
 
     # To prevent errors, always return a deepcopy of the internal lists
     @property

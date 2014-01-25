@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # lswww v2.4.0 - A web spider library
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
-# Copyright (C) 2006-2013 Nicolas Surribas
+# Copyright (C) 2006-2013 Nicolas SURRIBAS
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -144,6 +144,7 @@ class lswww(object):
 
         # 0 means no limits
         self.nice = 0
+        self.max_link_depth = 40
 
         server = (root.split("://")[1]).split("/")[0]
         self.root = HTTP.HTTPResource(root)   # Initial URL
@@ -169,6 +170,10 @@ class lswww(object):
     def setNice(self, nice=0):
         """Set the maximum of urls to visit with the same pattern"""
         self.nice = nice
+
+    def setMaxLinkDepth(self, maximum):
+        """Set how deep the scanner should explore the website"""
+        self.max_link_depth = maximum
 
     def setScope(self, scope):
         self.scope = scope
@@ -207,6 +212,11 @@ class lswww(object):
     def browse(self, web_resource):
         """Extract urls from a webpage and add them to the list of urls
         to browse if they aren't in the exclusion list"""
+
+        # We are going too much deep, don't browse this link
+        if web_resource.link_depth > self.max_link_depth:
+            return False
+
         url = web_resource.url
 
         # We don't need destination anchors
@@ -275,6 +285,7 @@ class lswww(object):
         mime_type = content_type.split(';')[0].strip()
         swf_links = []
         js_links = []
+        current_depth = web_resource.link_depth
 
         # Requests says it found an encoding... the content must be some HTML
         if resp_encoding and any(mime_type.startswith(t) for t in self.allowed_types):
@@ -306,7 +317,7 @@ class lswww(object):
             if redir is not None:
                 if self.__inzone(redir) == 0:
                     self.link_encoding[redir] = self.link_encoding[url]
-                    redir = HTTP.HTTPResource(redir)
+                    redir = HTTP.HTTPResource(redir, link_depth=current_depth+1)
                     # Is the document not visited yet and not forbidden ?
                     if (redir not in self.browsed_links and
                         redir not in self.tobrowse and
@@ -365,7 +376,7 @@ class lswww(object):
             if lien is not None:
                 if self.__inzone(lien) == 0:
                     # Is the document already visited of forbidden ?
-                    lien = HTTP.HTTPResource(lien, encoding=page_encoding, referer=url)
+                    lien = HTTP.HTTPResource(lien, encoding=page_encoding, referer=url, link_depth=current_depth+1)
                     if (lien in self.browsed_links or
                         lien in self.tobrowse or
                             self.isExcluded(lien)):
@@ -416,7 +427,8 @@ class lswww(object):
                                           post_params=post_params,
                                           file_params=files,
                                           encoding=page_encoding,
-                                          referer=url)
+                                          referer=url,
+                                          link_depth=current_depth+1)
             if (form_rsrc not in self.browsed_forms and
                 form_rsrc not in self.tobrowse and
                     not self.isExcluded(form_rsrc)):
@@ -458,6 +470,8 @@ class lswww(object):
             llien.startswith("news:") or
             llien.startswith("file:", 0) or
             llien.startswith("gopher:") or
+            # Sublime scheme, don't know what to do with it for the moment
+            llien.startswith("subl:") or
                 llien.startswith("irc:", 0)):
             return None
         # Good protocols or relatives links
@@ -895,12 +909,15 @@ class LinkParser(HTMLParser.HTMLParser):
 
     def handle_data(self, data):
         if self.inscript:
+            allowed_ext = [".php", ".asp", ".xml", ".js", ".json", ".jsp"]
             self.liens.extend(lamejs.lamejs(data).getLinks())
             candidates = re.findall(r'"([A-Za-z0-9_=#&%\.\+\?/-]*)"', data)
             candidates += re.findall(r"'([A-Za-z0-9_=#&%\.\+\?/-]*)'", data)
             for jstr in candidates:
-                if ('/' in jstr or '.' in jstr or '?' in jstr) and jstr not in self.common_js_strings:
-                    self.liens.append(jstr)
+                if jstr not in self.common_js_strings:
+                    for ext in allowed_ext:
+                        if ext in jstr:
+                            self.liens.append(jstr)
 
 
 class LinkParser2(object):
