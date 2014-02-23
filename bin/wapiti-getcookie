@@ -29,7 +29,7 @@ if "_" not in dir():
         return s
 
 if len(sys.argv) < 3:
-    sys.stderr.write("Usage: python getcookie.py <cookie_file.json> <url_with_form> [options]\n\n" +
+    sys.stderr.write("Usage: python wapiti-getcookie <cookie_file.json> <url_with_form> [options]\n\n" +
                      "Supported options are:\n" +
                      "-p <url_proxy>\n" +
                      "--proxy <url_proxy>\n" +
