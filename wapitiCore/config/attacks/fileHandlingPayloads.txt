@@ -27,6 +27,8 @@ c:\\boot.ini\0
 [DIRVALUE]/../../../../../../../../../../../../../../../../../../../../boot.ini
 [DIRVALUE]/../../../../../../../../../../boot.ini\0
 [DIRVALUE]/../../../../../../../../../../../../../../../../../../../../boot.ini\0
+file:///etc/passwd
+file://c:\\boot.ini
 /etc/passwd\0index.htm
 /etc/passwd\0index.html
 /etc/passwd\0index.php
