@@ -23,6 +23,7 @@ import os
 from wapitiCore.attack.attack import Attack
 from wapitiCore.language.vulnerability import Vulnerability, Anomaly
 from wapitiCore.net import HTTP
+import re
 
 
 class mod_xss(Attack):
@@ -517,7 +518,8 @@ class mod_xss(Attack):
 
     # generate a list of payloads based on where in the webpage the js-code will be injected
     def generate_payloads(self, html_code, code):
-        soup = BeautifulSoup(html_code)  # il faut garder la page non-retouchee en reserve...
+        # We must keep the original source code because bs gives us something that may differ...
+        soup = BeautifulSoup(html_code)
         e = []
         self.study(soup, keyword=code, entries=e)
 
@@ -533,23 +535,27 @@ class mod_xss(Attack):
             if elem['type'] == "attrval":
                 # print("tag -> {0}".format(elem['tag']))
                 # print(elem['name'])
-                i0 = html_code.find(code)
-                # i1=html_code[:i0].rfind("=")
-                try:
-                    # find the position of name of the attribute we are in
-                    i1 = html_code[:i0].rfind(elem['name'])
-                # stupid unicode errors, must check later
-                except UnicodeDecodeError:
-                    continue
+                code_index = html_code.find(code)
+                attrval_index = 0
+                before_code = html_code[:code_index]
 
-                start = html_code[i1:i0].replace(" ", "")[len(elem['name']):]
-                # between the tag name and our injected attribute there is an equal sign
-                # and (probably) a quote or a double-quote we need to close before putting our payload
-                if start.startswith("='"):
+                # Not perfect but still best than the former rfind
+                attr_pattern = "\s*" + elem['name'] + "\s*=\s*"
+
+                # Let's find the last match
+                for m in re.finditer(attr_pattern, before_code, flags=re.IGNORECASE):
+                    attrval_index = m.end()
+
+                attrval = before_code[attrval_index:]
+                # between the tag name and our injected attribute there is an equal sign and maybe
+                # a quote or a double-quote that we need to close before adding our payload
+                if attrval.startswith("'"):
                     payload = "'"
-                if start.startswith('="'):
+                elif attrval.startswith('"'):
                     payload = '"'
-                if elem['tag'].lower() == "img":
+
+                # we must deal differently with self-closing tags
+                if elem['tag'].lower() in ["img", "input"]:
                     payload += "/>"
                 else:
                     payload += "></" + elem['tag'] + ">"
@@ -610,5 +616,5 @@ class mod_xss(Attack):
                     if js_code not in payloads:
                         payloads.append(js_code)
 
-            html_code = html_code.replace(code, "none", 1)  # reduire la zone de recherche
+            html_code = html_code.replace(code, "none", 1)  # Reduce the research zone
         return payloads
