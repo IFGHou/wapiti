@@ -22,6 +22,7 @@ import requests
 
 
 class jsoncookie(object):
+    """This class allows to store (and load) cookies in a JSON formatted file."""
 
     def __init__(self):
         self.cookiedict = None
@@ -58,17 +59,26 @@ class jsoncookie(object):
                         self.cookiedict[dotdomain][path][key] = cookie_attrs
 
     def cookiejar(self, domain):
+        """Returns a cookielib.CookieJar object containing cookies matching the given domain."""
+        cj = cookielib.CookieJar()
+
         if not domain:
-            return None
+            return cj
+
+        if ":" in domain:
+            domain, port = domain.split(":", 1)
+
+        # For hostnames on local network we must add a 'local' tld (needed by cookielib)
+        if not '.' in domain:
+            domain += ".local"
 
         dotdomain = domain if domain[0] == '.' else '.' + domain
         exploded = dotdomain.split(".")
         parent_domains = [".%s" % (".".join(exploded[x:])) for x in range(1, len(exploded) - 1)]
         matching_domains = [d for d in parent_domains if d in self.cookiedict]
         if not matching_domains:
-            return None
+            return cj
 
-        cj = cookielib.CookieJar()
         for d in matching_domains:
             for path in self.cookiedict[d]:
                 for cookie_name, cookie_attrs in self.cookiedict[d][path].items():

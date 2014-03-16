@@ -148,7 +148,7 @@ class lswww(object):
 
         server = (root.split("://")[1]).split("/")[0]
         self.root = HTTP.HTTPResource(root)   # Initial URL
-        self.server = server  # Domain
+        self.server = server  # Domain (with potential :port)
         self.scope_url = root  # Scope of the analysis
 
         self.tobrowse = [self.root]
