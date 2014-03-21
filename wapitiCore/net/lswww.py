@@ -139,7 +139,7 @@ class lswww(object):
         self.timeout = 6.0
         self.global_headers = {}
         self.cookiejar = None
-        self.scope = None
+        self.scope = "folder"
         self.link_encoding = {}
 
         # 0 means no limits
