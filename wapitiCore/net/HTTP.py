@@ -485,7 +485,7 @@ class HTTP(object):
              headers={}):
         """Send a HTTP Request. GET or POST (if post_params is set)."""
         resp = None
-        _headers = {}
+        _headers = {"user-agent": "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)"}
         _headers.update(headers)
 
         get_data = None
