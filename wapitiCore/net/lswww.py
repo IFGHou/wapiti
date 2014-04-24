@@ -507,14 +507,13 @@ class lswww(object):
                             "C=N;O=A", "C=N;O=D", "C=S;O=A", "C=S;O=D"]:
                     args = ""
 
-                if "&" in args:
-                    args = args.split("&")
-                    args = [i for i in args if i != "" and "=" in i]
-                    for i in self.bad_params:
-                        for j in args:
-                            if j.startswith(i + "="):
-                                args.remove(j)
-                    args = "&".join(args)
+                args = args.split("&")
+                args = [kv for kv in args if kv != "" and kv not in self.bad_params]
+                for bad_arg in self.bad_params:
+                    for kv in args:
+                        if kv.startswith(bad_arg + "="):
+                            args.remove(kv)
+                args = "&".join(args)
 
             # First part of the url (path) must be encoded with UTF-8
             if isinstance(lien, unicode):
