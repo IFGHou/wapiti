@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # lamejs - A very basic javascript interpreter in Python
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
-# Copyright (C) 2013 Nicolas Surribas
+# Copyright (C) 2013-2014 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class lamejs(object):
         try:
             self.js_vars = {}
             self.links = []
-            rootnode = jsparser.jsparser.parse(data, None, 0)
+            rootnode = jsparser.parse(data, None, 0)
             self.read_node(rootnode)
         except Exception:
             pass

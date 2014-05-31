@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
-# Copyright (C) 2008-2013 Nicolas Surribas
+# Copyright (C) 2008-2014 Nicolas Surribas
 #
 # Original authors :
 # Alberto Pastor
@@ -50,8 +50,6 @@ class XMLReportGenerator(ReportGenerator):
         </vulnerabilityTypeList>
     </report>
     """
-
-
 
 
     def __init__(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
-# Copyright (C) 2008-2013 Nicolas Surribas
+# Copyright (C) 2008-2014 Nicolas Surribas
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ import sys
 modules = ["mod_crlf", "mod_exec", "mod_file", "mod_sql", "mod_xss",
            "mod_backup", "mod_htaccess", "mod_blindsql",
            "mod_permanentxss", "mod_nikto", "mod_delay"]
+
+commons = ["blindsql", "exec", "file", "permanentxss", "sql", "xss"]
 
 
 class Attack(object):

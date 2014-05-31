@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
-# Copyright (C) 2008-2013 Nicolas SURRIBAS
+# Copyright (C) 2006-2014 Nicolas SURRIBAS
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -132,7 +132,13 @@ class Wapiti(object):
             if self.color == 1:
                 attack_module.setColor()
 
+        # Custom list of modules was specified
         if self.options != "":
+            # First deactivate all modules
+            for attack_module in self.attacks:
+                attack_module.doGET = False
+                attack_module.doPOST = False
+
             opts = self.options.split(",")
 
             for opt in opts:
@@ -147,10 +153,11 @@ class Wapiti(object):
                     module = module[1:]
                     if module == "all":
                         for attack_module in self.attacks:
-                            if method == "get" or method == "":
-                                attack_module.doGET = False
-                            if method == "post" or method == "":
-                                attack_module.doPOST = False
+                            if attack_module.name in attack.commons:
+                                if method == "get" or method == "":
+                                    attack_module.doGET = False
+                                if method == "post" or method == "":
+                                    attack_module.doPOST = False
                     else:
                         found = False
                         for attack_module in self.attacks:
@@ -168,11 +175,14 @@ class Wapiti(object):
                     if module.startswith("+"):
                         module = module[1:]
                     if module == "all":
+                        print(_("[!] Keyword 'all' was removed for activation. Use 'common' and modules names instead."))
+                    elif module == "common":
                         for attack_module in self.attacks:
-                            if method == "get" or method == "":
-                                attack_module.doGET = True
-                            if method == "post" or method == "":
-                                attack_module.doPOST = True
+                            if attack_module.name in attack.commons:
+                                if method == "get" or method == "":
+                                    attack_module.doGET = True
+                                if method == "post" or method == "":
+                                    attack_module.doPOST = True
                     else:
                         found = False
                         for attack_module in self.attacks:

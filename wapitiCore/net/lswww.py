@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # lswww v2.4.0 - A web spider library
 # This file is part of the Wapiti project (http://wapiti.sourceforge.net)
-# Copyright (C) 2006-2013 Nicolas SURRIBAS
+# Copyright (C) 2006-2014 Nicolas SURRIBAS
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -815,14 +815,23 @@ class LinkParser(HTMLParser.HTMLParser):
         self.common_js_strings = ["Msxml2.XMLHTTP", "application/x-www-form-urlencoded", ".php", "text/xml",
                                   "about:blank", "Microsoft.XMLHTTP", "text/plain", "text/javascript",
                                   "application/x-shockwave-flash"]
+        self.js_events = ['onabort', 'onblur', 'onchange', 'onclick', 'ondblclick',
+                          'ondragdrop', 'onerror', 'onfocus', 'onkeydown', 'onkeypress',
+                          'onkeyup', 'onload', 'onmousedown', 'onmousemove', 'onmouseout',
+                          'onmouseover', 'onmouseup', 'onmove', 'onreset', 'onresize',
+                          'onselect', 'onsubmit', 'onunload']
 
     def handle_starttag(self, tag, attrs):
         tmpdict = {}
         for k, v in attrs:
             if v is None:
                 continue
-            if not k.lower() in tmpdict:
-                tmpdict[k.lower()] = v
+            lk = k.lower()
+            if not lk in tmpdict:
+                tmpdict[lk] = v
+                if lk in self.js_events:
+                    self.liens.extend(lamejs.lamejs(v).getLinks())
+
         if tag.lower() in ['a', 'link']:
             if "href" in tmpdict:
                 if tmpdict['href'].lower().startswith("javascript:"):
