@@ -146,7 +146,7 @@ class CrawlerPersister(object):
 
         # 2 - URLs and FORMs already browsed
         browsedEl = xml.createElement(self.BROWSED)
-        for http_resource in self.browsed_links:
+        for http_resource in self.browsed_links + self.browsed_forms:
             # <resource method="" path="" encoding ="">
             resEl = xml.createElement(self.RESOURCE)
             resEl.setAttribute(self.METHOD, http_resource.method)
