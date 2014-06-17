@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import sys
-import getopt
+import argparse
 import os
 import urlparse
 import time
@@ -83,7 +83,7 @@ class Wapiti(object):
 
         self.color = 0
         self.verbose = 0
-        self.options = ""
+        self.options = None
 
     def __initReport(self):
         for rep_gen_info in self.xml_rep_gen_parser.getReportGenerators():
@@ -133,7 +133,7 @@ class Wapiti(object):
                 attack_module.setColor()
 
         # Custom list of modules was specified
-        if self.options != "":
+        if self.options is not None:
             # First deactivate all modules
             for attack_module in self.attacks:
                 attack_module.doGET = False
@@ -142,6 +142,9 @@ class Wapiti(object):
             opts = self.options.split(",")
 
             for opt in opts:
+                if opt.strip() == "":
+                    continue
+
                 method = ""
                 if opt.find(":") > 0:
                     module, method = opt.split(":", 1)
@@ -326,6 +329,12 @@ class Wapiti(object):
 
 if __name__ == "__main__":
     doc = _("wapitiDoc")
+
+    class HelpMessage(argparse.Action):                                                                                      
+        def __call__(self, prsr, namespace, values, option_string=None):
+            print doc
+            sys.exit()
+
     try:
         prox = ""
         auth = []
@@ -345,145 +354,185 @@ if __name__ == "__main__":
             print("Error: You have an outdated version of python-requests. Please upgrade")
             sys.exit(1)
 
-        if len(sys.argv) < 2:
-            print(doc)
-            sys.exit(0)
-        if '-h' in sys.argv or '--help' in sys.argv:
-            print(doc)
-            sys.exit(0)
+        parser = argparse.ArgumentParser(description="Wapiti: Web application vulnerability scanner", add_help=False)
+        parser.add_argument('BASE_URL')
+        parser.add_argument('-s', '--start',
+                            action='append', default=[],
+                            help='Adds an url to start scan with',
+                            metavar='URL', dest='starting_urls')
+        parser.add_argument('-x', '--exclude',
+                            action='append', default=[],
+                            help='Adds an url to exclude from the scan',
+                            metavar='URL', dest='excluded_urls')
+        parser.add_argument('-p', '--proxy',
+                            action='append', default=[],
+                            help='Set a proxy for a given protocol',
+                            metavar='PROXY_URL', dest='proxies')
+        parser.add_argument('-c', '--cookie',
+                            help='Set a json cookie file to use',
+                            default=argparse.SUPPRESS,
+                            metavar='COOKIE_FILE')
+        parser.add_argument('-t', '--timeout',
+                            type=float, default=6.0,
+                            help='Set timeout for requests',
+                            metavar='SECONDS')
+        parser.add_argument('-a', '--auth',
+                            dest='credentials',
+                            default=argparse.SUPPRESS,
+                            help='Set credentials to use',
+                            metavar='CREDENTIALS')
+        parser.add_argument("--auth-method",
+                            default=argparse.SUPPRESS,
+                            help="Set the authentication method to use",
+                            choices=['basic', 'digest', 'kerberos', 'ntlm'])
+        parser.add_argument('-r', '--remove',
+                            action='append', default=[],
+                            help='Remove this parameter from urls',
+                            metavar='PARAMETER', dest='excluded_parameters')
+        parser.add_argument('-n', '--nice',
+                            dest='repeat_limit', default=0,
+                            help='Max occurences of parameter',
+                            metavar='COUNT', type=int)
+        parser.add_argument("-d", "--depth",
+                            help="Set how deep the scanner should explore the website",
+                            type=int, default=40)
+        parser.add_argument('-m', '--module',
+                            dest='modules', default=None,
+                            help='List of modules to load',
+                            metavar='MODULES_LIST')
+        parser.add_argument('-u', '--color',
+                            action='store_true',
+                            help='Highlight output')
+        parser.add_argument('-v', '--verbose',
+                            metavar='LEVEL', dest='verbosity',
+                            help='Set verbosity level', default=0,
+                            type=int, choices=xrange(0,3))
+        parser.add_argument('-b', '--scope',
+                            help='Set scan scope', default="folder",
+                            choices=['page', 'folder', 'domain'])
+        parser.add_argument('-f', '--format',
+                            help='Set output format', default="html",
+                            choices=['json', 'html', 'txt', 'openvas', 'vulneranet', 'xml'])
+        parser.add_argument('-o', '--output',
+                            metavar='OUPUT_PATH', default=argparse.SUPPRESS,
+                            help='Output file or folder')
+        parser.add_argument('-i', '--continue', dest="resume",
+                            nargs='?', metavar='FILE', default=argparse.SUPPRESS,
+                            help='File to import')
+        parser.add_argument('-k', '--attack', default=argparse.SUPPRESS,
+                            nargs='?', metavar='FILE',
+                            help='File to import')
+        parser.add_argument('--verify-ssl',
+                            default=1, dest="check_ssl",
+                            help='Set SSL check',
+                            type=int, choices=[0, 1])
+        parser.add_argument('--version', action='version', version=WAPITI_VERSION)
+        parser.add_argument('-h', '--help', action=HelpMessage, nargs=0, help="Show detailed usage")
+        args = parser.parse_args()
 
         if not os.path.isdir(crawlerPersister.CRAWLER_DATA_DIR):
             os.makedirs(crawlerPersister.CRAWLER_DATA_DIR)
 
-        url = sys.argv[1]
+        url = args.BASE_URL
         wap = Wapiti(url)
 
         try:
-            opts, args = getopt.getopt(sys.argv[2:],
-                                       "hup:s:x:c:a:r:v:t:m:o:f:n:d:kib:",
-                                       ["help", "color", "proxy=", "start=", "exclude=",
-                                        "cookie=", "auth=", "remove=", "verbose=", "timeout=",
-                                        "module=", "output=", "format=", "nice=", "depth=",
-                                        "attack", "continue", "scope=", "verify-ssl=", "auth-method="])
-        except getopt.GetoptError, e:
-            print(e)
-            sys.exit(2)
+            for start_url in args.starting_urls:
+                if start_url.startswith("http://") or start_url.startswith("https://"):
+                    wap.addStartURL(start_url)
+                elif os.path.isfile(start_url):
+                    import codecs
+                    try:
+                        urlfd = codecs.open(start_url, encoding="UTF-8")
+                        for urlline in urlfd:
+                            urlline = urlline.strip()
+                            if urlline.startswith("http://") or urlline.startswith("https://"):
+                                wap.addStartURL(urlline)
+                        urlfd.close()
+                    except UnicodeDecodeError:
+                        print(_("Error: File given with the -s option must be UTF-8 encoded !"))
+                        raise InvalidOptionValue("-s", start_url)
+                else:
+                    raise InvalidOptionValue('-s', start_url)
 
-        try:
-            for o, a in opts:
-                if o in ["-h", "--help"]:
-                    print(doc)
-                    sys.exit(0)
-                if o in ["-s", "--start"]:
-                    if a.startswith("http://") or a.startswith("https://"):
-                        wap.addStartURL(a)
-                    elif os.path.isfile(a):
-                        import codecs
-                        try:
-                            urlfd = codecs.open(a, encoding="UTF-8")
-                            for urlline in urlfd:
-                                urlline = urlline.strip()
-                                if urlline.startswith("http://") or urlline.startswith("https://"):
-                                    wap.addStartURL(urlline)
-                            urlfd.close()
-                        except UnicodeDecodeError:
-                            print(_("Error: File given with the -s option must be UTF-8 encoded !"))
-                            raise InvalidOptionValue(o, a)
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-x", "--exclude"]:
-                    if a.startswith("http://") or a.startswith("https://"):
-                        wap.addExcludedURL(a)
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-p", "--proxy"]:
-                    if a.startswith("http://") or a.startswith("https://"):
-                        wap.setProxy(a)
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-c", "--cookie"]:
-                    if os.path.isfile(a):
-                        wap.setCookieFile(a)
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-a", "--auth"]:
-                    if a.find("%") >= 0:
-                        auth = a.split("%")
-                        wap.setAuthCredentials(auth)
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["--auth-method"]:
-                    if a in ["basic", "digest", "kerberos", "ntlm"]:
-                        wap.setAuthMethod(a)
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-r", "--remove"]:
-                    wap.addBadParam(a)
-                if o in ["-n", "--nice"]:
-                    if str.isdigit(a):
-                        wap.setNice(int(a))
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-d", "--depth"]:
-                    if str.isdigit(a) and int(a) > 0:
-                        wap.setMaxDepth(int(a))
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-u", "--color"]:
-                    wap.setColor()
-                if o in ["-v", "--verbose"]:
-                    if str.isdigit(a):
-                        wap.verbosity(int(a))
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-t", "--timeout"]:
-                    if str.isdigit(a):
-                        wap.setTimeOut(int(a))
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-m", "--module"]:
-                    wap.setModules(a)
-                if o in ["-o", "--output"]:
-                    wap.setOutputFile(a)
-                if o in ["-f", "--format"]:
-                    found_generator = False
-                    for repGenInfo in wap.xml_rep_gen_parser.getReportGenerators():
-                        if a == repGenInfo.getKey():
-                            wap.setReportGeneratorType(a)
-                            found_generator = True
-                            break
-                    if not found_generator:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-b", "--scope"]:
-                    if a in ["page", "folder", "domain"]:
-                        wap.setScope(a)
-                    else:
-                        raise InvalidOptionValue(o, a)
-                if o in ["-k", "--attack"]:
-                    if a != "" and a[0] != '-':
-                        attackFile = a
-                    else:
-                        hostname = url.split("://")[1].split("/")[0]
-                        attackFile = u"{0}{1}{2}.xml".format(crawlerPersister.CRAWLER_DATA_DIR,
-                                                             os.path.sep,
-                                                             hostname)
-                if o in ["-i", "--continue"]:
-                    if a != '' and a[0] != '-':
-                        crawlerFile = a
-                    else:
-                        hostname = url.split("://")[1].split("/")[0]
-                        crawlerFile = u"{0}{1}{2}.xml".format(crawlerPersister.CRAWLER_DATA_DIR,
-                                                              os.path.sep,
-                                                              hostname)
-                if o in ["--verify-ssl"]:
-                    if str.isdigit(a):
-                        wap.setVerifySsl(bool(int(a)))
-                    else:
-                        raise InvalidOptionValue(o, a)
+            for exclude_url in args.excluded_urls:
+                if exclude_url.startswith("http://") or exclude_url.startswith("https://"):
+                    wap.addExcludedURL(exclude_url)
+                else:
+                    raise InvalidOptionValue("-x", exclude_url)
+
+            for proxy_url in args.proxies:
+                if proxy_url.startswith("http://") or proxy_url.startswith("https://"):
+                    wap.setProxy(proxy_url)
+                else:
+                    raise InvalidOptionValue("-p", proxy_url)
+
+            if "cookie" in args:
+                if os.path.isfile(args.cookie):
+                    wap.setCookieFile(args.cookie)
+                else:
+                    raise InvalidOptionValue("-c", args.cookie)
+
+            if "credentials" in args:
+                if "%" in args.credentials:
+                    wap.setAuthCredentials(args.credentials.split("%", 1))
+                else:
+                    raise InvalidOptionValue("-a", args.credentials)
+
+            if "auth_method" in args:
+                wap.setAuthMethod(args.auth_method)
+
+            for bad_param in args.excluded_parameters:
+                wap.addBadParam(bad_param)
+
+            wap.setNice(args.repeat_limit)
+            wap.setMaxDepth(args.depth)
+            # should be a setter
+            wap.verbosity(args.verbosity)
+            if args.color:
+                wap.setColor()
+            wap.setTimeOut(args.timeout)
+            wap.setModules(args.modules)
+
+            if "output" in args:
+                wap.setOutputFile(args.output)
+
+            found_generator = False
+            for repGenInfo in wap.xml_rep_gen_parser.getReportGenerators():
+                if args.format == repGenInfo.getKey():
+                    wap.setReportGeneratorType(args.format)
+                    found_generator = True
+                    break
+            if not found_generator:
+                raise InvalidOptionValue("-f", args.format)
+
+            wap.setScope(args.scope)
+            wap.setVerifySsl(args.check_ssl)
+
+            hostname = url.split("://")[1].split("/")[0]
+
+            if "attack" in args:
+                # Option was used
+                if not args.attack:
+                    # no value set, use default
+                    attackFile = u"{0}{1}{2}.xml".format(crawlerPersister.CRAWLER_DATA_DIR,
+                                                         os.path.sep,
+                                                         hostname)
+                else:
+                    crawlerFile = args.attack
+
+            if "resume" in args:
+                if not args.resume:
+                    crawlerFile = u"{0}{1}{2}.xml".format(crawlerPersister.CRAWLER_DATA_DIR,
+                                                          os.path.sep,
+                                                          hostname)
+                else:
+                    crawlerFile = args.resume
 
         except InvalidOptionValue, msg:
             print(msg)
             sys.exit(2)
+
 
         if attackFile is not None:
             if crawlerPersister.isDataForUrl(attackFile) == 1:
