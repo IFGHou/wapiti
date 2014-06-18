@@ -327,10 +327,13 @@ class Wapiti(object):
         """Set the filename where the report will be written"""
         self.output_file = outputFile
 
+    def addCustomHeader(self, key, value):
+        self.http_engine.addCustomHeader(key, value)
+
 if __name__ == "__main__":
     doc = _("wapitiDoc")
 
-    class HelpMessage(argparse.Action):                                                                                      
+    class HelpMessage(argparse.Action):
         def __call__(self, prsr, namespace, values, option_string=None):
             print doc
             sys.exit()
@@ -389,6 +392,14 @@ if __name__ == "__main__":
                             action='append', default=[],
                             help='Remove this parameter from urls',
                             metavar='PARAMETER', dest='excluded_parameters')
+        parser.add_argument('-H', '--header',
+                            action='append', default=[],
+                            help='Set a custom header to use for every requests',
+                            metavar='HEADER', dest='headers')
+        parser.add_argument('-U', '--user-agent',
+                            default=argparse.SUPPRESS,
+                            help='Set a custom user-agent to use for every requests',
+                            metavar='AGENT', dest='user_agent')
         parser.add_argument('-n', '--nice',
                             dest='repeat_limit', default=0,
                             help='Max occurences of parameter',
@@ -493,6 +504,14 @@ if __name__ == "__main__":
                 wap.setColor()
             wap.setTimeOut(args.timeout)
             wap.setModules(args.modules)
+
+            if "user_agent" in args:
+                wap.addCustomHeader("user-agent", args.user_agent)
+
+            for custom_header in args.headers:
+                if ":" in custom_header:
+                    hdr_name, hdr_value = custom_header.split(":", 1)
+                    wap.addCustomHeader(hdr_name.strip(), hdr_value.strip())
 
             if "output" in args:
                 wap.setOutputFile(args.output)

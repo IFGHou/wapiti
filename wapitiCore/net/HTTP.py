@@ -477,15 +477,15 @@ class HTTP(object):
         self.cookiejar = {}
         self.verify_ssl = True
         self.sslErrorOccured = False
+        self.base_headers = {"user-agent": "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)"}
 
         self.configured = 0
 
-    def send(self, target, method="",
-             get_params=None, post_params=None, file_params=None,
-             headers={}):
+    def send(self, target, headers={},
+             get_params=None, post_params=None, file_params=None):
         """Send a HTTP Request. GET or POST (if post_params is set)."""
         resp = None
-        _headers = {"user-agent": "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)"}
+        _headers = self.base_headers.copy()
         _headers.update(headers)
 
         get_data = None
@@ -636,6 +636,10 @@ class HTTP(object):
         elif self.auth_method == "kerberos":
             from requests_kerberos import HTTPKerberosAuth
             self.h.auth = HTTPKerberosAuth()
+
+    def addCustomHeader(self, key, value):
+        """Set a HTTP header to use for every requests"""
+        self.base_headers[key] = value
 
 if __name__ == "__main__":
     res1 = HTTPResource("http://httpbin.org/post?var1=a&var2=b",

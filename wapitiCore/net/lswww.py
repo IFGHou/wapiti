@@ -231,9 +231,8 @@ class lswww(object):
         # and not too short to give good results
         socket.setdefaulttimeout(self.timeout)
 
-        headers = {"user-agent": 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
         try:
-            resp = self.h.send(web_resource, headers=headers)
+            resp = self.h.send(web_resource)
         except socket.timeout:
             self.excluded.append(url)
             return False
