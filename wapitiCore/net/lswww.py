@@ -106,6 +106,7 @@ class lswww(object):
     SCOPE_DOMAIN = "domain"
     SCOPE_FOLDER = "folder"
     SCOPE_PAGE = "page"
+    SCOPE_URL = "url"
     SCOPE_DEFAULT = "default"
 
     allowed = ['php', 'html', 'htm', 'xml', 'xhtml', 'xht', 'xhtm',
@@ -177,6 +178,8 @@ class lswww(object):
 
     def setScope(self, scope):
         self.scope = scope
+        if scope == self.SCOPE_PAGE:
+            self.scope_url = self.root.url.split("?")[0]
         if scope == self.SCOPE_FOLDER:
             self.scope_url = "/".join(self.root.url.split("/")[:-1]) + "/"
         elif scope == self.SCOPE_DOMAIN:
@@ -559,10 +562,17 @@ class lswww(object):
         """Make sure the url is under the root url"""
         # Returns 0 if the URL is in zone
         if self.scope == self.SCOPE_PAGE:
+            if url.split("?")[0] == self.scope_url:
+                return 0
+            else:
+                return 1
+
+        if self.scope == self.SCOPE_URL:
             if url == self.scope_url:
                 return 0
             else:
                 return 1
+
         if url.startswith(self.scope_url):
             return 0
         else:

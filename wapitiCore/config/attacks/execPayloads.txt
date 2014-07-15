@@ -18,4 +18,6 @@ exit(base64_decode('dzRwMXQxX2V2YWw='));//
 exit(base64_decode('dzRwMXQxX2V2YWw='));#
 data:;base64,PD9waHAgZXhpdCgndzRwMXQxX2V2YWwnKTs/Pg==
 a`)`
-a`sleep 600`
+a`sleep 60`
+a;sleep 60;
+a|sleep 60;

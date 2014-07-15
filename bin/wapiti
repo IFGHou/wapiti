@@ -420,7 +420,7 @@ if __name__ == "__main__":
                             type=int, choices=xrange(0,3))
         parser.add_argument('-b', '--scope',
                             help='Set scan scope', default="folder",
-                            choices=['page', 'folder', 'domain'])
+                            choices=['page', 'folder', 'domain', 'url'])
         parser.add_argument('-f', '--format',
                             help='Set output format', default="html",
                             choices=['json', 'html', 'txt', 'openvas', 'vulneranet', 'xml'])

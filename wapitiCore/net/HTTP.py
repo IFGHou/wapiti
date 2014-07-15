@@ -350,6 +350,24 @@ class HTTPResource(object):
     def file_params(self):
         return deepcopy(self._file_params)
 
+    @property
+    def get_keys(self):
+        if len(self._get_params):
+            return zip(*self._get_params)[0]
+        return ()
+
+    @property
+    def post_keys(self):
+        if len(self._post_params):
+            return zip(*self._post_params)[0]
+        return ()
+
+    @property
+    def file_keys(self):
+        if len(self._file_params):
+            return zip(*self._file_params)[0]
+        return ()
+
     @staticmethod
     def _encode_params(params):
         if not params:
@@ -688,4 +706,10 @@ if __name__ == "__main__":
     print res12
     print "=== Upload cURL representation  ==="
     print res12.curl_repr
+    print "===   HTTP GET keys as a tuple  ==="
+    print res1.get_keys
+    print "===  HTTP POST keys as a tuple  ==="
+    print res1.post_keys
+    print "=== HTTP files keys as a tuple  ==="
+    print res12.file_keys
     print
